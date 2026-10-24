@@ -13,8 +13,8 @@ defineProps<{
   expanded?: boolean
   /** Associated panel ID when action expands a region. */
   controls?: string
-  /** Count supplies accessible status and small visual badge. */
-  badge?: number
+  /** Count or short status text supplies accessible status and small visual badge. */
+  badge?: number | string
   /** Badge status semantics shared with its rail destination. */
   badgeTone?: RailBadgeTone
   /** Existing integration selector. */
@@ -63,6 +63,7 @@ defineProps<{
   background: var(--histoire-danger);
 }
 .histoire-rail-badge[data-tone="agent"] { background: var(--histoire-agent); }
+.histoire-rail-badge[data-tone="accent"] { background: var(--histoire-accent); }
 /* Waiting for the user: larger agent dot with a ring, static so it never reads as busy. */
 .histoire-rail-badge[data-tone="attention"] { inset-block-start: 5px; inset-inline-end: 5px; width: 9px; height: 9px; background: var(--histoire-agent); box-shadow: 0 0 0 2px var(--histoire-surface), 0 0 0 3px var(--histoire-agent); }
 </style>

@@ -7,7 +7,7 @@ import { getHistoireTargetKey } from '@histoire/protocol'
 import { canOpenHistoireTargetInEditor, requestHistoireOpenInEditor } from '@histoire/sdk/internal'
 import { registeredCommands } from 'virtual:$histoire-commands'
 import { files, onUpdate } from 'virtual:$histoire-stories'
-import { shallowRef, watch } from 'vue'
+import { shallowReactive, shallowRef, watch } from 'vue'
 import { createBuiltinCommands } from '../util/builtin-commands.js'
 import { mapFile } from '../util/mapping.js'
 import { createStandaloneClientActions } from './client-actions.js'
@@ -17,6 +17,8 @@ export function createStandaloneCommands(session: HistoireSession, router: Route
   const metadata = shallowRef(files.map(file => mapFile(file)))
   const snapshot = shallowRef(session.getSnapshot())
   const active = shallowRef(true)
+  // Workbench-registered commands (extension plugins): reactive so search lists update live.
+  const extensions = shallowReactive(new Map<string, ClientCommand>())
   let executionGeneration = 0
   // Visibility depends on canonical state/capabilities, not only query changes.
   // This publication is shared by every reactive list/context consumer.
@@ -48,14 +50,32 @@ export function createStandaloneCommands(session: HistoireSession, router: Route
     const variant = variants?.find(variant => variant.id === current.selection?.variantId)
     return { route: router.currentRoute.value, currentStory: story, currentVariant: variant }
   }
-  /** Reuse registered/builtin definitions; editor authority names collected target only. */
+  /**
+   * Reuse registered/builtin definitions; editor authority names collected target only.
+   * Built-in and Node-backed commands need the dev server; workbench-registered commands
+   * decide their own availability through `showIf`.
+   */
   function list(query: string): ClientCommand[] {
     if (!active.value) return []
     const current = context()
     const text = query.toLowerCase()
-    return [...createBuiltinCommands(context, () => {}), ...registeredCommands].filter(command => (command.id === 'builtin:open-in-editor'
+    const dev = snapshot.value.source?.mode === 'dev'
+    return [...(dev ? [...createBuiltinCommands(context, () => {}), ...registeredCommands] : []), ...extensions.values()].filter(command => (command.id === 'builtin:open-in-editor'
       ? canOpenHistoireTargetInEditor(snapshot.value)
       : !command.showIf || command.showIf(current)) && (command.label.toLowerCase().includes(text) || command.searchText?.toLowerCase().includes(text)))
+  }
+  /**
+   * Adds a workbench-side command (extension plugins) to search. It runs its `clientAction`
+   * directly: no dev-server notification and no runtime ownership guard, since the action
+   * runner owns its scope. Disposal removes only this registration.
+   * @param command Command with a unique id.
+   */
+  function register(command: ClientCommand): () => void {
+    if (extensions.has(command.id)) throw new Error(`Duplicate command: ${command.id}`)
+    extensions.set(command.id, command)
+    return () => {
+      if (extensions.get(command.id) === command) extensions.delete(command.id)
+    }
   }
   /** Standalone adapts successful docs activation to its existing route and preserves other query preferences. */
   async function activateSearch(result: HistoireSearchResult): Promise<void> {
@@ -66,6 +86,7 @@ export function createStandaloneCommands(session: HistoireSession, router: Route
   }
   /** Only standalone publishes configured plugin commands over existing dev channel. */
   function execute(command: ClientCommand, params: Record<string, any>): Promise<unknown> {
+    if (extensions.get(command.id) === command) return Promise.resolve().then(() => command.clientAction?.(params, context()))
     if (command.id === 'builtin:open-in-editor') {
       const target = session.getSnapshot().selection
       return actions.execute({ ...command, clientAction: () => target && canOpenHistoireTargetInEditor(session.getSnapshot(), target) ? requestHistoireOpenInEditor(session, target) : undefined }, params, context())
@@ -74,7 +95,7 @@ export function createStandaloneCommands(session: HistoireSession, router: Route
       if (import.meta.hot) import.meta.hot.send('histoire:dev-command', { id: command.id, params })
     })
   }
-  return { context, list, execute, activateSearch,
+  return { context, list, register, execute, activateSearch,
     /** Capture actual command runtime lifetime, including same-target frame replacement. */
     captureExecutionOwner() {
       const generation = executionGeneration
@@ -87,6 +108,7 @@ export function createStandaloneCommands(session: HistoireSession, router: Route
       stopSnapshot()
       stopRuntime()
       stopExecutionOwner()
+      extensions.clear()
       actions.close()
       off?.()
     } }

@@ -1,4 +1,5 @@
 import type { HistoireTarget } from '@histoire/protocol'
+import type { CanvasArrangement } from '../stores/canvas-arrangement.js'
 import type { ProjectConfigState } from '../stores/project-config.js'
 import type { FrameActionTarget } from '../util/frame-actions.js'
 import type { ShortcutScope } from '../util/shortcuts.js'
@@ -14,6 +15,9 @@ import { createSearchFrameNavigation } from '../components/panes/search/frame-na
 import { createDevWorkbenchTestsOptions } from '../components/panes/tests/dev-runner.js'
 import { createWorkbenchTestsModel, provideWorkbenchTestsModel } from '../components/panes/tests/model.js'
 import { createContextMenu, provideContextMenu } from '../composables/context-menu.js'
+import { useContributionLookup } from '../composables/shell-extensions.js'
+import { useWorkbenchPluginActions } from '../extensions/action-surfaces.js'
+import { useStandaloneExtensionHost } from '../extensions/standalone.js'
 import { createMcpStore, provideMcpStore } from '../stores/mcp.js'
 import { createProjectConfigStore, provideProjectConfigStore } from '../stores/project-config.js'
 import { histoireConfig } from '../util/config.js'
@@ -117,6 +121,18 @@ export function useWorkbench(props: WorkbenchProps, error: (error: unknown) => v
   const searchQuery = ref('')
   const shortcuts = createShortcutRegistry()
   provideShortcutRegistry(shortcuts)
+  // Plugin setup runs in the background; navigation reuses the workbench's own routes.
+  const extensions = useStandaloneExtensionHost(props, {
+    inspectorTab: (value) => {
+      panel(value)
+      if (!shell.inspectorOpen.value) shell.toggleInspector()
+    },
+    pane: value => value === 'home' ? navigate('home') : void activatePane(value as WorkspacePane).catch(error),
+    settings: section => navigate('settings', section),
+    canvasView: value => void props.navigation.query({ arrange: value }).catch(error),
+  })
+  // Plugin commands, shortcuts and menu entries join the registries above (toolbar reads the host).
+  useWorkbenchPluginActions(extensions, { commands: props.commands, shortcuts, actions, menu, error, frameSession: target => canvas.value?.registry.getFrame(target.frameKey)?.session ?? props.session })
   useHistoireResource(shortcuts.bind('global.search', () => openSearch(), { allowInput: true }))
   if (dev) {
     useHistoireResource(shortcuts.bind('canvas.comment', () => {
@@ -143,6 +159,8 @@ export function useWorkbench(props: WorkbenchProps, error: (error: unknown) => v
     projectDefault: () => histoireConfig.ui?.defaultArrange,
     syncZoom: () => settings.state.syncZoom,
     views: storyCanvasViews,
+    // Plugin views resolve against this workbench's registry (pending until plugins settle).
+    canvasViews: useContributionLookup('canvas.view', extensions),
   })
   const { arrangement: arrange, base: baseArrange, override: arrangementOverride } = arrangementState
   const searchActive = computed(() => Boolean(searchQuery.value.trim() && !searchQuery.value.startsWith('>') && snapshot.value.status === 'ready' && !snapshot.value.stale))
@@ -244,7 +262,7 @@ export function useWorkbench(props: WorkbenchProps, error: (error: unknown) => v
     void props.navigation.panel(value).catch(error)
   }
   /** Additive arrangement URL rejects unknown values at read time. */
-  function setArrange(value: 'single' | 'grid' | 'list' | 'matrix') {
+  function setArrange(value: CanvasArrangement) {
     void props.navigation.query({ arrange: value }).catch(error)
   }
   /** Matrix axes remain URL-restorable without inventing variant IDs. */

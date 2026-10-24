@@ -4,10 +4,11 @@ import { useHistoireControls } from '@histoire/controls/vue'
 import { useHistoireContext, useHistoireResource } from '@histoire/vue/internal'
 import { computed, onMounted } from 'vue'
 import HistoireLogo from '../../assets/histoire.svg'
+import { useContributionLookup } from '../../composables/shell-extensions.js'
 import { useShell } from '../../composables/shell.js'
 import { useAgentsStore } from '../../stores/agents.js'
 import { useShortcutRegistry } from '../../util/shortcuts.js'
-import { type RailBadgeTone, type RailItem, railItems } from './rail-items.js'
+import { getPluginRailBadge, type RailBadgeTone, type RailItem, railItems, toPluginRailItem } from './rail-items.js'
 import RailButton from './RailButton.vue'
 import { handleShellShortcut } from './shortcuts.js'
 
@@ -31,12 +32,14 @@ const props = defineProps<{
   /** Dev status counts from caller-owned services. */
   badges?: Partial<Record<ShellPane, number>>
 }>()
+const panes = useContributionLookup('shell.pane')
 const emit = defineEmits<{ home: [], pane: [pane: Exclude<ShellPane, 'home'>], settings: [], error: [error: unknown] }>()
 const shell = useShell()
 const context = useHistoireContext()
 const dark = useHistoireControls()!.dark
 const shortcuts = useShortcutRegistry()
-const items = computed(() => railItems.filter(item => shell.dev || !item.devOnly))
+// Plugin panes follow built-ins; the registry already hides dev-only panes in static books.
+const items = computed(() => [...railItems.filter(item => shell.dev || !item.devOnly), ...panes.list().map(toPluginRailItem)])
 const agents = useAgentsStore()
 /** Threads blocked on a question for the user. */
 const waiting = computed(() => agents?.needsInput.value.length ?? 0)
@@ -44,7 +47,9 @@ const waiting = computed(() => agents?.needsInput.value.length ?? 0)
  * Badge count; the AI destination always shows threads waiting for input.
  * @param item Rail destination.
  */
-function badgeFor(item: RailItem): number | undefined {
+function badgeFor(item: RailItem): number | string | undefined {
+  const workbench = panes.workbench
+  if (item.contribution && workbench) return getPluginRailBadge(item, workbench.context, error => workbench.host.reportViewError(item.id, error, 'update'))
   return item.id === 'ai' && waiting.value ? Math.max(props.badges?.ai ?? 0, waiting.value) : props.badges?.[item.id]
 }
 /**

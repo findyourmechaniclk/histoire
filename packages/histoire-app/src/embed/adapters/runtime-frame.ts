@@ -10,6 +10,7 @@ import { createRuntimeLoadRecovery } from './runtime-loading.js'
 import { createRuntimeReadiness } from './runtime-readiness.js'
 import { createRuntimeRequests } from './runtime-requests.js'
 import { createRuntimeRevisionOwner } from './runtime-revision.js'
+import { createRuntimeFrameUrl, createTestWorkerUrl } from './sandbox-urls.js'
 import { createStalePreview } from './stale-preview.js'
 import { createEmbedTestWorkers } from './test-workers.js'
 import { createEmbedPreviewTests } from './tests.js'
@@ -43,15 +44,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
     maxWorkers: context.descriptor.config.testMaxWorkers ?? 1,
     timeoutMs: context.descriptor.config.runTimeout ?? 300_000,
     createDocumentId: () => createRuntimeDocumentId(context.bridge.getOwner().mountId),
-    createUrl(target, documentId) {
-      const url = new URL('__sandbox.html', base)
-      url.searchParams.set('storyId', target.storyId)
-      url.searchParams.set('variantId', target.variantId)
-      url.searchParams.set('documentId', documentId)
-      url.searchParams.set('embed', 'true')
-      url.searchParams.set('testWorker', 'true')
-      return url.href
-    },
+    createUrl: (target, documentId) => createTestWorkerUrl(base, target, documentId),
   })
   const loading = createRuntimeLoadRecovery(settings, () => active && !retired && owner.id && selected && context.standalone && layout === 'single' ? owner.selectionVersion : null, () => {
     requests.invalidate()
@@ -158,17 +151,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
     viewports = []
     sandboxViewports = []
     mounting()
-    const url = new URL('__sandbox.html', base)
-    url.searchParams.set('storyId', target.storyId)
-    url.searchParams.set('variantId', target.variantId!)
-    url.searchParams.set('grid', String(layout === 'grid'))
-    url.searchParams.set('documentId', owner.id!)
-    url.searchParams.set('selectionVersion', String(owner.selectionVersion))
-    url.searchParams.set('embed', 'true')
-    if (context.standalone) url.searchParams.set('standalone', 'true')
-    if (context.standalone && base.searchParams.get('nativeScroll') === 'true') url.searchParams.set('nativeScroll', 'true')
-    if (context.standalone && base.searchParams.get('matrix') === 'true') url.searchParams.set('matrix', 'true')
-    iframe.src = url.href
+    iframe.src = createRuntimeFrameUrl(base, { target, documentId: owner.id!, selectionVersion: owner.selectionVersion, grid: layout === 'grid', standalone: context.standalone })
     if (!iframe.isConnected) context.container.append(iframe)
     settings()
   }

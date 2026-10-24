@@ -1,6 +1,9 @@
 import type { InjectionKey } from 'vue'
 import type { SingleViewportState } from '../components/canvas/single-viewport.js'
+import type { ContributionPresence } from '../extensions/shell-registry.js'
+import type { CanvasDefaultArrangement } from './canvas-arrangement.js'
 import { inject, provide, reactive, ref } from 'vue'
+import { isPluginContributionId } from '../extensions/shell-registry.js'
 
 /** Small storage interface lets standalone persist while embeddings stay memory-only. */
 export interface SettingsStorage {
@@ -34,8 +37,22 @@ export const SETTINGS_SECTIONS = [
   { id: 'about', label: 'About', icon: 'info' },
 ] as const
 
-/** Hidden dev sections and invalid URLs recover to Appearance. */
-export function normalizeSettingsSection(section: unknown, dev: boolean): string {
+/** Registry view of plugin settings sections; see `createContributionLookup`. */
+export interface SettingsSectionRegistry {
+  /** Presence of one candidate plugin section id. */
+  presence: (id: unknown) => ContributionPresence
+}
+
+/**
+ * Hidden dev sections and invalid URLs recover to Appearance. Plugin sections (`<plugin>:<id>`)
+ * are kept while available or possibly still loading, so deep links survive plugin setup.
+ * @param section Route section parameter.
+ * @param dev Dev builds expose tests, agents and MCP.
+ * @param sections Plugin section registry; without one (no workbench bound yet) plugin
+ * sections are kept for the page to resolve.
+ */
+export function normalizeSettingsSection(section: unknown, dev: boolean, sections?: SettingsSectionRegistry): string {
+  if (isPluginContributionId(section)) return !sections || sections.presence(section) !== 'missing' ? section : 'appearance'
   return SETTINGS_SECTIONS.find(item => item.id === section && (dev || !('devOnly' in item)))?.id ?? 'appearance'
 }
 
@@ -44,7 +61,7 @@ export function createUiSettingsStore(options: { storage?: SettingsStorage, warn
   const defaults: UiSettings = { density: 'comfortable', syncZoom: false, watchTests: false }
   const state = reactive({ ...defaults })
   const singleViewport = reactive<SingleViewportState>({ mode: 'responsive' })
-  const defaultArrange = ref<'single' | 'grid' | 'list' | undefined>()
+  const defaultArrange = ref<CanvasDefaultArrangement | undefined>()
   try {
     const raw = options.storage?.getItem('_histoire-ui-settings')
     if (raw) {
@@ -79,7 +96,7 @@ export function createUiSettingsStore(options: { storage?: SettingsStorage, warn
     singleViewport,
     update,
     /** Arrangement override is separate from the documented local-only settings shape. */
-    setArrange(value: 'single' | 'grid' | 'list' | undefined): void {
+    setArrange(value: CanvasDefaultArrangement | undefined): void {
       defaultArrange.value = value
       try {
         if (value) options.storage?.setItem('_histoire-ui-arrange', JSON.stringify(value))

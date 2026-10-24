@@ -8,12 +8,14 @@ defineProps<{
   id: string
   /** Current side-panel identity. */
   pane: ShellPane
+  /** Visible name of the pane, used for the region's accessible name. */
+  label?: string
 }>()
 const shell = useShell()
 </script>
 
 <template>
-  <aside :id="id" class="histoire-side-panel-host" :aria-label="`${pane === 'ai' ? 'AI' : pane} panel`">
+  <aside :id="id" class="histoire-side-panel-host" :aria-label="`${label ?? (pane === 'ai' ? 'AI' : pane)} panel`">
     <div class="histoire-side-panel-content">
       <slot />
     </div>

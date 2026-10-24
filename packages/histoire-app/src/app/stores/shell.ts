@@ -1,8 +1,24 @@
+import type { ContributionPresence } from '../extensions/shell-registry.js'
 import { computed, shallowRef, watch } from 'vue'
+import { isPluginContributionId } from '../extensions/shell-registry.js'
 import { clampPanelWidth, INSPECTOR_WIDTH_DEFAULT, INSPECTOR_WIDTH_LIMITS, PANEL_WIDTH_DEFAULT, PANEL_WIDTH_LIMITS, resolveShellWidths } from './shell-widths.js'
 
-/** Local panel identities; home keeps the full workspace available. */
-export type ShellPane = 'home' | 'stories' | 'search' | 'tests' | 'ai'
+/** Built-in panel identities; home keeps the full workspace available. */
+export type BuiltinShellPane = 'home' | 'stories' | 'search' | 'tests' | 'ai'
+
+/** Plugin rail pane, identified by its qualified contribution id (`<plugin>:<id>`). */
+export type PluginShellPane = `${string}:${string}`
+
+/** Local panel identities. */
+export type ShellPane = BuiltinShellPane | PluginShellPane
+
+/** Registry view of plugin rail panes; see `createContributionLookup`. */
+export interface ShellPaneRegistry {
+  /** Presence of one candidate plugin pane id. */
+  presence: (id: unknown) => ContributionPresence
+  /** Notified when presence may have changed; returns its disposer. */
+  subscribe: (listener: () => void) => () => void
+}
 
 /** AI pane sections: agent threads or MCP server activity. */
 export type AiSection = 'threads' | 'mcp'
@@ -31,8 +47,15 @@ export const SHELL_STORAGE_KEY = '_histoire-ui-shell'
 /** Available client storage; adapters can replace browser persistence. */
 export type ShellStorage = Pick<Storage, 'getItem' | 'setItem'>
 
-/** Modes filter unavailable persisted and user-requested destinations alike. */
-export function isShellPane(value: unknown, dev: boolean): value is ShellPane {
+/**
+ * Modes filter unavailable persisted and user-requested destinations alike. Plugin panes
+ * are valid only while registered and available in `panes`.
+ * @param value Candidate pane.
+ * @param dev Dev builds expose tests and AI.
+ * @param panes Plugin pane registry; without it plugin panes are rejected.
+ */
+export function isShellPane(value: unknown, dev: boolean, panes?: ShellPaneRegistry): value is ShellPane {
+  if (isPluginContributionId(value)) return panes?.presence(value) === 'available'
   return typeof value === 'string' && (['home', 'stories', 'search'].includes(value) || (dev && ['tests', 'ai'].includes(value)))
 }
 
@@ -51,6 +74,8 @@ export function createShell(options: {
   const widths = computed(() => resolveShellWidths({ containerWidth: containerWidth.value, narrow: narrow.value, panelVisible: state.value.panelOpen && state.value.pane !== 'home', inspectorVisible: inspectorAvailable.value && state.value.inspectorOpen, panelWidth: state.value.panelWidth, inspectorWidth: state.value.inspectorWidth }))
   let storage: ShellStorage | undefined
   let closed = false
+  let panes: ShellPaneRegistry | undefined
+  let stopPanes: (() => void) | undefined
   /** Publish one immutable record so persistence never sees half an action. */
   function update(value: Partial<ShellState>): void {
     if (!closed) state.value = { ...state.value, ...value }
@@ -75,7 +100,7 @@ export function createShell(options: {
     storage = value
     // Comments merged into the AI pane; older saved preferences still name it.
     const savedPane: unknown = saved.pane === ('comments' as unknown) ? 'ai' : saved.pane
-    const pane = isShellPane(savedPane, options.dev) ? savedPane : 'stories'
+    const pane = isShellPane(savedPane, options.dev, panes) || mayAppear(savedPane) ? savedPane as ShellPane : 'stories'
     update({
       pane,
       panelOpen: pane !== 'home' && (typeof saved.panelOpen === 'boolean' ? saved.panelOpen : true),
@@ -86,9 +111,43 @@ export function createShell(options: {
       aiSection: saved.aiSection === 'mcp' ? 'mcp' : 'threads',
     })
   }
+  /**
+   * Plugin panes may still appear while plugin setup has not settled, or before a workbench
+   * bound its registry (the shell restores before the extension host exists). Such a pane is
+   * kept, shown as loading, and normalized once the registry knows.
+   * @param pane Candidate pane.
+   */
+  function mayAppear(pane: unknown): boolean {
+    return isPluginContributionId(pane) && (!panes || panes.presence(pane) === 'pending')
+  }
+  /** A plugin pane that will not appear (unknown, removed, dev-only in static) recovers to Stories. */
+  function normalizePane(): void {
+    const pane = state.value.pane
+    if (isPluginContributionId(pane) && panes?.presence(pane) === 'missing') update({ pane: 'stories' })
+  }
+  /**
+   * Binds the plugin pane registry of the owning workbench and keeps the current pane valid
+   * as plugins settle, register or retire.
+   * @param registry Plugin pane registry.
+   * @returns Unbinds the registry.
+   */
+  function bindPanes(registry: ShellPaneRegistry): () => void {
+    if (closed) return () => {}
+    stopPanes?.()
+    panes = registry
+    const stop = registry.subscribe(normalizePane)
+    stopPanes = stop
+    normalizePane()
+    return () => {
+      if (panes !== registry) return
+      stop()
+      panes = undefined
+      stopPanes = undefined
+    }
+  }
   /** Active panel buttons collapse; changing panels always reveals the new one. */
   function selectPane(pane: ShellPane): void {
-    if (!isShellPane(pane, options.dev)) return
+    if (!isShellPane(pane, options.dev, panes)) return
     update({ pane, panelOpen: pane !== 'home' && (state.value.pane !== pane || !state.value.panelOpen) })
   }
   /** Reopening from home restores stories as a useful default panel. */
@@ -139,6 +198,8 @@ export function createShell(options: {
     if (closed) return
     closed = true
     stop()
+    stopPanes?.()
+    panes = undefined
     storage = undefined
   }
   if (options.storage) restore(options.storage)
@@ -179,6 +240,7 @@ export function createShell(options: {
     setInspectorWidth,
     closePanelAfterSelection,
     restore,
+    bindPanes,
     close,
   }
 }

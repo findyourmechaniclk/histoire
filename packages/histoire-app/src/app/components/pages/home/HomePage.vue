@@ -13,6 +13,7 @@ import GuidesList from './GuidesList.vue'
 import HomeHeader from './HomeHeader.vue'
 import HomeSearch from './HomeSearch.vue'
 import { usePageOwnership } from './ownership.js'
+import PluginHomeSections from './PluginHomeSections.vue'
 import UpdatesList from './UpdatesList.vue'
 import './home.css'
 
@@ -85,11 +86,13 @@ function start(): void {
               <DevBrowseStatus v-if="dev && DevBrowseStatus" :story-ids="section.storyIds" />
             </template>
           </BrowseSections>
+          <PluginHomeSections column="primary" />
         </div>
         <aside class="histoire-home-secondary">
           <slot v-if="dev" name="activity" />
           <GuidesList :guides="guides" @select="select" />
           <UpdatesList :changed="buildInfo?.changed" :stories="snapshot.catalog.stories" :dev="dev" @select="select" />
+          <PluginHomeSections column="secondary" />
         </aside>
       </div>
       <p v-if="!snapshot.catalog.stories.length" class="histoire-home-empty">

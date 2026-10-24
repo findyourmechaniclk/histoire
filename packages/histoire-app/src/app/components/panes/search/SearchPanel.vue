@@ -59,7 +59,11 @@ useHistoireResource(() => {
   active = false
 })
 const selectedCommand = shallowRef<ClientCommand | null>(null)
-const commands = computed(() => snapshot.value.source?.mode === 'dev' && query.value.startsWith('>') ? props.commands.list(query.value.slice(1).trim()) : [])
+// The adapter keeps Node-backed commands dev-only; extension plugin commands also list in static books.
+const commands = computed(() => {
+  void snapshot.value
+  return query.value.startsWith('>') ? props.commands.list(query.value.slice(1).trim()) : []
+})
 const results = computed(() => state.value.results.filter(result => scope.value === 'all' || (scope.value === 'stories' ? result.kind === 'story' || result.kind === 'variant' : result.kind === (scope.value === 'props' ? 'prop' : 'docs'))))
 const ordered = results
 const index = ref(0)

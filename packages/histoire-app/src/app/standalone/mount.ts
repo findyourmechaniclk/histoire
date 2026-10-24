@@ -1,7 +1,9 @@
 import type { HistoireSourceDescriptor } from '@histoire/protocol'
 import { HistoireSdkError } from '@histoire/protocol'
+import { workbenchPlugins } from 'virtual:$histoire-workbench-plugins'
 import { createApp, nextTick } from 'vue'
 import App from '../App.vue'
+import { provideWorkbenchPlugins } from '../composables/extensions.js'
 import { setupPluginApi } from '../plugin.js'
 import { histoireConfig } from '../util/config.js'
 import { createStandaloneCommands } from './commands.js'
@@ -55,6 +57,8 @@ export function mountStandaloneApp(options: {
       if (mounted) app.unmount()
     })
     app.use(navigation.router)
+    // Entries load lazily inside the workbench host; mounting never waits for plugin code.
+    provideWorkbenchPlugins(app, workbenchPlugins)
     abort.signal.throwIfAborted()
     app.mount(options.container)
     mounted = true

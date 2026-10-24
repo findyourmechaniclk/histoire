@@ -1,5 +1,6 @@
 import type { HistoireTarget } from '@histoire/protocol'
 import type { Router } from 'vue-router'
+import type { SettingsSectionRegistry } from '../stores/settings.js'
 import type { createStandaloneSelection } from './selection.js'
 import { resolveStoryRouteId, resolveStoryRouteSelection, STORY_ROUTE_PATH } from '@histoire/protocol'
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
@@ -15,9 +16,12 @@ export function createStandaloneNavigation(selection: ReturnType<typeof createSt
       { path: '/settings/:section?', name: 'settings', component: { render: () => null } },
     ],
   })
+  // The router exists before any workbench: plugin sections are looked up lazily in the
+  // registry the mounted workbench binds. Unbound, plugin sections pass for the page to resolve.
+  let settingsSections: SettingsSectionRegistry | undefined
   const stopGuard = router.beforeEach((route) => {
     if (route.name !== 'settings') return
-    const section = normalizeSettingsSection(route.params.section, options.dev ?? false)
+    const section = normalizeSettingsSection(route.params.section, options.dev ?? false, settingsSections)
     if (section !== route.params.section) return { name: 'settings', params: { section }, replace: true }
   })
   let active = true
@@ -86,12 +90,24 @@ export function createStandaloneNavigation(selection: ReturnType<typeof createSt
     href(target: HistoireTarget) { return router.resolve(location(target)).href },
     /** Workbench query additions retain story identity and existing tabs. */
     query(value: Record<string, string>) { return router.replace({ ...router.currentRoute.value, query: { ...router.currentRoute.value.query, ...value } }) },
+    /**
+     * Binds the plugin settings sections of the mounted workbench to the settings guard.
+     * @param registry Plugin settings section registry.
+     * @returns Unbinds the registry.
+     */
+    bindSettingsSections(registry: SettingsSectionRegistry): () => void {
+      settingsSections = registry
+      return () => {
+        if (settingsSections === registry) settingsSections = undefined
+      }
+    },
     /** Caller panel routing keeps story identity and current URL history mode. */
     panel(value: string) {
       return router.replace({ ...router.currentRoute.value, query: { ...router.currentRoute.value.query, tab: value } })
     }, close() {
       active = false
       generation++
+      settingsSections = undefined
       stopGuard()
       off()
       stopSelection()

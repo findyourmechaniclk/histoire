@@ -115,7 +115,7 @@ function setSelectedSession(session: HistoireSession | undefined): void {
       <MarkdownPage v-else-if="route.name === 'story' && markdown" :anchor="route.hash" @select="shell.closePanelAfterSelection" @error="emit('error', $event)" />
       <CanvasViewport v-else-if="route.name === 'story'" ref="canvas" :preview-base="previewBase" :frame-budget="histoireConfig.ui?.frameBudget ?? 6" :arrange="arrange" :base-arrange="baseArrange" :arrangement-override="arrangementOverride" :highlighted-targets="highlighted" :search-active="searchActive" :comment-mode="dev?.commentMode.value" :ui-hidden="shell.uiHidden.value" :inspector-width="!shell.uiHidden.value && shell.inspectorOpen.value && !shell.narrow.value ? shell.inspectorWidth.value + 24 : 0" @selected-session="setSelectedSession" @frame-pointer="dev?.pickComment($event)" @error="emit('error', $event)">
         <template #toolbar>
-          <CanvasToolbar :arrange="arrange" :match-count="searchMatches.count.value" :match-position="searchMatches.position.value" @previous-match="workbench.previousMatch" @next-match="workbench.nextMatch" @arrange="workbench.setArrange" @edit-presets="workbench.navigate('settings', 'viewports')">
+          <CanvasToolbar :arrange="arrange" :match-count="searchMatches.count.value" :match-position="searchMatches.position.value" @previous-match="workbench.previousMatch" @next-match="workbench.nextMatch" @arrange="workbench.setArrange" @edit-presets="workbench.navigate('settings', 'viewports')" @error="emit('error', $event)">
             <template #screenshot="slot">
               <ScreenshotPopover v-if="ScreenshotPopover && snapshot.selection?.variantId" :story-id="snapshot.selection.storyId" :variant-id="snapshot.selection.variantId" :open="slot.open" :trigger="dev?.screenshotTrigger.value" @update:open="slot.setOpen" />
             </template>
@@ -134,7 +134,7 @@ function setSelectedSession(session: HistoireSession | undefined): void {
           </CanvasToolbar>
         </template>
         <template #matrix="slot">
-          <MatrixView :rows="rows" :cols="cols" :preview-base="previewBase" :frame-budget="histoireConfig.ui?.frameBudget ?? 6" :size="slot.size" :content-insets="slot.contentInsets" :ui-hidden="shell.uiHidden.value" :discovery-failed="slot.discoveryFailed" @axes="workbench.setAxes" @add-axis="revealMatrixProps" @error="emit('error', $event)" />
+          <MatrixView :rows="rows" :cols="cols" :preview-base="previewBase" :size="slot.size" :content-insets="slot.contentInsets" :ui-hidden="shell.uiHidden.value" :discovery-failed="slot.discoveryFailed" @axes="workbench.setAxes" @add-axis="revealMatrixProps" @error="emit('error', $event)" />
         </template>
         <template #overlays>
           <CommentsCanvasOverlay v-if="CommentsCanvasOverlay && dev" ref="commentOverlay" :model="dev.threads" :agents="dev.commentAgents.value" :active="dev.commentMode.value" @setup-agent="dev.setupAgents" />

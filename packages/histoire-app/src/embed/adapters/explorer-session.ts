@@ -53,6 +53,8 @@ export function createExplorerViewSession(context: EmbedSurfaceContext) {
       // Inner port has validated document/origin actor; outer envelope still
       // belongs to Explorer's current selection, including non-selected grid actors.
       if (event.type === 'channel' && !primaryClosing) context.bridge.post('channel.message', event.message, identity)
+      // Frame plugin traffic of the owned primary reaches the outer SDK session the same way.
+      if (event.type === 'plugin' && !primaryClosing) context.bridge.post('plugin.message', event.message, identity)
     })
     const stopFocus = isPrimary
       ? transport.channel?.subscribe((event) => {

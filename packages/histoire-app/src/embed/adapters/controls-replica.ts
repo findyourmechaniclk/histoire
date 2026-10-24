@@ -3,6 +3,7 @@ import type { EmbedSurfaceContext } from '../surfaces.js'
 import { getControlsAppearance } from '@histoire/controls/vue'
 import { CONTROLS_APPEARANCE, CONTROLS_FOCUS, CONTROLS_OVERLAY, CONTROLS_OVERLAY_REFRESH, CONTROLS_OVERLAY_RESULT, CONTROLS_READY, CONTROLS_RESIZE, createControlsStateRevision, HistoireSdkError, mapRuntimeViewport, PREVIEW_SETTINGS_SYNC, RUNTIME_FAILED, STATE_SYNC, validateBridgeEventPayload, validateHistoireStateSnapshot } from '@histoire/protocol'
 import { createRuntimeDocumentOwner } from './document.js'
+import { createControlsReplicaUrl } from './sandbox-urls.js'
 /** Same-origin custom controls replica; all edits resolve through canonical parent runtime. */
 export function createEmbedControlsReplica(context: EmbedSurfaceContext, changed: (hasControls: boolean, height: number) => void) {
   const window = context.container.ownerDocument.defaultView!
@@ -112,12 +113,7 @@ export function createEmbedControlsReplica(context: EmbedSurfaceContext, changed
       canonicalId = snapshot.runtime.runtimeId
       const documentId = `${context.bridge.getOwner().mountId}:controls:${++documentCounter}`
       owner.replace(documentId, snapshot.selection)
-      const url = new URL('__sandbox.html', context.sourceBase ?? window.location.href)
-      url.searchParams.set('storyId', snapshot.selection.storyId)
-      url.searchParams.set('variantId', snapshot.selection.variantId)
-      url.searchParams.set('controls', 'true')
-      url.searchParams.set('documentId', documentId)
-      iframe.src = url.href
+      iframe.src = createControlsReplicaUrl(context.sourceBase ?? window.location.href, snapshot.selection, documentId)
       context.container.append(iframe)
       context.bridge.post('readiness.changed', { runtime: { ...snapshot.runtime, mountId: context.bridge.getOwner().mountId } }, { runtimeId: canonicalId!, target: owner.target! })
       clearTimeout(deadline)

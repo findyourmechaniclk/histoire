@@ -1,4 +1,5 @@
 import type { InjectionKey } from 'vue'
+import { BUILTIN_SHORTCUTS, isEditableTarget, matchesShortcut, shortcutBindingsOverlap } from '@histoire/plugin-kit'
 import { inject, provide, shallowReactive } from 'vue'
 
 /** Keyboard ownership stays local to workbench/provider scope. */
@@ -27,64 +28,20 @@ export interface ShortcutDefinition {
 /** Handler-free reference remains available while a route's tools are unmounted. */
 export type ShortcutReference = Pick<ShortcutDefinition, 'id' | 'label' | 'keys' | 'scope' | 'devOnly'>
 
-/** One source defines built-in bindings; active surfaces bind handlers by identity. */
-const builtins: readonly ShortcutReference[] = [
-  { id: 'global.search', label: 'Search', keys: ['mod+k'], scope: 'global' },
-  { id: 'global.toggle-ui', label: 'Toggle UI', keys: ['mod+shift+h'], scope: 'global' },
-  { id: 'global.show-ui', label: 'Show UI', keys: ['escape'], scope: 'global' },
-  { id: 'global.theme', label: 'Toggle dark mode', keys: ['mod+shift+d'], scope: 'global' },
-  { id: 'canvas.select', label: 'Select tool', keys: ['v'], scope: 'canvas' },
-  { id: 'canvas.pan', label: 'Pan tool', keys: ['h'], scope: 'canvas' },
-  { id: 'canvas.measure', label: 'Measure tool', keys: ['m'], scope: 'canvas' },
-  { id: 'canvas.comment', label: 'Comment tool', keys: ['c'], scope: 'canvas', devOnly: true },
-  { id: 'canvas.pan-hold', label: 'Hold to pan', keys: ['space'], scope: 'canvas' },
-  { id: 'canvas.fit', label: 'Fit to canvas', keys: ['shift+1'], scope: 'canvas' },
-  { id: 'canvas.selection', label: 'Zoom to selection', keys: ['shift+2'], scope: 'canvas' },
-  { id: 'canvas.actual', label: 'Actual size', keys: ['shift+0'], scope: 'canvas' },
-  { id: 'frame.isolated', label: 'Open isolated', keys: ['mod+enter'], scope: 'frame' },
-  { id: 'frame.editor', label: 'Open in editor', keys: ['alt+e'], scope: 'frame', devOnly: true },
-  { id: 'frame.source', label: 'Copy source', keys: ['mod+shift+c'], scope: 'frame' },
-  { id: 'frame.tests', label: 'Run tests', keys: ['t'], scope: 'frame', devOnly: true },
-  { id: 'frame.screenshot', label: 'Screenshot', keys: ['shift+s'], scope: 'frame', devOnly: true },
-  { id: 'frame.comment', label: 'Comment for AI', keys: ['shift+c'], scope: 'frame', devOnly: true },
-  { id: 'comment.screenshot', label: 'Capture screenshot for AI message', keys: ['mod+shift+s'], scope: 'comment', devOnly: true },
-  { id: 'comment.attach', label: 'Attach files to AI message', keys: ['mod+u'], scope: 'comment', devOnly: true },
-]
-
-/** Normalize equivalent modifier spellings for duplicate detection. */
-function normalize(binding: string): string {
-  const parts = binding.toLowerCase().split('+').map(value => value.trim())
-  const key = parts.pop()!
-  return [...parts.sort(), key].join('+')
-}
-
-/** Platform aliases overlap explicit Control/Command bindings on supported hosts. */
-function concreteBindings(binding: string): string[] {
-  const value = normalize(binding)
-  return value.split('+').includes('mod') ? ['ctrl', 'meta'].map(modifier => normalize(value.replace(/\bmod\b/, modifier))) : [value]
-}
+/** Built-in bindings live in plugin-kit so native hosts apply the same precedence. */
+const builtins: readonly ShortcutReference[] = BUILTIN_SHORTCUTS
 
 /** Exact modifiers avoid stale held-key state and accidental shifted actions. */
-export function matchesShortcut(binding: string, event: KeyboardEvent): boolean {
-  const parts = normalize(binding).split('+')
-  const key = parts.pop()!
-  const mod = parts.includes('mod')
-  if (event.altKey !== parts.includes('alt') || event.shiftKey !== parts.includes('shift')) return false
-  if (mod ? !(event.metaKey || event.ctrlKey) : event.metaKey !== parts.includes('meta') || event.ctrlKey !== parts.includes('ctrl')) return false
-  const physicalDigit = /^\d$/.test(key) && event.code === `Digit${key}`
-  return physicalDigit || (key === 'space' ? event.code === 'Space' || event.key === ' ' : event.key.toLowerCase() === key)
-}
+export { matchesShortcut }
 
 /** Detect editable native controls without requiring a global DOM realm. */
-export function isEditing(target: EventTarget | null): boolean {
-  const element = target as HTMLElement | null
-  return Boolean(element?.closest?.('input, textarea, select, [contenteditable="true"], [role="textbox"]'))
-}
+export const isEditing = isEditableTarget
 
-/** Per-workbench registration; disposer removes only its original definition. */
+/** Per-workbench registration; disposer removes only its original definition and its non-built-in reference. */
 export function createShortcutRegistry() {
   const entries = shallowReactive(new Map<string, ShortcutDefinition>())
-  const reference = shallowReactive(new Map(builtins.map(item => [item.id, item])))
+  const builtinById = new Map(builtins.map(item => [item.id, item]))
+  const reference = shallowReactive(new Map(builtinById))
   const registry = {
     entries,
     reference,
@@ -92,13 +49,20 @@ export function createShortcutRegistry() {
     register(definition: ShortcutDefinition): () => void {
       if (entries.has(definition.id)) throw new Error(`Duplicate shortcut id: ${definition.id}`)
       for (const existing of entries.values()) {
-        if (existing.scope === definition.scope && definition.keys.some(key => existing.keys.some(value => concreteBindings(value).some(binding => concreteBindings(key).includes(binding))))) throw new Error(`Duplicate shortcut binding: ${definition.id}`)
+        if (shortcutBindingsOverlap(existing, definition)) throw new Error(`Duplicate shortcut binding: ${definition.id}`)
       }
       entries.set(definition.id, definition)
       const { id, label, keys, scope, devOnly } = definition
       reference.set(id, { id, label, keys, scope, devOnly })
       return () => {
-        if (entries.get(definition.id) === definition) entries.delete(definition.id)
+        // Only the live registration owns its id; stale disposers must not touch a replacement.
+        if (entries.get(id) !== definition) return
+        entries.delete(id)
+        // Built-ins stay listed (with canonical metadata) while their surface is unmounted;
+        // other shortcuts (e.g. plugin ones) leave the Settings reference with their handler.
+        const builtin = builtinById.get(id)
+        if (builtin) reference.set(id, builtin)
+        else reference.delete(id)
       }
     },
     /** Bind canonical metadata while preserving removable per-surface runtime authority. */
@@ -129,6 +93,9 @@ export function createShortcutRegistry() {
   }
   return registry
 }
+
+/** Per-workbench shortcut registry. */
+export type ShortcutRegistry = ReturnType<typeof createShortcutRegistry>
 
 /** Injectable registry prevents unrelated workbenches sharing keyboard authority. */
 const shortcutsKey: InjectionKey<ReturnType<typeof createShortcutRegistry>> = Symbol('histoire-shortcuts')
