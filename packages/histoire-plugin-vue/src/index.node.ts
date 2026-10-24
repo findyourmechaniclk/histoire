@@ -3,6 +3,7 @@ import type { Plugin } from 'histoire'
 import generateStoryCommand from './commands/generate-story.server.js'
 import { collectVaporPlugin } from './util/collect-vapor.js'
 import { listComponentFiles } from './util/list-components.js'
+import { getUiLibraryInlineDeps } from './util/ui-libraries.js'
 
 export function HstVue(): Plugin {
   return {
@@ -10,6 +11,7 @@ export function HstVue(): Plugin {
 
     defaultConfig() {
       return {
+        viteNodeInlineDeps: getUiLibraryInlineDeps(),
         supportMatch: [
           {
             id: 'vue',
@@ -38,9 +40,9 @@ export function HstVue(): Plugin {
                 }
               },
             },
+            collectVaporPlugin(),
           ],
         },
-            collectVaporPlugin(),
       }
     },
     supportPlugin: {

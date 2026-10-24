@@ -1,4 +1,4 @@
-# Histoire + Nuxt 3
+# Histoire + Nuxt 3 / 4
 
 ```bash
 pnpm add -D @histoire/plugin-nuxt

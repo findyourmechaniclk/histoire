@@ -8,6 +8,11 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 import '../../shared/styles/index.css'
 
-export const setupVue3 = defineSetupVue3(({ app }) => {
-  app.use(createVuetify())
+export const setupVue3 = defineSetupVue3(({ app, onDarkChange }) => {
+  const vuetify = createVuetify()
+  app.use(vuetify)
+  // Vuetify theme follows Histoire's dark mode.
+  onDarkChange((dark) => {
+    vuetify.theme.change(dark ? 'dark' : 'light')
+  })
 })

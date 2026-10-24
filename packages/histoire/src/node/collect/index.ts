@@ -36,7 +36,6 @@ export function useCollectStories(options: UseCollectStoriesOptions, ctx: Contex
         /@histoire\/[\w-]+\/dist/,
         /histoire-[\w-]+\/dist/,
         /@vue\/devtools-api/,
-        /vuetify/,
         // @TODO temporary fix for https://github.com/histoire-dev/histoire/issues/409
         /vite\w*\/dist\/client\/(client|env).mjs/,
         ...ctx.config.viteNodeInlineDeps ?? [],

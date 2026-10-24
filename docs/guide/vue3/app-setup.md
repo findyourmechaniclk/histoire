@@ -60,6 +60,51 @@ function mySetupApp ({ app, story, variant }) {
 
 You can put the prop on the `<Story>` component too, so that `<Variant>` will have a default value for it. Redefining the prop on a `<Variant>` will **override** the function though.
 
+## Dark mode <Badge type="tip" text="1.0-beta.2+" />
+
+`onDarkChange` calls your listener with Histoire's current dark mode, then again each time it changes. The listener stops when the story app is unmounted. Use it to sync the theme of a UI library:
+
+```ts
+import { defineSetupVue3 } from '@histoire/plugin-vue'
+import { createVuetify } from 'vuetify'
+
+export const setupVue3 = defineSetupVue3(({ app, onDarkChange }) => {
+  const vuetify = createVuetify()
+  app.use(vuetify)
+
+  onDarkChange((dark) => {
+    vuetify.theme.change(dark ? 'dark' : 'light')
+  })
+})
+```
+
+Outside of setup functions, use [`onDarkChange` from `histoire/client`](../../reference/client.md#ondarkchange).
+
+## Lifecycle hooks <Badge type="tip" text="1.0-beta.2+" />
+
+Each variant renders in its own Vue app. `hooks` lets setup code (and framework plugins) follow that app's lifecycle:
+
+| Hook | Called |
+| --- | --- |
+| `onBeforeMount(cb)` | After all setup functions, right before the app mounts. |
+| `onMounted(cb)` | Once the story finished rendering, including async setup. |
+| `onReady(cb)` | After `onMounted` callbacks, before the variant is reported ready. |
+| `onCleanup(cb)` | Once, when the app is unmounted or its setup failed. Use it to release resources. |
+| `setRunWithContext(runner)` | Wraps the next setup functions (setup file, `setupApp`) in a context, for example an injection context. Several runners compose. |
+
+Stage callbacks can be async. Histoire waits for them in order. Register `onCleanup` right after acquiring a resource: if the story is closed while setup is still running, cleanup callbacks registered later still run once setup finishes. After that, `onCleanup` runs the callback right away.
+
+While Histoire collects stories (on Node.js), setup functions run but stage hooks don't, and `onDarkChange` listeners are never called.
+
+```ts
+import { defineSetupVue3 } from '@histoire/plugin-vue'
+
+export const setupVue3 = defineSetupVue3(({ hooks }) => {
+  const socket = new WebSocket('ws://localhost:1234')
+  hooks.onCleanup(() => socket.close())
+})
+```
+
 ## Examples
 
 ### Vue Router

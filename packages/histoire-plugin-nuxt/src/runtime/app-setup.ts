@@ -1,14 +1,17 @@
+import type { Vue3AppHooksApi } from '@histoire/plugin-vue'
 import type { PublicRuntimeConfig } from '@nuxt/schema'
 import type { App } from 'h3'
 import { createApp } from 'h3'
 import { createFetch } from 'ofetch'
 import { createNuxtSetupContext } from './nuxt-context.js'
-import { initializeNuxtPreviewLifecycle } from './nuxt-lifecycle.js'
+import { assertStoryAppHooks, initializeNuxtPreviewLifecycle } from './nuxt-lifecycle.js'
 
 /** A real Histoire Vue app gets its own Nuxt payload and plugin lifecycle. */
 interface NuxtPreviewSetup {
   /** Actual variant Vue app, never Nuxt's cached document entry app. */
   app: any
+  /** Story app lifecycle hooks from `@histoire/plugin-vue`. */
+  hooks: Vue3AppHooksApi
 }
 
 const initializedApps = new WeakMap<object, Promise<void>>()
@@ -17,6 +20,7 @@ let setupContext: ReturnType<typeof createNuxtSetupContext> | undefined
 
 /** Set up Nuxt on actual story app; existing callers without app retain entry compatibility. */
 export async function setupNuxtApp(publicConfig: PublicRuntimeConfig, setupApi?: NuxtPreviewSetup, appConfig: { baseURL?: string, buildAssetsDir?: string, cdnURL?: string } = { baseURL: '/' }) {
+  if (setupApi?.app) assertStoryAppHooks(setupApi)
   if (setupApi?.app && initializedApps.has(setupApi.app)) return initializedApps.get(setupApi.app)
   const pending = initialize()
   if (setupApi?.app) initializedApps.set(setupApi.app, pending)
@@ -68,8 +72,8 @@ export async function setupNuxtApp(publicConfig: PublicRuntimeConfig, setupApi?:
     const fallback = getNuxtAppCtx()
     setupContext ??= createNuxtSetupContext(fallback)
     nuxt.runWithContext = (callback: () => unknown) => setupContext.call(nuxt, () => originalRun(callback))
-    setupApi.app.__HST_NUXT_SETUP_CONTEXT__ = (callback: () => unknown) => setupContext.setup(nuxt, () => originalRun(callback))
-    await initializeNuxtPreviewLifecycle(setupApi.app, nuxt._scope, () => {
+    setupApi.hooks.setRunWithContext(callback => setupContext.setup(nuxt, () => originalRun(callback)))
+    await initializeNuxtPreviewLifecycle(setupApi.hooks, nuxt._scope, () => {
       getNuxtAppCtx(nuxt._id).unset()
       if (fallback.tryUse() === nuxt) fallback.unset()
       delete win.__NUXT__?.[id]

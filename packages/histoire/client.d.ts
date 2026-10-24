@@ -34,3 +34,9 @@ export function onTest(register: HistoireTestRegistration): void
 
 export function toggleDark(value?: boolean): boolean
 export function isDark(): boolean
+
+/**
+ * Calls `listener` with the current dark mode, then on every change.
+ * @returns Function stopping the subscription.
+ */
+export function onDarkChange(listener: (dark: boolean) => void): () => void
