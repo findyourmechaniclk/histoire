@@ -15,6 +15,8 @@ export const setupVue3 = defineSetupVue3(({ addWrapper }) => {
 
 The rendering will recursively occur in all the wrappers `default` slot.
 
+Wrappers only surround rendered stories and controls. The hidden story mount Histoire uses to register variants runs without them, like story collection, so app-level providers (overlays, toasts, ...) exist once per document. Install anything story setup code needs with `app.use()` or `app.provide()` instead.
+
 ## Controls wrappers <Badge type="tip" text="1.0-beta.2+" />
 
 Wrappers also surround custom controls by default. Pass `{ controls: false }` for visual wrappers that should not add layout around inspector controls:

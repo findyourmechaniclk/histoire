@@ -33,6 +33,15 @@ export default _defineComponent({
       type: String,
       default: 'default',
     },
+
+    /**
+     * No hidden mount app configures this story: the render app runs the
+     * mount pass itself, so app setup (e.g. Nuxt plugins) runs once per frame.
+     */
+    configureStory: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   emits: {
@@ -87,6 +96,7 @@ export default _defineComponent({
         getVariant: () => props.variant,
         renderContext,
         wrapInDiv: true,
+        configureStory: props.configureStory,
       })
 
       await host.mount()
@@ -98,8 +108,13 @@ export default _defineComponent({
       emit('ready')
     }
 
+    /** Whether the variant can mount now, or waits for the hidden mount to configure it. */
+    function canMount() {
+      return props.variant.configReady || props.configureStory
+    }
+
     _onMounted(async () => {
-      if (props.variant.configReady) {
+      if (canMount()) {
         await mountVariant()
       }
     })
@@ -113,7 +128,7 @@ export default _defineComponent({
       renderContext.currentVariant = props.variant
       renderContext.slotName = slotName
 
-      if (props.variant.configReady && !mounting) {
+      if (canMount() && !mounting) {
         if (!host) {
           await mountVariant()
         }
