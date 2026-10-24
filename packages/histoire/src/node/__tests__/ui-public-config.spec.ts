@@ -18,4 +18,20 @@ describe('workbench public config', () => {
     expect(output).not.toContain('private-comments')
     expect(output).toContain('"frameBudget":12')
   })
+
+  it.each(['dev', 'build'] as const)('keeps Node plugin objects and Vite options out of %s client modules', (mode) => {
+    const ctx = {
+      mode,
+      config: {
+        plugins: [{ name: 'node-only-plugin', privateField: 'plugin-sentinel' }],
+        vite: { define: { SECRET: 'vite-sentinel' } },
+        ui: { frameBudget: 12 },
+      },
+    } as unknown as Context
+    const output = resolvedConfig(ctx)
+    expect(output).not.toContain('plugin-sentinel')
+    expect(output).not.toContain('node-only-plugin')
+    expect(output).not.toContain('vite-sentinel')
+    expect(output).toContain('"frameBudget":12')
+  })
 })
