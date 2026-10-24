@@ -1,4 +1,4 @@
-import { mkdir } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { createMarkdownFilesWatcher } from '../../markdown/watcher.js'
@@ -38,6 +38,24 @@ describe('project source discovery', () => {
         expect(project.ctx.markdownFiles.every(file => file.html?.includes('<h1'))).toBe(true)
       }
       finally { await stories.close() }
+    }
+    finally { await project.close() }
+  })
+
+  it('discovers docs and resolves links to them when the project lives below a hidden directory', async () => {
+    const project = await createMarkdownProject()
+    // Worktrees and caches often sit in dot directories (`.claude/worktrees/...`); only paths
+    // inside the project decide whether a document is hidden.
+    const root = join(project.ctx.root, '.worktrees', 'book')
+    await mkdir(join(root, 'components'), { recursive: true })
+    await writeFile(join(root, 'Guide.story.md'), '# Guide')
+    await writeFile(join(root, 'components', 'Links.story.md'), '[Guide](../Guide.story.md)')
+    project.ctx.root = root
+    try {
+      await createMarkdownFilesWatcher(project.ctx)
+      expect(project.ctx.markdownFiles.map(file => file.relativePath).sort()).toEqual(['Guide.story.md', 'components/Links.story.md'])
+      const links = project.ctx.markdownFiles.find(file => file.relativePath === 'components/Links.story.md')!
+      expect(links.html).toContain('data-histoire-story-path="Guide.story.js"')
     }
     finally { await project.close() }
   })

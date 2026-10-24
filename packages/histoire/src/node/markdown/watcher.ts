@@ -1,6 +1,7 @@
 import type { Context } from '../context.js'
 import chokidar from 'chokidar'
 import micromatch from 'micromatch'
+import { relative, resolve } from 'pathe'
 import { withCleanupDeadline } from '../runtime/cleanup.js'
 import { getContextRegistry } from '../runtime/registry.js'
 import { waitForRuntimeWork } from '../runtime/wait.js'
@@ -31,7 +32,10 @@ export async function createMarkdownFilesWatcher(ctx: Context, signal?: AbortSig
     cwd: ctx.root,
     ignored: (path, stats) => {
       if (isIgnored(path)) return true
-      if (micromatch.isMatch(path, '**/*.story.md')) return false
+      // Chokidar passes absolute paths here. Match them relative to the root, like event paths:
+      // `**` skips dot segments, so a root below a hidden directory (`~/.cache/...`, worktrees in
+      // `.claude/worktrees/...`) would otherwise hide every document.
+      if (micromatch.isMatch(relative(ctx.root, resolve(ctx.root, path)), '**/*.story.md')) return false
       return stats?.isFile()
     },
   })
