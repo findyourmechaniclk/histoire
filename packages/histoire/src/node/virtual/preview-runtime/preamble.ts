@@ -20,6 +20,12 @@ export interface PreviewRuntimePreambleOptions {
    * runtime import, which do not exist in a project without Vitest.
    */
   hasVitestPreview: boolean
+  /**
+   * True when the book configures at least one frame plugin. Without one the
+   * runtime never imports the frame plugin manifest, saving a module request
+   * on every interactive document.
+   */
+  hasFramePlugins: boolean
   /** Resolved id of `@vitest/spy` (only used when `hasVitestPreview`). */
   vitestSpyId: string | null
   /** Resolved id of `@vitest/mocker/browser` (only used when `hasVitestPreview`). */
@@ -65,6 +71,7 @@ export interface PreviewRuntimePreambleOptions {
  */
 export function previewRuntimePreamble({
   hasVitestPreview,
+  hasFramePlugins,
   vitestSpyId,
   vitestMockerBrowserId,
   histoireSharedId,
@@ -87,7 +94,7 @@ import { ModuleMocker, ModuleMockerMSWInterceptor } from ${JSON.stringify(vitest
   : ''}
 import FloatingVue from ${JSON.stringify(histoireVendorIds.floatingVue)}
 import { createPinia } from ${JSON.stringify(histoireVendorIds.pinia)}
-import { computed, createApp, defineComponent, h, nextTick, onMounted, reactive, ref, watch } from ${JSON.stringify(histoireVendorIds.vue)}
+import { computed, createApp, defineComponent, h, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from ${JSON.stringify(histoireVendorIds.vue)}
 import GenericMountStory from ${app('components/story/GenericMountStory.vue.js')}
 import GenericRenderStory from ${app('components/story/GenericRenderStory.vue.js')}
 import { setupPluginApi } from ${app('plugin.js')}
@@ -105,7 +112,7 @@ import { createRuntimeState } from ${app('../embed/adapters/state.js')}
 import { createRuntimeStatePresets } from ${app('../embed/adapters/state-presets.js')}
 import { createStandalonePresetStorage } from ${app('../embed/app/standalone/presets.js')}
 import { observeRuntimeLayout } from ${app('../embed/adapters/layout.js')}
-import { ELEMENT_PICK_REQUEST, ELEMENT_PICK_RESULT, MEASURE_REQUEST, MEASURE_RESULT, PROPS_OVERRIDE, applyVariantStateUpdate, createControlsOverlayBridge, createControlsStateRevision, createFailedRunSummary, createVariantStateSyncGuards, getVariantStateKey, measureWireValue, serializeTestError } from ${JSON.stringify(histoireSharedId)}
+import { ELEMENT_PICK_REQUEST, ELEMENT_PICK_RESULT, MEASURE_REQUEST, MEASURE_RESULT, PROPS_OVERRIDE, applyVariantStateUpdate, createControlsOverlayBridge, createControlsStateRevision, createFailedRunSummary, createVariantStateSyncGuards, getFramePurpose, getVariantStateKey, isInteractiveFramePurpose, measureWireValue, serializeTestError } from ${JSON.stringify(histoireSharedId)}
 import { createVariantTestSession, hasVanillaSetupHooks } from ${JSON.stringify(variantTestSessionId)}
 ${hasVitestPreview
   ? `import { createStaticPreviewMockRpc, createStaticPreviewMswOptions, enableStaticPreviewMockInterception } from ${JSON.stringify(staticMockRuntimeId)}`
@@ -129,6 +136,15 @@ async function ensureGridComponent() {
   await gridComponentPromise
 }
 
+/**
+ * Imports the frame plugin manifest (\`FRAME_PLUGINS_ID\`). Only the frame-plugins
+ * section calls it, and only in interactive documents. Books without frame
+ * plugins get an empty manifest without a module request.
+ */
+function importFramePluginManifest() {
+  return ${hasFramePlugins ? `import('virtual:$histoire-frame-plugins')` : 'Promise.resolve({ framePlugins: [] })'}
+}
+
 const TEST_DEFINITIONS_KEY = ${JSON.stringify(TEST_DEFINITIONS_KEY)}
 const STORY_CHANGED_EVENT = ${JSON.stringify(STORY_CHANGED_EVENT)}
 const files = ${JSON.stringify(storyEntryLoaders ? [] : files)}
@@ -137,17 +153,7 @@ const moduleLoaders = {
 }
 ${storyEntryLoaders ? previewStoryEntries(storyEntryLoaders) : ''}
 const storyFileCache = new Map()
-const initialSelection = {
-  storyId: new URLSearchParams(window.location.search).get('storyId'),
-  variantId: new URLSearchParams(window.location.search).get('variantId'),
-  grid: new URLSearchParams(window.location.search).get('grid') === 'true',
-  // Controls mode: this sandbox instance renders only the story's custom
-  // #controls slot for the host Controls panel (used for vitest-mocked
-  // stories, whose module can only execute where the mocker is active).
-  controls: new URLSearchParams(window.location.search).get('controls') === 'true',
-  // Isolated matrix cells consume canonical state without publishing back to it.
-  matrix: new URLSearchParams(window.location.search).get('matrix') === 'true',
-}
+${previewInitialSelection()}
 // Story currently displayed, declared here rather than next to the app that
 // writes it: the story-loading section reads it several sections earlier, where
 // a later declaration would still be in its temporal dead zone.
@@ -158,4 +164,26 @@ const selectionState = {
 setupPluginApi()
 
 ${MOCK_RPC_SNIPPET}`
+}
+
+/**
+ * Emits the `initialSelection` declaration: target, presentation flags and
+ * runtime purpose parsed from the sandbox iframe URL. Needs `getFramePurpose`
+ * from `@histoire/shared` in scope.
+ */
+export function previewInitialSelection() {
+  return `const initialSelection = {
+  storyId: new URLSearchParams(window.location.search).get('storyId'),
+  variantId: new URLSearchParams(window.location.search).get('variantId'),
+  grid: new URLSearchParams(window.location.search).get('grid') === 'true',
+  // Controls mode: this sandbox instance renders only the story's custom
+  // #controls slot for the host Controls panel (used for vitest-mocked
+  // stories, whose module can only execute where the mocker is active).
+  controls: new URLSearchParams(window.location.search).get('controls') === 'true',
+  // Isolated matrix cells consume canonical state without publishing back to it.
+  matrix: new URLSearchParams(window.location.search).get('matrix') === 'true',
+  // Why this document exists (interactive, test-worker, automation, controls).
+  // Legacy flags still map when a host omits \`purpose\`; Matrix cells stay interactive.
+  purpose: getFramePurpose(new URLSearchParams(window.location.search)),
+}`
 }

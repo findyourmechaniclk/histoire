@@ -1,6 +1,6 @@
 import type { HistoireSnapshot } from '@histoire/protocol'
 import { describe, expect, it } from 'vitest'
-import { createInspectorEventCounter, findChangedSourceLine, getInspectorTabs, isInspectorTestsEnabled, normalizeInspectorTab } from '../../../../histoire-app/src/app/components/inspector/state.js'
+import { createInspectorEventCounter, findChangedSourceLine, getInspectorTabs, isInspectorTestsEnabled, normalizeInspectorTab, resolveInspectorTab } from '../../../../histoire-app/src/app/components/inspector/state.js'
 
 /** Minimal immutable session projection for event ownership tests. */
 function snapshot(variantId: string, sequences: number[], runtimeId = 'runtime'): HistoireSnapshot {
@@ -34,6 +34,16 @@ describe('inspector selection behavior', () => {
     }
     // A retained URL intent may become available again after source replacement.
     expect(normalizeInspectorTab('tests', isInspectorTestsEnabled(true, 'dev'))).toBe('tests')
+  })
+
+  it('waits for plugin setup before rewriting unknown plugin tab values', () => {
+    const options = { testsEnabled: true, pluginTabs: ['acme:panel'], ready: false }
+    expect(['', 'docs', 'events', 'tests', 'unknown'].map(value => resolveInspectorTab(value, options).value)).toEqual(['', 'docs', 'events', 'tests', ''])
+    expect(resolveInspectorTab('unknown', { ...options, ready: true })).toEqual({ value: '', pending: false, rewrite: false })
+    expect(resolveInspectorTab('acme:panel', options)).toEqual({ value: 'acme:panel', pending: false, rewrite: false })
+    expect(resolveInspectorTab('other:panel', options)).toEqual({ value: 'other:panel', pending: true, rewrite: false })
+    expect(resolveInspectorTab('other:panel', { ...options, ready: true })).toEqual({ value: '', pending: false, rewrite: true })
+    expect(resolveInspectorTab('builtin:docs', { ...options, ready: true })).toEqual({ value: 'docs', pending: false, rewrite: false })
   })
 
   it('counts only unread events from selected runtime and retires count on navigation', () => {

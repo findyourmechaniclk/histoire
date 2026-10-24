@@ -12,6 +12,7 @@ import { previewApp } from './app.js'
 import { previewComponents } from './components.js'
 import { previewElementInspection } from './element-inspection.js'
 import { previewErrorOverlay } from './error-overlay.js'
+import { previewFramePlugins } from './frame-plugins.js'
 import { previewHostMessaging } from './host-messaging.js'
 import { previewMount } from './mount.js'
 import { previewRuntimePreamble } from './preamble.js'
@@ -41,6 +42,8 @@ export interface PreviewRuntimeSourceOptions {
    * body; without it the runtime boots without any Vitest global.
    */
   hasVitestPreview: boolean
+  /** True when the book configures at least one frame plugin (see the preamble option). */
+  hasFramePlugins: boolean
   /** Resolved id of `@vitest/spy` (only used when `hasVitestPreview`). */
   vitestSpyId: string | null
   /** Resolved id of `@vitest/mocker/browser` (only used when `hasVitestPreview`). */
@@ -106,6 +109,8 @@ ${previewStoryLoading(options.mountTimeoutMs, !!options.storyEntryLoaders)}
 
 ${previewVariantBridge()}
 
+${previewFramePlugins()}
+
 ${previewElementInspection()}
 
 ${previewComponents()}
@@ -162,6 +167,8 @@ export function previewRuntime(ctx: Context) {
 
   return buildPreviewRuntimeSource({
     hasVitestPreview,
+    // Same filter as the frame manifest: dev-only plugins never ship in a build.
+    hasFramePlugins: (ctx.workbenchPlugins ?? []).some(plugin => plugin.frame && !(ctx.mode === 'build' && plugin.devOnly)),
     vitestSpyId,
     vitestMockerBrowserId,
     histoireSharedId,

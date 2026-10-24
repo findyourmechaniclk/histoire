@@ -38,6 +38,12 @@ export const MARKDOWN_FILES = 'virtual:$histoire-markdown-files'
 export const RESOLVED_MARKDOWN_FILES = `\0${MARKDOWN_FILES}`
 export const COMMANDS = 'virtual:$histoire-commands'
 export const RESOLVED_COMMANDS = `/__resolved__${COMMANDS}`
+/** Lazy manifest of plugin workbench (`client`) entries. */
+export const WORKBENCH_PLUGINS_ID = 'virtual:$histoire-workbench-plugins'
+export const RESOLVED_WORKBENCH_PLUGINS_ID = `/__resolved__${WORKBENCH_PLUGINS_ID}`
+/** Lazy manifest of plugin frame entries. */
+export const FRAME_PLUGINS_ID = 'virtual:$histoire-frame-plugins'
+export const RESOLVED_FRAME_PLUGINS_ID = `/__resolved__${FRAME_PLUGINS_ID}`
 export const BROWSER_COLLECTOR_ID = 'virtual:$histoire-browser-collector'
 export const RESOLVED_BROWSER_COLLECTOR_ID = `/__resolved__${BROWSER_COLLECTOR_ID}`
 export const TEST_HARNESS_ID = 'virtual:$histoire-test-harness'
@@ -54,6 +60,7 @@ export * from './noop.js'
 export * from './preview-runtime/index.js'
 export * from './resolved-commands.js'
 export * from './resolved-config.js'
+export * from './resolved-frame-plugins.js'
 export * from './resolved-generated-global-setup.js'
 export * from './resolved-generated-setup-code.js'
 export * from './resolved-markdown-files.js'
@@ -61,6 +68,7 @@ export * from './resolved-stories.js'
 export * from './resolved-support-plugins-client.js'
 export * from './resolved-support-plugins-collect.js'
 export * from './resolved-theme.js'
+export * from './resolved-workbench-plugins.js'
 export * from './story-source.js'
 export * from './story.js'
 export * from './test-harness.js'

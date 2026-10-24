@@ -1,9 +1,23 @@
+import type { HistoireFramePurpose } from '@histoire/shared'
 import * as protocol from '@histoire/protocol'
-import { createVariantStateSyncGuards, getVariantStateKey } from '@histoire/shared'
+import { createVariantStateSyncGuards, getVariantStateKey, isInteractiveFramePurpose } from '@histoire/shared'
 import * as vue from 'vue'
 import { previewApp } from '../../virtual/preview-runtime/app.js'
 import { previewComponents } from '../../virtual/preview-runtime/components.js'
+import { previewFramePlugins } from '../../virtual/preview-runtime/frame-plugins.js'
 import { previewHostMessaging } from '../../virtual/preview-runtime/host-messaging.js'
+
+/** Entry of the `virtual:$histoire-frame-plugins` manifest, as the runtime imports it. */
+export interface FramePluginManifestEntry {
+  /** Descriptor id. */
+  id: string
+  /** Descriptor contract version. */
+  apiVersion: number
+  /** Browser-visible descriptor options. */
+  options?: unknown
+  /** Lazy import of the frame entry module. */
+  load: () => Promise<{ default: unknown }>
+}
 
 /** Execute actual generated Vue app, rendering framework actors with controlled frame timing. */
 export function createPreviewRuntimeApp(options: {
@@ -16,12 +30,20 @@ export function createPreviewRuntimeApp(options: {
   loadGridComponent?: () => Promise<vue.Component>
   /** Receives messages posted by the generated runtime. */
   onMessage?: (message: Record<string, any>) => void
+  /** Document purpose parsed from the frame URL; defaults to `interactive`. */
+  purpose?: HistoireFramePurpose
+  /** Marks the document as an isolated Matrix cell. */
+  matrix?: boolean
+  /** Frame plugin manifest served to the runtime; its import is counted. */
+  framePlugins?: FramePluginManifestEntry[]
 } = {}) {
   const messages: Record<string, any>[] = []
   const callbacks: FrameRequestCallback[] = []
   const actorReady: (() => void)[] = []
   let paused = false
   let listener: (event: unknown) => Promise<void>
+  const pagehideListeners: (() => void)[] = []
+  let framePluginManifestImports = 0
   const host = { postMessage: (message: Record<string, any>) => {
     messages.push(message)
     options.onMessage?.(message)
@@ -36,15 +58,22 @@ export function createPreviewRuntimeApp(options: {
     ...protocol,
     createVariantStateSyncGuards,
     getVariantStateKey,
-    initialSelection: { storyId, variantId, grid: options.grid === true },
+    isInteractiveFramePurpose,
+    initialSelection: { storyId, variantId, grid: options.grid === true, matrix: options.matrix === true, purpose: options.purpose ?? 'interactive' },
+    /** Counts manifest evaluation: the generated runtime's only path to frame plugin modules. */
+    async importFramePluginManifest() {
+      framePluginManifestImports++
+      return { framePlugins: options.framePlugins ?? [] }
+    },
     selectionState: {},
     histoireConfig: {},
     window: {
       location: { origin: window.location.origin, search: `?documentId=${encodeURIComponent(options.documentId ?? 'document')}&selectionVersion=0` },
       frameElement: { ownerDocument: { defaultView: host } },
-      /** Capture only generated runtime dispatch; pagehide services remain available. */
+      /** Capture generated runtime dispatch and page-hide teardown. */
       addEventListener(type: string, callback: typeof listener) {
         if (type === 'message') listener = callback
+        if (type === 'pagehide') pagehideListeners.push(callback as () => void)
       },
     },
     /** Frame timing separates framework readiness from delayed serialized snapshot publication. */
@@ -56,9 +85,9 @@ export function createPreviewRuntimeApp(options: {
     observeRuntimeLayout: () => ({ refresh() {}, close() {} }),
     installRuntimeHostChannels: () => ({ receive() {}, close() {} }),
     installRuntimeEventScope: () => () => {},
-    createRuntimeState: () => ({ capture() {} }),
+    createRuntimeState: (getState: () => object, serialize: (value: object) => object) => ({ capture() {}, get: () => serialize(getState()) }),
     createRuntimeStatePresets: () => ({ restoreSelected() {} }),
-    toRawDeep: (value: unknown) => value,
+    toRawDeep: (value: unknown) => JSON.parse(JSON.stringify(vue.toRaw(value))),
     postVariantStateSnapshot: () => {},
     postVariantStateSnapshotById: () => {},
     GenericMountStory: vue.defineComponent({ render: () => null }),
@@ -83,12 +112,30 @@ export function createPreviewRuntimeApp(options: {
     get: (target, key) => key in target ? target[key as string] : (globalThis as any)[key],
   })
   // eslint-disable-next-line no-new-func -- production runtime is generated source.
-  const app = new Function('scope', `with (scope) { ${previewHostMessaging()}\n${previewComponents()}\n${previewApp()}\nreturn app }`)(globals) as vue.App
+  const { app, handleFrameStoryChanged } = new Function('scope', `with (scope) { ${previewHostMessaging()}\n${previewFramePlugins()}\n${previewComponents()}\n${previewApp()}\nreturn { app, handleFrameStoryChanged } }`)(globals) as { app: vue.App, handleFrameStoryChanged: (storyId: string) => void }
   app.mount(container)
+  /**
+   * Delivers one trusted host message (marker and host source added).
+   * @param data Message body.
+   */
+  function receive(data: Record<string, unknown>) {
+    return listener!({ source: host, origin: window.location.origin, data: { __histoire: true, ...data } })
+  }
   return {
     /** Runtime-owned root supports rendering assertions without consulting global page state. */
     container,
     messages,
+    /** Reactive story file the runtime renders; tests mutate variant state through it. */
+    file,
+    /** Times the frame plugin manifest was imported by this document. */
+    get framePluginManifestImports() { return framePluginManifestImports },
+    /** Runs the generated page-hide teardown, as on navigation away from the document. */
+    pagehide() { for (const callback of pagehideListeners.splice(0)) callback() },
+    /**
+     * Runs the generated reaction to an HMR `STORY_CHANGED_EVENT`.
+     * @param changedStoryId Story whose module changed.
+     */
+    storyChanged(changedStoryId: string) { handleFrameStoryChanged(changedStoryId) },
     /** Returning cached variant still waits for its newly mounted renderer. */
     pauseRendering() { paused = true },
     /** Framework readiness is independent from delayed snapshot publication. */
@@ -111,8 +158,9 @@ export function createPreviewRuntimeApp(options: {
      * @param grid Requests grid layout when true.
      */
     select(variantId: string, selectionVersion: number, grid = false) {
-      return listener!({ source: host, origin: window.location.origin, data: { __histoire: true, type: protocol.PREVIEW_SYNC, storyId, variantId, documentId: options.documentId ?? 'document', selectionVersion, grid } })
+      return receive({ type: protocol.PREVIEW_SYNC, storyId, variantId, documentId: options.documentId ?? 'document', selectionVersion, grid })
     },
+    receive,
     /** Vue watchers and fixture elements belong to this app alone. */
     close() {
       app.unmount()

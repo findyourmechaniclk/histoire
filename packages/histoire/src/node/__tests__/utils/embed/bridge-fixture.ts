@@ -22,6 +22,8 @@ export async function createEmbedBridgeFixture(options: {
   setup?: string
   /** Additional trusted fixture-only Histoire configuration. */
   config?: string
+  /** Plugin expressions appended after the Vue support plugin. */
+  plugins?: string
   /** Optional native consumer document; same owned host lifecycle as SDK fixtures. */
   hostHtml?: string
   /** Finite in-memory host assets; no filesystem or CORS proxy routes. */
@@ -58,7 +60,7 @@ export async function createEmbedBridgeFixture(options: {
       await mkdir(dirname(path), { recursive: true })
       await writeFile(path, content)
     }
-    await writeFile(join(fixture.root, 'custom.ts'), `import { HstVue } from '@histoire/plugin-vue'; export default { plugins:[HstVue()], storyMatch:['*.story.vue'], collectMaxThreads:1, mcp:false, ${options.setup ? 'setupFile:\'./setup.ts\',' : ''} ${options.config ?? ''} embed:{enabled:${options.embedding !== false},channels:${JSON.stringify(options.channels ?? [])},allowServerTests:${options.allowServerTests === true},allowedOrigins:[${JSON.stringify(hostOrigin)}]} }`)
+    await writeFile(join(fixture.root, 'custom.ts'), `import { HstVue } from '@histoire/plugin-vue'; export default { plugins:[HstVue()${options.plugins ? `,${options.plugins}` : ''}], storyMatch:['*.story.vue'], collectMaxThreads:1, mcp:false, ${options.setup ? 'setupFile:\'./setup.ts\',' : ''} ${options.config ?? ''} embed:{enabled:${options.embedding !== false},channels:${JSON.stringify(options.channels ?? [])},allowServerTests:${options.allowServerTests === true},allowedOrigins:[${JSON.stringify(hostOrigin)}]} }`)
     let bookUrl: string
     if (options.mode === 'source-dev') {
       sourceDevelopment = await createEmbedSourceDevelopment(fixture.root, 'custom.ts')

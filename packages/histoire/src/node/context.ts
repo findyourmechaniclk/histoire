@@ -7,9 +7,12 @@ import type {
   ServerStoryFile,
 } from '@histoire/shared'
 import type { ResolvedConfig } from 'vite'
+import type { ResolvedWorkbenchPlugin } from './config/workbench-plugins.js'
 import { resolve } from 'pathe'
 import { resolveConfig as resolveViteConfig } from 'vite'
+import { createBrowserEntryResolver, resolveCommandClientSetupFiles } from './config/browser-entries.js'
 import { processConfig, resolveConfig } from './config/index.js'
+import { resolveWorkbenchPlugins } from './config/workbench-plugins.js'
 import { closeContext, getContextRegistry } from './runtime/registry.js'
 import { mergeHistoireViteConfig } from './vite/index.js'
 
@@ -31,6 +34,10 @@ export interface Context {
   supportPlugins: FinalSupportPlugin[]
   markdownFiles: ServerMarkdownFile[]
   registeredCommands?: PluginCommand[]
+  /** Validated `Plugin.workbench` descriptors with resolved entries, in config order. */
+  workbenchPlugins?: ResolvedWorkbenchPlugin[]
+  /** Resolved `clientSetupFile` of each registered command that has one. */
+  commandClientSetupFiles?: Map<PluginCommand, string>
 }
 
 export interface CreateContextOptions {
@@ -56,6 +63,8 @@ export async function createContext(options: CreateContextOptions): Promise<Cont
     supportPlugins: [],
     markdownFiles: [],
     registeredCommands: [],
+    workbenchPlugins: [],
+    commandClientSetupFiles: new Map(),
   }
 
   const { pluginContext } = getContextRegistry(ctx)
@@ -70,6 +79,10 @@ export async function createContext(options: CreateContextOptions): Promise<Cont
       await plugin.configResolved?.(ctx.config, pluginContext)
       if (plugin.commands?.length) ctx.registeredCommands.push(...plugin.commands)
     }
+    // Browser modules named by plugins resolve once here, so a bad entry fails startup.
+    const resolveEntry = createBrowserEntryResolver(root, viteConfig)
+    ctx.workbenchPlugins = await resolveWorkbenchPlugins(ctx.config.plugins, resolveEntry, options.mode)
+    ctx.commandClientSetupFiles = await resolveCommandClientSetupFiles(ctx.registeredCommands, resolveEntry)
     return ctx
   }
   catch (error) {

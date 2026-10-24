@@ -70,10 +70,12 @@ export const previewRuntimeStubStoryFiles: PreviewRuntimeStoryFile[] = [
  * @param options Generation options.
  * @param options.lazyStoryEntries Emits the dev form importing per-story entries
  * instead of baking the story metadata.
+ * @param options.framePlugins Whether the book configures frame plugins.
  */
-export function generatePreviewRuntimeSource(hasVitestPreview = true, { lazyStoryEntries = false } = {}) {
+export function generatePreviewRuntimeSource(hasVitestPreview = true, { lazyStoryEntries = false, framePlugins = true } = {}) {
   return buildPreviewRuntimeSource({
     hasVitestPreview,
+    hasFramePlugins: framePlugins,
     vitestSpyId: '/stub/node_modules/@vitest/spy/dist/index.js',
     vitestMockerBrowserId: '/stub/node_modules/@vitest/mocker/dist/browser.js',
     histoireSharedId: '/stub/node_modules/@histoire/shared/dist/index.js',

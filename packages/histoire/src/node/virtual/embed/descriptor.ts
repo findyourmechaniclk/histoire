@@ -1,4 +1,4 @@
-import type { HistoireCapabilities, HistoireSourceDescriptor } from '@histoire/protocol'
+import type { HistoireCapabilities, HistoireFramePluginInfo, HistoireSourceDescriptor } from '@histoire/protocol'
 import type { Context } from '../../context.js'
 import type { CatalogSnapshot } from '../../runtime/catalog/types.js'
 import { createEmbedSurfaceCapabilities } from '@histoire/app/dist/embed/capabilities.js'
@@ -32,10 +32,19 @@ function capabilities(ctx: Context, snapshot: CatalogSnapshot, mode: 'dev' | 'st
   }
 }
 
+/**
+ * Installed frame plugins as data (`{ id, apiVersion }`, never paths or options), in config order.
+ * Static books omit dev-only entries, matching the frame manifest.
+ */
+function framePlugins(ctx: Context, mode: 'dev' | 'static'): HistoireFramePluginInfo[] {
+  return (ctx.workbenchPlugins ?? []).filter(plugin => plugin.frame && (mode === 'dev' || !plugin.devOnly)).map(plugin => ({ id: plugin.id, apiVersion: plugin.apiVersion }))
+}
+
 /** Builds one portable descriptor shared by dev documents and immutable static output. */
 export function createEmbedDescriptor(ctx: Context, snapshot: CatalogSnapshot, mode: 'dev' | 'static' = 'dev', buildId?: string, namespace: 'embed' | 'local' = 'embed'): HistoireSourceDescriptor {
   const { enabled: _enabled, channels: _channels, ...embed } = resolveEmbedConfig(ctx.config.embed)
   const theme = ctx.config.theme
+  const installed = framePlugins(ctx, mode)
   const descriptor: HistoireSourceDescriptor = {
     descriptorVersion: 1,
     protocolVersion: 1,
@@ -44,7 +53,9 @@ export function createEmbedDescriptor(ctx: Context, snapshot: CatalogSnapshot, m
     revision: mode === 'static' ? buildId : snapshot.revision,
     mode,
     catalog: projectEmbedCatalog(snapshot),
-    capabilities: capabilities(ctx, snapshot, mode),
+    // Books without frame plugins keep the shape older SDKs validate.
+    capabilities: installed.length ? { ...capabilities(ctx, snapshot, mode), framePlugins: { available: true } } : capabilities(ctx, snapshot, mode),
+    ...(installed.length ? { framePlugins: installed } : {}),
     // Standalone never receives external authority from opt-in embed settings.
     embed: namespace === 'local' ? { allowedOrigins: [], allowServerTests: true, allowOpenInEditor: true } : embed,
     assets: projectEmbedAssets(snapshot, namespace),

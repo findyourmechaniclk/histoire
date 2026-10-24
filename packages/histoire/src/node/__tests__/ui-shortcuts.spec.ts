@@ -3,11 +3,7 @@ import { registerCanvasShortcuts } from '../../../../histoire-app/src/app/compon
 import { createCanvasFrames } from '../../../../histoire-app/src/app/composables/canvas-settings.js'
 import { createCanvasStore } from '../../../../histoire-app/src/app/stores/canvas.js'
 import { createShortcutRegistry } from '../../../../histoire-app/src/app/util/shortcuts.js'
-
-/** Minimal native-event projection keeps registry tests independent of DOM. */
-function keyboard(key: string, modifiers: Partial<KeyboardEvent> = {}) {
-  return { key, code: key === ' ' ? 'Space' : `Key${key.toUpperCase()}`, ctrlKey: false, metaKey: false, shiftKey: false, altKey: false, defaultPrevented: false, repeat: false, target: null, preventDefault: vi.fn(), ...modifiers } as unknown as KeyboardEvent
-}
+import { keyboard } from './utils/keyboard-event.js'
 
 describe('workbench shortcut registry', () => {
   it.each(['single', 'grid', 'list', 'matrix'] as const)('selection shortcut respects %s zoom ownership', (arrangement) => {
@@ -78,6 +74,21 @@ describe('workbench shortcut registry', () => {
     expect(registry.handle(keyboard('!', { code: 'Digit1', shiftKey: true }), ['canvas'], true)).toBe(true)
     expect(fit).not.toHaveBeenCalled()
     expect(replacement).toHaveBeenCalledOnce()
+  })
+
+  it('drops disposed non-built-in shortcuts from the settings reference', () => {
+    const registry = createShortcutRegistry()
+    const remove = registry.register({ id: 'plugin.run', label: 'Run plugin', keys: ['shift+r'], scope: 'global', handler: vi.fn() })
+    expect(registry.reference.has('plugin.run')).toBe(true)
+    remove()
+    expect(registry.reference.has('plugin.run')).toBe(false)
+    // A stale disposer must not remove a later registration with the same id.
+    registry.register({ id: 'plugin.run', label: 'Run plugin again', keys: ['shift+r'], scope: 'global', handler: vi.fn() })
+    remove()
+    expect(registry.reference.get('plugin.run')?.label).toBe('Run plugin again')
+    // Built-in metadata survives its handler being replaced and released.
+    registry.register({ id: 'global.theme', label: 'Theme', keys: ['mod+shift+d'], scope: 'global', handler: vi.fn() })()
+    expect(registry.reference.get('global.theme')?.label).toBe('Toggle dark mode')
   })
 
   it('switches canvas tools with H/V while preserving editable input and scope ownership', () => {

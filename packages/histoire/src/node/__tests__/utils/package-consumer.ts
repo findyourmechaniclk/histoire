@@ -47,10 +47,13 @@ export async function createPackedPackageConsumer(directory: string, options: {
   await mkdir(tarDirectory, { recursive: true })
   await mkdir(root)
   const workspace = new Map<string, { path: string, manifest: any }>()
-  for (const entry of await readdir(resolve(MCP_REPOSITORY_ROOT, 'packages'))) {
-    const path = resolve(MCP_REPOSITORY_ROOT, 'packages', entry)
-    const manifest = JSON.parse(await readFile(resolve(path, 'package.json'), 'utf8'))
-    workspace.set(manifest.name, { path, manifest })
+  // Example packages (the reference plugin) are packable too; examples without a manifest are skipped.
+  for (const group of ['packages', 'examples']) {
+    for (const entry of await readdir(resolve(MCP_REPOSITORY_ROOT, group))) {
+      const path = resolve(MCP_REPOSITORY_ROOT, group, entry)
+      const manifest = await readFile(resolve(path, 'package.json'), 'utf8').then(JSON.parse, () => undefined)
+      if (manifest?.name && !workspace.has(manifest.name)) workspace.set(manifest.name, { path, manifest })
+    }
   }
   const packages: Record<string, string> = {}
   const manifests: Record<string, any> = {}

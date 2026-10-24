@@ -1,3 +1,4 @@
+import { previewAppSelection } from './app-selection.js'
 import { previewMessageHandler } from './message-handler.js'
 import { previewPropsOverride } from './props-override.js'
 import { previewRuntimeService } from './runtime-service.js'
@@ -8,7 +9,8 @@ import { previewRuntimeService } from './runtime-service.js'
  * host, and the `render()` that picks between grid, single-variant and
  * controls-only modes.
  *
- * The inbound message dispatch is emitted by {@link previewMessageHandler} and
+ * Selection loading and readiness ({@link previewAppSelection}), runtime
+ * services and the inbound message dispatch ({@link previewMessageHandler}) are
  * spliced into the middle of `setup()`.
  */
 export function previewApp() {
@@ -99,99 +101,7 @@ export function previewApp() {
       }
     }
 
-    async function waitForVariantSnapshot(waitForPaint = true) {
-      await nextTick()
-      await nextTick()
-      if (waitForPaint) await new Promise(resolve => requestAnimationFrame(resolve))
-    }
-
-    /** A mounted actor can acknowledge restored intent without remounting its story state. */
-    async function markVariantReady(variantId) {
-      const currentFile = file.value
-      const currentSelection = previewSelectionVersion
-      const targetVariant = getVariantById(variantId)
-      if (!targetVariant) return
-      frameworkReadyVariants.add(targetVariant)
-      await waitForVariantSnapshot()
-      if (file.value !== currentFile) return
-      if (!selection.grid && (currentSelection !== previewSelectionVersion || variantId !== selection.variantId)) return
-      getRuntimeState(targetVariant).capture()
-      getRuntimePresets(targetVariant).restoreSelected()
-      reapplyPropsOverride(variantId)
-      readyVariantIds.add(variantId)
-      postVariantStateSnapshotById(story.value, variantId)
-      postToParent({ type: VARIANT_READY, storyId: story.value?.id, variantId })
-      gridReadyVariantIds.add(variantId)
-      runtimeLayout.refresh()
-    }
-
-    /** Loads the selected story and presentation dependencies before exposing readiness.
-     * @param nextSelection Host-owned story, variant, and grid selection.
-     * @returns Current selection token when applied, or null when superseded/reloading.
-     */
-    async function syncSelection(nextSelection) {
-      const token = ++selectionToken
-      const nextGrid = !!nextSelection.grid
-      if (selection.storyId !== nextSelection.storyId || selection.variantId !== nextSelection.variantId) clearPropsOverrides()
-      selection.storyId = nextSelection.storyId ?? null
-      selectionState.storyId = selection.storyId
-      selection.variantId = nextSelection.variantId ?? null
-      // A single-story selection can leave grid mode immediately. Entering grid
-      // mode waits until its component is loaded below, so Vue never renders an
-      // undefined component while that import is pending.
-      if (!nextGrid) selection.grid = false
-      gridSelectedVariantId.value = nextSelection.variantId ?? null
-      clearRuntimeTestDefinitions()
-      if (!selection.storyId) {
-        stopVariantStateWatchers()
-        selection.grid = nextGrid
-        file.value = null
-        return selectionToken === token ? token : null
-      }
-
-      // Fetch story and grid modules together, but handle story collection
-      // staleness separately from a failed grid chunk.
-      const [fileResult, gridResult] = await Promise.allSettled([
-        loadStoryFile(selection.storyId),
-        nextGrid ? ensureGridComponent() : Promise.resolve(),
-      ])
-
-      if (selectionToken !== token) return null
-
-      if (fileResult.status === 'rejected') {
-        // Unknown story: the baked metadata predates the latest collection
-        // (e.g. a story file added while this iframe was running).
-        if (attemptStaleRuntimeReload(\`story:\${selection.storyId}\`)) {
-          return null
-        }
-        throw fileResult.reason
-      }
-      if (gridResult.status === 'rejected') throw gridResult.reason
-
-      const nextFile = fileResult.value
-      selection.grid = nextGrid
-
-      const hasUnknownVariant = selection.variantId
-        && !nextFile.story.variants.some(item => item.id === selection.variantId)
-
-      if (hasUnknownVariant) {
-        // Unknown variant on a known story: same staleness, same recovery.
-        if (attemptStaleRuntimeReload(\`variant:\${selection.storyId}:\${selection.variantId}\`)) {
-          return null
-        }
-        // The reload was declined (already attempted for this selection, so
-        // the variant is genuinely gone): the guard must stay armed, or the
-        // next PREVIEW_SYNC would reload the whole iframe all over again.
-      }
-      else {
-        clearStaleRuntimeReloadGuard()
-      }
-
-      file.value = nextFile
-      syncVariantStateWatchers(nextFile.story)
-      await nextTick()
-      return selectionToken === token ? token : null
-    }
+${previewAppSelection()}
 
 ${previewRuntimeService()}
 

@@ -16,6 +16,11 @@ describe('standalone canvas arrangement', () => {
     expect(resolveWorkbenchArrangement('unknown', 'list')).toBe('list')
   })
 
+  it('falls back from unregistered view keys like any unknown arrangement', () => {
+    expect(resolveWorkbenchArrangement('acme:compare', 'list')).toBe('list')
+    expect(resolveWorkbenchArrangement('acme:compare', undefined, 'single')).toBe('single')
+  })
+
   it('allows URL matrix or grid overrides and local defaults for unconfigured stories', () => {
     expect(resolveWorkbenchArrangement('matrix', 'list')).toBe('matrix')
     expect(resolveWorkbenchArrangement('grid', 'list')).toBe('grid')

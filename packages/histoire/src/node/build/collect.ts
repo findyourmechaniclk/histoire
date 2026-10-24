@@ -1,6 +1,7 @@
 import type { PreviewStoryCallback } from '@histoire/shared'
 import type { ViteDevServer } from 'vite'
 import type { Context } from '../context.js'
+import { setFramePurpose } from '@histoire/shared'
 import pc from 'picocolors'
 import { useCollectStories } from '../collect/index.js'
 import { startPreview } from '../preview.js'
@@ -53,10 +54,12 @@ export async function renderPreviewStories(ctx: Context, previewStoryCallbacks: 
       const story = storyFile.story
       if (!story) continue
       for (const variant of story.variants) {
-        const query = new URLSearchParams()
-        query.append('storyId', story.id)
-        query.append('variantId', variant.id)
-        const url = `${baseUrl}__sandbox.html?${query.toString()}`
+        const sandboxUrl = new URL('__sandbox.html', baseUrl)
+        sandboxUrl.searchParams.append('storyId', story.id)
+        sandboxUrl.searchParams.append('variantId', variant.id)
+        // Capture documents are automation: no frame plugins, unchanged defaults.
+        setFramePurpose(sandboxUrl, 'automation')
+        const url = sandboxUrl.href
         for (const fn of previewStoryCallbacks) {
           await fn({
             file: storyFile.path,

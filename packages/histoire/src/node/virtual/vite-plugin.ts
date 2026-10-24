@@ -75,6 +75,12 @@ export function createVirtualFilesPlugin(ctx: Context, isServer: boolean) {
       if (id.startsWith(VirtualFiles.COMMANDS)) {
         return VirtualFiles.RESOLVED_COMMANDS
       }
+      if (id.startsWith(VirtualFiles.WORKBENCH_PLUGINS_ID)) {
+        return VirtualFiles.RESOLVED_WORKBENCH_PLUGINS_ID
+      }
+      if (id.startsWith(VirtualFiles.FRAME_PLUGINS_ID)) {
+        return VirtualFiles.RESOLVED_FRAME_PLUGINS_ID
+      }
       if (id.startsWith(VirtualFiles.BROWSER_COLLECTOR_ID)) {
         return VirtualFiles.RESOLVED_BROWSER_COLLECTOR_ID
       }
@@ -156,6 +162,14 @@ export function createVirtualFilesPlugin(ctx: Context, isServer: boolean) {
 
       if (id === VirtualFiles.RESOLVED_COMMANDS) {
         return VirtualFiles.resolvedCommands(ctx)
+      }
+      // Manifests are not invalidated on file changes: config edits restart the server,
+      // and plugin modules themselves get ordinary Vite HMR.
+      if (id === VirtualFiles.RESOLVED_WORKBENCH_PLUGINS_ID) {
+        return VirtualFiles.resolvedWorkbenchPlugins(ctx, command)
+      }
+      if (id === VirtualFiles.RESOLVED_FRAME_PLUGINS_ID) {
+        return VirtualFiles.resolvedFramePlugins(ctx, command)
       }
       if (id === VirtualFiles.RESOLVED_BROWSER_COLLECTOR_ID) {
         return VirtualFiles.browserCollector(ctx)

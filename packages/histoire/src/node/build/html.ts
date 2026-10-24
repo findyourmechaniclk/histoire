@@ -55,5 +55,7 @@ export function generateScriptLinks(prefetchScripts: string[], rel: string, ctx:
 /** Bridge entry loads surface styles without booting an explorer, collector, or story runtime. */
 export function generateEmbedHtml(jsEntryFile: string, ctx: Context, cssEntryFile?: string): string {
   const head = cssEntryFile ? `<link rel="stylesheet" href="${ctx.resolvedViteConfig.base}${cssEntryFile}">` : ''
-  return generateBaseHtml(head, `<script type="module" src="${ctx.resolvedViteConfig.base}${jsEntryFile}"></script>`, ctx)
+  // The source-origin explorer imports the plugin manifest, whose dynamic imports the Vitest
+  // mocker wraps like story imports; it needs the same runner stub as the workbench page.
+  return generateBaseHtml(head, `${renderVitestRunnerBootstrap()}<script type="module" src="${ctx.resolvedViteConfig.base}${jsEntryFile}"></script>`, ctx)
 }

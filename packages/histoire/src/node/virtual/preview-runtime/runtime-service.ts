@@ -43,6 +43,11 @@ export function previewRuntimeService() {
             runtimeHostChannels.receive(message.payload, { storyId: targetStory.id, variantId: targetVariant.id })
             result = null
           }
+          else if (message.command === 'plugin.post') {
+            // Captured target only proves the document is live; delivery follows the actor id.
+            receiveFramePluginMessage(message.payload)
+            result = null
+          }
           else if (message.command === 'state.get') result = state.get()
           else if (message.command === 'state.patch') result = state.patch(message.payload)
           else if (message.command === 'state.reset') {
@@ -86,5 +91,7 @@ export function previewRuntimeService() {
         : undefined,
       message => postToParent(message))
     window.addEventListener('pagehide', closeRuntimeEvents, { once: true })
-    window.addEventListener('pagehide', () => runtimeLayout.close(), { once: true })`
+    window.addEventListener('pagehide', () => runtimeLayout.close(), { once: true })
+    // Navigation away: frame plugins detach while the document is still alive.
+    window.addEventListener('pagehide', () => detachFrameActors(() => true), { once: true })`
 }

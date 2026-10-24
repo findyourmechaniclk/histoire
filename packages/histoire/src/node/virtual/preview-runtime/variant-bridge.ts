@@ -1,7 +1,8 @@
 /**
  * Emits the bridge between the mounted variants and the host: state snapshot
  * posting, the test run entry point and its error summary, the module-level
- * selection state, and the HMR listener that invalidates a changed story.
+ * selection state, and the HMR listener that detaches the frame plugins of a
+ * changed story and invalidates it.
  */
 export function previewVariantBridge() {
   return `function postVariantStateSnapshot(storyId, variant) {
@@ -34,6 +35,7 @@ if (import.meta.hot) {
       return
     }
 
+    handleFrameStoryChanged(storyId)
     invalidateStoryRuntime(storyId)
   })
 }`

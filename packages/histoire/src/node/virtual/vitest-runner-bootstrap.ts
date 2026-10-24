@@ -22,13 +22,16 @@ function runWithVitestDynamicImport(loader) {
 
 /**
  * Renders the inline script that guarantees a usable
- * `__vitest_browser_runner__` before the app entry runs.
+ * `__vitest_browser_runner__` and `__vitest_mocker__` before the app entry runs.
  *
  * Story modules transformed by Vitest's mocker call
- * `__vitest_browser_runner__.wrapDynamicImport()`, which does not exist outside
- * a real Vitest browser run. Both HTML documents Histoire serves (the dev
- * server's and the built one) need the same stub — emitting it from one place
- * keeps a divergence from silently breaking one of the two runtimes.
+ * `__vitest_browser_runner__.wrapDynamicImport()` (built output) or
+ * `__vitest_mocker__.wrapDynamicImport()` (dev transforms, e.g. the workbench
+ * plugin manifest the dev source-origin explorer imports), which do not exist
+ * outside a real Vitest browser run. Every HTML document Histoire serves (the
+ * dev server's and the built ones) needs the same stub — emitting it from one
+ * place keeps a divergence from silently breaking one of the runtimes. A real
+ * mocker installed later replaces the passthrough.
  * @param indent Leading whitespace of every emitted line, so the surrounding
  * HTML document keeps its own indentation.
  */
@@ -36,11 +39,13 @@ export function renderVitestRunnerBootstrap(indent = '') {
   return [
     `${indent}<script>`,
     `${indent}(() => {`,
-    `${indent}  const runner = globalThis.__vitest_browser_runner__ ?? {}`,
-    `${indent}  if (typeof runner.wrapDynamicImport !== 'function') {`,
-    `${indent}    runner.wrapDynamicImport = loader => loader()`,
+    `${indent}  for (const key of ['__vitest_browser_runner__', '__vitest_mocker__']) {`,
+    `${indent}    const runner = globalThis[key] ?? {}`,
+    `${indent}    if (typeof runner.wrapDynamicImport !== 'function') {`,
+    `${indent}      runner.wrapDynamicImport = loader => loader()`,
+    `${indent}    }`,
+    `${indent}    globalThis[key] = runner`,
     `${indent}  }`,
-    `${indent}  globalThis.__vitest_browser_runner__ = runner`,
     `${indent}})()`,
     `${indent}</script>`,
   ].join('\n')

@@ -1,4 +1,4 @@
-import type { HistoireRuntimeSnapshot } from '@histoire/protocol'
+import type { HistoireFramePluginInfo, HistoireRuntimeSnapshot } from '@histoire/protocol'
 import type { HistoireSessionNotification } from '../../../../../../histoire-sdk/src/adapters/types.js'
 import type { HistoireBridgePort } from '../../../../../../histoire-sdk/src/internal.js'
 import { createEmbedRuntimeFrame } from '../../../../../../histoire-app/src/embed/adapters/runtime-frame.js'
@@ -6,12 +6,16 @@ import { sourceFixture } from '../../../../../../histoire-sdk/src/__tests__/fixt
 import { createHistoireSessionWithAdapters } from '../../../../../../histoire-sdk/src/internal.js'
 
 /** Real controller/runtime adapter; only already-validated notification delivery is synchronous. */
-export async function createRuntimeFrameFixture(options: { standalone?: boolean, sourceBase?: string, runtimeRevision?: string, extraVariants?: string[], requestTimeout?: number } = {}) {
+export async function createRuntimeFrameFixture(options: { standalone?: boolean, sourceBase?: string, runtimeRevision?: string, extraVariants?: string[], requestTimeout?: number, framePlugins?: HistoireFramePluginInfo[] } = {}) {
   const fixture = sourceFixture()
   for (const id of options.extraVariants ?? []) fixture.descriptor.catalog.stories[0].variants.push({ id, title: id })
   if (options.runtimeRevision) fixture.descriptor.catalog.stories[0].runtimeRevision = options.runtimeRevision
   fixture.descriptor.config = { title: 'Book', autoApplyContrastColor: false, theme: { defaultColorScheme: 'light', darkClass: 'dark' }, responsivePresets: [], backgroundPresets: [], storyCollectTimeout: 100 }
   if (options.requestTimeout) fixture.descriptor.config.runTimeout = options.requestTimeout
+  if (options.framePlugins) {
+    fixture.descriptor.framePlugins = options.framePlugins
+    fixture.descriptor.capabilities.framePlugins = { available: true }
+  }
   const container = document.createElement('div')
   document.body.append(container)
   const publications: HistoireRuntimeSnapshot[] = []
@@ -31,7 +35,9 @@ export async function createRuntimeFrameFixture(options: { standalone?: boolean,
               ? { type: 'state', state: payload }
               : event === 'events.appended'
                 ? { type: 'event', event: (payload as { items: unknown[] }).items[0] }
-                : null
+                : event === 'plugin.message'
+                  ? { type: 'plugin', message: payload }
+                  : null
           if (!notification) return
           if (notification.type === 'runtime') publications.push(notification.runtime)
           for (const listener of listeners) listener({ ...owner, epoch: fixture.descriptor.epoch, revision: fixture.descriptor.revision, ...identity, ...notification } as HistoireSessionNotification)

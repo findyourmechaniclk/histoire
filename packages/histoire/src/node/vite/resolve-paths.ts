@@ -1,6 +1,7 @@
 import type { Context } from '../context.js'
 import { createRequire } from 'node:module'
 import { dirname } from 'pathe'
+import { findUp } from '../util/find-up.js'
 import { resolveHistoireSharedEntry } from '../util/resolve-histoire-shared.js'
 import { tryResolveDependency } from '../util/resolve-package.js'
 import { tryResolveVitestModule } from '../util/resolve-vitest-package.js'
@@ -54,6 +55,23 @@ export function resolveSupportPluginAllowPaths(ctx: Context): string[] {
 
     return Array.from(result)
   })
+}
+
+/**
+ * Lists the package directories of resolved workbench and frame plugin entries, so the
+ * dev server may serve them (and their sibling modules) from outside the project root.
+ * @param ctx The histoire context.
+ */
+export function resolveWorkbenchPluginAllowPaths(ctx: Context): string[] {
+  const result = new Set<string>()
+  for (const plugin of ctx.workbenchPlugins ?? []) {
+    for (const file of [plugin.client, plugin.frame]) {
+      if (!file) continue
+      const packageJson = findUp(dirname(file), ['package.json'])
+      result.add(dirname(packageJson ?? file))
+    }
+  }
+  return Array.from(result)
 }
 
 /**

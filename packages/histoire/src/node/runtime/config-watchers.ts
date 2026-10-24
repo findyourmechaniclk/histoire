@@ -1,21 +1,10 @@
-import type { Buffer } from 'node:buffer'
+import type { FileSnapshot } from '../config/dependencies.js'
 import type { ProjectConfigurationRevision, ProjectRuntimeDependencies } from './types.js'
-import { readFile } from 'node:fs/promises'
 import chokidar from 'chokidar'
 import path from 'pathe'
+import { getConfigDependencies, readFileSnapshot } from '../config/dependencies.js'
 import { configFileNames, resolveConfigFile } from '../config/index.js'
 import { createCleanupStack } from './cleanup.js'
-
-/** Missing files are a distinct snapshot so creation and removal stay observable. */
-async function configSnapshot(file: string): Promise<Buffer | undefined> {
-  try {
-    return await readFile(file)
-  }
-  catch (error) {
-    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT') return
-    throw error
-  }
-}
 
 /** Vite default discovery candidates, captured before Vite reads its selected file. */
 const viteConfigFileNames = [
@@ -77,7 +66,7 @@ export async function captureProjectConfigurationRevision(root: string, config?:
   const histoireFile = resolveConfigFile(root, config)
   const viteFiles = localConfigFiles(root, viteConfigFileNames)
   const files = configurationFiles(root, config, histoireFile)
-  const snapshots = new Map(await Promise.all(files.map(async file => [file, await configSnapshot(file)] as const)))
+  const snapshots = new Map(await Promise.all(files.map(async file => [file, await readFileSnapshot(file)] as const)))
   return {
     histoireFile: histoireFile ? path.resolve(histoireFile) : null,
     viteConfigFile: viteFiles.find(file => snapshots.get(file) !== undefined) ?? null,
@@ -98,10 +87,22 @@ export const watchProjectConfiguration: ProjectRuntimeDependencies['watch'] = as
     for (const file of watchedConfigFiles(localConfigFiles(root, viteConfigFileNames), viteFile, revision?.viteConfigFile ?? null)) files.set(file, 'Vite')
     const histoireCandidates = histoireConfigFiles(root, options.config, revision?.histoireFile ?? histoireFile)
     for (const file of watchedConfigFiles(histoireCandidates, histoireFile, revision?.histoireFile ?? null)) files.set(file, 'Histoire')
-    const snapshots = new Map(await Promise.all([...files.keys()].map(async file => [
-      file,
-      revision?.snapshots.has(file) ? revision.snapshots.get(file) : await configSnapshot(file),
-    ] as const)))
+    // Local modules the configs imported (plugin sources, shared helpers) restart like the
+    // config importing them. Their baseline is the loader's read right after evaluation.
+    const dependencies = getConfigDependencies(runtime.context.config)
+    const loaded = new Map<string, FileSnapshot>()
+    for (const [source, modules] of [['Histoire', dependencies?.histoire], ['Vite', dependencies?.vite]] as const) {
+      for (const [file, snapshot] of modules ?? []) {
+        if (files.has(file)) continue
+        files.set(file, source)
+        loaded.set(file, snapshot)
+      }
+    }
+    const snapshots = new Map(await Promise.all([...files.keys()].map(async (file) => {
+      if (revision?.snapshots.has(file)) return [file, revision.snapshots.get(file)] as const
+      if (loaded.has(file)) return [file, loaded.get(file)] as const
+      return [file, await readFileSnapshot(file)] as const
+    })))
     // Directory watches retain creation, priority replacement and unlink events
     // that a named missing-file watcher can lose before its parent subscribes.
     const targets = [...new Set([root, ...[...files.keys()].map(file => path.dirname(file))])]
@@ -119,7 +120,7 @@ export const watchProjectConfiguration: ProjectRuntimeDependencies['watch'] = as
       // coalesce those notifications without dropping a subsequent distinct edit.
       changes = changes.then(async () => {
         if (stopped) return
-        const next = await configSnapshot(file)
+        const next = await readFileSnapshot(file)
         const previous = snapshots.get(file)
         if (stopped || (next === undefined ? previous === undefined : previous?.equals(next))) return
         snapshots.set(file, next)

@@ -33,7 +33,7 @@ export function previewMessageHandler() {
 
     async function handlePreviewMessage(event) {
       // New opt-in traffic never inherits legacy optional document identity.
-      if ((event.data.type === HOST_CHANNEL_MESSAGE || (event.data.type === RUNTIME_REQUEST && event.data.command === 'channel.post')) && event.data.documentId !== previewDocumentId) return
+      if ((event.data.type === HOST_CHANNEL_MESSAGE || (event.data.type === RUNTIME_REQUEST && ['channel.post', 'plugin.post'].includes(event.data.command))) && event.data.documentId !== previewDocumentId) return
       if (event.data.documentId !== undefined && event.data.documentId !== previewDocumentId) return
       if ([MEASURE_REQUEST, ELEMENT_PICK_REQUEST, PROPS_OVERRIDE].includes(event.data.type)) {
         if (initialSelection.controls) return
@@ -112,6 +112,11 @@ export function previewMessageHandler() {
           previewSelectionVersion = event.data.selectionVersion
         }
         gridSelectedVariantId.value = event.data.variantId
+      }
+      else if (event.data?.type === HOST_CHANNEL_MESSAGE && event.data.plugin !== undefined) {
+        // Plugin traffic addresses one actor by id, never the selected variant.
+        try { receiveFramePluginMessage(event.data.plugin) }
+        catch { /* Rejections are counted against the plugin; the story runtime is unaffected. */ }
       }
       else if (event.data?.type === HOST_CHANNEL_MESSAGE) {
         if (event.data.storyId !== story.value?.id || event.data.variantId !== variant.value?.id) return

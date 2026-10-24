@@ -1,4 +1,7 @@
 import type { ConfigMode, HistoireConfig, PluginConfigContext } from '@histoire/shared'
+import type { ModuleCache } from 'jiti'
+import type { FileSnapshot } from './dependencies.js'
+import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { createJiti } from 'jiti'
 import path from 'pathe'
@@ -6,6 +9,7 @@ import pc from 'picocolors'
 import { resolveConfig as resolveViteConfig } from 'vite'
 import { findUp } from '../util/find-up.js'
 import { getDefaultConfig } from './defaults.js'
+import { recordConfigDependencies, snapshotLocalModules } from './dependencies.js'
 import { mergeConfig } from './merge.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -36,20 +40,34 @@ export function resolveConfigFile(cwd: string = process.cwd(), configFile?: stri
   }
 }
 
+/** One evaluated config file. */
+interface LoadedConfigModule {
+  /** Default export. */
+  config: Partial<HistoireConfig>
+  /** Absolute paths of every module jiti evaluated for it, the file itself included. */
+  modules: string[]
+}
+
 /**
- * Imports a config file through jiti (so TypeScript configs work) and returns
- * its default export.
+ * Imports a config file through jiti (so TypeScript configs work), keeping the module list.
+ * `evalModule` with an owned cache is `jiti.import` minus resolution: every module jiti
+ * transpiles for this load lands in that cache, also on filesystem cache hits. Modules Node
+ * imports natively (`.mjs`, `.cjs`, `.js` in `type: module` packages) are not listed.
+ * @param configFile Absolute config path.
  */
-export async function loadConfigFile(configFile: string): Promise<Partial<HistoireConfig>> {
+async function loadConfigModule(configFile: string): Promise<LoadedConfigModule> {
   try {
     const jiti = createJiti(__filename, {
       moduleCache: false,
     })
-    const result = await jiti.import(configFile, { default: true }) as Partial<HistoireConfig>
+    const cache: ModuleCache = {}
+    const source = await readFile(configFile, 'utf8')
+    const module = await jiti.evalModule(source, { filename: configFile, ext: path.extname(configFile), cache, async: true }) as { default?: unknown } | undefined
+    const result = (module?.default ?? module) as Partial<HistoireConfig>
     if (!result) {
       throw new Error(`Expected default export in ${configFile}`)
     }
-    return result
+    return { config: result, modules: Object.keys(cache) }
   }
   catch (e) {
     console.error(pc.red(`Error while loading ${configFile}`))
@@ -58,22 +76,38 @@ export async function loadConfigFile(configFile: string): Promise<Partial<Histoi
 }
 
 /**
+ * Imports a config file through jiti (so TypeScript configs work) and returns
+ * its default export.
+ */
+export async function loadConfigFile(configFile: string): Promise<Partial<HistoireConfig>> {
+  return (await loadConfigModule(configFile)).config
+}
+
+/**
  * Resolves the final Histoire config: the config file, the `histoire` key of
  * the Vite config and the (plugin-processed) defaults, merged in that order.
  */
 export async function resolveConfig(cwd: string = process.cwd(), mode: ConfigMode, configFile?: string, context?: PluginConfigContext): Promise<HistoireConfig> {
   let result: Partial<HistoireConfig>
+  let histoireModules: Map<string, FileSnapshot> = new Map()
   const resolvedConfigFile = resolveConfigFile(cwd, configFile)
   if (resolvedConfigFile) {
-    result = await loadConfigFile(resolvedConfigFile)
+    const loaded = await loadConfigModule(resolvedConfigFile)
+    result = loaded.config
+    // Read right after evaluation: an edit landing before the watcher is ready still differs.
+    histoireModules = await snapshotLocalModules(loaded.modules)
   }
   const viteConfig = await resolveViteConfig({ root: cwd }, mode === 'dev' ? 'serve' : 'build')
+  const viteModules = await snapshotLocalModules(viteConfig.configFileDependencies)
   const viteHistoireConfig = (viteConfig.histoire ?? {}) as HistoireConfig
 
   const preUserConfig = mergeConfig(result, viteHistoireConfig)
   const processedDefaultConfig = await processDefaultConfig(getDefaultConfig(), preUserConfig, mode, context)
 
-  return resolveConfigPlugins(mergeConfig(preUserConfig, processedDefaultConfig), mode, context)
+  const config = await resolveConfigPlugins(mergeConfig(preUserConfig, processedDefaultConfig), mode, context)
+  // Dev watchers restart when one of these local modules (e.g. a plugin source) changes.
+  recordConfigDependencies(config, { histoire: histoireModules, vite: viteModules })
+  return config
 }
 
 /** Applies the `config` hook of every resolved plugin. */

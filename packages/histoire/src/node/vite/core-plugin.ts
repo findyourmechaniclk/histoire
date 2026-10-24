@@ -14,7 +14,8 @@ import { resolveVisualConfig } from '../visual/config.js'
 import { retireVisualSource } from '../visual/source.js'
 import { createAppHtmlMiddleware, createSandboxHtmlMiddleware } from './dev-html.js'
 import { createMcpPreviewHtmlMiddleware } from './mcp-preview-html.js'
-import { histoireSharedPath, resolveSupportPluginAllowPaths, tryResolveDependency, withPackageDirs } from './resolve-paths.js'
+import { histoireSharedPath, resolveSupportPluginAllowPaths, resolveWorkbenchPluginAllowPaths, tryResolveDependency, withPackageDirs } from './resolve-paths.js'
+import { createWorkbenchVueResolver } from './workbench-vue.js'
 
 export interface HistoireVitePluginOptions {
   /** Whether the config is built for the node-side (collecting) server. */
@@ -42,6 +43,9 @@ export function createHistoireVitePlugin(ctx: Context, options: HistoireVitePlug
 
   return {
     name: 'histoire-vite-plugin',
+
+    // Workbench plugin client graphs share the workbench's vendored Vue.
+    resolveId: createWorkbenchVueResolver(),
 
     config(_, { command }) {
       const optimizeEntries = browserRuntime
@@ -116,6 +120,7 @@ export function createHistoireVitePlugin(ctx: Context, options: HistoireVitePlug
               ctx.resolvedViteConfig.root,
               ctx.root,
               ...supportPluginAllowPaths,
+              ...resolveWorkbenchPluginAllowPaths(ctx),
               ...controlsAllowPaths,
               ...browserRuntimePaths.allowPaths,
               ...browserRuntimePaths.mswAllowPaths,

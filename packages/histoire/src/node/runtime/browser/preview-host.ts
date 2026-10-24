@@ -1,6 +1,6 @@
 import type { HistoireGlobals } from '@histoire/protocol'
 import { randomBytes } from 'node:crypto'
-import { getSandboxRelativeUrl, normalizePreviewBase } from '@histoire/shared'
+import { getSandboxRelativeUrl, normalizePreviewBase, setFramePurpose } from '@histoire/shared'
 import { renderPreviewScript } from './preview-script.js'
 
 /** Trusted target resolved from dev catalog or immutable Node manifest. */
@@ -63,6 +63,7 @@ export function createPreviewHostRegistry(options: { base: string }) {
       sandboxUrl.searchParams.set('mcpNonce', target.nonce)
       sandboxUrl.searchParams.set('mcpEpoch', target.epoch)
       sandboxUrl.searchParams.set('embed', 'true')
+      setFramePurpose(sandboxUrl, 'automation')
       const script = renderPreviewScript({ authority: { origin: new URL(target.origin).origin, storyId: target.storyId, variantId: target.variantId, nonce: target.nonce, epoch: target.epoch, active: true }, sandboxUrl: sandboxUrl.href, settings: { responsiveWidth: target.width, responsiveHeight: target.height, rotate: false, backgroundColor: target.backgroundColor, checkerboard: false, textDirection: target.textDirection, globals: target.globals ?? {} }, colorScheme: target.colorScheme, propsOverride: target.propsOverride })
       return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;overflow:hidden"><script>${script}</script></body></html>`
     },
