@@ -192,6 +192,7 @@ export function createHistoireVitePlugin(ctx: Context, options: HistoireVitePlug
 
       // serve our index.html after vite history fallback
       return () => {
+      server.middlewares.use(createMswWorkerMiddleware(server, ctx.root))
         server.middlewares.use(createAppHtmlMiddleware(server, ctx))
       }
     },

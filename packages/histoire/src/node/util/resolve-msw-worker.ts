@@ -8,10 +8,12 @@ import { tryResolveDependency } from './resolve-package.js'
  * resolved project-first), otherwise MSW logs "outdated worker" mismatch
  * warnings in the built app.
  * @param root The project root to resolve `msw` from first.
+ * @param options Resolution options.
+ * @param options.fallback Set to `false` to only accept the project's own install.
  * @returns The worker file path, or `null` when no msw install is found.
  */
-export function resolveMswWorkerPath(root: string): string | null {
-  const packageJsonPath = tryResolveDependency(root, 'msw/package.json')
+export function resolveMswWorkerPath(root: string, options: { fallback?: boolean } = {}): string | null {
+  const packageJsonPath = tryResolveDependency(root, 'msw/package.json', options)
   if (!packageJsonPath) {
     return null
   }
