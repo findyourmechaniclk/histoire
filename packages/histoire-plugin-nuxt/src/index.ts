@@ -3,6 +3,7 @@ import type { UserConfig as ViteConfig, Plugin as VitePlugin } from 'vite'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import replace from '@rollup/plugin-replace'
+import { prebundleTranspiledDeps, resolveIncludeId } from './prebundle.js'
 import { isolateNuxtResolver } from './resolve.js'
 
 /** Kit owns the loaded Nuxt shape; don't mix separately hoisted schema majors. */
@@ -22,8 +23,24 @@ const ignorePlugins = [
 /** Nuxt uses process-wide internals; Vue/Svelte multi-root support does not extend it. */
 let activeNuxtOwner: object | undefined
 
+export interface HstNuxtOptions {
+  /**
+   * Nuxt build directory used by Histoire, relative to the Nuxt root.
+   * Kept apart from `.nuxt` so a running `nuxt dev` doesn't share generated files.
+   * @default '.histoire/nuxt'
+   */
+  buildDir?: string
+  /**
+   * Packages from Nuxt's `build.transpile` to pre-bundle anyway, so story
+   * frames don't load them as hundreds of separate modules. Known client-only
+   * UI libraries (`reka-ui`, `radix-vue`) are always pre-bundled.
+   */
+  prebundle?: string[]
+}
+
 /** Integrates one Nuxt project with explicit root and startup cleanup ownership. */
-export function HstNuxt(): Plugin {
+export function HstNuxt(options: HstNuxtOptions = {}): Plugin {
+  const { buildDir = '.histoire/nuxt', prebundle = [] } = options
   let nuxt: Nuxt
   const owner = {}
   let closing: Promise<void> | undefined
@@ -43,7 +60,7 @@ export function HstNuxt(): Plugin {
       context?.onCleanup(close)
       let nuxtViteConfig: Awaited<ReturnType<typeof useNuxtViteConfig>>
       try {
-        nuxtViteConfig = await useNuxtViteConfig(context?.root ?? process.cwd(), (acquired) => {
+        nuxtViteConfig = await useNuxtViteConfig(context?.root ?? process.cwd(), buildDir, (acquired) => {
           nuxt = acquired
         })
       }
@@ -94,13 +111,13 @@ export function HstNuxt(): Plugin {
           ],
           css: viteConfig.css,
           publicDir: viteConfig.publicDir,
-          optimizeDeps: {
+          optimizeDeps: prebundleTranspiledDeps({
             ...viteConfig.optimizeDeps,
             exclude: [
               ...viteConfig.optimizeDeps.exclude,
               '@histoire/plugin-nuxt',
             ],
-          },
+          }, nuxt.options.build.transpile, prebundle, dep => resolveIncludeId(nuxt.options.rootDir, dep)),
           // @ts-expect-error Vue-specific config
           vue: viteConfig.vue,
           logLevel: 'info',
@@ -115,7 +132,7 @@ export async function setupVue3 (setupApi) {
         viteNodeInlineDeps: [
           /\/(nuxt|nuxt3)\//,
           /^#/,
-          /\.nuxt/,
+          new RegExp(escapeRegExp(nuxt.options.buildDir)),
           ...(nuxt.options.build.transpile.filter(
             r => typeof r === 'string' || r instanceof RegExp,
           ) as Array<string | RegExp>),
@@ -141,13 +158,14 @@ export async function setupVue3 (setupApi) {
 }
 
 /** Registers Nuxt before later template/config steps can fail. */
-async function useNuxtViteConfig(root: string, onAcquire: (nuxt: Nuxt) => void) {
+async function useNuxtViteConfig(root: string, buildDir: string, onAcquire: (nuxt: Nuxt) => void) {
   const { loadNuxt, buildNuxt } = await import('@nuxt/kit')
   const nuxt = await loadNuxt({
     cwd: root,
     ready: false,
     dev: true,
     overrides: {
+      buildDir,
       devtools: { enabled: false },
       ssr: false,
       experimental: {
@@ -224,4 +242,9 @@ async function useNuxtViteConfig(root: string, onAcquire: (nuxt: Nuxt) => void) 
     }),
     nuxt,
   }
+}
+
+/** Escapes a path for use as a literal inside a `RegExp`. */
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }

@@ -19,7 +19,9 @@ describe('nuxt resolved project root', () => {
       expect(runtime.context.root).toBe(project.root)
       expect(runtime.context.storyFiles.some(file => file.story?.variants.length)).toBe(true)
       expect(runtime.context.config.setupCode.join('\n')).toContain('configFromNuxt')
-      await access(join(project.root, '.nuxt', 'imports.d.ts'))
+      // Generated files stay apart from a concurrently running `nuxt dev`.
+      await access(join(project.root, '.histoire', 'nuxt', 'imports.d.ts'))
+      await expect(access(join(project.root, '.nuxt'))).rejects.toThrow()
       await expect(createContext({ root: project.root, mode: 'dev' })).rejects.toThrow('Nuxt integration supports one active project per process')
       expect(runtime.isActive()).toBe(true)
       expect(process.cwd()).toBe(cwd)
