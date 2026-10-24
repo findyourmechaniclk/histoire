@@ -1,0 +1,7 @@
+node_modules
+*.log*
+.quasar
+dist
+.histoire/
+cypress/screenshots
+quasar.config.*.temporary.compiled*
