@@ -194,6 +194,8 @@ const OTHER_KEYS = [
   'innerHeight',
   'innerWidth',
   'length',
+  // Node 25+ has native storage globals (undefined without `--localstorage-file`); jsdom's must replace them
+  'localStorage',
   'location',
   'matchMedia',
   'moveBy',
@@ -226,6 +228,7 @@ const OTHER_KEYS = [
   'scrollX',
   'scrollY',
   'self',
+  'sessionStorage',
   /* 'setInterval', */
   /* 'setTimeout', */
   'stop',
