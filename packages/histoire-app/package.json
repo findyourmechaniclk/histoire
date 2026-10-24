@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@histoire/controls": "workspace:^",
+    "@histoire/plugin-kit": "workspace:*",
     "@histoire/protocol": "workspace:^",
     "@histoire/sdk": "workspace:^",
     "@histoire/shared": "workspace:^",

@@ -1,3 +1,4 @@
+import type { HistoireJsonValue } from '@histoire/protocol'
 import type chokidar from 'chokidar'
 import type fs from 'fs-extra'
 import type path from 'pathe'
@@ -100,6 +101,28 @@ export interface PluginApiDevEvent extends PluginApiBase {
   payload: any
 }
 
+/**
+ * Browser-facing part of a Histoire plugin. Only these fields reach the browser;
+ * entries are loaded lazily by the workbench and by interactive story frames.
+ */
+export interface WorkbenchPluginDescriptor {
+  /** Stable identity shared by Node, workbench and frame modules. `[a-z][a-z0-9-]*`, at most 64 characters, not `builtin`. */
+  id: string
+  /** Extension contract version; only `1` exists. */
+  apiVersion: 1
+  /**
+   * Module default-exporting `defineWorkbenchPlugin(...)`. Bare specifiers and absolute paths
+   * resolve through Vite from the project root; package authors resolve their own relative paths first.
+   */
+  client?: string
+  /** Module default-exporting `defineFramePlugin(...)`; resolved like `client`. */
+  frame?: string
+  /** Explicit browser-visible JSON options. Nothing else from the Node plugin reaches the browser. */
+  options?: HistoireJsonValue
+  /** Exclude both entries from static builds. */
+  devOnly?: boolean
+}
+
 export interface Plugin {
   /**
    * Name of the plugin
@@ -156,4 +179,8 @@ export interface Plugin {
    * Use this hook to manipulate Vite plugins before they are passed to Vite.
    */
   vitePlugins?: (plugins: VitePlugin[]) => Awaitable<void>
+  /**
+   * Browser-facing workbench and frame entries contributed by this plugin.
+   */
+  workbench?: WorkbenchPluginDescriptor
 }

@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@histoire/controls": "workspace:^",
+    "@histoire/plugin-kit": "workspace:^",
     "@histoire/protocol": "workspace:^",
     "@histoire/sdk": "workspace:^",
     "@iconify/vue": "^4.1.2",
