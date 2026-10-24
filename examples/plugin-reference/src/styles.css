@@ -1,0 +1,211 @@
+/*
+ * Shared by every UI variant. Plugin views render inside the workbench theme scope without
+ * Shadow DOM: read `--histoire-*` tokens, and prefix every class so nothing leaks either way.
+ */
+.hst-ref-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: var(--histoire-pane-gutter, 16px);
+  color: var(--histoire-body);
+  font: 13px/1.4 var(--histoire-font-sans, sans-serif);
+}
+
+.hst-ref-panel[data-flush] {
+  padding: 0;
+}
+
+.hst-ref-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--histoire-control-height, 28px);
+}
+
+.hst-ref-row > .hst-ref-grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.hst-ref-title {
+  margin: 0;
+  color: var(--histoire-text);
+  font-weight: 600;
+}
+
+.hst-ref-muted {
+  color: var(--histoire-muted);
+}
+
+.hst-ref-empty {
+  padding: 24px 8px;
+  color: var(--histoire-muted);
+  text-align: center;
+}
+
+.hst-ref-list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hst-ref-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  padding: 6px var(--histoire-pane-row-inset, 8px);
+  border: 0;
+  border-radius: var(--histoire-radius-control, 7px);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.hst-ref-item:hover,
+.hst-ref-item:focus-visible {
+  background: var(--histoire-chip);
+}
+
+.hst-ref-item {
+  flex-wrap: wrap;
+}
+
+/* Issue detail goes on its own line under the rule and element. */
+.hst-ref-item > .hst-ref-muted {
+  flex-basis: 100%;
+}
+
+.hst-ref-item > .hst-ref-grow {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hst-ref-chip {
+  flex: none;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--histoire-chip);
+  color: var(--histoire-text);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+}
+
+.hst-ref-chip[data-tone="warn"] {
+  background: var(--histoire-danger-soft);
+  color: var(--histoire-danger-text);
+}
+
+.hst-ref-button {
+  height: var(--histoire-control-height, 28px);
+  padding: 0 10px;
+  border: 1px solid var(--histoire-border);
+  border-radius: var(--histoire-radius-button, 9px);
+  background: var(--histoire-surface);
+  color: var(--histoire-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.hst-ref-button:hover:not(:disabled) {
+  background: var(--histoire-chip);
+}
+
+.hst-ref-button:disabled {
+  opacity: .5;
+  cursor: default;
+}
+
+.hst-ref-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.hst-ref-switch input {
+  accent-color: var(--histoire-accent);
+}
+
+/* Per-frame overlay: passive badge in the frame's top-right corner. */
+.hst-ref-frame-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+
+/* Canvas overlay: positioned in canvas units; the host layer applies pan and zoom. */
+.hst-ref-annotation {
+  position: absolute;
+  box-sizing: border-box;
+  border: 2px dashed var(--histoire-accent);
+  border-radius: 4px;
+  background: rgb(var(--histoire-accent-rgb) / 8%);
+}
+
+.hst-ref-annotation[data-draft] {
+  border-style: solid;
+}
+
+/* Compare view. */
+.hst-ref-compare {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hst-ref-compare-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+}
+
+.hst-ref-compare-column {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hst-ref-compare-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  color: var(--histoire-text);
+  font: 600 13px/22px var(--histoire-font-sans, sans-serif);
+}
+
+.hst-ref-compare-frame {
+  overflow: hidden;
+  border: 1px solid var(--histoire-border);
+  border-radius: var(--histoire-radius-panel, 12px);
+  background: var(--histoire-surface);
+  box-shadow: var(--histoire-shadow-toolbar);
+}
+
+.hst-ref-compare-frame > * {
+  width: 100%;
+  height: 100%;
+}
+
+.hst-ref-compare-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+}
+
+/* Cleared state: never cover the canvas. */
+.hst-ref-compare-empty:empty {
+  display: none;
+}
