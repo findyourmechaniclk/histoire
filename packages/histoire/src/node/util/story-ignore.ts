@@ -7,12 +7,14 @@ import { getProjectTempDir } from './temp-paths.js'
 /** Shares source admission and directory pruning across both filesystem watchers. */
 export function createStoryIgnore(ctx: Context) {
   const temporary = getProjectTempDir(ctx.root)
+  // Persistent optimizer caches (see vite/optimizer-cache.ts) are as large.
+  const cache = resolve(ctx.root, '.histoire', 'cache')
   const patterns = ctx.config.storyIgnored.map(pattern => resolve(ctx.root, pattern))
   return (file: string) => {
     const absolute = resolve(ctx.root, file)
     // Old and concurrent runs can contain gigabytes of optimizer output.
     // Prune the directory itself; generated stories register through addStory.
-    return isPathWithinRoot(temporary, absolute) || patterns.some(pattern => micromatch.isMatch(absolute, pattern))
+    return isPathWithinRoot(temporary, absolute) || isPathWithinRoot(cache, absolute) || patterns.some(pattern => micromatch.isMatch(absolute, pattern))
   }
 }
 

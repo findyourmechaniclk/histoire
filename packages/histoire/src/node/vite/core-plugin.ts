@@ -1,7 +1,7 @@
 import type { Plugin as VitePlugin } from 'vite'
 import type { Context } from '../context.js'
 import type { BrowserRuntimePaths } from './resolve-paths.js'
-import { dirname, join } from 'pathe'
+import { dirname } from 'pathe'
 import { APP_PATH, getHistoireStyleFiles } from '../alias.js'
 import { tailwindRuntimeDirectory } from '../builtin-plugins/tailwind/template.js'
 import { getContextRegistry } from '../runtime/registry.js'
@@ -14,6 +14,8 @@ import { resolveVisualConfig } from '../visual/config.js'
 import { retireVisualSource } from '../visual/source.js'
 import { createAppHtmlMiddleware, createSandboxHtmlMiddleware } from './dev-html.js'
 import { createMcpPreviewHtmlMiddleware } from './mcp-preview-html.js'
+import { createMswWorkerMiddleware } from './msw-worker.js'
+import { getStoryOptimizerEntries, getViteCacheDir } from './optimizer-cache.js'
 import { histoireSharedPath, resolveSupportPluginAllowPaths, tryResolveDependency, withPackageDirs } from './resolve-paths.js'
 
 export interface HistoireVitePluginOptions {
@@ -49,6 +51,7 @@ export function createHistoireVitePlugin(ctx: Context, options: HistoireVitePlug
         : [
             `${APP_PATH}/bundle-main.js`,
             `${APP_PATH}/bundle-sandbox.js`,
+            ...getStoryOptimizerEntries(ctx),
           ]
       const optimizeInclude = browserRuntime
         ? []
@@ -149,7 +152,7 @@ export function createHistoireVitePlugin(ctx: Context, options: HistoireVitePlug
             : {},
           '__HST_COLLECT__': isServer,
         },
-        cacheDir: join(tempDir, 'vite', browserRuntime
+        cacheDir: getViteCacheDir(ctx, browserRuntime
           ? (isServer ? 'browser-server' : 'browser-client')
           : (isServer ? 'server' : 'client')),
       }
@@ -189,10 +192,10 @@ export function createHistoireVitePlugin(ctx: Context, options: HistoireVitePlug
       server.middlewares.use(createMcpPreviewHtmlMiddleware(server))
       if (!isServer && !browserRuntime) installUiHttpRouter(server)
       server.middlewares.use(createSandboxHtmlMiddleware(server))
+      server.middlewares.use(createMswWorkerMiddleware(server, ctx.root))
 
       // serve our index.html after vite history fallback
       return () => {
-      server.middlewares.use(createMswWorkerMiddleware(server, ctx.root))
         server.middlewares.use(createAppHtmlMiddleware(server, ctx))
       }
     },
