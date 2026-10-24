@@ -1,6 +1,7 @@
 import type { Plugin } from 'histoire'
 
 import generateStoryCommand from './commands/generate-story.server.js'
+import { collectVaporPlugin } from './util/collect-vapor.js'
 import { listComponentFiles } from './util/list-components.js'
 
 export function HstVue(): Plugin {
@@ -39,6 +40,7 @@ export function HstVue(): Plugin {
             },
           ],
         },
+            collectVaporPlugin(),
       }
     },
     supportPlugin: {

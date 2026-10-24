@@ -26,3 +26,32 @@ _resolveComponent("HstButton")
     expect(transformed).toContain('_stubComponent("HstButton")')
   })
 })
+
+describe('hstVue collect Vapor SFCs', () => {
+  /** Runs the collect-time pre transform on one SFC source. */
+  function transform(source: string, isCollecting: boolean) {
+    const plugin = HstVue().config().vite.plugins.find(item => item.name === 'histoire-plugin-vue:collect-vapor')
+    return plugin.transform.call({ meta: { histoire: { isCollecting } } }, source, '/src/Flag.vue')
+  }
+
+  const source = `<script setup lang="ts" vapor>
+const vapor = true
+</script>
+
+<template>
+  <span vapor>{{ vapor }}</span>
+</template>
+`
+
+  it('compiles Vapor SFCs as VDOM components during collection', () => {
+    // Node collection runs Vue's CJS build, which has no Vapor runtime.
+    const transformed = transform(source, true)
+    expect(transformed).toContain('<script setup lang="ts">')
+    expect(transformed).toContain('const vapor = true')
+    expect(transformed).toContain('<span vapor>')
+  })
+
+  it('keeps Vapor mode outside collection', () => {
+    expect(transform(source, false)).toBeUndefined()
+  })
+})
