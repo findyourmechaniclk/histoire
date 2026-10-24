@@ -28,6 +28,17 @@ export const MOCKER_HELPERS_SNIPPET = `function registerNativeFactoryResolver(mo
 
 function enableManualMockPreload(mocker) {
   const originalQueueMock = mocker.queueMock.bind(mocker)
+  const originalPrepare = mocker.prepare.bind(mocker)
+  const preloads = new Set()
+  let preloadingFactories = 0
+
+  // Dynamic imports wait for prepare(), i.e. the whole mock queue. A factory's
+  // own imports (vi.mock(id, async () => { await import('vue') })) run while
+  // its preload is queued: waiting for preloads there deadlocks, so they only
+  // wait for mock registrations, as in Vitest.
+  mocker.prepare = () => preloadingFactories
+    ? Promise.all(Array.from(mocker.queue).filter(promise => !preloads.has(promise)))
+    : originalPrepare()
 
   mocker.queueMock = (rawId, importer, factoryOrOptions) => {
     originalQueueMock(rawId, importer, factoryOrOptions)
@@ -45,13 +56,21 @@ function enableManualMockPreload(mocker) {
       for (const mockUrl of mocker.registry.keys()) {
         const mock = mocker.registry.get(mockUrl)
         if (mock?.type === 'manual' && !mock.cache) {
-          await mock.resolve()
+          preloadingFactories++
+          try {
+            await mock.resolve()
+          }
+          finally {
+            preloadingFactories--
+          }
         }
       }
     }).finally(() => {
       mocker.queue.delete(preloadPromise)
+      preloads.delete(preloadPromise)
     })
 
+    preloads.add(preloadPromise)
     mocker.queue.add(preloadPromise)
   }
 }`
