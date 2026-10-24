@@ -22,6 +22,17 @@ export default defineComponent({
       type: Object as PropType<Story['meta']>,
       default: undefined,
     },
+
+    /**
+     * Story-level default for its variants. Declared as a prop (not left in
+     * `$attrs`) so Vue normalizes `auto-props-disabled` casing and boolean
+     * casting; `undefined` when not set. Variants read it through injection in
+     * both mount and render passes.
+     */
+    autoPropsDisabled: {
+      type: Boolean,
+      default: undefined,
+    },
   },
 
   setup(props) {
@@ -34,6 +45,7 @@ export default defineComponent({
     const renderContext = useRenderContext()
     const story = computed(() => attrs.story)
     provide('story', story)
+    provide('storyAutoPropsDisabled', () => props.autoPropsDisabled)
 
     const storyComponent: any = vm.parent
     const implicitState = reactive<Record<string, any>>({})
