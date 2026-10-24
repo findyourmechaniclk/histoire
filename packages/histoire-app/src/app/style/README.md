@@ -81,9 +81,9 @@ wrappers reset their own margins and padding.
 
 `main.pcss` composes document styles, controls, native Vue surfaces, tokens, and
 fonts in their existing order. `document.pcss` owns the standalone document
-reset; reusable native surfaces do not import it. `sandbox.css` owns the story
-runtime document baseline and retains controls/runtime Tailwind utilities.
-Generated Markdown code blocks use shared native docs styles in
+reset; reusable native surfaces do not import it. The story runtime document
+loads the same `main.pcss` output, which also hides the hidden story mount
+(`.htw-sandbox-hidden`). Generated Markdown code blocks use shared native docs styles in
 `histoire-vue/src/styles/content.css`; prose compatibility rules remain in
 `main.pcss`.
 
