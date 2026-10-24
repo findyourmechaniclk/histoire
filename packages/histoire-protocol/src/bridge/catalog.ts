@@ -8,6 +8,8 @@ import { invalid, wireId, wireRecord } from './validation.js'
 
 /** Finite advertised operation/surface keys. */
 const operations = ['catalog', 'search', 'docs', 'rawSource', 'dynamicSource', 'state', 'customControls', 'previewTests', 'serverTests', 'openInEditor', 'hostChannels']
+/** Optional operation keys; absent in legacy descriptors. */
+const optionalOperations = ['framePlugins']
 const surfaces = ['explorer', 'preview', 'grid', 'tree', 'search', 'toolbar', 'controls', 'docs', 'source', 'events', 'tests']
 
 /** Validates complete availability maps before framework/UI code consumes them. */
@@ -24,7 +26,11 @@ export function validateHistoireCapabilities(value: unknown): void {
       }
     }
   }
-  if (Object.keys(input).some(key => key !== 'surfaces' && !operations.includes(key)) || Object.keys(views).some(key => !surfaces.includes(key))) invalid('Unknown capability')
+  if (input.framePlugins !== undefined) {
+    const capability = wireRecord(input.framePlugins)
+    if (Object.keys(capability).some(key => key !== 'available' && key !== 'reason') || typeof capability.available !== 'boolean' || (capability.reason !== undefined && typeof capability.reason !== 'string')) invalid('Invalid capability')
+  }
+  if (Object.keys(input).some(key => key !== 'surfaces' && !operations.includes(key) && !optionalOperations.includes(key)) || Object.keys(views).some(key => !surfaces.includes(key))) invalid('Unknown capability')
 }
 
 /** Relative display labels cannot expose Node paths or module identifiers. */

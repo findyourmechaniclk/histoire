@@ -18,7 +18,7 @@ export function getHistoireWireLimit(policy: HistoireWirePolicy): number {
     || (policy.kind === 'event' && policy.name === 'catalog.changed')) {
     return HISTOIRE_WIRE_LIMITS.catalog
   }
-  if (policy.name === 'channel.message' || policy.name === 'channel.post') return HISTOIRE_WIRE_LIMITS.event
+  if (['channel.message', 'channel.post', 'plugin.message', 'plugin.post'].includes(policy.name)) return HISTOIRE_WIRE_LIMITS.event
   if (policy.kind === 'event' && ['state.changed', 'layout.changed'].includes(policy.name)) return HISTOIRE_WIRE_LIMITS.state
   return policy.kind === 'event' ? HISTOIRE_WIRE_LIMITS.event : HISTOIRE_WIRE_LIMITS.request
 }

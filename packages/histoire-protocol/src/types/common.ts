@@ -36,7 +36,15 @@ export interface HistoireCapability {
 export type HistoireCapabilityName = 'catalog' | 'search' | 'docs' | 'rawSource' | 'dynamicSource' | 'state' | 'customControls' | 'previewTests' | 'serverTests' | 'openInEditor' | 'hostChannels'
 
 /** Named engine/operation and per-surface availability. */
-export type HistoireCapabilities = Record<HistoireCapabilityName, HistoireCapability> & { surfaces: Record<HistoireSurface, HistoireCapability> }
+export type HistoireCapabilities = Record<HistoireCapabilityName, HistoireCapability> & {
+  /** Per-surface availability. */
+  surfaces: Record<HistoireSurface, HistoireCapability>
+  /**
+   * Frame plugin messaging; advertised only by books with frame plugins (descriptor `framePlugins`),
+   * so books without them keep the shape older SDKs validate.
+   */
+  framePlugins?: HistoireCapability
+}
 
 /** Stable source identity and last completed content publication. */
 export interface HistoireSourceIdentity {

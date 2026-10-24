@@ -10,7 +10,7 @@ import { invalid, validateHistoireTarget, wireId, wireRecord } from './validatio
 type BridgeDirection = 'parent-to-child' | 'child-to-parent'
 
 /** Runtime-only request groups; data bridge must never execute stories implicitly. */
-const runtimeCommands = ['state.get', 'state.patch', 'state.reset', 'tests.collect', 'controls.preset', 'channel.post']
+const runtimeCommands = ['state.get', 'state.patch', 'state.reset', 'tests.collect', 'controls.preset', 'channel.post', 'plugin.post']
 
 /** Gates role authority before dispatch, independently of advertised capability checks. */
 function validateRole(role: HistoirePortRole, command: HistoireBridgeCommand, payload: Record<string, unknown>, direction: BridgeDirection): void {
@@ -151,12 +151,13 @@ function validateBridgeEventBody(input: Record<string, unknown>, role: HistoireP
   const event = input.event as HistoireBridgeEvent
   validateWireValue(input.payload, { kind: 'event', name: event })
   validateBridgeEventPayload(event, input.payload, true)
-  if (event === 'channel.message') {
+  // Plugin publications share host-channel authority: owned primary document and story only.
+  if (event === 'channel.message' || event === 'plugin.message') {
     const payload = wireRecord(input.payload)
     const target = wireRecord(payload.target)
     if (role !== 'primary' || direction !== 'child-to-parent' || !wireId(input.runtimeId) || payload.runtimeId !== input.runtimeId
       || !input.target || target.storyId !== wireRecord(input.target).storyId) {
-      invalid('Host channel event requires exact primary document and story')
+      invalid('Application channel event requires exact primary document and story')
     }
   }
   if (event === 'focus.changed' && role === 'primary') {

@@ -6,10 +6,10 @@ export const HISTOIRE_PROTOCOL_VERSION = 1
 export const HISTOIRE_DESCRIPTOR_VERSION = 1
 
 /** Finite request registry; no arbitrary plugin/code/URL execution. */
-export const HISTOIRE_BRIDGE_COMMANDS = ['catalog.list', 'catalog.getStory', 'catalog.search', 'selection.select', 'state.get', 'state.patch', 'state.reset', 'settings.update', 'events.clear', 'docs.get', 'source.get', 'tests.collect', 'tests.run', 'tests.cancel', 'openInEditor', 'subscriptions.add', 'subscriptions.remove', 'view.sync', 'controls.configure', 'controls.preset', 'channel.post'] as const
+export const HISTOIRE_BRIDGE_COMMANDS = ['catalog.list', 'catalog.getStory', 'catalog.search', 'selection.select', 'state.get', 'state.patch', 'state.reset', 'settings.update', 'events.clear', 'docs.get', 'source.get', 'tests.collect', 'tests.run', 'tests.cancel', 'openInEditor', 'subscriptions.add', 'subscriptions.remove', 'view.sync', 'controls.configure', 'controls.preset', 'channel.post', 'plugin.post'] as const
 
 /** Finite publication registry. */
-export const HISTOIRE_BRIDGE_EVENTS = ['catalog.changed', 'content.changed', 'selection.changed', 'state.changed', 'settings.changed', 'events.appended', 'readiness.changed', 'layout.changed', 'tests.progress', 'source.disconnected', 'overlay.open', 'overlay.update', 'overlay.close', 'overlay.result', 'controls.height', 'focus.changed', 'channel.message'] as const
+export const HISTOIRE_BRIDGE_EVENTS = ['catalog.changed', 'content.changed', 'selection.changed', 'state.changed', 'settings.changed', 'events.appended', 'readiness.changed', 'layout.changed', 'tests.progress', 'source.disconnected', 'overlay.open', 'overlay.update', 'overlay.close', 'overlay.result', 'controls.height', 'focus.changed', 'channel.message', 'plugin.message'] as const
 
 /** Validated method intent. */
 export type HistoireBridgeCommand = typeof HISTOIRE_BRIDGE_COMMANDS[number]

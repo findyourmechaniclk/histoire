@@ -1,4 +1,5 @@
 import type { HistoireHostChannelPayload } from '../channels.js'
+import type { HistoirePluginChannelPayload } from '../plugin-channels.js'
 import type { HistoireControlsAppearanceMessage, HistoireControlsOverlayMessage, HistoireControlsOverlayRefreshMessage, HistoireControlsOverlayResultMessage } from './controls.js'
 import type {
   HistoireCollectTestsPayload,
@@ -49,6 +50,18 @@ export interface HistoireHostChannelPreviewMessage extends HistoireStoryScopedMe
   channel: HistoireHostChannelPayload
 }
 
+/**
+ * Plugin channel traffic shares the application-data discriminator, and with it the sandbox
+ * source, origin and document guards, but carries a `plugin` body instead of a channel name.
+ * Delivery follows `plugin.actorId`, never the selected variant.
+ */
+export interface HistoirePluginChannelPreviewMessage extends HistoireStoryScopedMessage {
+  /** Same finite discriminator as host channels. */
+  type: typeof HOST_CHANNEL_MESSAGE
+  /** Plugin message or runtime notice of one actor. */
+  plugin: HistoirePluginChannelPayload
+}
+
 /** Finite first-party service request, bound to exact document and target. */
 export interface HistoireRuntimeRequestMessage extends HistoireStoryScopedMessage {
   /** Service dispatcher marker. */
@@ -56,7 +69,7 @@ export interface HistoireRuntimeRequestMessage extends HistoireStoryScopedMessag
   /** Correlated request lifetime. */
   requestId: string
   /** Runtime-owned operation. */
-  command: 'state.get' | 'state.patch' | 'state.reset' | 'source.get' | 'channel.post'
+  command: 'state.get' | 'state.patch' | 'state.reset' | 'source.get' | 'channel.post' | 'plugin.post'
   /** Isolated inspection read uses the getter-safe runtime projection. */
   inspection?: true
   /** Isolated inspection authority must match the nonce host lease. */
@@ -194,6 +207,7 @@ export type HistoireTestCaseResultMessage = HistoireTestCaseResultPayload & {
 /** Every message the host posts into the preview iframe. */
 export type HistoireHostMessage =
   | HistoireHostChannelPreviewMessage
+  | HistoirePluginChannelPreviewMessage
   | HistoireControlsAppearanceMessage
   | HistoireControlsOverlayRefreshMessage
   | HistoireControlsOverlayResultMessage
@@ -209,6 +223,7 @@ export type HistoireHostMessage =
 /** Every message the preview iframe posts back to the host. */
 export type HistoirePreviewMessage =
   | HistoireHostChannelPreviewMessage
+  | HistoirePluginChannelPreviewMessage
   | HistoireControlsOverlayMessage
   | HistoireStateSyncMessage
   | HistoireSandboxReadyMessage

@@ -1,5 +1,6 @@
 import type { HistoireBridgeEvent } from './types.js'
 import { validateHostChannelPayload } from '../channels.js'
+import { validatePluginChannelPayload } from '../plugin-channels.js'
 import { validateHistoireSourceDescriptor } from './catalog.js'
 import { validateHistoireErrorData, validateHistoireTestResult } from './results.js'
 import { validateHistoireEvent, validateHistoireRuntimeSnapshot, validateHistoireStateSnapshot, validateHistoireViewports } from './snapshot.js'
@@ -106,5 +107,8 @@ export function validateBridgeEventPayload(event: HistoireBridgeEvent, value: un
   }
   else if (event === 'channel.message') {
     validateHostChannelPayload(input, true)
+  }
+  else if (event === 'plugin.message') {
+    validatePluginChannelPayload(input, true)
   }
 }

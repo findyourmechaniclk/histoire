@@ -1,5 +1,6 @@
 import type { HistoireBridgeCommand } from './types.js'
 import { validateHostChannelPayload } from '../channels.js'
+import { validatePluginChannelPayload } from '../plugin-channels.js'
 import { validateHistoireSnapshot } from './snapshot.js'
 import { HISTOIRE_BRIDGE_EVENTS } from './types.js'
 import { invalid, validateHistoireTarget, validateSettingsPatch, wireId, wireRecord } from './validation.js'
@@ -29,6 +30,7 @@ export function validateBridgePayload(command: HistoireBridgeCommand, value: unk
     'subscriptions.add': ['subscriptionId', 'streams'],
     'subscriptions.remove': ['subscriptionId'],
     'channel.post': ['name', 'type', 'data'],
+    'plugin.post': ['pluginId', 'actorId', 'type', 'data'],
     'controls.configure': ['customOnly'],
     'controls.preset': ['action', 'id', 'label'],
   }
@@ -52,6 +54,7 @@ export function validateBridgePayload(command: HistoireBridgeCommand, value: unk
     if (command === 'subscriptions.add' && (!Array.isArray(input.streams) || input.streams.some(stream => !HISTOIRE_BRIDGE_EVENTS.includes(stream)))) invalid('Invalid subscription stream')
   }
   if (command === 'channel.post') validateHostChannelPayload(input)
+  if (command === 'plugin.post') validatePluginChannelPayload(input)
   if (command === 'view.sync') validateHistoireSnapshot(value, measured)
   if (command === 'controls.configure' && typeof input.customOnly !== 'boolean') invalid('Controls presentation must be boolean')
   if (command === 'controls.preset') {

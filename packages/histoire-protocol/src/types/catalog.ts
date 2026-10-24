@@ -1,4 +1,5 @@
 import type { HistoireMatrixHint } from '../helpers/matrix.js'
+import type { HistoireFramePluginInfo } from '../plugin-channels.js'
 import type { HistoireCapabilities, HistoireTarget } from './common.js'
 import type { HistoireEmbedPolicy, HistoireSourceAssets, HistoireSourceConfig } from './source-descriptor.js'
 
@@ -134,4 +135,6 @@ export interface HistoireSourceDescriptor {
   embed?: HistoireEmbedPolicy
   /** Lazy same-book content/search inventory. */
   assets?: HistoireSourceAssets
+  /** Installed frame plugins (`{ id, apiVersion }` only); absent when the book has none. */
+  framePlugins?: readonly HistoireFramePluginInfo[]
 }
