@@ -1,6 +1,6 @@
-import { reactive, ref } from '@histoire/vendors/vue'
+import { reactive, ref, toRaw } from '@histoire/vendors/vue'
 import { describe, expect, it } from 'vitest'
-import { _toRawDeep } from '../../../../histoire-plugin-vue/src/client/app/util.js'
+import { _toRawDeep, applyStateToBindings } from '../../../../histoire-plugin-vue/src/client/app/util.js'
 import { applyVariantStateUpdate, createVariantStateSyncGuards, getVariantStateKey } from '../../../../histoire-shared/src/variant-state.js'
 
 describe('variant state sync guards', () => {
@@ -53,5 +53,38 @@ describe('_toRawDeep', () => {
         label: 'variant-local',
       },
     })
+  })
+})
+
+describe('applyStateToBindings', () => {
+  it('leaves non-plain objects referenced by story setup bindings untouched', () => {
+    class Clock {
+      ticks = 1
+    }
+    const date = new Date(2026, 0, 1)
+    const clock = new Clock()
+    const bindings = reactive({
+      now: { value: date },
+      clock,
+      state: { count: 1 },
+      readonly: {
+        get value() { return 'fixed' },
+      },
+    })
+
+    // Serialized snapshot coming back from the controls: Date and class
+    // instances lost their prototype, read-only values are plain data.
+    applyStateToBindings(bindings, {
+      now: { value: {} },
+      clock: { ticks: 5 },
+      state: { count: 2 },
+      readonly: { value: 'changed' },
+    })
+
+    expect(bindings.now.value).toBe(date)
+    expect(toRaw(bindings.clock)).toBe(clock)
+    expect(clock.ticks).toBe(1)
+    expect(bindings.state.count).toBe(2)
+    expect(bindings.readonly.value).toBe('fixed')
   })
 })

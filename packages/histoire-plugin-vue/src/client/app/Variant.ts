@@ -4,7 +4,7 @@ import { applyState } from '@histoire/shared'
 import { computed, defineComponent, getCurrentInstance, inject, onBeforeUnmount, useAttrs } from 'vue'
 import { syncVariantAutoProps } from './auto-props.js'
 import { useRenderContext } from './render-context.js'
-import { syncStateBundledAndExternal, toRawDeep } from './util.js'
+import { applyStateToBindings, syncStateBundledAndExternal, toRawDeep } from './util.js'
 
 // const logLocation = location.href.includes('__sandbox') ? '[Sandbox]' : '[Host]'
 
@@ -29,9 +29,10 @@ export default defineComponent({
       default: false,
     },
 
+    /** `undefined` when not set on the variant, so the story value applies. */
     autoPropsDisabled: {
       type: Boolean,
-      default: false,
+      default: undefined,
     },
 
     setupApp: {
@@ -57,6 +58,7 @@ export default defineComponent({
     const vm = getCurrentInstance()
     const story = inject<ComputedRef<any>>('story')
     const implicitState = inject<() => any>('implicitState')
+    const storyAutoPropsDisabled = inject<() => boolean | undefined>('storyAutoPropsDisabled', () => undefined)
     const renderContext = useRenderContext()
     let lastPropsTypesSnapshot: string
     let renderVariant: Variant
@@ -87,7 +89,8 @@ export default defineComponent({
         slots: () => vm.proxy.$slots,
         source: props.source,
         responsiveDisabled: props.responsiveDisabled,
-        autoPropsDisabled: props.autoPropsDisabled,
+        // Variant value wins in either direction, otherwise inherit the story's.
+        autoPropsDisabled: props.autoPropsDisabled ?? storyAutoPropsDisabled() ?? false,
         setupApp: props.setupApp,
         meta: props.meta,
         configReady: true,
@@ -176,7 +179,8 @@ export default defineComponent({
         && renderContext.currentVariant?.id === variant.id
 
       if (shouldSync && !renderStateSync) {
-        renderStateSync = syncStateBundledAndExternal(variant.state, implicitState())
+        // Implicit state is the story's own bindings, not a Histoire-owned copy.
+        renderStateSync = syncStateBundledAndExternal(variant.state, implicitState(), applyStateToBindings)
       }
       else if (!shouldSync && renderStateSync) {
         renderStateSync.stop()
