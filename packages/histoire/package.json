@@ -53,8 +53,8 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "build": "rimraf dist && tsc",
-    "watch": "tsc -w --sourceMap",
+    "build": "rimraf dist && tsc && vite build --config vite.runtime.config.ts",
+    "watch": "concurrently \"tsc -w --sourceMap\" \"vite build --config vite.runtime.config.ts --watch\"",
     "test": "vitest run",
     "test:tailwind:integration": "vitest run --config vitest.tailwind.config.ts",
     "test:embed:integration": "vitest run --config vitest.embed.config.ts",
@@ -139,6 +139,7 @@
     "@types/pngjs": "^6.0.5",
     "@typescript/native": "catalog:",
     "@vitest/browser-playwright": "4.1.10",
+    "concurrently": "^9.1.0",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "4.1.10"

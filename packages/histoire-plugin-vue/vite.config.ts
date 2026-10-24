@@ -47,23 +47,18 @@ export default defineConfig({
         'vue',
       ],
 
-      input: [
-        'src/client/client.ts',
-        'src/client/server.ts',
-      ],
+      input: {
+        'client/client': 'src/client/client.ts',
+        'client/server': 'src/client/server.ts',
+      },
 
       output: {
-        // manualChunks (id) {
-        //   if (id.includes('node_modules')) {
-        //     return 'vendor'
-        //   }
-        // },
         entryFileNames: '[name].js',
-        chunkFileNames: '[name].js',
+        // Every story sandbox loads the client again: bundled, it is a couple
+        // of modules instead of one per source file. Code both entries use
+        // lands in one shared chunk, so it still has a single instance.
+        chunkFileNames: 'client/chunks/[name]-[hash].js',
         assetFileNames: '[name][extname]',
-        // hoistTransitiveImports: false,
-        preserveModules: true,
-        preserveModulesRoot: 'src',
       },
       treeshake: false,
       preserveEntrySignatures: 'strict',

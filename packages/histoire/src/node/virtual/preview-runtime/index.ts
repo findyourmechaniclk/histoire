@@ -3,6 +3,7 @@ import type { PreviewRuntimePreambleOptions, PreviewRuntimeStoryFile } from './p
 import { randomUUID } from 'node:crypto'
 import { createRequire } from 'node:module'
 import { hasProjectVitest } from '../../util/has-vitest.js'
+import { resolveBrowserRuntimeEntry } from '../../util/resolve-browser-runtime.js'
 import { resolveHistoireAppBundledDir } from '../../util/resolve-histoire-app.js'
 import { resolveHistoireSharedEntry } from '../../util/resolve-histoire-shared.js'
 import { tryResolveVitestModule } from '../../util/resolve-vitest-package.js'
@@ -144,9 +145,8 @@ export function getRuntimeStoryFiles(ctx: Context): PreviewRuntimeStoryFile[] {
  */
 export function previewRuntime(ctx: Context) {
   const histoireSharedId = resolveHistoireSharedEntry()
-  // Sibling virtual modules, resolved from this file's directory.
-  const variantTestSessionId = require.resolve('../variant-test-session/index.js')
-  const staticMockRuntimeId = require.resolve('../vitest-static-mock-runtime/index.js')
+  const variantTestSessionId = resolveBrowserRuntimeEntry('variant-test-session')
+  const staticMockRuntimeId = resolveBrowserRuntimeEntry('vitest-static-mock-runtime')
   const hasVitest = hasProjectVitest(ctx.root)
   const vitestSpyId = tryResolveVitestModule(ctx.root, '@vitest/spy')
   const vitestMockerBrowserId = tryResolveVitestModule(ctx.root, '@vitest/mocker/browser')
