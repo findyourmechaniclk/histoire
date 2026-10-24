@@ -20,6 +20,15 @@ async function sizes(page: any) {
   }))
 }
 
+/**
+ * Scopes runtime queries to the displayed variant. Automatic test collection
+ * briefly mounts an offscreen copy of the same variant in the interactive
+ * document, so document-wide role queries can match two buttons.
+ */
+function runtimeContent(runtime: any) {
+  return runtime.locator('[data-histoire-runtime-content]')
+}
+
 /** Select through actual toolbar; no injected preference can replace menu wiring proof. */
 async function autoFit(page: any) {
   const option = page.getByRole('button', { name: 'Auto fit content', exact: true })
@@ -51,12 +60,12 @@ describe('content-sized workbench browser acceptance', () => {
       const iframe = first.locator('iframe')
       const runtime = await (await iframe.elementHandle())!.contentFrame()
       const documentId = await runtime!.evaluate(() => (window as any).__HST_PREVIEW_DOCUMENT_ID__)
-      await runtime!.getByRole('button', { name: 'Count 0', exact: true }).click()
-      await runtime!.getByRole('button', { name: 'Toggle size', exact: true }).click()
+      await runtimeContent(runtime).getByRole('button', { name: 'Count 0', exact: true }).click()
+      await runtimeContent(runtime).getByRole('button', { name: 'Toggle size', exact: true }).click()
       await expect.poll(() => sizes(page)).toEqual([{ ...expected[0], width: 240, height: 150, viewport: [240, 150] }, ...expected.slice(1)])
-      await runtime!.getByRole('button', { name: 'Toggle size', exact: true }).click()
+      await runtimeContent(runtime).getByRole('button', { name: 'Toggle size', exact: true }).click()
       await expect.poll(() => sizes(page)).toEqual(expected)
-      expect(await runtime!.getByRole('button', { name: 'Count 1', exact: true }).count()).toBe(1)
+      expect(await runtimeContent(runtime).getByRole('button', { name: 'Count 1', exact: true }).count()).toBe(1)
       expect(await runtime!.evaluate(() => (window as any).__HST_PREVIEW_DOCUMENT_ID__)).toBe(documentId)
       await page.screenshot({ path: '/tmp/histoire-content-grid.png' })
 
@@ -121,7 +130,7 @@ describe('content-sized workbench browser acceptance', () => {
       const first = page.locator('.histoire-canvas-frame').filter({ has: page.getByRole('button', { name: 'First', exact: true }) })
       const second = page.locator('.histoire-canvas-frame').filter({ has: page.getByRole('button', { name: 'Second', exact: true }) })
       const firstRuntime = await (await first.locator('iframe').elementHandle())!.contentFrame()
-      await firstRuntime!.getByRole('button', { name: 'Toggle size', exact: true }).click()
+      await runtimeContent(firstRuntime).getByRole('button', { name: 'Toggle size', exact: true }).click()
       await expect.poll(async () => (await sizes(page))[0].width).toBe(240)
       await page.evaluate(() => {
         ;(window as any).retiredContentDocument = document.querySelector<HTMLIFrameElement>('.histoire-canvas-frame.is-selected iframe')?.contentDocument
