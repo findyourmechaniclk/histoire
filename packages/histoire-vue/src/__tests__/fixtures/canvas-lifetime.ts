@@ -1,4 +1,4 @@
-import type { CanvasStore } from '../../../../histoire-app/src/app/stores/canvas.js'
+import type { CanvasArrangement, CanvasStore } from '../../../../histoire-app/src/app/stores/canvas.js'
 import { createHistoireSessionWithAdapters } from '@histoire/sdk/internal'
 import { HistoireProvider } from '@histoire/vue'
 import { flushPromises, mount } from '@vue/test-utils'
@@ -12,9 +12,17 @@ import { sourceFixture } from '../../../../histoire-sdk/src/__tests__/fixtures/s
 import { canvasRuntimeFixture } from './canvas-runtime.js'
 import { resizeObserverFixture } from './resize-observer.js'
 
+/** Extra hooks of `canvasLifetimeFixture`. */
+export interface CanvasLifetimeExtras {
+  /** Runs in the host component's setup, inside the canonical provider (extra provides). */
+  setup?: () => void
+  /** Saved canvas preferences merged over the zoom. */
+  preferences?: Record<string, unknown>
+}
+
 /** Mount genuine frame lifecycle with existing SDK transport and controlled native geometry. */
-export async function canvasLifetimeFixture(create: ReturnType<typeof vi.fn>, budget = 2, variantCount = 2, zoom = 0.5, responsiveDisabled = false) {
-  window.localStorage.setItem('_histoire-ui-canvas', JSON.stringify({ zoom }))
+export async function canvasLifetimeFixture(create: ReturnType<typeof vi.fn>, budget = 2, variantCount = 2, zoom = 0.5, responsiveDisabled = false, extras: CanvasLifetimeExtras = {}) {
+  window.localStorage.setItem('_histoire-ui-canvas', JSON.stringify({ zoom, ...extras.preferences }))
   const resize = resizeObserverFixture()
   const dimensions = { width: 1800, height: 1000 }
   vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
@@ -43,13 +51,14 @@ export async function canvasLifetimeFixture(create: ReturnType<typeof vi.fn>, bu
   })
   const matrix = createMatrixStore()
   const menu = createContextMenu()
-  const arrange = ref<'single' | 'grid' | 'list' | 'matrix'>('grid')
+  const arrange = ref<CanvasArrangement>('grid')
   const uiHidden = ref(false)
   const Host = defineComponent({
     setup() {
       provideStoryCanvasViews(createStoryCanvasViews())
       provideMatrix(matrix)
       provideContextMenu(menu)
+      extras.setup?.()
       return () => h(CanvasViewport, { arrange: arrange.value, previewBase: 'https://book.example/', frameBudget: budget, uiHidden: uiHidden.value })
     },
   })

@@ -3,6 +3,7 @@ import { waitForHistoireSelection } from '@histoire/sdk/internal'
 import { defineComponent, h, nextTick, shallowRef, watch } from 'vue'
 import { useHistoireSnapshot } from '../../composables/snapshot.js'
 import { useHistoireContext, useHistoireResource } from '../../provider/context.js'
+import { HISTOIRE_SHORTCUT_SCOPE_ATTRIBUTE } from '../../provider/plugin-shortcuts.js'
 import { HistoireDocs } from '../docs/HistoireDocs.js'
 import { HistoirePreview } from '../preview/HistoirePreview.js'
 import { HistoireVariantGrid } from '../preview/HistoireVariantGrid.js'
@@ -73,7 +74,8 @@ export const ExplorerPreview = defineComponent({
     return () => {
       const story = snapshot.value.catalog.stories.find(story => story.id === snapshot.value.selection?.storyId)
       const showingRuntime = mode.value === 'preview' || mode.value === 'grid'
-      return h('main', { 'class': 'histoire-explorer-preview', 'aria-label': 'Histoire canvas' }, [
+      // Plugin shortcut focus areas: the whole canvas, and the single-variant frame inside it.
+      return h('main', { 'class': 'histoire-explorer-preview', 'aria-label': 'Histoire canvas', [HISTOIRE_SHORTCUT_SCOPE_ATTRIBUTE]: 'canvas' }, [
         mode.value === 'docs' ? h(HistoireDocs, { key: 'docs', anchor: props.docsAnchor, onError: error => emit('error', error) }) : mode.value === 'empty' ? slots.empty?.() : null,
         showingRuntime
           ? h('div', { class: 'histoire-explorer-layout' }, [
@@ -83,7 +85,7 @@ export const ExplorerPreview = defineComponent({
             ])
           : null,
         showingRuntime && !snapshot.value.selection?.variantId && story ? h('div', { 'role': 'group', 'aria-label': 'Choose variant' }, story.variants.map(variant => h(HstButton, { 'color': 'flat', 'type': 'button', 'data-test-id': 'story-variant-list-item', 'onClick': () => void session.selection.select({ storyId: story.id, variantId: variant.id }).catch(error => emit('error', error)) }, { default: () => variant.title }))) : null,
-        props.active && !switching.value ? h(layout.value === 'grid' ? HistoireVariantGrid : HistoirePreview, { 'key': 'runtime', 'ref': primary, 'style': showingRuntime ? undefined : { position: 'absolute', inset: '0', visibility: 'hidden', pointerEvents: 'none' }, 'aria-hidden': !showingRuntime, 'onReady': () => emit('ready'), 'onError': error => emit('error', error) }) : null,
+        props.active && !switching.value ? h(layout.value === 'grid' ? HistoireVariantGrid : HistoirePreview, { 'key': 'runtime', 'ref': primary, [HISTOIRE_SHORTCUT_SCOPE_ATTRIBUTE]: showingRuntime && layout.value === 'preview' && snapshot.value.selection?.variantId ? 'frame' : undefined, 'style': showingRuntime ? undefined : { position: 'absolute', inset: '0', visibility: 'hidden', pointerEvents: 'none' }, 'aria-hidden': !showingRuntime, 'onReady': () => emit('ready'), 'onError': error => emit('error', error) }) : null,
       ])
     }
   },

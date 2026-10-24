@@ -1,10 +1,12 @@
 import type { HistoireSettingsPatch, HistoireSourceConfig } from '@histoire/protocol'
+import type { NativeToolbarGroup } from './groups.js'
 import { HstButton, HstSelect, HstSwitch, HstText } from '@histoire/controls/vue'
 import { isHistoireProjectFileOrigin } from '@histoire/protocol'
 import { canOpenHistoireTargetInEditor, getHistoireSessionDescriptor, requestHistoireOpenInEditor } from '@histoire/sdk/internal'
 import { defineComponent, h, ref, watch } from 'vue'
 import { useHistoireSnapshot } from '../../composables/snapshot.js'
 import { useHistoireContext } from '../../provider/context.js'
+import { ToolbarExtensions } from './ToolbarExtensions.js'
 
 /** Scoped preferences work without primary; runtime receives current settings when explicitly mounted. */
 export const HistoireToolbar = defineComponent({
@@ -27,6 +29,10 @@ export const HistoireToolbar = defineComponent({
       const target = snapshot.value.selection
       if (target && canOpenHistoireTargetInEditor(snapshot.value, target)) void requestHistoireOpenInEditor(session, target).catch(error => emit('error', error))
     }
+    /** Plugin items of one native group, after that group's built-ins. */
+    function plugins(group: NativeToolbarGroup) {
+      return h(ToolbarExtensions, { group, onError: (error: unknown) => emit('error', error) })
+    }
     return () => {
       const settings = snapshot.value.settings
       let config: HistoireSourceConfig | undefined
@@ -45,11 +51,16 @@ export const HistoireToolbar = defineComponent({
           const preset = config?.responsivePresets[index]
           if (preset) update({ responsiveWidth: preset.width, responsiveHeight: preset.height ?? null })
         } }),
+        plugins('viewport'),
         h(HstSelect, { 'layout': 'inline', 'aria-label': 'Background', 'modelValue': settings.backgroundColor, 'options': [...(config?.backgroundPresets.some(preset => preset.color === 'transparent') ? [] : [{ value: 'transparent', label: 'Transparent' }]), ...(config?.backgroundPresets ?? []).map(preset => ({ value: preset.color, label: preset.label }))], 'onUpdate:modelValue': (value: string) => update({ backgroundColor: value }) }),
         h(HstSwitch, { 'title': 'Checkerboard', 'modelValue': settings.checkerboard, 'onUpdate:modelValue': (value: boolean) => update({ checkerboard: value }) }),
+        plugins('background'),
         h(HstSelect, { 'layout': 'inline', 'aria-label': 'Direction', 'modelValue': settings.textDirection, 'options': [{ value: 'ltr', label: 'LTR' }, { value: 'rtl', label: 'RTL' }], 'onUpdate:modelValue': (value: 'ltr' | 'rtl') => update({ textDirection: value }) }),
         config?.theme.hideColorSchemeSwitch ? null : h(HstSelect, { 'layout': 'inline', 'aria-label': 'Appearance', 'modelValue': settings.colorScheme, 'options': ['auto', 'light', 'dark'], 'onUpdate:modelValue': (value: 'light' | 'dark' | 'auto') => update({ colorScheme: value }) }),
+        plugins('ui'),
         showEditor ? h(HstButton, { color: 'flat', type: 'button', disabled: !canOpenHistoireTargetInEditor(snapshot.value, selection), onClick: editor }, { default: () => 'Open in editor' }) : null,
+        // Items of groups without a native counterpart trail the built-ins.
+        plugins('plugins'),
       ])
     }
   },

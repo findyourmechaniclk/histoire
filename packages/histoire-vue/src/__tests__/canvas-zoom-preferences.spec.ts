@@ -221,7 +221,7 @@ describe('canvas zoom preferences', () => {
         provideMatrix(matrix)
         provideStoryCanvasViews(createStoryCanvasViews())
         return () => h(CanvasViewport, { arrange: arrange.value, previewBase: 'https://book.example/', frameBudget: 1 }, {
-          matrix: slot => h(MatrixView, { size: slot.size, contentInsets: slot.contentInsets, frameBudget: 1, previewBase: 'https://book.example/' }),
+          matrix: slot => h(MatrixView, { size: slot.size, contentInsets: slot.contentInsets, previewBase: 'https://book.example/' }),
         })
       },
     })

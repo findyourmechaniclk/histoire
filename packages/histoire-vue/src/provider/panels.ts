@@ -16,6 +16,9 @@ export interface HistoireDocsIntent {
 /** Provider reuses its snapshot observer to retire local intent without another SDK subscription. */
 export function createHistoirePanelNavigation(snapshot: HistoireSession['getSnapshot']) {
   const docs = shallowRef<HistoireDocsIntent | null>(null)
+  // Plugin navigation (`openInspectorTab`) publishes a fresh object per request so repeated
+  // requests for one tab still notify watchers.
+  const tab = shallowRef<{ id: string } | null>(null)
   let active = true
   /** Exact source and selection prevent delayed activation from claiming another provider target. */
   function current(intent: HistoireDocsIntent, value: ReturnType<HistoireSession['getSnapshot']>): boolean {
@@ -25,6 +28,12 @@ export function createHistoirePanelNavigation(snapshot: HistoireSession['getSnap
   return {
     /** Readonly reactive intent consumed only by this provider's native panels. */
     docs: shallowReadonly(docs),
+    /** Readonly reactive inspector tab request (qualified `builtin:` or plugin id). */
+    tab: shallowReadonly(tab),
+    /** Plugin navigation asks this provider's explorer panels to show one tab. */
+    requestTab(id: string): void {
+      if (active) tab.value = { id }
+    },
     /** Admit activation against its original source/target; only docs publish local panel intent. */
     showDocs(result: HistoireSearchResult, source: HistoireSourceIdentity | null): boolean {
       if (!active || !source) return false
@@ -40,11 +49,13 @@ export function createHistoirePanelNavigation(snapshot: HistoireSession['getSnap
     /** Explicit tab choice or provider session replacement owns local intent retirement. */
     clear(): void {
       docs.value = null
+      tab.value = null
     },
     /** Provider teardown cannot publish another panel activation. */
     close(): void {
       active = false
       docs.value = null
+      tab.value = null
     },
   }
 }

@@ -6,6 +6,7 @@
 @import './navigation.css';
 @import './explorer.css';
 @import './embed.css';
+@import './extensions.css';
 
 .histoire-provider {
   --histoire-background: #ffffff;

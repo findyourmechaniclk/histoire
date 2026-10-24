@@ -1,10 +1,14 @@
+import type { ExtensionHost } from '@histoire/plugin-kit'
 import type { HistoireSession } from '@histoire/sdk'
 import type { PropType } from 'vue'
 import { provideHistoireControls } from '@histoire/controls/vue'
 import { getHistoireSessionDescriptor } from '@histoire/sdk/internal'
-import { computed, defineComponent, h, onBeforeUnmount, onMounted, provide, readonly, shallowRef, toRaw, watch } from 'vue'
+import { computed, defineComponent, h, inject, markRaw, onBeforeUnmount, onMounted, provide, readonly, shallowRef, toRaw, watch } from 'vue'
+import { provideNativeWorkbenchComponents } from '../components/extensions/workbench-components.js'
 import { histoireContextKey } from './context.js'
+import { createProviderExtensions, histoireExtensionsKey, provideHistoireExtensions } from './extensions.js'
 import { createHistoirePanelNavigation } from './panels.js'
+import { bindPluginShortcuts } from './plugin-shortcuts.js'
 import { getHistoireThemeVariables } from './theme.js'
 
 /** Explicit session provider with local theme, overlay, measurement and resource ownership. */
@@ -14,6 +18,11 @@ export const HistoireProvider = defineComponent({
   props: {
     /** Caller connects/disposes this controller. */
     session: { type: Object as PropType<HistoireSession>, required: true },
+    /**
+     * Caller-owned extension host whose contributions native parts render. Never disposed by the
+     * provider, kept across session replacement; nested providers without it reuse the nearest one.
+     */
+    extensions: { type: Object as PropType<ExtensionHost>, default: undefined },
   },
   emits: {
     /** Async child mount/cleanup failures; never dropped as unhandled rejections. */
@@ -26,6 +35,12 @@ export const HistoireProvider = defineComponent({
     const snapshot = shallowRef(props.session.getSnapshot())
     const panels = createHistoirePanelNavigation(() => toRaw(props.session).getSnapshot())
     const generation = shallowRef(0)
+    // Hosts are plain objects with private state; Vue must never proxy them.
+    const ownHost = () => props.extensions ? markRaw(toRaw(props.extensions)) : undefined
+    const plugins = createProviderExtensions({ own: ownHost, inherited: inject(histoireExtensionsKey, undefined), session: () => toRaw(props.session), panels })
+    provideHistoireExtensions(() => plugins.state.host)
+    // State and pane components for plugin views; an enclosing workbench's own ones win.
+    provideNativeWorkbenchComponents()
     const systemDark = shallowRef(false)
     const dark = computed(() => snapshot.value.settings.colorScheme === 'dark' || (snapshot.value.settings.colorScheme === 'auto' && systemDark.value))
     const paletteRevision = computed(() => snapshot.value.status === 'ready' && snapshot.value.source ? JSON.stringify([snapshot.value.source.epoch, snapshot.value.source.revision]) : '')
@@ -38,11 +53,13 @@ export const HistoireProvider = defineComponent({
     /** One subscription publishes both canonical snapshot and local navigation retirement. */
     function synchronize(value: ReturnType<HistoireSession['getSnapshot']>) {
       panels.synchronize(value)
+      plugins.synchronize(value)
       snapshot.value = value
     }
     let stop = props.session.subscribe(synchronize)
     let removed = false
     let stopMedia: (() => void) | undefined
+    let stopShortcuts: (() => void) | undefined
 
     /** Observe teardown failures and report child errors through live provider boundary. */
     function reportError(error: unknown) {
@@ -79,6 +96,7 @@ export const HistoireProvider = defineComponent({
       panels,
       own,
       reportError,
+      extensions: plugins.state,
     }
     provide(histoireContextKey, context)
     provideHistoireControls({ overlay, dark })
@@ -86,6 +104,7 @@ export const HistoireProvider = defineComponent({
       for (const dispose of Array.from(resources)) dispose()
       stop()
       panels.clear()
+      plugins.replace()
       snapshot.value = session.getSnapshot()
       stop = session.subscribe(synchronize)
       generation.value++
@@ -129,6 +148,8 @@ export const HistoireProvider = defineComponent({
 
     onMounted(() => {
       if (!root.value) return
+      // Not a session resource: session replacement keeps the provider root and its keys.
+      stopShortcuts = bindPluginShortcuts(root.value, plugins.state, reportError)
       const media = root.value.ownerDocument.defaultView?.matchMedia?.('(prefers-color-scheme: dark)')
       if (media) {
         systemDark.value = media.matches
@@ -141,9 +162,11 @@ export const HistoireProvider = defineComponent({
       removed = true
       stopRootSize()
       stopMedia?.()
+      stopShortcuts?.()
       stop()
       for (const dispose of Array.from(resources)) dispose()
       panels.close()
+      plugins.close()
     })
     return () => h('div', {
       ...attrs,

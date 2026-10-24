@@ -54,7 +54,7 @@ async function canvasFixture(zoom: number | 'fit' = 'fit', initialHeight = 900, 
       provideStoryCanvasViews(createStoryCanvasViews())
       return () => h(CanvasViewport, { arrange: arrange.value, previewBase: 'https://book.example/', frameBudget: 1, inspectorWidth: inspectorWidth.value }, {
         header: customHeader ? () => h('div', 'Custom header') : undefined,
-        matrix: slot => h(MatrixView, { size: slot.size, contentInsets: slot.contentInsets, frameBudget: 1, previewBase: 'https://book.example/' }),
+        matrix: slot => h(MatrixView, { size: slot.size, contentInsets: slot.contentInsets, previewBase: 'https://book.example/' }),
       })
     },
   })

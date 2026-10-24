@@ -1,5 +1,6 @@
 import type { HistoireSession } from '@histoire/sdk'
 import type { InjectionKey, Ref, ShallowRef } from 'vue'
+import type { HistoireProviderExtensions } from './extensions.js'
 import type { createHistoirePanelNavigation } from './panels.js'
 import { inject, onScopeDispose } from 'vue'
 
@@ -27,6 +28,8 @@ export interface HistoireVueContext {
   own: (cleanup: () => void | Promise<void>) => () => void
   /** Report typed child failures through provider's error event. */
   reportError: (error: unknown) => void
+  /** Plugin surfaces: caller-owned host (own or inherited), surface contexts, registry reads. */
+  extensions: HistoireProviderExtensions
 }
 
 /** Each Vue tree owns its context; no active provider or controller globals. */
