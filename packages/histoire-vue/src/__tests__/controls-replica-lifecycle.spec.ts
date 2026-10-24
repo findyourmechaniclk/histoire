@@ -4,12 +4,16 @@ import { describe, expect, it, vi } from 'vitest'
 import { createEmbedControlsReplica } from '../../../histoire-app/src/embed/adapters/controls-replica.js'
 import { deferred } from '../../../histoire-sdk/src/__tests__/fixtures/session.js'
 
-/** Source-owned replica with delayed canonical acknowledgment and stale proxy mirror. */
-function replicaFixture() {
+/**
+ * Source-owned replica with delayed canonical acknowledgment and stale proxy mirror.
+ * @param hasCustomControls Collected custom controls availability of the selected story; omitted when unknown.
+ */
+function replicaFixture(hasCustomControls?: boolean) {
   const operation = deferred<HistoireStateSnapshot>()
   let closed = false
   const target = { storyId: 'story', variantId: 'variant' }
-  const snapshot = { runtime: { status: 'ready', runtimeId: 'primary' }, selection: target, settings: createDefaultHistoireSettings(), state: { target, runtimeId: 'primary', value: { expanded: true } as Record<string, unknown> } }
+  const catalog = { stories: [{ id: 'story', ...(hasCustomControls === undefined ? {} : { hasCustomControls }) }, { id: 'custom', hasCustomControls: true }] }
+  const snapshot = { runtime: { status: 'ready', runtimeId: 'primary' }, selection: target, settings: createDefaultHistoireSettings(), catalog, state: { target, runtimeId: 'primary', value: { expanded: true } as Record<string, unknown> } }
   const getSnapshot = vi.fn(() => {
     if (closed) throw new Error('closed parent')
     return snapshot
@@ -19,22 +23,26 @@ function replicaFixture() {
   vi.stubGlobal('ResizeObserver', class { observe() {} disconnect() {} })
   vi.stubGlobal('matchMedia', () => ({ matches: false }))
   const post = vi.fn()
+  const changed = vi.fn()
   let synchronize = () => {}
   const context = { container, descriptor: { config: { theme: {} } }, session: { getSnapshot, subscribe: (listener: () => void) => {
     synchronize = listener
     return () => {}
   }, state: { patch: vi.fn(() => operation.promise) } }, bridge: { getOwner: () => ({ mountId: 'controls' }), post } }
-  const replica = createEmbedControlsReplica(context as any, () => {})
-  const iframe = container.querySelector('iframe')!
-  vi.spyOn(iframe, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 0, 420, 220))
-  Object.defineProperties(iframe, { clientWidth: { get: () => 420 }, clientHeight: { get: () => 220 } })
-  const documentId = new URL(iframe.src).searchParams.get('documentId')
-  const childPost = vi.spyOn(iframe.contentWindow!, 'postMessage').mockImplementation(() => {})
+  const replica = createEmbedControlsReplica(context as any, changed)
+  // Stories collected without custom controls get no replica document.
+  const iframe = container.querySelector('iframe')
+  if (iframe) {
+    vi.spyOn(iframe, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 0, 420, 220))
+    Object.defineProperties(iframe, { clientWidth: { get: () => 420 }, clientHeight: { get: () => 220 } })
+  }
+  const documentId = iframe && new URL(iframe.src).searchParams.get('documentId')
+  const childPost = iframe ? vi.spyOn(iframe.contentWindow!, 'postMessage').mockImplementation(() => {}) : vi.fn()
   /** Sandbox messages carry exact frame/origin/document/target ownership. */
   function dispatch(type: string, extra = {}) {
-    window.dispatchEvent(new MessageEvent('message', { source: iframe.contentWindow!, origin: location.origin, data: { __histoire: true, type, documentId, ...target, ...extra } }))
+    window.dispatchEvent(new MessageEvent('message', { source: iframe!.contentWindow!, origin: location.origin, data: { __histoire: true, type, documentId, ...target, ...extra } }))
   }
-  return { operation, snapshot, getSnapshot, context, replica, post, childPost, dispatch, synchronize: () => synchronize(), closeParent: () => {
+  return { operation, snapshot, getSnapshot, context, replica, post, changed, childPost, dispatch, synchronize: () => synchronize(), closeParent: () => {
     closed = true
   }, close() {
     replica.close()
@@ -44,6 +52,21 @@ function replicaFixture() {
 }
 
 describe('source controls replica acquisition', () => {
+  it('skips the replica document for stories collected without custom controls', async () => {
+    const fixture = replicaFixture(false)
+    try {
+      await fixture.replica.ready
+      expect(fixture.context.container.querySelector('iframe')).toBeNull()
+      expect(fixture.changed).toHaveBeenLastCalledWith(false, 0)
+      expect(fixture.post).toHaveBeenCalledWith('controls.height', { height: 0, hasControls: false }, { runtimeId: 'primary', target: fixture.snapshot.selection })
+      // Selecting a story with custom controls boots its replica again.
+      fixture.snapshot.selection = { storyId: 'custom', variantId: 'variant' }
+      fixture.synchronize()
+      expect(new URL(fixture.context.container.querySelector('iframe')!.src).searchParams.get('storyId')).toBe('custom')
+    }
+    finally { fixture.close() }
+  })
+
   it('keeps newer local typing while older canonical acknowledgments arrive', async () => {
     const fixture = replicaFixture()
     const second = deferred<HistoireStateSnapshot>()

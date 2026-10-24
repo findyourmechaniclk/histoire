@@ -1,6 +1,6 @@
 import type { ServerStory, ServerStoryFile, ServerVariant } from '@histoire/shared'
 import type { PropType } from 'vue'
-import { defineComponent, inject, onMounted, provide, useAttrs } from 'vue'
+import { defineComponent, inject, onMounted, provide, useAttrs, useSlots } from 'vue'
 import { autoStubComponents } from './stub'
 
 export default defineComponent({
@@ -74,6 +74,8 @@ export default defineComponent({
       docsOnly: props.docsOnly,
       meta: props.meta,
       variants: [],
+      // Variants with their own `#controls` slot set it too.
+      hasCustomControls: !!useSlots().controls,
     }
     const addStory = inject('addStory', null)
     addStory?.(story)

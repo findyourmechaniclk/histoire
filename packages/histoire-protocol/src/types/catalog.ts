@@ -60,6 +60,8 @@ export interface HistoireCatalogStory {
   layoutExplicit?: boolean
   /** Finite prop domains for two-axis preview matrices. */
   matrix?: HistoireMatrixHint
+  /** Whether collection saw a `controls` slot; absent when the support plugin can't tell. */
+  hasCustomControls?: boolean
   /** Support plugin identity without loader. */
   supportPluginId?: string
   /** SHA-256 of canonical story source and executable metadata; absent means conservative reload. */

@@ -188,6 +188,11 @@ export interface ServerStory {
   docsOnly?: boolean
   docsText?: string
   meta?: StoryMeta
+  /**
+   * Whether the story or one of its variants declares a `controls` slot.
+   * Set by support plugins that know at collection; absent when unknown.
+   */
+  hasCustomControls?: boolean
 }
 
 export interface ServerVariant {
