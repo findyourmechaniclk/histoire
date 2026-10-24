@@ -1,70 +1,28 @@
 import type { CanvasFrameLayout } from '../components/canvas/frame-layout.js'
 import type { CanvasMeasureState } from '../components/canvas/measure-controller.js'
-import type { CanvasFitOptions, CanvasPoint, CanvasRect, CanvasSize } from '../components/canvas/pan/usePanZoom.js'
+import type { CanvasPoint, CanvasSize } from '../components/canvas/pan/usePanZoom.js'
 import type { SingleViewportState } from '../components/canvas/single-viewport.js'
 import type { SingleZoomListener } from '../components/canvas/single-zoom.js'
 import type { CanvasBackground } from '../util/background.js'
+import type { CanvasArrangement } from './canvas-arrangement.js'
+import type { CanvasContentInsets, CanvasFitTarget, CanvasPreferences, CanvasStorage, CanvasViewSnapshot, CanvasZoom } from './canvas-types.js'
 import { reactive } from 'vue'
 import { createCanvasContentSizes } from '../components/canvas/content-sizes.js'
 import { canvasContentRect, clampZoom, fitCanvas, zoomAroundPoint } from '../components/canvas/pan/usePanZoom.js'
 import { fitSingleViewport } from '../components/canvas/single-zoom.js'
-import { readCanvasPreferences, saveCanvasPreferences } from './canvas-preferences.js'
+import { arrangementZoom, readCanvasPreferences, saveCanvasPreferences } from './canvas-preferences.js'
 
+export type { CanvasArrangement } from './canvas-arrangement.js'
 export { getCanvasStorage } from './canvas-preferences.js'
-
-/** Persistent canvas pointer mode. */
-/** `comment` exists only in dev with comments available and is never persisted. */
-export type CanvasTool = 'select' | 'pan' | 'measure' | 'comment'
-/** Canvas arrangements retain local zoom preferences; Matrix resets to Fit on entry. */
-export type CanvasArrangement = 'single' | 'grid' | 'list' | 'matrix'
-/** Logical scale, whole-canvas fit, or List selection fitting. */
-export type CanvasZoom = number | 'fit' | 'selection'
-
-/** Frame bounds can resolve fixed-pixel labels at each candidate scale. */
-export type CanvasFitTarget = CanvasRect | ((zoom: number) => CanvasRect)
-
-/** Locally persisted zoom preference for every available canvas arrangement. */
-export type CanvasZoomByArrange = Record<CanvasArrangement, CanvasZoom>
-
-/** Session-owned view state saved separately for each story. */
-export interface CanvasViewSnapshot {
-  /** Requested arrangement, before any temporary Matrix fallback. */
-  arrangement: CanvasArrangement
-  /** Independent zoom preference for each arrangement. */
-  zoomByArrange: CanvasZoomByArrange
-  /** Canvas translation in viewport CSS pixels. */
-  panOffset: CanvasPoint
-}
-
-/** Persistent canvas preferences; per-story transforms use workbench memory. */
-export interface CanvasPreferences {
-  /** Fit each runtime's intrinsic content rather than a shared viewport. */
-  autoFitContent: boolean
-  /** Independent zoom preference for each arrangement. */
-  zoomByArrange: CanvasZoomByArrange
-  /** Persistent pointer mode. */
-  tool: CanvasTool
-  /** Frame-only CSS background. */
-  frameBackground: string
-}
-
-/** Optional local-storage port avoids shared mutable state and browser-only imports. */
-export interface CanvasStorage {
-  /** Read saved preference JSON. */
-  getItem: (key: string) => string | null
-  /** Write saved preference JSON. */
-  setItem: (key: string, value: string) => void
-}
-
-/** Fixed canvas chrome belongs to layout geometry, never saved user preferences. */
-export type CanvasContentInsets = Pick<CanvasFitOptions, 'topInset' | 'bottomInset'>
+export type { BuiltinCanvasTool, CanvasContentInsets, CanvasFitTarget, CanvasPreferences, CanvasStorage, CanvasTool, CanvasViewSnapshot, CanvasZoom, CanvasZoomByArrange } from './canvas-types.js'
 
 /** Create independent canvas state; nearest shell provides instance to its tools. */
 export function createCanvasStore(options: { storage?: CanvasStorage, singleViewport?: SingleViewportState } = {}) {
   const preferences = readCanvasPreferences(options.storage)
   const state = reactive({ ...preferences, singleViewport: options.singleViewport ?? { mode: 'responsive' as const }, singleViewportSize: { width: 1, height: 1 }, singleViewportDraft: null as CanvasSize | null, arrangement: 'grid' as CanvasArrangement, zoom: preferences.zoomByArrange.grid, effectiveZoom: typeof preferences.zoomByArrange.grid === 'number' ? preferences.zoomByArrange.grid : 1, panOffset: { x: 32, y: 32 }, selectedFrame: null as string | null, viewport: { width: 0, height: 0 }, bounds: { x: 0, y: 0, width: 0, height: 0 }, inspectorWidth: 0, contentInsets: { topInset: 0, bottomInset: 0 }, frameBackgrounds: {} as Record<string, CanvasBackground>, panning: false, measure: null as CanvasMeasureState | null })
   let selectionBounds: CanvasFitTarget | undefined
-  let fitBounds: CanvasFitTarget = state.bounds
+  // Absent while the active view has no layout (plugin views may opt out of fitting).
+  let fitBounds: CanvasFitTarget | undefined = state.bounds
   let singleArea: CanvasSize = { width: 0, height: 0 }
   const singleZoomListeners = new Set<SingleZoomListener>()
   /** Notify native scroll ownership before replacing the rendered scale. */
@@ -89,7 +47,7 @@ export function createCanvasStore(options: { storage?: CanvasStorage, singleView
     state.arrangement = arrangement
     selectionBounds = undefined
     if (arrangement === 'matrix') return resetZoom()
-    const zoom = state.zoomByArrange[arrangement]
+    const zoom = arrangementZoom(state.zoomByArrange, arrangement)
     state.zoom = zoom
     if (typeof zoom === 'number') state.effectiveZoom = zoom
     else if (arrangement === 'single') fit()
@@ -103,7 +61,7 @@ export function createCanvasStore(options: { storage?: CanvasStorage, singleView
       return save()
     }
     // Setup runs before ResizeObserver measures; fitting an empty viewport would lock at 10%.
-    const transform = frameTransform(fitBounds)
+    const transform = fitBounds && frameTransform(fitBounds)
     if (!transform) return save()
     // Static bounds converge through reactive relayout, so a dead band stops it early. Zoom-dependent
     // bounds are already solved at a fixed point; applying them exactly keeps screen-space chrome in view.
@@ -132,8 +90,8 @@ export function createCanvasStore(options: { storage?: CanvasStorage, singleView
     state.singleViewportSize = size
     if (state.arrangement === 'single' && state.zoom === 'fit') fit()
   }
-  /** Geometry comes from canvas adapter, never transformed DOM dimensions; bounds may depend on zoom. */
-  function setGeometry(viewport: CanvasSize, bounds: CanvasFitTarget, inspectorWidth = 0, insets: CanvasContentInsets = {}, selectedBounds?: CanvasFitTarget) {
+  /** Geometry comes from canvas adapter, never transformed DOM dimensions; bounds may depend on zoom. Without bounds, Fit keeps the camera. */
+  function setGeometry(viewport: CanvasSize, bounds: CanvasFitTarget | undefined, inspectorWidth = 0, insets: CanvasContentInsets = {}, selectedBounds?: CanvasFitTarget) {
     // Every measurement replaces ownership; an absent selection retires old frame bounds.
     selectionBounds = selectedBounds
     const nextInsets = { topInset: Math.max(0, insets.topInset ?? 0), bottomInset: Math.max(0, insets.bottomInset ?? 0) }
@@ -141,7 +99,7 @@ export function createCanvasStore(options: { storage?: CanvasStorage, singleView
     if (state.arrangement !== 'single' && typeof state.zoom === 'number' && nextInsets.topInset !== state.contentInsets.topInset) state.panOffset = { x: state.panOffset.x, y: state.panOffset.y + nextInsets.topInset - state.contentInsets.topInset }
     state.viewport = viewport
     fitBounds = bounds
-    state.bounds = typeof bounds === 'function' ? bounds(state.effectiveZoom) : bounds
+    state.bounds = typeof bounds === 'function' ? bounds(state.effectiveZoom) : bounds ?? { x: 0, y: 0, width: 0, height: 0 }
     state.inspectorWidth = inspectorWidth
     state.contentInsets = nextInsets
     if (state.zoom === 'fit') fit()
@@ -172,7 +130,7 @@ export function createCanvasStore(options: { storage?: CanvasStorage, singleView
   function restoreView(snapshot: CanvasViewSnapshot) {
     state.zoomByArrange = { ...snapshot.zoomByArrange }
     state.arrangement = snapshot.arrangement
-    state.zoom = state.zoomByArrange[snapshot.arrangement]
+    state.zoom = arrangementZoom(state.zoomByArrange, snapshot.arrangement)
     selectionBounds = undefined
     if (state.arrangement === 'matrix') resetZoom()
     if (typeof state.zoom === 'number') {

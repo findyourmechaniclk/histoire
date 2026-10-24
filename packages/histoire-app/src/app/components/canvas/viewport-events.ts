@@ -2,6 +2,7 @@ import type { CanvasFrames } from '../../composables/canvas-settings.js'
 import type { CanvasStore } from '../../stores/canvas.js'
 import type { CanvasFrameLayout } from './frame-layout.js'
 import type { usePointerPan } from './pan/usePointerPan.js'
+import { isCanvasViewContent } from './views/view-input.js'
 
 /** Frame pointer coordinates emitted to the comment placement flow. */
 export interface CanvasFramePointerTarget {
@@ -63,6 +64,8 @@ export function createCanvasViewportEvents(options: {
   /** Give canvas background focus without stealing interactive control focus. */
   function pointerDown(event: PointerEvent): void {
     const target = event.target as Element | null
+    // Custom view content owns presses that are not pan gestures (those stop in `viewPointer`).
+    if (isCanvasViewContent(target)) return
     if (!target?.closest('button, a[href], input, textarea, select, summary, [contenteditable], [role="button"]')) options.getViewport()?.focus({ preventScroll: true })
     options.pointer.onPointerDown(event)
   }
@@ -81,5 +84,21 @@ export function createCanvasViewportEvents(options: {
     }
   }
 
-  return { onWheel, openCanvasMenu, pointerDown, framePointer }
+  /**
+   * Pan gestures (Pan tool, held Space, middle button) over custom view content pan the canvas
+   * and stop before the view sees them, as story frames stop receiving input while panning.
+   */
+  function viewPointer(event: PointerEvent): void {
+    if (options.getCommentMode() || !isCanvasViewContent(event.target) || !options.pointer.onPointerDown(event)) return
+    event.stopPropagation()
+    options.getViewport()?.focus({ preventScroll: true })
+  }
+
+  /** Capture-phase press handling: comment placement first, then custom view pan gestures. */
+  function capturePointer(event: PointerEvent): void {
+    framePointer(event)
+    viewPointer(event)
+  }
+
+  return { onWheel, openCanvasMenu, pointerDown, framePointer, capturePointer }
 }

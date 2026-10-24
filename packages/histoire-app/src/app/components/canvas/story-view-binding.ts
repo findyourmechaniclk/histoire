@@ -142,6 +142,8 @@ export function bindStoryCanvasView(options: StoryCanvasViewBindingOptions) {
     canvas.zoomByArrange.grid,
     canvas.zoomByArrange.list,
     canvas.zoomByArrange.matrix,
+    // Plugin views have no fixed key; the active zoom covers them.
+    canvas.zoom,
     canvas.panOffset.x,
     canvas.panOffset.y,
     options.getArrangement(),

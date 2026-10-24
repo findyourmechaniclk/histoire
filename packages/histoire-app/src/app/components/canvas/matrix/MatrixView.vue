@@ -10,6 +10,7 @@ import { useMatrixStore } from '../../../stores/matrix.js'
 import { filterMatrixValues } from '../../../util/matrix.js'
 import { canvasContentKey } from '../content-sizes.js'
 import { useCanvasFrameAdmission } from '../frame-admission.js'
+import { useCanvasFrameLedger } from '../frames/frame-ledger.js'
 import { canvasContentRect, clientToCanvas } from '../pan/usePanZoom.js'
 import { layoutMatrixFrames, MATRIX_COLUMN_HEADER, MATRIX_ROW_GUTTER, MATRIX_TOP_INSET, matrixLayoutBounds } from './matrix-layout.js'
 import { watchMatrixFrameSelection } from './matrix-selection.js'
@@ -24,8 +25,6 @@ const props = defineProps<{
   cols?: string
   /** Logical dimensions shared with normal canvas previews. */
   size: { width: number, height: number }
-  /** Budget includes canonical hidden preview plus admitted cells. */
-  frameBudget: number
   /** Absolute first-party preview source URL. */
   previewBase: string
   /** Measured fixed chrome; matrix adds its own axis-control reservation once. */
@@ -59,6 +58,8 @@ function layoutFrames(zoom = canvas.effectiveZoom) {
 const frames = computed(() => layoutFrames())
 const topInset = computed(() => Math.max(props.uiHidden ? MATRIX_COLUMN_HEADER : MATRIX_TOP_INSET, props.contentInsets?.topInset ?? 0))
 const insets = computed(() => ({ topInset: topInset.value, bottomInset: props.contentInsets?.bottomInset ?? 0 }))
+// Viewport ledger already holds the hidden canonical primary's slot.
+const ledger = useCanvasFrameLedger()
 const live = useCanvasFrameAdmission({
   frames: () => frames.value,
   viewport: () => {
@@ -66,7 +67,7 @@ const live = useCanvasFrameAdmission({
     const origin = clientToCanvas(content, canvas.effectiveZoom, canvas.panOffset)
     return { ...origin, width: content.width / canvas.effectiveZoom, height: content.height / canvas.effectiveZoom }
   },
-  budget: () => Math.max(0, props.frameBudget - 1),
+  budget: () => ledger.available.value,
   selected: () => matrix.selectedCell.value?.key ?? null,
   moving: () => canvas.panning,
   context: () => JSON.stringify([story.value?.id, baseVariant.value, matrix.cells.value.map(cell => cell.key), props.size.width, props.size.height, canvas.viewport.width, canvas.viewport.height, canvas.inspectorWidth]),

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { HistoireCatalogStory, HistoireSession } from '@histoire/sdk'
+import type { CanvasArrangement } from '../../stores/canvas-arrangement.js'
 import { useHistoireSession, useHistoireSnapshot } from '@histoire/vue'
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
+import { useHistoireContext } from '@histoire/vue/internal'
+import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { createCanvasFrames, provideCanvas, provideCanvasPointerPan } from '../../composables/canvas-settings.js'
 import { useContextMenu } from '../../composables/context-menu.js'
 import { createCanvasStore, getCanvasStorage } from '../../stores/canvas.js'
@@ -9,6 +11,7 @@ import { useUiSettingsStore } from '../../stores/settings.js'
 import { useStoryCanvasViews } from '../../stores/story-canvas-views.js'
 import { getSearchFrameState } from '../panes/search/frame-navigation.js'
 import WorkbenchEmptyState from '../shell/WorkbenchEmptyState.vue'
+import { useCanvasExtensions } from './canvas-extensions.js'
 import { createCanvasHeaderEditor } from './canvas-header-editor.js'
 import CanvasFrame from './CanvasFrame.vue'
 import CanvasHeader from './CanvasHeader.vue'
@@ -16,15 +19,16 @@ import CanvasMatrixPrimary from './CanvasMatrixPrimary.vue'
 import CanvasSingleVariant from './CanvasSingleVariant.vue'
 import CanvasStatus from './CanvasStatus.vue'
 import CollectErrorCard from './CollectErrorCard.vue'
-import { useCanvasFrameAdmission } from './frame-admission.js'
+import { createCanvasFrameActivation } from './frame-activation.js'
 import { watchCanvasFrameFocus } from './frame-focus.js'
 import { bindCanvasFrameInteractions } from './frame-interactions.js'
-import { canvasFrameBounds, type CanvasFrameLayout, keepFrameLayouts, layoutCanvasFrames, rankCanvasStartupFrames, visibleCanvasFrames } from './frame-layout.js'
+import { canvasFrameBounds, type CanvasFrameLayout, keepFrameLayouts, layoutCanvasFrames, visibleCanvasFrames } from './frame-layout.js'
 import { watchCanvasListDefaultSelection, watchCanvasSelectedSession } from './frame-selection.js'
-import { provideCanvasStartupCoordinator } from './frame-startup-coordinator.js'
 import { createCanvasFrameState } from './frame-state.js'
 import FrameGrid from './FrameGrid.vue'
 import FrameList from './FrameList.vue'
+import { useViewportFrames } from './frames/viewport-frames.js'
+import CanvasPluginLayers from './overlays/CanvasPluginLayers.vue'
 import { type CanvasSize, clientToCanvas } from './pan/usePanZoom.js'
 import { selectedSingleFrame, singleViewportSettings } from './single-viewport.js'
 import { bindStoryCanvasView } from './story-view-binding.js'
@@ -34,6 +38,8 @@ import { useCanvasPan } from './useCanvasPan.js'
 import { useCanvasVariantSize } from './useCanvasVariantSize.js'
 import { useSingleVariantGeometry } from './useSingleVariantGeometry.js'
 import { createCanvasViewportEvents } from './viewport-events.js'
+import { canvasViewFitBounds, leasedFrameFor, useCanvasViewContext, useCanvasViewDescriptor } from './views/canvas-views.js'
+import PluginCanvasView from './views/PluginCanvasView.vue'
 
 const props = withDefaults(defineProps<{
   /** Absolute source base supplied by standalone adapter. */
@@ -41,9 +47,9 @@ const props = withDefaults(defineProps<{
   /** Approved maximum live frames, including selected frame. */
   frameBudget: number
   /** URL arrangement provided by narrow standalone navigation adapter. */
-  arrange?: 'single' | 'grid' | 'list' | 'matrix'
+  arrange?: CanvasArrangement
   /** Arrangement resolved without an explicit URL override. */
-  baseArrange?: 'single' | 'grid' | 'list' | 'matrix'
+  baseArrange?: CanvasArrangement
   /** Whether a valid URL arrangement overrides remembered story views. */
   arrangementOverride?: boolean
   /** Floating inspector width excluded from fit geometry. */
@@ -79,6 +85,7 @@ const canvas = createCanvasStore({ singleViewport: settings?.singleViewport, sto
 const registry = createCanvasFrames(canvas)
 const frameState = createCanvasFrameState(session)
 const renderedArrange = computed(() => props.arrange)
+const activeView = useCanvasViewDescriptor(() => renderedArrange.value)
 /** Failure belongs to the hidden runtime; usable axes still take precedence in Matrix. */
 const matrixDiscoveryFailed = ref(false)
 provideCanvas(canvas, registry, frameState)
@@ -94,8 +101,9 @@ const viewBinding = bindStoryCanvasView({
 })
 const { size, frameContentSize } = useCanvasVariantSize(canvas)
 const { area: singleArea, size: singleSize, measure: measureSingle } = useSingleVariantGeometry(canvas, { settings: () => snapshot.value.settings, inspectorWidth: () => props.inspectorWidth, hidden: () => props.uiHidden, contentSize: () => canvas.autoFitContent ? frameContentSize(selectedVariantId.value) : undefined })
-/** Reuse arrangement geometry for rendering and target-zoom selection fitting. */
+/** Reuse arrangement geometry for rendering and target-zoom selection fitting; custom views lay out their own leases. */
 function layoutFrames(zoom = canvas.effectiveZoom) {
+  if (activeView.id.value) return []
   if (renderedArrange.value === 'single') {
     const variantId = selectedVariantId.value ?? (diagnostics.value.length ? cachedVariantId.value : null)
     return selectedSingleFrame(story.value, variantId, singleSize.value)
@@ -136,17 +144,18 @@ const viewportEvents = createCanvasViewportEvents({
   openMenu: (event, target) => contextMenu?.open(event, target),
   emitFramePointer: target => emit('framePointer', target),
 })
-const live = useCanvasFrameAdmission({
+const providerRoot = useHistoireContext().root
+const { live, leases } = useViewportFrames({
+  budget: () => props.frameBudget,
+  arrangement: () => renderedArrange.value,
   frames: () => frames.value,
   viewport: () => canvasViewport.value,
-  budget: () => props.frameBudget,
   selected: () => selectedFrame.value?.id ?? null,
   moving: () => canvas.panning,
   context: () => JSON.stringify([story.value?.id, renderedArrange.value, size.value.width, size.value.height, canvas.viewport.width, canvas.viewport.height, props.inspectorWidth]),
+  leases: { canonical: session, frames: registry, previewBase: () => props.previewBase, settings: () => snapshot.value.settings, root: () => providerRoot.value, menu: contextMenu },
 })
-const startupOrder = computed(() => rankCanvasStartupFrames(frames.value, [...live.value], selectedFrame.value?.id ?? null))
-provideCanvasStartupCoordinator(startupOrder)
-let iframeActivatedFrameId: string | undefined
+const viewContext = useCanvasViewContext(activeView, useCanvasExtensions({ canvas, frames: registry, viewport: () => viewport.value, leases }))
 let stopInteractions = () => {}
 let initialFocusPending = true
 const { insets: contentInsets, headerBounds, measure } = useCanvasGeometry({
@@ -157,6 +166,7 @@ const { insets: contentInsets, headerBounds, measure } = useCanvasGeometry({
   temporaryPan: () => renderedArrange.value === 'single' ? panning.value : space.held.value || canvas.panning,
   onMeasure(size, insets) {
     if (renderedArrange.value === 'single') return measureSingle(size, insets)
+    if (activeView.id.value) return canvas.setGeometry(size, canvasViewFitBounds(activeView.view.value, activeView.workbench), props.inspectorWidth, insets)
     if (renderedArrange.value === 'matrix') {
       canvas.viewport = size
       canvas.inspectorWidth = props.inspectorWidth
@@ -186,6 +196,8 @@ const { canOpenInEditor, openInEditor } = createCanvasHeaderEditor({
 const stopSelectedSession = watchCanvasSelectedSession({
   snapshot: () => snapshot.value,
   registry,
+  // Custom views publish the leased frame showing the selected variant.
+  frameFor: target => activeView.id.value ? leasedFrameFor(registry, target) : null,
   unavailable: () => diagnostics.value.length > 0 || renderedArrange.value === 'matrix',
   publish: owner => emit('selectedSession', owner),
 })
@@ -203,21 +215,7 @@ function resizeSingleViewport(size: CanvasSize): void {
 
 watchCanvasListDefaultSelection({ snapshot: () => snapshot.value, arrangement: () => renderedArrange.value, zoom: () => canvas.zoom, unavailable: () => diagnostics.value.length > 0, select: selectVariant })
 
-/** Select another ready grid/list preview while leaving its original click untouched. */
-function activatePreview(iframe: HTMLIFrameElement) {
-  if (renderedArrange.value === 'matrix' || snapshot.value.stale || diagnostics.value.length) return
-  const entry = [...registry.frames.values()].find(frame => frame.iframe === iframe)
-  const selected = snapshot.value.selection
-  if (!entry || (entry.storyId === selected?.storyId && entry.variantId === selected.variantId)) return
-  const state = entry.session?.getSnapshot()
-  if (!state || state.stale || state.runtime.status !== 'ready' || state.selection?.storyId !== entry.storyId || state.selection.variantId !== entry.variantId) return
-  const targetId = entry.id
-  iframeActivatedFrameId = targetId
-  void selectVariant(entry.variantId).finally(async () => {
-    await nextTick()
-    if (iframeActivatedFrameId === targetId) iframeActivatedFrameId = undefined
-  })
-}
+const activation = createCanvasFrameActivation({ registry, snapshot: () => snapshot.value, unavailable: () => renderedArrange.value === 'matrix' || diagnostics.value.length > 0, select: target => session.selection.select(target).catch(error => emit('error', error)) })
 
 watch(currentStory, (value) => {
   if (value) cachedStory.value = value
@@ -229,21 +227,17 @@ watch(() => snapshot.value.selection?.variantId, (value) => {
 watch(renderedArrange, (arrangement) => {
   if (viewBinding.isActiveStory(story.value?.id)) canvas.setArrangement(arrangement)
 }, { flush: 'sync', immediate: true })
-watch([frames, () => selectedFrame.value?.id, () => props.inspectorWidth, () => props.uiHidden, renderedArrange, story, panning], measure, { flush: 'post' })
+// Custom view layouts follow their registered (leased) frames and `requestLayout` calls.
+watch([frames, () => selectedFrame.value?.id, () => props.inspectorWidth, () => props.uiHidden, renderedArrange, story, panning, () => activeView.view.value && registry.frames.size, activeView.layoutRevision], measure, { flush: 'post' })
 watchCanvasFrameFocus({
   getFrame: () => selectedFrame.value,
   getArrange: () => renderedArrange.value,
   focusFrame: canvas.focusFrame,
   selectFrame: canvas.selectFrame,
-  shouldRevealFrame: (frame) => {
-    if (!viewBinding.shouldRevealFrame(frame)) return false
-    if (iframeActivatedFrameId !== frame.id) return true
-    iframeActivatedFrameId = undefined
-    return false
-  },
+  shouldRevealFrame: frame => viewBinding.shouldRevealFrame(frame) && activation.shouldReveal(frame.id),
 })
 onMounted(() => {
-  if (viewport.value) stopInteractions = bindCanvasFrameInteractions(viewport.value, pointer, space, viewportEvents.onWheel, activatePreview)
+  if (viewport.value) stopInteractions = bindCanvasFrameInteractions(viewport.value, pointer, space, viewportEvents.onWheel, activation.activate)
   measure()
 })
 onBeforeUnmount(() => {
@@ -257,7 +251,7 @@ defineExpose({ canvas, registry, getFrameLayout: (id: string) => frames.value.fi
 </script>
 
 <template>
-  <div ref="viewport" class="histoire-canvas-viewport" :class="{ 'is-single': renderedArrange === 'single', 'is-panning': panning, 'is-dragging': canvas.panning, 'is-commenting': commentMode }" :style="{ '--histoire-canvas-inspector-reserve': `${inspectorWidth}px` }" role="region" aria-label="Story canvas" tabindex="-1" @wheel="viewportEvents.onWheel" @contextmenu="viewportEvents.openCanvasMenu" @keydown="viewportEvents.openCanvasMenu" @pointerdown.capture="viewportEvents.framePointer" @pointerdown="viewportEvents.pointerDown" @pointermove="pointer.onPointerMove" @pointerup="pointer.onPointerUp" @pointercancel="pointer.onPointerCancel">
+  <div ref="viewport" class="histoire-canvas-viewport" :class="{ 'is-single': renderedArrange === 'single', 'is-panning': panning, 'is-dragging': canvas.panning, 'is-commenting': commentMode }" :style="{ '--histoire-canvas-inspector-reserve': `${inspectorWidth}px` }" role="region" aria-label="Story canvas" tabindex="-1" @wheel="viewportEvents.onWheel" @contextmenu="viewportEvents.openCanvasMenu" @keydown="viewportEvents.openCanvasMenu" @pointerdown.capture="viewportEvents.capturePointer" @pointerdown="viewportEvents.pointerDown" @pointermove="pointer.onPointerMove" @pointerup="pointer.onPointerUp" @pointercancel="pointer.onPointerCancel">
     <div v-if="!uiHidden" ref="toolbar" class="histoire-canvas-toolbar-host">
       <slot name="toolbar" :canvas="canvas" :frames="registry" />
     </div>
@@ -267,13 +261,15 @@ defineExpose({ canvas, registry, getFrameLayout: (id: string) => frames.value.fi
       </slot>
     </div>
     <CanvasSingleVariant v-if="renderedArrange === 'single' && story" ref="singleVariant" :area="singleArea" :frame="selectedFrame" :variant="selectedVariant" :preview-base="previewBase" :stale="diagnostics.length > 0" :resizable="singleResizable" @resize="resizeSingleViewport" @contextmenu="(event, target) => emit('contextmenu', event, target)" />
-    <slot v-else-if="renderedArrange === 'matrix'" name="matrix" :canvas="canvas" :frames="registry" :size="size" :content-insets="contentInsets" :frame-budget="frameBudget" :preview-base="previewBase" :discovery-failed="matrixDiscoveryFailed" />
+    <PluginCanvasView v-else-if="activeView.id.value" :key="activeView.id.value" :view="activeView.view.value" :presence="activeView.presence.value" :context="viewContext" :workbench="activeView.workbench" />
+    <slot v-else-if="renderedArrange === 'matrix'" name="matrix" :canvas="canvas" :frames="registry" :size="size" :content-insets="contentInsets" :preview-base="previewBase" :discovery-failed="matrixDiscoveryFailed" />
     <component :is="renderedArrange === 'list' ? FrameList : FrameGrid" v-else :frames="renderedFrames">
       <template #default="{ frame }">
         <CanvasFrame :frame="frame" :fit-bounds="zoom => fitBoundsForFrame(frame, zoom)" :variant="variantsById.get(frame.variantId)!" :selected="frame.id === selectedFrame?.id" :live="live.has(frame.id)" :preview-base="previewBase" :width="frame.width" :height="frameContentSize(frame.variantId).height" :stale="diagnostics.length > 0" v-bind="getSearchFrameState(frame.id, !!searchActive, highlightedTargets)" @select="selectVariant" @contextmenu="(event, target) => emit('contextmenu', event, target)" />
       </template>
     </component>
     <CanvasMatrixPrimary :active="renderedArrange === 'matrix'" :preview-base="previewBase" :width="size.width" :height="size.height" @status="matrixDiscoveryFailed = $event === 'error'" @error="emit('error', $event)" />
+    <CanvasPluginLayers v-if="!uiHidden && !commentMode" :panning="space.held.value || canvas.panning" />
     <div v-if="commentMode" class="histoire-comment-capture" @pointerdown="viewportEvents.framePointer" />
     <slot v-if="!uiHidden" name="overlays" :canvas="canvas" :frames="registry" :selected-frame="selectedFrame" />
     <CollectErrorCard v-if="diagnostics.length && !uiHidden" :errors="diagnostics" />

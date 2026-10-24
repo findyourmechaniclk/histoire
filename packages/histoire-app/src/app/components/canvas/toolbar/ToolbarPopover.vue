@@ -20,6 +20,8 @@ const props = withDefaults(defineProps<{
   iconOnly?: boolean
   /** Preferred width before canvas clamping. */
   width?: number
+  /** Formatted shortcut hint of the trigger (tooltip, overflow menu). */
+  shortcut?: string
 }>(), { iconOnly: undefined })
 const emit = defineEmits<{ 'update:open': [value: string | null] }>()
 const trigger = shallowRef<HTMLElement | null>(null)
@@ -42,7 +44,7 @@ defineExpose({ trigger })
 
 <template>
   <span class="histoire-toolbar-anchor">
-    <ToolbarButton :ref="setTrigger" :label="label" :icon="icon" :icon-only="iconOnly" :pressed="open === id" menu-role="menuitem" aria-haspopup="dialog" :aria-expanded="open === id" @click="emit('update:open', open === id ? null : id)">
+    <ToolbarButton :ref="setTrigger" :label="label" :icon="icon" :icon-only="iconOnly" :shortcut="shortcut" :pressed="open === id" menu-role="menuitem" aria-haspopup="dialog" :aria-expanded="open === id" @click="emit('update:open', open === id ? null : id)">
       <template v-if="$slots.trigger" #default><slot name="trigger" /></template>
     </ToolbarButton>
     <BasePopover class="histoire-toolbar-popover" :open="open === id" :anchor="trigger" :label="label" :width="width" :overlay-target="overlayTarget" :bounds="bounds" @update:open="emit('update:open', null)">

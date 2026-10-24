@@ -1,3 +1,4 @@
+import type { CanvasArrangement } from '../../stores/canvas-arrangement.js'
 import type { CanvasFrameLayout } from './frame-layout.js'
 import { watch } from 'vue'
 
@@ -6,7 +7,7 @@ export interface CanvasFrameFocusOptions {
   /** Current selected frame; zoom can regenerate its layout object. */
   getFrame: () => CanvasFrameLayout | undefined
   /** Arrangement changes may reveal selected frame in another layout. */
-  getArrange: () => 'single' | 'grid' | 'list' | 'matrix'
+  getArrange: () => CanvasArrangement
   /** Bring selected frame into view without changing selected variant. */
   focusFrame: (frame: CanvasFrameLayout) => void
   /** Update selected frame without moving the canvas. */

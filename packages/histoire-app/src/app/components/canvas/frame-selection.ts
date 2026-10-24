@@ -1,5 +1,6 @@
+import type { HistoireTarget } from '@histoire/protocol'
 import type { HistoireSession } from '@histoire/sdk'
-import type { CanvasFrames } from '../../composables/canvas-settings.js'
+import type { CanvasFrameRegistration, CanvasFrames } from '../../composables/canvas-settings.js'
 import type { CanvasArrangement, CanvasZoom } from '../../stores/canvas.js'
 import { getHistoireTargetKey } from '@histoire/protocol'
 import { watch, watchEffect } from 'vue'
@@ -40,6 +41,8 @@ export interface CanvasSelectedSessionOptions {
   snapshot: () => ReturnType<HistoireSession['getSnapshot']>
   /** Exact frame registrations, including loading/budget placeholders. */
   registry: CanvasFrames
+  /** Frame showing `target` when it is not keyed by target (custom view leases); `null` uses the target-keyed entry. */
+  frameFor?: (target: HistoireTarget) => CanvasFrameRegistration | null
   /** Matrix and collection failures use canonical inspector instead. */
   unavailable: () => boolean
   /** Publish selected ready runtime to workbench inspector. */
@@ -58,7 +61,7 @@ export function watchCanvasSelectedSession(options: CanvasSelectedSessionOptions
   const stop = watchEffect((onCleanup) => {
     const canonical = options.snapshot()
     const target = canonical.selection
-    const frame = target?.variantId ? options.registry.getFrame(getHistoireTargetKey(target)) : null
+    const frame = target?.variantId ? options.frameFor?.(target) ?? options.registry.getFrame(getHistoireTargetKey(target)) : null
     const owner = frame?.session
     const documentId = frame?.documentId
     const iframe = frame?.iframe
