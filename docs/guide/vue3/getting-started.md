@@ -119,7 +119,7 @@ Example:
 
 <DemoLinks framework="nuxt3" />
 
-Histoire supports Nuxt 3 with the `@histoire/plugin-nuxt` package.
+Histoire supports Nuxt 3 and 4 with the `@histoire/plugin-nuxt` package.
 
 ```bash
 pnpm add -D @histoire/plugin-nuxt
@@ -139,6 +139,49 @@ export default defineConfig({
   ],
 })
 ```
+
+Histoire generates its Nuxt build files in `.histoire/nuxt`, so it can run next to `nuxt dev` without sharing `.nuxt`. Change it with `HstNuxt({ buildDir: '.my-dir' })` (relative to the Nuxt root).
+
+## Quasar CLI <Badge type="tip" text="1.0-beta.2+" />
+
+Quasar CLI projects (`@quasar/app-vite`) don't have a `vite.config` file. The `@histoire/plugin-quasar` package reads your `quasar.config` file instead.
+
+```bash
+pnpm add -D @histoire/plugin-quasar
+```
+
+```js
+import { HstQuasar } from '@histoire/plugin-quasar'
+import { HstVue } from '@histoire/plugin-vue'
+import { defineConfig } from 'histoire'
+
+export default defineConfig({
+  storyMatch: ['src/**/*.story.vue'],
+  plugins: [
+    HstVue(),
+    HstQuasar(),
+  ],
+})
+```
+
+The plugin:
+
+- reuses the Vite config Quasar CLI generates (aliases, `build.env`, `build.vitePlugins`, Sass variables, `extendViteConf`...),
+- loads Quasar CSS, `extras`, `animations` and `css` entries,
+- installs Quasar with your `framework` options (config, plugins, lang, icon set),
+- installs your store from `src/stores/index`,
+- runs client boot files in order. They receive a router using memory history, so they never change the URL of the story,
+- syncs Quasar's `Dark` plugin with Histoire's dark mode.
+
+App Extensions apply too: their boot files, CSS and `framework` options are loaded like the project's own.
+
+While Histoire loads it, `quasar.config` sees your project folder as the working directory (`process.cwd()`, `path.resolve`), even if Histoire was started from another folder. Relative `fs` paths aren't covered: build them from `__dirname` or `ctx.appPaths`.
+
+::: tip
+The plugin reads the config through Quasar CLI's own loader. If your `@quasar/app-vite` version doesn't expose it, Histoire warns and evaluates `quasar.config` directly, without App Extension additions. Add those in your [setup file](./app-setup.md#global-setup) if your stories need them.
+:::
+
+For other UI libraries, see [Ecosystem](./ecosystem.md).
 
 ## Configuration
 

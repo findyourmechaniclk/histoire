@@ -213,6 +213,10 @@ module.exports = {
               text: 'Hierarchy',
               link: '/guide/vue3/hierarchy',
             },
+            {
+              text: 'Ecosystem',
+              link: '/guide/vue3/ecosystem',
+            },
           ],
         },
         {

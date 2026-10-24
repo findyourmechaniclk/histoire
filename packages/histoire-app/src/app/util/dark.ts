@@ -1,3 +1,4 @@
+import { registerHistoireDarkSource } from '@histoire/shared'
 import { useDark, useToggle } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 import { histoireConfig } from './config.js'
@@ -28,6 +29,9 @@ export const isDark = isEmbeddedRuntime
       },
     })
 export const toggleDark = useToggle(isDark)
+
+// Story framework hosts and `onDarkChange` follow appearance through `@histoire/shared`.
+registerHistoireDarkSource(listener => watch(isDark, value => listener(value), { immediate: true }))
 
 /** Apply bridge-owned appearance without persisting embedded preferences. */
 export function applyRuntimeColorScheme(value: 'light' | 'dark' | 'auto') {

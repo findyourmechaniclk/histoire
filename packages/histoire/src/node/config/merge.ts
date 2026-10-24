@@ -18,7 +18,7 @@ export const mergeBuildConfig = createDefu((obj: any, key, value) => {
  *
  * Arrays are replaced by default, except for the keys whose semantics require
  * accumulating: `vite` (composed as functions), `plugins` (deduplicated by
- * name), `setupCode`, `supportMatch` and `build`.
+ * name), `setupCode`, `viteNodeInlineDeps`, `supportMatch` and `build`.
  */
 export const mergeConfig = createDefu((obj: any, key, value) => {
   if (obj[key] && key === 'vite') {
@@ -50,6 +50,12 @@ export const mergeConfig = createDefu((obj: any, key, value) => {
         newValue.unshift(plugin)
       }
     }
+    return true
+  }
+
+  // Plugins and users each contribute collection inline deps; matchers stack.
+  if (obj[key] && key === 'viteNodeInlineDeps') {
+    obj[key] = [...obj[key], ...value]
     return true
   }
 

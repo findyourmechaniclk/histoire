@@ -137,3 +137,29 @@ export default defineConfig({
 To add UI to the workbench or code to story frames, give the plugin a `workbench` descriptor: see [Workbench plugins](./workbench.md).
 
 See the [plugin API reference](../../reference/plugin-api.md).
+
+## Vue framework integrations
+
+A plugin integrating a Vue framework (like `@histoire/plugin-nuxt` or `@histoire/plugin-quasar`) usually:
+
+1. Returns the framework's Vite config from `defaultConfig` (`vite` option), dropping plugins that only make sense for the framework's own dev server.
+2. Returns `setupCode`: modules exporting a `setupVue3` function. They run before the user's setup file, for each story app.
+3. Uses the setup API `hooks` to follow the story app lifecycle:
+
+```js
+// Module referenced in `setupCode`
+export async function setupVue3({ app, hooks, onDarkChange }) {
+  const framework = await createFramework(app)
+
+  // Run the user setup file and `setupApp` inside the framework context
+  hooks.setRunWithContext(callback => framework.runWithContext(callback))
+
+  hooks.onBeforeMount(() => framework.callHook('beforeMount'))
+  hooks.onMounted(() => framework.callHook('mounted'))
+  hooks.onCleanup(() => framework.dispose())
+
+  onDarkChange(dark => framework.setDark(dark))
+}
+```
+
+See [App setup](../vue3/app-setup.md#lifecycle-hooks) for the list of hooks.

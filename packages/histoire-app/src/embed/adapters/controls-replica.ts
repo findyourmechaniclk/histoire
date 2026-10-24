@@ -113,10 +113,21 @@ export function createEmbedControlsReplica(context: EmbedSurfaceContext, changed
       canonicalId = snapshot.runtime.runtimeId
       const documentId = `${context.bridge.getOwner().mountId}:controls:${++documentCounter}`
       owner.replace(documentId, snapshot.selection)
+      clearTimeout(deadline)
+      const story = snapshot.catalog.stories.find(item => item.id === snapshot.selection!.storyId)
+      if (story?.hasCustomControls === false) {
+        // Collection saw no `controls` slot: skip booting a whole story
+        // document (app setup included) just to report that.
+        iframe.remove()
+        ready = true
+        changed(false, 0)
+        publish('controls.height', { height: 0, hasControls: false })
+        resolveReady()
+        return
+      }
       iframe.src = createControlsReplicaUrl(context.sourceBase ?? window.location.href, snapshot.selection, documentId)
       context.container.append(iframe)
       context.bridge.post('readiness.changed', { runtime: { ...snapshot.runtime, mountId: context.bridge.getOwner().mountId } }, { runtimeId: canonicalId!, target: owner.target! })
-      clearTimeout(deadline)
       deadline = setTimeout(() => {
         if (current() && !ready) {
           rejectReady(new HistoireSdkError('TIMEOUT', 'Controls replica readiness timed out'))

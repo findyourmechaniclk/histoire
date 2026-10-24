@@ -12,6 +12,11 @@ import { resolveStoryFileComponent } from '../../util/story-component'
 
 const props = defineProps<{
   story: Story
+  /**
+   * Skip the mount when the support plugin's `RenderStory` configures the
+   * story itself (`renderConfiguresStory`), saving a second story app.
+   */
+  optional?: boolean
 }>()
 
 const mountComponent = ref(null)
@@ -26,6 +31,9 @@ watchEffect(async () => {
   // the support plugin renders the loader itself.
   await resolveStoryFileComponent(props.story.file)
   const pluginModule = await clientPlugin()
+  if (props.optional && pluginModule.renderConfiguresStory) {
+    return
+  }
   mountComponent.value = markRaw(pluginModule.MountStory)
 })
 </script>

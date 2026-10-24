@@ -1,5 +1,5 @@
 import type { ServerStory, ServerVariant } from '@histoire/shared'
-import { defineComponent, inject, type PropType } from 'vue'
+import { defineComponent, inject, type PropType, useSlots } from 'vue'
 
 export default defineComponent({
   name: 'HistoireVariant',
@@ -48,6 +48,10 @@ export default defineComponent({
 
     const addVariant = inject('addVariant') as (variant: ServerVariant) => void
     addVariant(variant)
+
+    if (useSlots().controls) {
+      story.hasCustomControls = true
+    }
   },
 
   render() {

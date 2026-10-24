@@ -6,7 +6,8 @@
  * - `PreviewControlsCapture` renders only the story `#controls` slot for the
  *   host Controls panel.
  *
- * Both captures mount the story off-screen first so its slots register.
+ * Both captures mount the story off-screen first so its slots register. The
+ * test capture leaves that to the support plugin's RenderStory when it can.
  */
 export function previewComponents() {
   return `const PreviewFrameActor = defineComponent({
@@ -24,6 +25,11 @@ export function previewComponents() {
       type: Function,
       required: true,
     },
+    /** Forwarded to GenericRenderStory: let the support plugin configure the story in its render app. */
+    configureStory: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: {
     ready: () => true,
@@ -37,6 +43,7 @@ export function previewComponents() {
     return () => h(GenericRenderStory, {
       story: props.story,
       variant: props.variant,
+      configureStory: props.configureStory,
       onReady: () => emit('ready'),
     })
   },
@@ -64,8 +71,11 @@ const PreviewTestCapture = defineComponent({
     }
 
     return () => [
+      // Skipped for support plugins whose RenderStory configures the story
+      // in its own app (one app setup per frame instead of two).
       h('div', { class: 'htw-sandbox-hidden' }, [h(GenericMountStory, {
         story: props.story,
+        optional: true,
       })]),
       h('div', {
         ref: canvas,
@@ -79,6 +89,7 @@ const PreviewTestCapture = defineComponent({
         story: props.story,
         variant: props.variant,
         getElement: () => canvas.value,
+        configureStory: true,
         onReady,
       })]),
     ]

@@ -70,5 +70,11 @@ module.exports = {
   corePlugins: {
     preflight: false,
   },
+  experimental: {
+    // Emit `--tw-*` defaults on used utilities instead of `*, ::before, ::after`.
+    // Histoire CSS shares documents with story CSS (merged in built sandboxes,
+    // teleported overlays in dev), where Tailwind 4 uses the same variables.
+    optimizeUniversalDefaults: true,
+  },
   plugins: [],
 }

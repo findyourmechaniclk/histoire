@@ -40,8 +40,8 @@ export function createDomEnv() {
     }
     finally {
       keys.forEach(key => delete globalThis[key])
-      originals.forEach((v, k) => {
-        globalThis[k] = v
+      originals.forEach((descriptor, key) => {
+        Object.defineProperty(globalThis, key, descriptor)
       })
     }
   }

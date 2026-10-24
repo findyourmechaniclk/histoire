@@ -15,6 +15,7 @@ import { ViteNodeServer } from 'vite-node/server'
 import { hashContent, readRegisteredText } from '../mcp/project/content-index.js'
 import { getContextRegistry } from '../runtime/registry.js'
 import { slash } from '../util/fs.js'
+import { formatThrown } from './errors.js'
 import { finalizeCollectedStoryFile } from './finalize.js'
 
 export interface UseCollectStoriesOptions {
@@ -35,7 +36,6 @@ export function useCollectStories(options: UseCollectStoriesOptions, ctx: Contex
         /@histoire\/[\w-]+\/dist/,
         /histoire-[\w-]+\/dist/,
         /@vue\/devtools-api/,
-        /vuetify/,
         // @TODO temporary fix for https://github.com/histoire-dev/histoire/issues/409
         /vite\w*\/dist\/client\/(client|env).mjs/,
         ...ctx.config.viteNodeInlineDeps ?? [],
@@ -166,7 +166,7 @@ export function useCollectStories(options: UseCollectStoriesOptions, ctx: Contex
       delete storyFile.story
       delete storyFile.treePath
       delete storyFile.treeFile
-      console.error(pc.red(`Error while collecting story ${storyFile.path}:\n${e.frame ? `${pc.bold(e.message)}\n${e.frame}` : e.stack}`))
+      console.error(pc.red(`Error while collecting story ${storyFile.path}:\n${e?.frame ? `${pc.bold(e.message)}\n${e.frame}` : formatThrown(e)}`))
       if (options.throws) {
         throw e
       }

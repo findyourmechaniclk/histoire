@@ -21,6 +21,7 @@ export function projectCatalog(stories: readonly CatalogStory[], diagnostics: re
       ...(story.runtimeRevision ? { runtimeRevision: story.runtimeRevision } : {}),
       docsOnly: story.docsOnly,
       ...(typeof extra?.layoutExplicit === 'boolean' ? { layoutExplicit: extra.layoutExplicit } : {}),
+      ...(typeof extra?.hasCustomControls === 'boolean' ? { hasCustomControls: extra.hasCustomControls } : {}),
       ...(matrix ? { matrix } : {}),
       ...(story.group == null ? {} : { group: story.group }),
       ...(typeof extra?.icon === 'string' ? { icon: extra.icon } : {}),

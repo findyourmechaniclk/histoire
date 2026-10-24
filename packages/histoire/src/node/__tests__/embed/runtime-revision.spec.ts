@@ -59,6 +59,18 @@ describe('canonical runtime digest projection', () => {
     expect(descriptor.catalog.stories[0].matrix?.axes.count).toEqual([0, 0.1, 0.2, 0.3])
   })
 
+  it('projects collected custom controls availability, omitting it when unknown', async () => {
+    // Hosts skip the controls replica document only on an explicit `false`.
+    const unknown = createMcpStory(fixture.root, 'unknown', 'unknown.story.js')
+    fixture.context.storyFiles.push(unknown)
+    fixture.story.story.hasCustomControls = false
+    await fixture.catalog.publish(fixture.context)
+    const stories = fixture.catalog.current.catalog.stories
+    expect(stories.find(story => story.id === fixture.story.story.id)!.hasCustomControls).toBe(false)
+    expect(stories.find(story => story.id === 'unknown')).not.toHaveProperty('hasCustomControls')
+    expect(() => validateHistoireCatalogStory({ ...stories[0], hasCustomControls: 'no' })).toThrow()
+  })
+
   it('omits runtime digest when canonical source bytes are unavailable', async () => {
     const unavailable = createMcpStory(fixture.root, 'unavailable', 'unavailable.story.js')
     delete unavailable.moduleCode

@@ -13,6 +13,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hidden story mount: registers variants and must never show or take space.
+   Unlayered: Tailwind drops `@layer` rules whose class its content scan misses. */
+.htw-sandbox-hidden {
+  display: none;
+}
+
 @layer base {
   .__histoire-render-story:not(.__histoire-render-custom-controls) {
     overflow: auto;

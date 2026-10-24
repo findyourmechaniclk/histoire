@@ -48,6 +48,22 @@ import { toggleDark } from 'histoire/client'
 toggleDark(true)
 ```
 
+## `onDarkChange` <Badge type="tip" text="1.0-beta.2+" />
+
+`onDarkChange(listener: (dark: boolean) => void): () => void`
+
+Calls `listener` with the current dark mode, then on every change. Returns a function that stops listening. Works with every framework.
+
+```js
+import { onDarkChange } from 'histoire/client'
+
+const stop = onDarkChange((dark) => {
+  myUiLibrary.setTheme(dark ? 'dark' : 'light')
+})
+```
+
+In Vue setup functions, prefer [`onDarkChange` from the setup API](../guide/vue3/app-setup.md#dark-mode): it stops automatically.
+
 ## `onTest` <Badge type="tip" text="1.0-beta.2+" />
 
 Registers story-scoped Vitest cases for the current variant.

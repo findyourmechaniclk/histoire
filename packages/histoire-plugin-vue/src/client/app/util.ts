@@ -84,19 +84,56 @@ function _toRawObject(obj: Record<any, any>, target: Record<any, any>, seen = ne
   })
 }
 
+/** Plain data object (or a reactive proxy of one): safe to merge serialized state into. */
+function isPlainObject(value: unknown): value is Record<string, any> {
+  if (!isObject(value) || Array.isArray(value)) return false
+  const prototype = Object.getPrototypeOf(value)
+  return prototype === Object.prototype || prototype === null
+}
+
+/**
+ * Applies a serialized state snapshot to a story's own `<script setup>` /
+ * `data` bindings. Unlike `applyState`, bindings may hold objects the story
+ * only references (module singletons, mocked exports, stores): serialization
+ * turned their Dates, Maps or class instances into plain copies, so those
+ * values are never overwritten. Plain objects are merged recursively, equal
+ * values are skipped and read-only properties are left as they are.
+ * @param target Bindings to update, e.g. the Vue story's implicit state
+ * @param state Serialized snapshot, e.g. from the controls panel
+ */
+export function applyStateToBindings(target: Record<string, any>, state: Record<string, any>) {
+  for (const key in state) {
+    const current = target[key]
+    const value = state[key]
+    if (Object.is(current, value)) continue
+    if (isObject(current) && !Array.isArray(current) && !isPlainObject(current)) continue
+    if (isPlainObject(current) && isPlainObject(value)) {
+      applyStateToBindings(current, value)
+      continue
+    }
+    try {
+      target[key] = value
+    }
+    catch {
+      // Getter-only or readonly (e.g. computed) binding
+    }
+  }
+}
+
 /**
  * Synchronize states between the bundled and external/user versions of Vue
  * @param bundledState Reactive state created with the bundled Vue
  * @param externalState Reactive state created with the external/user Vue
+ * @param applyExternal Applies bundled snapshots to `externalState`
  */
-export function syncStateBundledAndExternal(bundledState, externalState) {
+export function syncStateBundledAndExternal(bundledState, externalState, applyExternal: (target: any, state: any) => void = applyState) {
   let syncing = false
 
   const _stop = _watch(() => bundledState, (value) => {
     if (value == null) return
     if (!syncing) {
       syncing = true
-      applyState(externalState, _toRawDeep(value))
+      applyExternal(externalState, _toRawDeep(value))
     }
     else {
       syncing = false

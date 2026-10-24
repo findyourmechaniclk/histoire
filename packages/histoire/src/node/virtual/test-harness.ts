@@ -1,12 +1,10 @@
 import type { Context } from '../context.js'
 import type { PreviewRuntimeStoryFile } from './preview-runtime/preamble.js'
-import { createRequire } from 'node:module'
+import { resolveBrowserRuntimeEntry } from '../util/resolve-browser-runtime.js'
 import { getStoryCollectTimeout } from '../util/test-timeouts.js'
 import { buildStoryModuleLoaders, getRuntimeStoryFiles } from './preview-runtime/index.js'
 import { generatedKnownEmptySetupProbe } from './variant-test-session/setup-hooks.js'
 import { VITEST_DYNAMIC_IMPORT_SNIPPET } from './vitest-runner-bootstrap.js'
-
-const require = createRequire(import.meta.url)
 
 /** Options of {@link buildTestHarnessSource}. */
 export interface TestHarnessOptions {
@@ -70,7 +68,7 @@ export async function runCollectedTest(storyId, variantId, definition) {
  */
 export function testHarness(ctx: Context) {
   return buildTestHarnessSource({
-    variantTestSessionId: require.resolve('./variant-test-session/index.js'),
+    variantTestSessionId: resolveBrowserRuntimeEntry('variant-test-session'),
     files: getRuntimeStoryFiles(ctx),
     mountTimeoutMs: getStoryCollectTimeout(ctx),
   })

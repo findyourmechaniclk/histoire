@@ -68,3 +68,34 @@ it('keeps native BroadcastChannel delivery usable after installing jsdom globals
     env.destroy()
   }
 })
+
+it('installs jsdom web storage over Node 25+ built-in storage globals', () => {
+  // Node 25+ exposes its own `localStorage`/`sessionStorage` getters, which
+  // return undefined without `--localstorage-file`. Simulate them here.
+  const nativeDescriptors = ['localStorage', 'sessionStorage'].map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)] as const)
+  const nativeGetter = vi.fn(() => undefined)
+  for (const [key] of nativeDescriptors) {
+    Object.defineProperty(globalThis, key, { get: nativeGetter, configurable: true })
+  }
+  try {
+    const env = createDomEnv()
+    try {
+      localStorage.setItem('key', 'local')
+      sessionStorage.setItem('key', 'session')
+      expect(env.window.localStorage.getItem('key')).toBe('local')
+      expect(env.window.sessionStorage.getItem('key')).toBe('session')
+    }
+    finally {
+      env.destroy()
+    }
+    // Native accessors come back as-is and are never invoked.
+    expect(Object.getOwnPropertyDescriptor(globalThis, 'localStorage')?.get).toBe(nativeGetter)
+    expect(nativeGetter).not.toHaveBeenCalled()
+  }
+  finally {
+    for (const [key, descriptor] of nativeDescriptors) {
+      if (descriptor) Object.defineProperty(globalThis, key, descriptor)
+      else delete (globalThis as any)[key]
+    }
+  }
+})

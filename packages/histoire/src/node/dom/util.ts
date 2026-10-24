@@ -42,7 +42,9 @@ export function populateGlobal(global: any, win: any, options: PopulateOptions =
   const { bindFunctions = false } = options
   const keys = getWindowKeys(global, win)
 
-  const originals = new Map<string | symbol, any>()
+  // Own property descriptors replaced on `global`, so accessors such as Node's
+  // web storage getters are restored without being invoked.
+  const originals = new Map<string | symbol, PropertyDescriptor>()
 
   const overrideObject = new Map<string | symbol, any>()
   for (const key of keys) {
@@ -51,7 +53,8 @@ export function populateGlobal(global: any, win: any, options: PopulateOptions =
       && !isClassLikeName(key)
       && win[key].bind(win)
 
-    if (KEYS.includes(key) && key in global) originals.set(key, global[key])
+    const original = KEYS.includes(key) ? Object.getOwnPropertyDescriptor(global, key) : undefined
+    if (original) originals.set(key, original)
 
     Object.defineProperty(global, key, {
       get() {

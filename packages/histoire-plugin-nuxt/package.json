@@ -39,6 +39,7 @@
     "unenv": "^1.10.0"
   },
   "devDependencies": {
+    "@histoire/plugin-vue": "workspace:*",
     "@nuxt/schema": "^3.14.1592",
     "@types/node": "^22.10.1",
     "@typescript/native": "catalog:",

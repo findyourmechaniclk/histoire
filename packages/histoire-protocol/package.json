@@ -21,12 +21,13 @@
     "dist"
   ],
   "scripts": {
-    "build": "rimraf dist && tsc",
+    "build": "rimraf dist && vite build && tsc --emitDeclarationOnly",
     "test": "vitest run",
-    "watch": "tsc -w --sourceMap"
+    "watch": "concurrently \"vite build --watch\" \"tsc -w --emitDeclarationOnly\""
   },
   "devDependencies": {
     "@typescript/native": "catalog:",
+    "concurrently": "^9.1.0",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "4.1.10"

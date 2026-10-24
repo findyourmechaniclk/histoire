@@ -548,6 +548,8 @@ export default defineConfig({
 
 Transpile dependencies when collecting stories on Node.js.
 
+Values add up: your entries are merged with the ones plugins provide (for example `@histoire/plugin-vue` adds known Vue UI libraries).
+
 For example, if you have a dependency that contains ESM code but Node tries to load it in CommonJS context, you might have this kind of error:
 
 <div class="overflow-auto bg-gray-100 rounded dark:bg-gray-850 text-sm">

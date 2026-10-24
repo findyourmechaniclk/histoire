@@ -1,23 +1,22 @@
 import type { Story, Variant } from '@histoire/shared'
-import type { App, Component, PropType, VNode } from 'vue'
-import type { Vue3StorySetupApi, Vue3StorySetupHandler } from '../../helpers.js'
-import { registerHistoireGlobalsAdapter, registerStoryExecutionTargetResolver, useHistoireGlobals, withStoryExecution } from '@histoire/shared'
-// @ts-expect-error virtual module id
-import * as generatedSetup from 'virtual:$histoire-generated-global-setup'
-// @ts-expect-error virtual module id
-import * as setup from 'virtual:$histoire-setup'
+import type { App, Component, VNode } from 'vue'
+import type { Vue3StorySetupApi } from '../../helpers.js'
+import type { PreviewRenderContext } from './render-context.js'
+import { onHistoireDarkChange, registerHistoireGlobalsAdapter, registerStoryExecutionTargetResolver, useHistoireGlobals, withStoryExecution } from '@histoire/shared'
 import {
   createApp,
-  defineComponent,
   getCurrentInstance,
   h,
   nextTick,
   reactive,
   Suspense,
 } from 'vue'
+import { createAppHooks, getAppHooks } from './app-hooks.js'
 import { registerGlobalComponents } from './global-components.js'
-import { type PreviewRenderContext, provideRenderContext } from './render-context.js'
+import { PreviewHostRoot } from './host-root.js'
+import { mountStoryPass, type StoryMountPass } from './mount-pass.js'
 import { RouterLinkStub } from './RouterLinkStub'
+import { runSetupHooks } from './setup-hooks.js'
 
 // Reads story app's Vue instance, never Histoire's separate vendor Vue instance.
 registerStoryExecutionTargetResolver('vue', () => (getCurrentInstance()?.appContext.app as any)?.__HST_STORY_MOUNT_TARGET__)
@@ -37,37 +36,19 @@ interface PreviewHostOptions {
   getVariant: () => Variant | null
   renderContext: PreviewRenderContext
   wrapInDiv?: boolean
+  /**
+   * Render host only: when the variant isn't configured yet (no hidden mount
+   * app in this document), run the story mount pass inside this app first.
+   */
+  configureStory?: boolean
 }
-
-const PreviewHostRoot = defineComponent({
-  name: 'PreviewHostRoot',
-
-  props: {
-    story: {
-      type: Object as PropType<Story>,
-      required: true,
-    },
-
-    renderContext: {
-      type: Object as PropType<PreviewRenderContext>,
-      required: true,
-    },
-  },
-
-  setup(props) {
-    provideRenderContext(props.renderContext)
-
-    return () => h(props.story.file.component, {
-      story: props.story,
-    })
-  },
-})
 
 /** Own isolated story app and publish readiness after first root Suspense resolves. */
 export function createPreviewHost(options: PreviewHostOptions) {
   let app: App = null
   let target: HTMLDivElement = null
   let retireMount: (() => void) | undefined
+  let storyPass: StoryMountPass | undefined
 
   /**
    * Waits for the user Vue app to flush render-time mutations like auto-prop
@@ -106,7 +87,12 @@ export function createPreviewHost(options: PreviewHostOptions) {
         })
 
         const controlsSlot = options.renderContext.slotName === 'controls'
-        for (const wrapper of wrappers) {
+        // The hidden mount only registers story metadata, like collection,
+        // which runs without wrappers too. Wrappers there would be a second
+        // live copy of app providers in this window, duplicating shared UI
+        // such as overlays and toasts (e.g. Nuxt UI `UApp` + `useOverlay()`).
+        const hiddenMount = options.renderContext.mode === 'mount'
+        for (const wrapper of hiddenMount ? [] : wrappers) {
           if (controlsSlot && !wrapper.controls) continue
           const child = vnode
           vnode = h(wrapper.component, {
@@ -130,6 +116,8 @@ export function createPreviewHost(options: PreviewHostOptions) {
       if (app !== ownerApp || target !== ownerTarget) throw new Error('Preview host retired during mounting')
     }
 
+    const hooks = createAppHooks(ownerApp)
+
     registerGlobalComponents(app)
     app.component('RouterLink', RouterLinkStub)
 
@@ -141,47 +129,77 @@ export function createPreviewHost(options: PreviewHostOptions) {
       addWrapper: (wrapper, wrapperOptions) => {
         wrappers.unshift({ component: wrapper, controls: wrapperOptions?.controls ?? true })
       },
+      hooks: hooks.api,
+      onDarkChange: listener => hooks.api.onCleanup(onHistoireDarkChange(listener)),
     }
 
     try {
-      await runSetupHooks(setupApi)
+      await runSetupHooks(setupApi, hooks, options.configureStory && !options.getVariant()?.configReady
+        ? async () => {
+          storyPass = mountStoryPass(ownerApp, options.getStory(), options.el)
+          await storyPass.ready
+          assertOwner()
+        }
+        : undefined)
       assertOwner()
-      await (ownerApp as any).__HST_NUXT_LIFECYCLE__?.('app:beforeMount')
+      await hooks.run('beforeMount')
       assertOwner()
 
       // Registration remains attributed to this exact app during synchronous
-      // mount; readiness waits actual async setup and Nuxt head/plugin hooks.
+      // mount; readiness waits actual async setup and framework stage hooks.
       withStoryExecution(() => ownerApp.mount(ownerTarget), ownerTarget)
       await rootReady
       assertOwner()
-      await (ownerApp as any).__HST_NUXT_LIFECYCLE__?.('app:mounted')
+      await hooks.run('mounted')
       assertOwner()
-      await (ownerApp as any).__HST_NUXT_LIFECYCLE__?.('app:suspense:resolve')
+      await hooks.run('ready')
       assertOwner()
       await waitForHostRenderSettled()
       assertOwner()
       if (retireMount === retire) retireMount = undefined
     }
     catch (error) {
-      // Nuxt/plugin setup may allocate effects before app ever mounts.
+      // Framework/plugin setup may allocate effects before app ever mounts.
       if (app === ownerApp) unmount()
-      // Imports may finish after prior unmount and register new scoped resources
-      // on retired app. Release captured owner, never replacement app.
-      else cleanupApp(ownerApp)
+      // Setup has settled: imports that finished after an earlier unmount may
+      // have registered resources on the retired app. Release the captured
+      // owner for good, never the replacement app.
+      cleanupApp(ownerApp, true)
       throw error
     }
   }
 
-  /** Close exactly one app, including resources acquired after early retirement. */
-  function cleanupApp(owner: App) {
-    ;(owner as any)?.__HST_NUXT_CLEANUP__?.()
-    if (owner?._container) owner.unmount()
+  /**
+   * Release one app's hooks and unmount it. `final` once its setup can no
+   * longer register resources. Cleanup errors are logged: they must neither
+   * block the next mount nor hide a setup/mount failure.
+   */
+  function cleanupApp(owner: App, final: boolean) {
+    if (!owner) return
+    const hooks = getAppHooks(owner)
+    try {
+      if (final) hooks?.close()
+      else hooks?.cleanup()
+    }
+    catch (cleanupError) {
+      console.error(cleanupError)
+    }
+    finally {
+      // Vue keeps `_container` after unmount; it only clears this marker.
+      // A second `unmount()` would run plugin `onUnmount` cleanups again.
+      if ((owner._container as any)?.__vue_app__ === owner) owner.unmount()
+    }
   }
 
+  /** Retire the current app and remove its element. */
   function unmount() {
+    // A pending mount still runs setup; its failure path closes the app.
+    const mountPending = retireMount !== undefined
     retireMount?.()
     retireMount = undefined
-    cleanupApp(app)
+    storyPass?.unmount()
+    storyPass = undefined
+    cleanupApp(app, !mountPending)
     app = null
 
     if (target) {
@@ -199,30 +217,4 @@ export function createPreviewHost(options: PreviewHostOptions) {
     unmount,
     forceUpdate,
   }
-}
-
-async function runSetupHooks(setupApi: Vue3StorySetupApi) {
-  if (typeof generatedSetup?.setupVue3 === 'function') {
-    const setupFn = generatedSetup.setupVue3 as Vue3StorySetupHandler
-    await callSetupHook(setupFn, setupApi)
-  }
-
-  if (typeof setup?.setupVue3 === 'function') {
-    const setupFn = setup.setupVue3 as Vue3StorySetupHandler
-    await callSetupHook(setupFn, setupApi)
-  }
-
-  if (typeof setupApi.variant?.setupApp === 'function') {
-    const setupFn = setupApi.variant.setupApp as Vue3StorySetupHandler
-    await callSetupHook(setupFn, setupApi)
-  }
-}
-
-/** Nuxt context follows actual app for user and variant setup hooks. */
-function callSetupHook(handler: Vue3StorySetupHandler, setupApi: Vue3StorySetupApi) {
-  const invoke = () => withStoryExecution(() => handler(setupApi), (setupApi.app as any).__HST_STORY_MOUNT_TARGET__)
-  const scoped = (setupApi.app as any).__HST_NUXT_SETUP_CONTEXT__
-  if (scoped) return scoped(invoke)
-  const nuxt = (setupApi.app as any).$nuxt
-  return nuxt?.runWithContext ? nuxt.runWithContext(invoke) : invoke()
 }

@@ -13,6 +13,7 @@ import { dirname, resolve } from 'pathe'
 import pc from 'picocolors'
 import { ModuleCacheMap, ViteNodeRunner } from 'vite-node/client'
 import { createDomEnv } from '../dom/env.js'
+import { formatCollectCrash, toCloneableError } from './errors.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -43,6 +44,19 @@ let _rpc: ReturnType<typeof createBirpc<{
   resolveId: ResolveIdFunction
 }>>
 let _invalidationRevision = -1
+/** Story file of the latest task, so late async failures can be attributed. */
+let _currentStoryPath: string | undefined
+
+// App code (e.g. Nuxt plugins opening sockets) can fail asynchronously and
+// crash this worker. The error reaching the main thread lacks the story file,
+// and non-native errors (jsdom DOMException) arrive there as `{}`.
+process.on('unhandledRejection', (reason) => {
+  // Still crash like Node's default mode, with a native error that survives cloning.
+  throw toCloneableError(reason)
+})
+process.on('uncaughtExceptionMonitor', (error) => {
+  console.error(pc.red(formatCollectCrash(error, _currentStoryPath)))
+})
 
 // Cleanup module cache
 parentPort.on('message', (message) => {
@@ -54,6 +68,7 @@ parentPort.on('message', (message) => {
 export default async (payload: Payload): Promise<ReturnData> => {
   const startTime = performance.now()
   process.env.HST_COLLECT = 'true'
+  _currentStoryPath = payload.storyFile.relativePath
 
   _rpc = createBirpc<{
     fetchModule: FetchFunction
@@ -118,6 +133,9 @@ export default async (payload: Payload): Promise<ReturnData> => {
     return {
       storyData,
     }
+  }
+  catch (e) {
+    throw toCloneableError(e)
   }
   finally {
     // Failed story imports cannot leave DOM globals or a transferred RPC port

@@ -15,6 +15,13 @@ import * as generatedSetup from 'virtual:$histoire-generated-global-setup'
 // @ts-expect-error virtual module id
 import * as setup from 'virtual:$histoire-setup'
 
+/**
+ * Setup modules in run order. Accessed through this array: a static
+ * `setup.setupVanilla` makes the bundler warn on every build whose setup
+ * file only has hooks for other frameworks.
+ */
+const setupModules: Array<Record<string, any> | undefined> = [generatedSetup, setup]
+
 export default _defineComponent({
   name: 'RenderStory',
 
@@ -69,20 +76,15 @@ export default _defineComponent({
         el: document.createElement('div'),
       }
 
-      if (typeof generatedSetup?.setupVanilla === 'function') {
-        await withStoryExecution(() => generatedSetup.setupVanilla({
-          app,
-          story: props.story,
-          variant: props.variant,
-        }), sandbox.value)
-      }
-
-      if (typeof setup?.setupVanilla === 'function') {
-        await withStoryExecution(() => setup.setupVanilla({
-          app,
-          story: props.story,
-          variant: props.variant,
-        }), sandbox.value)
+      for (const setupModule of setupModules) {
+        const setupVanilla = setupModule?.setupVanilla
+        if (typeof setupVanilla === 'function') {
+          await withStoryExecution(() => setupVanilla({
+            app,
+            story: props.story,
+            variant: props.variant,
+          }), sandbox.value)
+        }
       }
 
       if (typeof props.variant.setupApp === 'function') {
