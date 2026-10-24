@@ -3,8 +3,10 @@ import type {
   HistoireDocsContent,
   HistoireEmbedPresentation,
   HistoireEvent,
+  HistoireFramePluginInfo,
   HistoireHostChannelMessage,
   HistoireJsonValue,
+  HistoirePluginChannel,
   HistoireReadonly,
   HistoireSearchResult,
   HistoireSelectionInput,
@@ -13,6 +15,7 @@ import type {
   HistoireSourceContent,
   HistoireStateSnapshot,
   HistoireSurface,
+  HistoireTarget,
   HistoireTestCollectionResult,
   HistoireTestRunSummary,
 } from '@histoire/protocol'
@@ -27,6 +30,30 @@ export interface HistoireHostChannel {
   subscribe: (listener: (message: HistoireHostChannelMessage) => void) => () => void
   /** Saturated local rate, inbound validation, and listener failure count. */
   getDroppedCount: () => number
+}
+
+/** Frame plugin actor attached in the session's primary runtime document. */
+export interface HistoirePluginActor {
+  /** Attached plugin. */
+  readonly pluginId: string
+  /** Rendered mount identity; channels bind to it. */
+  readonly actorId: string
+  /** Variant rendered by the actor. */
+  readonly target: HistoireTarget
+  /** Runtime document hosting the actor. */
+  readonly runtimeId: string
+}
+
+/** Frame plugin messaging. Remote hosts never evaluate book plugin modules; this is data only. */
+export interface HistoireSessionPlugins {
+  /** Frame plugins the connected book advertises; works on a data-only connection. */
+  frames: () => readonly HistoireFramePluginInfo[]
+  /** Actors of `pluginId` attached in the primary runtime, in attach order. */
+  actors: (pluginId: string) => readonly HistoirePluginActor[]
+  /** Observes actor attach and detach; returns unsubscribe. */
+  subscribe: (listener: () => void) => () => void
+  /** Channel bound to exactly `frame.actorId`; never retargets, rejects after the actor retires. */
+  open: (pluginId: string, frame: { readonly actorId: string }) => HistoirePluginChannel
 }
 
 /** Remote book options; construction never accesses DOM. */
@@ -91,6 +118,8 @@ export interface HistoireSession {
   }
   /** Application namespaces explicitly enabled by source configuration. */
   channels: { open: (name: string) => HistoireHostChannel }
+  /** Frame plugin inventory and per-actor channels; absent on view-session proxies. */
+  plugins?: HistoireSessionPlugins
   /** Lazy data-service documentation. */
   docs: { get: (storyId: string) => Promise<HistoireDocsContent> }
   /** Raw data-service or explicit runtime-generated source. */

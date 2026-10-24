@@ -127,4 +127,7 @@ export function receiveNotification(context: SessionContext, notification: Histo
   else if (notification.type === 'channel') {
     context.deliverChannel?.(notification.message)
   }
+  else if (notification.type === 'plugin') {
+    context.deliverPlugin?.(notification.message)
+  }
 }

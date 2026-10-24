@@ -1,4 +1,4 @@
-import type { HistoireCapabilities, HistoireCapabilityName, HistoireHostChannelMessage, HistoireSettings, HistoireSettingsPatch, HistoireSnapshot, HistoireSourceDescriptor, HistoireTarget } from '@histoire/protocol'
+import type { HistoireCapabilities, HistoireCapabilityName, HistoireHostChannelMessage, HistoirePluginChannelEvent, HistoireSettings, HistoireSettingsPatch, HistoireSnapshot, HistoireSourceDescriptor, HistoireTarget } from '@histoire/protocol'
 import type { HistoireSessionAdapters, HistoireSourceConnection, HistoireSurfaceConnection } from '../adapters/types.js'
 import type { HistoireMount, HistoireSession, HistoireSessionOptions } from '../types.js'
 import { HistoireSdkError } from '@histoire/protocol'
@@ -52,6 +52,8 @@ export class SessionContext {
   readonly eventListeners = new Set<(event: HistoireSnapshot['events']['items'][number]) => void>()
   /** Application relay owned by this session, not any framework/global store. */
   deliverChannel?: (message: HistoireHostChannelMessage) => void
+  /** Frame plugin relay owned by this session. */
+  deliverPlugin?: (message: HistoirePluginChannelEvent) => void
   /** Owned pending work. */
   readonly operations = new OperationOwner()
   /** Per-story remembered explicit/default variant. */

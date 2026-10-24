@@ -9,6 +9,7 @@ import { acceptHistoireSourceDescriptor, bindHistoireSessionInternals, isAccepte
 import { mountSurface } from './mounts.js'
 import { receiveNotification } from './notifications.js'
 import { observeOperation } from './ownership.js'
+import { createSessionPlugins } from './plugins.js'
 import { request } from './request.js'
 import { reconcileSelection, resolveSelection, select } from './selection.js'
 import { collectTests, getDocs, getSource, runTests } from './services.js'
@@ -210,6 +211,7 @@ export function createHistoireSessionWithAdapters(options: HistoireSessionOption
       clear: () => clearEvents(context),
     },
     channels: createSessionChannels(context),
+    plugins: createSessionPlugins(context),
     docs: { get: storyId => observeOperation(getDocs(context, storyId)) },
     source: { get: input => observeOperation(getSource(context, input)) },
     tests: { collect: () => observeOperation(collectTests(context)), run: options => observeOperation(runTests(context, options)) },

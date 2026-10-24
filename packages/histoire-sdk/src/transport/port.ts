@@ -99,8 +99,8 @@ export function createBridgePort(options: BridgePortOptions) {
         emit({ type: 'dropped', ...notificationOwner(), count: payload.droppedCount })
       }
     }
-    else if (event.event === 'channel.message') {
-      emit({ type: 'channel', ...notificationOwner(), message: payload })
+    else if (event.event === 'channel.message' || event.event === 'plugin.message') {
+      emit({ ...(event.event === 'channel.message' ? { type: 'channel' } : { type: 'plugin' }), ...notificationOwner(), message: payload } as HistoireSessionNotification)
     }
     options.publication?.(event)
   }

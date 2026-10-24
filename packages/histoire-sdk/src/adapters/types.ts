@@ -2,6 +2,7 @@ import type {
   HistoireEmbedPresentation,
   HistoireEvent,
   HistoireHostChannelMessage,
+  HistoirePluginChannelEvent,
   HistoireRuntimeSnapshot,
   HistoireSettings,
   HistoireSourceDescriptor,
@@ -38,7 +39,7 @@ export interface HistoireRequestCapture {
 }
 
 /** Finite requests supported by injected source/runtime adapters. */
-export type HistoireSessionCommand = 'catalog.search' | 'selection.select' | 'state.get' | 'state.patch' | 'state.reset' | 'controls.preset' | 'settings.update' | 'events.clear' | 'docs.get' | 'source.get' | 'tests.collect' | 'tests.run' | 'openInEditor' | 'channel.post'
+export type HistoireSessionCommand = 'catalog.search' | 'selection.select' | 'state.get' | 'state.patch' | 'state.reset' | 'controls.preset' | 'settings.update' | 'events.clear' | 'docs.get' | 'source.get' | 'tests.collect' | 'tests.run' | 'openInEditor' | 'channel.post' | 'plugin.post'
 
 /** Validated adapter notification ownership; SDK still checks current lifetime. */
 export interface HistoireNotificationOwner {
@@ -65,6 +66,7 @@ export type HistoireSessionNotification = HistoireNotificationOwner & (
   | { type: 'state', state: HistoireStateSnapshot }
   | { type: 'event', event: HistoireEvent }
   | { type: 'channel', message: HistoireHostChannelMessage }
+  | { type: 'plugin', message: HistoirePluginChannelEvent }
   | { type: 'dropped', count: number, stale?: boolean }
 )
 
