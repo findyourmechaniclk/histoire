@@ -335,6 +335,10 @@ module.exports = {
               text: 'Plugin development guide',
               link: '/guide/plugins/development',
             },
+            {
+              text: 'Workbench plugins',
+              link: '/guide/plugins/workbench',
+            },
           ],
         },
       ],

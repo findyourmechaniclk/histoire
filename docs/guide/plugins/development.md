@@ -134,4 +134,6 @@ export default defineConfig({
 })
 ```
 
+To add UI to the workbench or code to story frames, give the plugin a `workbench` descriptor: see [Workbench plugins](./workbench.md).
+
 See the [plugin API reference](../../reference/plugin-api.md).
