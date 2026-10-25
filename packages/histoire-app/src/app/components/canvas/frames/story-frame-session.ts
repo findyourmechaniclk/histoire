@@ -123,7 +123,16 @@ export async function startStoryFrameSession(context: StoryFrameSessionContext, 
       // A new selection owns its own readiness; the initial mount promise retires.
       if (intent === targetSelector.currentIntent()) throw error
     })
-    await waitForCanvasStartup(Promise.all([mounted, readiness.promise]).then(() => {}), signal)
+    // The runtime reporting the target ready is authoritative: a document that
+    // reloaded (e.g. after a dropped module request) reports through the session
+    // while the first handshake's mount readiness only settles at its timeout.
+    // That wait held the startup slot of every other queued frame. A mount
+    // failure still fails startup while readiness is pending.
+    const started = new Promise<void>((resolve, reject) => {
+      readiness.promise.then(resolve, reject)
+      mounted.catch(reject)
+    })
+    await waitForCanvasStartup(started, signal)
   }
   catch (error) {
     readiness.fail(error)

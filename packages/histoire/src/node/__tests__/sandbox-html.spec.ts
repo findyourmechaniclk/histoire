@@ -12,6 +12,6 @@ describe('renderSandboxEntry', () => {
     expect(entry.head).toContain(`<link rel="stylesheet" href="/@fs/${bundledStyle}?v=hst-test">`)
     // The `<link>` order keeps app styles before the bundled component styles.
     expect(entry.head.indexOf(style)).toBeLessThan(entry.head.indexOf(bundledStyle))
-    expect(entry.script).toBe(`<script type="module" src="${RESOLVED_PREVIEW_RUNTIME_ID}"></script>`)
+    expect(entry.script).toBe(`<script type="module" src="${RESOLVED_PREVIEW_RUNTIME_ID}" onerror="__histoireEntryFailed()"></script>`)
   })
 })

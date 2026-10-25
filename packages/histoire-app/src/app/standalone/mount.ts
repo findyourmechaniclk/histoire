@@ -8,6 +8,7 @@ import { setupPluginApi } from '../plugin.js'
 import { histoireConfig } from '../util/config.js'
 import { createStandaloneCommands } from './commands.js'
 import { installStandaloneDocument } from './document.js'
+import { createWorkbenchErrorHandler } from './error-handler.js'
 import { createStandaloneFolders } from './folders.js'
 import { createStandaloneNavigation } from './navigation.js'
 import { restoreStandalonePreferences } from './preferences.js'
@@ -56,6 +57,7 @@ export function mountStandaloneApp(options: {
     resources.push(() => {
       if (mounted) app.unmount()
     })
+    app.config.errorHandler = createWorkbenchErrorHandler(window)
     app.use(navigation.router)
     // Entries load lazily inside the workbench host; mounting never waits for plugin code.
     provideWorkbenchPlugins(app, workbenchPlugins)

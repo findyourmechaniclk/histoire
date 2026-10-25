@@ -56,4 +56,18 @@ describe('preview runtime staleness', () => {
     // A successful selection clears the guard so later staleness can reload again.
     expect(source).toContain('clearStaleRuntimeReloadGuard()')
   })
+
+  it('reloads after a dropped story module request under the per-document entry guard', () => {
+    const source = generatePreviewRuntimeSource()
+
+    // The stale guard is shared by every same-origin frame of the tab; a
+    // network failure must not consume it, nor stop other frames recovering.
+    expect(source).toContain('if (isModuleLoadFailure(fileResult.reason) && window.__histoireEntryFailed?.())')
+    // eslint-disable-next-line no-template-curly-in-string -- asserting on generated runtime source
+    expect(source).toContain('if (!isModuleLoadFailure(fileResult.reason) && attemptStaleRuntimeReload(`story:${selection.storyId}`))')
+    expect(source).toMatch(/function isModuleLoadFailure\(error\) \{\n {2}return \/Failed to fetch dynamically imported module/)
+    // Lazy app imports failing the same way reload instead of failing the variant.
+    expect(source).toContain('function renderRuntimeError(error) {\n  // A module the app imports lazily failed to fetch')
+    expect(source).toContain('if (isModuleLoadFailure(error) && window.__histoireEntryFailed?.()) return')
+  })
 })

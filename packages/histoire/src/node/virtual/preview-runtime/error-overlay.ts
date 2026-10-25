@@ -1,3 +1,5 @@
+import { MODULE_LOAD_FAILURE } from '@histoire/shared'
+
 /**
  * Emits the runtime error reporter: a full-body message before the Vue app has
  * booted, a bottom overlay afterwards (so a late unhandled rejection does not
@@ -7,7 +9,15 @@
 export function previewErrorOverlay() {
   return `const RUNTIME_ERROR_OVERLAY_ID = '__histoire-runtime-error'
 
+/** Whether an error comes from a module that failed to fetch, rather than from code that ran. */
+function isModuleLoadFailure(error) {
+  return ${MODULE_LOAD_FAILURE}.test(String(error?.message ?? error))
+}
+
 function renderRuntimeError(error) {
+  // A module the app imports lazily failed to fetch (e.g. a network change):
+  // reload under the per-document guard instead of failing the variant.
+  if (isModuleLoadFailure(error) && window.__histoireEntryFailed?.()) return
   postToParent({ type: RUNTIME_FAILED, error: serializeTestError(error) })
   const message = error instanceof Error
     ? (error.stack ?? error.message)

@@ -6,6 +6,7 @@ import { APP_PATH, getHistoireStyleFiles } from '../alias.js'
 import { getDevClientPreloads } from '../server/client-ready.js'
 import { RESOLVED_PREVIEW_RUNTIME_ID } from '../virtual/index.js'
 import { renderVitestRunnerBootstrap } from '../virtual/vitest-runner-bootstrap.js'
+import { ENTRY_RELOAD_SCRIPT, renderModuleEntry, UNHANDLED_MODULE_FAILURE_SCRIPT } from './entry-reload.js'
 import { versionModuleFile } from './module-version.js'
 
 /** Early Histoire routes inherit Vite headers without replacing caller-owned response policy. */
@@ -37,13 +38,13 @@ export function renderSandboxEntry(version: (file: string) => string) {
   if (process.env.HISTOIRE_DEV) {
     return {
       head: '',
-      script: `<script type="module" src="/@fs/${APP_PATH}/bundle-sandbox${getBundleSuffix()}.js"></script>`,
+      script: renderModuleEntry(`/@fs/${APP_PATH}/bundle-sandbox${getBundleSuffix()}.js`),
     }
   }
   const { style, bundledStyle } = getHistoireStyleFiles()
   return {
     head: [style, bundledStyle].map(file => `<link rel="stylesheet" href="/@fs/${version(file)}">`).join('\n  '),
-    script: `<script type="module" src="${RESOLVED_PREVIEW_RUNTIME_ID}"></script>`,
+    script: renderModuleEntry(RESOLVED_PREVIEW_RUNTIME_ID),
   }
 }
 
@@ -75,6 +76,7 @@ ${renderVitestRunnerBootstrap('  ')}
     }
   }
   </script>
+  <script>${ENTRY_RELOAD_SCRIPT}</script>
   ${entry.script}
 </body>
 </html>`
@@ -103,7 +105,9 @@ function renderAppHtml(ctx: Context, server: ViteDevServer) {
   <body>
     <div id="app"></div>
 ${renderVitestRunnerBootstrap('    ')}
-    <script type="module" src="/@fs/${APP_PATH}/bundle-main${getBundleSuffix()}.js"></script>
+    <script>${ENTRY_RELOAD_SCRIPT}
+${UNHANDLED_MODULE_FAILURE_SCRIPT}</script>
+    ${renderModuleEntry(`/@fs/${APP_PATH}/bundle-main${getBundleSuffix()}.js`)}
   </body>
 </html>`
 }

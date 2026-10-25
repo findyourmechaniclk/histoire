@@ -79,9 +79,15 @@ export function previewAppSelection() {
       if (selectionToken !== token) return null
 
       if (fileResult.status === 'rejected') {
+        // A dropped module request (e.g. a network change) reloads under the
+        // per-document entry guard: the stale guard below is shared by every
+        // frame of the tab, so only the first failing frame would recover.
+        if (isModuleLoadFailure(fileResult.reason) && window.__histoireEntryFailed?.()) {
+          return null
+        }
         // Unknown story: the baked metadata predates the latest collection
         // (e.g. a story file added while this iframe was running).
-        if (attemptStaleRuntimeReload(\`story:\${selection.storyId}\`)) {
+        if (!isModuleLoadFailure(fileResult.reason) && attemptStaleRuntimeReload(\`story:\${selection.storyId}\`)) {
           return null
         }
         throw fileResult.reason

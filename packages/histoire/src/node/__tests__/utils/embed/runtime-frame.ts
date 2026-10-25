@@ -6,11 +6,11 @@ import { sourceFixture } from '../../../../../../histoire-sdk/src/__tests__/fixt
 import { createHistoireSessionWithAdapters } from '../../../../../../histoire-sdk/src/internal.js'
 
 /** Real controller/runtime adapter; only already-validated notification delivery is synchronous. */
-export async function createRuntimeFrameFixture(options: { standalone?: boolean, sourceBase?: string, runtimeRevision?: string, extraVariants?: string[], requestTimeout?: number, framePlugins?: HistoireFramePluginInfo[] } = {}) {
+export async function createRuntimeFrameFixture(options: { standalone?: boolean, sourceBase?: string, runtimeRevision?: string, extraVariants?: string[], requestTimeout?: number, framePlugins?: HistoireFramePluginInfo[], storyCollectTimeout?: number } = {}) {
   const fixture = sourceFixture()
   for (const id of options.extraVariants ?? []) fixture.descriptor.catalog.stories[0].variants.push({ id, title: id })
   if (options.runtimeRevision) fixture.descriptor.catalog.stories[0].runtimeRevision = options.runtimeRevision
-  fixture.descriptor.config = { title: 'Book', autoApplyContrastColor: false, theme: { defaultColorScheme: 'light', darkClass: 'dark' }, responsivePresets: [], backgroundPresets: [], storyCollectTimeout: 100 }
+  fixture.descriptor.config = { title: 'Book', autoApplyContrastColor: false, theme: { defaultColorScheme: 'light', darkClass: 'dark' }, responsivePresets: [], backgroundPresets: [], storyCollectTimeout: options.storyCollectTimeout ?? 100 }
   if (options.requestTimeout) fixture.descriptor.config.runTimeout = options.requestTimeout
   if (options.framePlugins) {
     fixture.descriptor.framePlugins = options.framePlugins

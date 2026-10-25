@@ -8,6 +8,7 @@ import { getRuntimeCatalogForContext } from '../../runtime/catalog/attachment.js
 import { CatalogError } from '../../runtime/catalog/types.js'
 import { getContextRegistry } from '../../runtime/registry.js'
 import { applyDevResponseHeaders } from '../../vite/dev-html.js'
+import { ENTRY_RELOAD_SCRIPT, renderModuleEntry, UNHANDLED_MODULE_FAILURE_SCRIPT } from '../../vite/entry-reload.js'
 import { renderVitestRunnerBootstrap } from '../vitest-runner-bootstrap.js'
 import { projectEmbedContent } from './content.js'
 import { resolveEmbedEditorTarget } from './editor.js'
@@ -61,7 +62,7 @@ export function createEmbedMiddleware(server: ViteDevServer, ctx: Context): Conn
     try {
       if (embedDocument) {
         const suffix = process.env.HISTOIRE_DEV ? '-dev' : ''
-        const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>${renderVitestRunnerBootstrap()}<script type="module" src="/@fs/${APP_PATH}/bundle-embed${suffix}.js"></script></body></html>`
+        const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>${renderVitestRunnerBootstrap()}<script>${ENTRY_RELOAD_SCRIPT}\n${UNHANDLED_MODULE_FAILURE_SCRIPT}</script>${renderModuleEntry(`/@fs/${APP_PATH}/bundle-embed${suffix}.js`)}</body></html>`
         const transformed = await server.transformIndexHtml(req.url, html)
         res.setHeader('content-type', 'text/html; charset=UTF-8')
         res.end(transformed)

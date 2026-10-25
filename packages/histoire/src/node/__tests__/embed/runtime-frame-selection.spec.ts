@@ -72,6 +72,59 @@ describe('standalone story document selection', () => {
     finally { await fixture.close() }
   })
 
+  it('resends the restored selection to a reloaded document that missed it', async () => {
+    const fixture = await createRuntimeFrameFixture({ standalone: true })
+    const frame = fixture.container.querySelector('iframe')!
+    const post = vi.spyOn(frame.contentWindow!, 'postMessage').mockImplementation(() => {})
+    try {
+      frame.dispatchEvent(new Event('load'))
+      publishFrameMessage(frame, VARIANT_READY)
+      await fixture.primary.ready
+      // The document reloads itself (stale metadata, failed module request):
+      // the resync posted on load can arrive before its runtime listens.
+      frame.dispatchEvent(new Event('load'))
+      const syncs = () => post.mock.calls.filter(([message]) => message.type === PREVIEW_SYNC).map(([message]) => message.selectionVersion)
+      expect(syncs()).toEqual([1])
+      publishFrameMessage(frame, VARIANT_READY, undefined, { selectionVersion: 0 })
+      expect(syncs()).toEqual([1, 1])
+      expect(fixture.session.getSnapshot().runtime.status).toBe('mounting')
+      publishFrameMessage(frame, VARIANT_READY, undefined, { selectionVersion: 1 })
+      expect(fixture.session.getSnapshot().runtime.status).toBe('ready')
+      // Once restored, stale reports are dropped without another resync.
+      publishFrameMessage(frame, VARIANT_READY, undefined, { selectionVersion: 0 })
+      expect(syncs()).toEqual([1, 1])
+    }
+    finally { await fixture.close() }
+  })
+
+  it('opens a fresh document when the frame shows a browser error page', async () => {
+    vi.useFakeTimers()
+    const fixture = await createRuntimeFrameFixture({ standalone: true, storyCollectTimeout: 30_000 })
+    const frame = fixture.container.querySelector('iframe')!
+    const src = frame.src
+    const navigations: string[] = []
+    const setSrc = vi.spyOn(frame, 'src', 'set').mockImplementation(value => navigations.push(value))
+    try {
+      // A dropped document request (e.g. a network change) leaves the browser's
+      // cross-origin error page, where no Histoire script runs to recover.
+      const contentDocument = vi.spyOn(frame, 'contentDocument', 'get').mockReturnValue(null)
+      frame.dispatchEvent(new Event('load'))
+      await vi.advanceTimersByTimeAsync(500)
+      // Same document identity: the mount's pending readiness stays valid.
+      expect(navigations).toEqual([src])
+      contentDocument.mockRestore()
+      frame.dispatchEvent(new Event('load'))
+      publishFrameMessage(frame, VARIANT_READY)
+      await fixture.primary.ready
+      expect(fixture.session.getSnapshot().runtime.status).toBe('ready')
+    }
+    finally {
+      setSrc.mockRestore()
+      await fixture.close()
+      vi.useRealTimers()
+    }
+  })
+
   it('restores superseding selection when first document load finishes before bootstrap readiness', async () => {
     const fixture = await createRuntimeFrameFixture({ standalone: true, extraVariants: ['second'] })
     const frame = fixture.container.querySelector('iframe')!

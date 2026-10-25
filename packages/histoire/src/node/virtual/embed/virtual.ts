@@ -15,9 +15,22 @@ export function embedSourceModule(namespace: 'embed' | 'local' = 'embed', comman
 ${namespace === 'local'
   ? `export async function loadDescriptor() {
   const path = ${JSON.stringify(command === 'serve' ? '__histoire/local/descriptor.json' : 'assets/histoire-local.json')}
-  const response = await fetch(new URL(path, new URL(bookBase, location.origin)), { credentials: 'same-origin', cache: 'no-store', redirect: 'error' })
-  if (!response.ok) throw new Error('Local source catalog is unavailable')
-  return response.json()
+  const url = new URL(path, new URL(bookBase, location.origin))
+  // The dev server holds this request open until its catalog is ready. A
+  // dropped connection or a starting server must not leave the workbench empty.
+  const retry = ${command === 'serve'}
+  for (let attempt = 0; ; attempt++) {
+    let response
+    try {
+      response = await fetch(url, { credentials: 'same-origin', cache: 'no-store', redirect: 'error' })
+    }
+    catch (error) {
+      if (!retry) throw error
+    }
+    if (response?.ok) return response.json()
+    if (response && !(retry && response.status === 503)) throw new Error('Local source catalog is unavailable')
+    await new Promise(resolve => setTimeout(resolve, Math.min(250 * 2 ** attempt, 2000)))
+  }
 }`
   : ''}
 export function subscribeSource(listener) {

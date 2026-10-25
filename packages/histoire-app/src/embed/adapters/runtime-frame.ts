@@ -52,6 +52,16 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
     owner.select(selected!, true)
     mounting(true)
     post({ type: PREVIEW_SYNC, ...selected!, grid: false, selectionVersion: owner.selectionVersion })
+  }, () => post({ type: PREVIEW_SYNC, ...selected!, grid: false, selectionVersion: owner.selectionVersion }), {
+    failed: () => !iframe.contentDocument,
+    // Same URL and document identity: pending readiness stays valid, and the
+    // load after it restores later intent like any physical reload.
+    renavigate: () => {
+      if (!active || retired || !owner.id) return
+      const src = iframe.src
+      loading.navigate()
+      iframe.src = src
+    },
   })
   const channels = createEmbedHostChannels(context, () => ({ id: owner.id, selected, ready: id => readyIds.has(id) }))
   const tests = createEmbedPreviewTests(requests, (capture) => {
@@ -199,7 +209,10 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
     if (!active || !owner.id || event.source !== iframe.contentWindow || event.origin !== window.location.origin || !event.data?.__histoire) return
     const message = event.data
     if (message.documentId !== owner.id) return
-    if (context.standalone && layout === 'single' && message.selectionVersion !== owner.selectionVersion) return
+    if (context.standalone && layout === 'single' && message.selectionVersion !== owner.selectionVersion) {
+      if (message.type === VARIANT_READY && message.variantId === selected?.variantId) loading.missed()
+      return
+    }
     if (message.type === RUNTIME_FAILED) {
       fail(new HistoireSdkError('PREVIEW_NOT_READY', message.error?.message ?? 'Story mount failed'))
       return
@@ -223,6 +236,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
       readyIds.add(message.variantId)
       refreshLayout()
       if (message.variantId === selected?.variantId) {
+        loading.restored()
         stalePreview.remember(context.session.getSnapshot(), selected)
         const runtime = publish('ready')
         publishState()
@@ -302,6 +316,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
       layoutScheduler.close()
       resize.disconnect()
       iframe.removeEventListener('load', loading.loaded)
+      loading.dispose()
       iframe.remove()
     },
   }

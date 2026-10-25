@@ -74,6 +74,19 @@ describe('managed story frame acquisition', () => {
     expect(test.container.querySelector('iframe')).toBeNull()
   })
 
+  it('is ready once its runtime reports the target, even if the first document handshake never settles', async () => {
+    // A reloaded frame document (e.g. after a dropped module request) reports
+    // readiness through the session while the first mount waits for a timeout.
+    const test = await leaseFixture({
+      prepare(session) {
+        const mount = session.mount.bind(session)
+        session.mount = (...args: Parameters<HistoireSession['mount']>) => Object.assign(mount(...args), { ready: new Promise<never>(() => {}) })
+      },
+    })
+    await test.frame.start()
+    expect(test.frame.status.value).toBe('ready')
+  })
+
   it('cancels a queued startup on release without ever creating a session', async () => {
     // An empty startup order keeps the request queued behind the coordinator.
     const startup = canvasStartupCoordinatorFixture()
