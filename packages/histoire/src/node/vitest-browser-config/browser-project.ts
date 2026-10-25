@@ -3,21 +3,29 @@ import type { BrowserProviderOption, Vitest } from 'vitest/node'
 import { debugVitestBrowser } from '../util/browser-debug.js'
 import { importResolvedModule } from '../util/import-resolved.js'
 import { resolveVitestModule } from '../util/resolve-vitest-package.js'
+import { createDefinitionOptimizerPolicy } from './definition-optimizer.js'
 
 /**
  * Builds the default `test` options of a browser run: headless chromium through
  * the project's own `@vitest/browser-playwright`, with Histoire's plugins.
  * @param root Project root, used to resolve the provider package.
  * @param plugins Vite plugins the browser server must also apply.
+ * @param optimizeDeps Definition-run optimizer options, applied to the browser server only.
+ * @param serverConfig Other Vite options of the browser server (see {@link getVitestBrowserServerConfig}).
  */
-export async function getVitestBrowserProjectConfig(root: string, plugins: VitePlugin[] = [], optimizeDeps?: InlineConfig['optimizeDeps']) {
+export async function getVitestBrowserProjectConfig(
+  root: string,
+  plugins: VitePlugin[] = [],
+  optimizeDeps?: InlineConfig['optimizeDeps'],
+  serverConfig: InlineConfig = {},
+) {
   const { playwright } = await importResolvedModule(resolveVitestModule(root, '@vitest/browser-playwright'))
   return {
     browser: {
       enabled: true,
       ui: false,
       headless: true,
-      provider: wrapBrowserProviderWithPlugins(playwright(), plugins, optimizeDeps),
+      provider: wrapBrowserProviderWithPlugins(playwright(), plugins, optimizeDeps, serverConfig),
       instances: [
         {
           browser: 'chromium' as const,
@@ -29,18 +37,44 @@ export async function getVitestBrowserProjectConfig(root: string, plugins: ViteP
 }
 
 /**
+ * Vite options the browser server needs from a run's Vite config.
+ *
+ * Vitest creates that server from `project.options` and the project's config
+ * file only, never from the inline config of `createVitest`. Histoire's
+ * configs are inline (`configFile: false`), so without this copy framework
+ * and user options (Nuxt's `#app` aliases, `resolve.dedupe`, `css`,
+ * `publicDir`, `server.fs.allow`, …) never reach the page. Vitest overwrites
+ * the keys it owns (`root`, `base`, `define`, `cacheDir`, `mode`, …).
+ *
+ * Left out: `plugins` (passed separately) and `test` (Vitest options).
+ * `optimizeDeps` comes from the framework and user config, not from the run's
+ * own lists: their `include` pre-bundles CommonJS dependencies the page would
+ * fail to import raw. Its `entries` and `noDiscovery` are left out: Histoire's
+ * core plugin disables discovery in the browser runtime, and definition runs
+ * replace the whole optimizer config with their own policy.
+ * @param viteConfig The run's Vite config.
+ * @param optimizeDeps The framework and user optimizer config.
+ */
+export function getVitestBrowserServerConfig(viteConfig: InlineConfig, optimizeDeps: InlineConfig['optimizeDeps'] = {}): InlineConfig {
+  const { test: _test, plugins: _plugins, optimizeDeps: _runOptimizeDeps, ...serverConfig } = viteConfig as InlineConfig & { test?: unknown }
+  const { entries: _entries, noDiscovery: _noDiscovery, ...frameworkOptimizeDeps } = optimizeDeps
+  return { ...serverConfig, optimizeDeps: frameworkOptimizeDeps }
+}
+
+/**
  * COMPAT: this and `assignVitestBrowserProjectOptions` write Vitest
  * `@internal` API surfaces (`provider.serverFactory`, `project.options`,
  * `coreWorkspaceProject`) — the only channel through which `@vitest/browser`
- * accepts extra Vite plugins for its browser server (it reads
- * `project.options?.plugins`). Verified through vitest 4.1.10; the
+ * accepts extra Vite plugins and options for its browser server (it spreads
+ * `project.options` into `createViteServer`). Verified through vitest 4.1.10; the
  * `peerDependencies` range in package.json documents the supported versions
  * and must be re-verified before widening it.
  */
 function wrapBrowserProviderWithPlugins(
   provider: BrowserProviderOption,
   plugins: VitePlugin[],
-  optimizeDeps?: InlineConfig['optimizeDeps'],
+  optimizeDeps: InlineConfig['optimizeDeps'] | undefined,
+  serverConfig: InlineConfig,
 ): BrowserProviderOption {
   return {
     ...provider,
@@ -64,8 +98,11 @@ function wrapBrowserProviderWithPlugins(
     },
     async serverFactory(options: any) {
       const project = options.project as any
-      project.options ??= {}
-      project.options.plugins = plugins
+      project.options = { ...project.options, ...serverConfig }
+      // The definition optimizer policy belongs to the browser server alone:
+      // Vitest's Node-side server shares `plugins` but resolves with Node
+      // conditions, where browser-only framework includes fail to resolve.
+      project.options.plugins = optimizeDeps ? [...plugins, createDefinitionOptimizerPolicy(optimizeDeps)] : plugins
       if (optimizeDeps) project.options.optimizeDeps = optimizeDeps
       return await provider.serverFactory(options)
     },

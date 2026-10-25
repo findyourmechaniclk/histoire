@@ -3,7 +3,6 @@ import type { Context } from '../context.js'
 import type { VitestBrowserRuntimeConfigResult } from './index.js'
 import { resolve } from 'pathe'
 import { getTestMaxWorkers } from '../util/test-timeouts.js'
-import { RESOLVED_TEST_HARNESS_ID, TEST_HARNESS_ID } from '../virtual/index.js'
 import { getViteConfigWithPlugins } from '../vite/index.js'
 import { createVitestBrowserRuntimeConfig } from './index.js'
 
@@ -54,10 +53,10 @@ export async function getHistoireBrowserRunConfig(
 
   if (collecting) {
     // The collection specs are the only entries: nothing else is imported, so
-    // discovery would only slow the run down.
+    // discovery would only slow the run down. The framework `include` stays:
+    // the browser server pre-bundles it (see `getVitestBrowserServerConfig`).
     viteConfig.optimizeDeps = {
       ...viteConfig.optimizeDeps,
-      include: [],
       entries: optimizerEntries,
       noDiscovery: true,
     }
@@ -71,6 +70,9 @@ export async function getHistoireBrowserRunConfig(
   // needed.
   viteConfig.cacheDir = resolve(ctx.root, '.histoire', 'cache', collecting ? 'vitest-collect' : options.definitions ? 'vitest-definitions' : 'vitest-test')
   if (options.definitions) viteConfig.optimizeDeps = { ...viteConfig.optimizeDeps, holdUntilCrawlEnd: viteConfig.optimizeDeps?.holdUntilCrawlEnd ?? false }
+  // Failure screenshots and other Vitest attachments stay with Histoire's own
+  // files instead of Vitest's default `<root>/.vitest-attachments`.
+  const attachmentsDir = resolve(ctx.root, '.histoire', 'vitest-attachments')
 
   return createVitestBrowserRuntimeConfig(ctx, viteConfig, {
     define: {
@@ -85,6 +87,7 @@ export async function getHistoireBrowserRunConfig(
     ...(collecting
       ? {
           test: {
+            attachmentsDir,
             // One story file at a time: collecting executes story modules with
             // side effects (mocks, global setup) in a shared page.
             fileParallelism: false,
@@ -94,10 +97,8 @@ export async function getHistoireBrowserRunConfig(
         }
       : {
           test: {
+            attachmentsDir,
             maxWorkers: options.definitions ? Math.min(4, getTestMaxWorkers(ctx)) : getTestMaxWorkers(ctx),
-          },
-          resolveAlias: {
-            [TEST_HARNESS_ID]: RESOLVED_TEST_HARNESS_ID,
           },
         }),
   })

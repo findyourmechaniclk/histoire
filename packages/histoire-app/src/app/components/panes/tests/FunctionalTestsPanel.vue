@@ -13,6 +13,7 @@ import WorkbenchPaneHeader from '../../shell/WorkbenchPaneHeader.vue'
 import WorkbenchPanelAction from '../../shell/WorkbenchPanelAction.vue'
 
 import { useWorkbenchTestsModel } from './model.js'
+import { getCollectionFailure } from './projection.js'
 import TestsFilter from './TestsFilter.vue'
 import TestsSummary from './TestsSummary.vue'
 import TestsTree from './TestsTree.vue'
@@ -32,7 +33,12 @@ const issue = computed(() => {
   return error ? (error instanceof Error ? error.message : String(error)).split('\n')[0] : null
 })
 /** Keep partial collection rows usable; replace only failed empty collection. */
-const collectionFailed = computed(() => model?.discoveryStatus.value === 'error' && !model.visibleRows.value.length)
+const collectionFailure = computed(() => {
+  if (!model) return null
+  if (model.discoveryStatus.value === 'error' && !model.visibleRows.value.length) return issue.value ?? ''
+  return model.discoveryStatus.value === 'collecting' ? null : getCollectionFailure(model.visibleRows.value)
+})
+const collectionFailed = computed(() => collectionFailure.value !== null)
 /** Selection is canonical; root translates successful activation into inspector Tests tab. */
 async function select(row: WorkbenchTestRow) {
   if (!row.selectable) return
@@ -69,7 +75,7 @@ async function select(row: WorkbenchTestRow) {
         Retry collection
       </HstButton>
       <WorkbenchErrorState v-if="collectionFailed" title="Test collection failed">
-        {{ issue }}
+        {{ collectionFailure }}
         <template #actions>
           <HstButton color="flat" type="button" @click="model.retryCollection()">
             Retry collection

@@ -1,29 +1,14 @@
 import type { Context } from '../context.js'
 import fs from 'node:fs'
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { dirname, join } from 'node:path'
+import { join } from 'node:path'
 import { expect, it, vi } from 'vitest'
-import { getDefaultConfig } from '../config/index.js'
 import { resolveVitestModule } from '../util/resolve-vitest-package.js'
 import { getVitestBrowserDependencyNames } from '../vitest-browser-config/dependencies.js'
 import { createVitestBrowserResolvePlugin } from '../vitest-browser-config/index.js'
 import { getHistoireBrowserRunConfig } from '../vitest-browser-config/run-config.js'
-
-function createContext(): Context {
-  const root = process.cwd()
-
-  return {
-    root,
-    config: getDefaultConfig(),
-    resolvedViteConfig: { root } as Context['resolvedViteConfig'],
-    mode: 'dev',
-    storyFiles: [],
-    supportPlugins: [],
-    markdownFiles: [],
-    registeredCommands: [],
-  }
-}
+import { createBrowserRunContext as createContext, writeProjectFiles } from './utils/vitest-browser-run.js'
 
 it('keeps Node Playwright providers and declaration packages out of browser optimization', () => {
   const read = vi.spyOn(fs, 'readFileSync').mockReturnValue(JSON.stringify({
@@ -46,10 +31,7 @@ it('keeps installed Vite plugins out of browser optimization', async () => {
       'node_modules/@vitejs/plugin-vue/package.json': { peerDependencies: { vite: '6', vue: '3' } },
       'node_modules/client-library/package.json': { peerDependencies: { vue: '3' } },
     }
-    for (const [path, manifest] of Object.entries(manifests)) {
-      await mkdir(dirname(join(root, path)), { recursive: true })
-      await writeFile(join(root, path), JSON.stringify(manifest))
-    }
+    await writeProjectFiles(root, manifests)
     expect(getVitestBrowserDependencyNames({ root, supportPlugins: [] } as unknown as Context)).toEqual(['client-library'])
   }
   finally { await rm(root, { recursive: true, force: true }) }
@@ -89,6 +71,14 @@ it('reuses the dep-optimizer cache between runs instead of forcing prebundles', 
   // dir would ping-pong invalidate between the two configs).
   expect(collection.viteConfig.cacheDir).toBe(`${ctx.root}/.histoire/cache/vitest-collect`)
   expect(test.viteConfig.cacheDir).toBe(`${ctx.root}/.histoire/cache/vitest-test`)
+})
+
+it('keeps Vitest attachments (failure screenshots) under .histoire', async () => {
+  const ctx = createContext()
+  for (const collecting of [true, false]) {
+    const run = await getHistoireBrowserRunConfig(ctx, { collecting, entries: [] })
+    expect(run.viteConfig.test.attachmentsDir).toBe(`${ctx.root}/.histoire/vitest-attachments`)
+  }
 })
 
 it('bakes the collection flag matching the kind of run', async () => {

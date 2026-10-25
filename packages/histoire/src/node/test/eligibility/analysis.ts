@@ -10,6 +10,8 @@ export interface CollectionModuleAnalysis {
   opaque?: true
   /** Named reads of owned Histoire client plumbing, verified against resolved runtime identity. */
   runtimeImports?: string[]
+  /** Non-imported files plugins read to produce this output; edits to them change it too. */
+  watchFiles?: string[]
 }
 
 const registrationNames = new Set(['onTest', 'pushHistoireTestRegistration', 'TEST_REGISTRY_KEY', 'TEST_DEFINITIONS_KEY'])

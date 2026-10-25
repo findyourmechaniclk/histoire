@@ -26,11 +26,13 @@ export async function collectGenerationTests(ctx: Context, snapshot: Context, so
     if (options.storyId !== undefined && stories.length > 1) throw new HistoireSdkError('STORY_AMBIGUOUS', 'Requested story ID is ambiguous')
     const targets = stories.flatMap(file => file.story!.variants.map(variant => ({ storyId: file.story!.id, variantId: variant.id })))
     const generation = captureTestCollectionGeneration(ctx)
-    const cache = getTestCollectionCache(ctx, source, generation?.token, snapshot.storyFiles)
-    const cached = cache?.read(stories.map(file => file.story!.id), options.force) ?? []
+    const cache = getTestCollectionCache(ctx, source, generation?.verify, snapshot.storyFiles)
+    const cached = await cache?.read(stories.map(file => file.story!.id), options.force) ?? []
     const cachedStories = new Set(cached.map(entry => entry.target.storyId))
     const remaining = stories.filter(file => !cachedStories.has(file.story!.id))
     let eligibility: Awaited<ReturnType<typeof captureTestCollectionEligibility>> | undefined
+    /** Streamed entries per story, admitted once a story's last variant arrives. */
+    const streamed = new Map<string, HistoireProjectTestCollectionResult['variants']>()
     /** Cache, streamed results, and final evidence share identical publication fences. */
     function assertCurrent() {
       deadline.assertCurrent()
@@ -42,7 +44,21 @@ export async function collectGenerationTests(ctx: Context, snapshot: Context, so
     function publish(result: HistoireProjectTestCollectionResult) {
       assertCurrent()
       if (result.execution.runId !== execution.runId) throw new HistoireSdkError('INVALID_ARGUMENT', 'Test discovery operation changed')
+      admit(result.variants)
       options.onProgress?.({ execution, variants: result.variants })
+    }
+    /** Completed stories reach the cache immediately, so a reload or cancellation keeps them. */
+    function admit(variants: HistoireProjectTestCollectionResult['variants']) {
+      if (!cache || !eligibility) return
+      for (const entry of variants) {
+        const entries = streamed.get(entry.target.storyId)
+        if (entries) entries.push(entry)
+        else streamed.set(entry.target.storyId, [entry])
+      }
+      for (const id of new Set(variants.map(entry => entry.target.storyId))) {
+        const proof = eligibility.evidence.get(id)
+        if (proof) cache.write(streamed.get(id)!, new Map([[id, proof]]), assertCurrent)
+      }
     }
     assertCurrent()
     debugVitestBrowser('collection:cache', { runId: execution.runId, hits: cached.length, misses: targets.length - cached.length, stories: remaining.map(file => file.story!.id) })
@@ -80,7 +96,7 @@ export async function collectGenerationTests(ctx: Context, snapshot: Context, so
     const result = { execution, variants: targets.map(target => entries.get(getHistoireTargetKey(target))!) }
     validateProjectTestCollection(result, targets)
     assertCurrent()
-    cache?.write(result.variants, eligibility?.cacheableStoryIds ?? [], assertCurrent)
+    cache?.write(result.variants, eligibility?.evidence ?? new Map(), assertCurrent)
     return result
   }
   catch (error) { throw deadline.failure(error) }

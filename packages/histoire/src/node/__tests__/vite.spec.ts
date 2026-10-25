@@ -218,24 +218,6 @@ describe('getViteConfigWithPlugins', () => {
     expect(resolvedId).toMatch(/@vitest[+/]runner/)
   }, 15000)
 
-  it('excludes Vitest public entry dependencies from the browser optimizer', async () => {
-    const ctx = createContext()
-    const { viteConfig } = await getViteConfigWithPlugins(false, ctx, {
-      browserRuntime: true,
-      collecting: true,
-    })
-    const runtimeConfig = await createVitestBrowserRuntimeConfig(ctx, viteConfig)
-    const optimizer = runtimeConfig.viteConfig.test.deps.optimizer.client
-
-    expect(optimizer.exclude).toContain('vitest')
-    expect(optimizer.exclude).toContain('expect-type')
-    expect(optimizer.exclude).toContain('@vitest/expect')
-    expect(optimizer.exclude).toContain('@vitest/snapshot')
-    expect(optimizer.exclude).toContain('vitest > expect-type')
-    expect(optimizer.exclude).toContain('vitest > @vitest/expect > chai')
-    expect(optimizer.exclude).toContain('vitest > @vitest/snapshot > magic-string')
-  }, 15000)
-
   it('matches root-relative and query-suffixed story importers in browser collection mode', async () => {
     const ctx = createContext()
     const { viteConfig } = await getViteConfigWithPlugins(false, ctx, {

@@ -37,14 +37,18 @@ async function mountPanel(runnable: boolean, options: WorkbenchTestsOptions = {}
     state,
     update,
     wrapper,
-    /** Discovery acknowledges every executable target, including empty variants. */
-    collection(tested = false): HistoireProjectTestCollectionResult {
+    /**
+     * Discovery acknowledges every executable target, including empty variants.
+     * @param tested Gives variant `c` one test definition.
+     * @param error Collection failure of every target.
+     */
+    collection(tested = false, error?: string): HistoireProjectTestCollectionResult {
       const source = session.getSnapshot().source!
       return {
         execution: { runId: 'loading-test', mode: 'server', sourceId: source.sourceId, epoch: source.epoch, revision: source.revision },
         variants: fixture.descriptor.catalog.stories.filter(story => !story.docsOnly).flatMap(story => story.variants.map(variant => ({
           target: { storyId: story.id, variantId: variant.id },
-          collection: { definitions: tested && variant.id === 'c' ? [{ id: '0', name: 'test', fullName: 'test' }] : [] },
+          collection: { definitions: tested && variant.id === 'c' ? [{ id: '0', name: 'test', fullName: 'test' }] : [], ...(error ? { error: { message: error } } : {}) },
         }))),
       }
     },
@@ -154,5 +158,23 @@ describe('workbench Tests pane loading', () => {
       again.resolve(test.collection(true))
       await test.close()
     }
+  })
+
+  it('reports one collection error when no target could be collected', async () => {
+    const gate = deferred<HistoireProjectTestCollectionResult>()
+    const collectProject = vi.fn().mockReturnValueOnce(gate.promise).mockReturnValue(new Promise(() => {}))
+    const test = await mountPanel(true, { collectProject })
+    try {
+      // A run-wide failure (e.g. an unresolved harness import) fails every
+      // story the same way: one error, not one warning per variant.
+      gate.resolve(test.collection(false, 'Failed to resolve import "virtual:$histoire-test-harness"\n  at spec'))
+      await vi.waitFor(() => expect(test.wrapper.find('[role="alert"] strong').exists()).toBe(true))
+      expect(test.wrapper.get('[role="alert"] strong').text()).toBe('Test collection failed')
+      expect(test.wrapper.get('[role="alert"] p').text()).toBe('Failed to resolve import "virtual:$histoire-test-harness"')
+      expect(test.wrapper.find('[aria-label="Project tests"]').exists()).toBe(false)
+      await test.wrapper.get('[role="alert"] button').trigger('click')
+      expect(collectProject).toHaveBeenCalledTimes(2)
+    }
+    finally { await test.close() }
   })
 })

@@ -1,10 +1,8 @@
 import type { InlineConfig, Plugin as VitePlugin } from 'vite'
 import type { Context } from '../context.js'
-import { mergeAlias } from 'vite'
 import { debugVitestBrowser } from '../util/browser-debug.js'
-import { getVitestBrowserProjectConfig } from './browser-project.js'
-import { createDefinitionOptimizerPolicy } from './definition-optimizer.js'
-import { getVitestBrowserDependencyNames, getVitestBrowserOptimizeDeps, VITEST_BROWSER_OPTIMIZER_EXCLUDES } from './dependencies.js'
+import { getVitestBrowserProjectConfig, getVitestBrowserServerConfig } from './browser-project.js'
+import { getVitestBrowserOptimizeDeps } from './dependencies.js'
 import { createVitestBrowserResolvePlugin } from './resolve-plugin.js'
 
 export { assignVitestBrowserProjectOptions } from './browser-project.js'
@@ -38,7 +36,6 @@ export interface CreateVitestBrowserRuntimeConfigOptions {
     force?: boolean
   }
   test?: Record<string, any>
-  resolveAlias?: Record<string, string>
 }
 
 /**
@@ -55,57 +52,47 @@ export async function createVitestBrowserRuntimeConfig(
 ): Promise<VitestBrowserRuntimeConfigResult> {
   const plugins = [...((viteConfig.plugins as VitePlugin[] | undefined) ?? [])]
   plugins.push(createVitestBrowserResolvePlugin(ctx, options.isServer))
+  const runViteConfig: InlineConfig = {
+    ...viteConfig,
+    define: {
+      ...viteConfig.define,
+      ...options.define,
+    },
+    optimizeDeps: {
+      ...viteConfig.optimizeDeps,
+      ...options.optimizeDeps,
+      include: [
+        ...new Set([
+          ...(options.reachableDependencies ? viteConfig.optimizeDeps?.include ?? [] : getVitestBrowserOptimizeDeps(ctx)),
+          ...((options.optimizeDeps?.include ?? [])),
+        ]),
+      ],
+      noDiscovery: options.optimizeDeps?.noDiscovery ?? viteConfig.optimizeDeps?.noDiscovery,
+      force: options.optimizeDeps?.force ?? viteConfig.optimizeDeps?.force,
+    },
+    plugins,
+  }
+  // Applied by the browser server only (see `getVitestBrowserProjectConfig`).
   const definitionOptimizer = options.reachableDependencies ? { ...viteConfig.optimizeDeps, ...options.optimizeDeps } : undefined
-  if (definitionOptimizer) plugins.push(createDefinitionOptimizerPolicy(definitionOptimizer))
-  const defaultTest = await getVitestBrowserProjectConfig(ctx.root, plugins, definitionOptimizer)
-  const browserDependencyNames = options.reachableDependencies ? [] : getVitestBrowserDependencyNames(ctx)
+  const defaultTest = await getVitestBrowserProjectConfig(ctx.root, plugins, definitionOptimizer, getVitestBrowserServerConfig(runViteConfig, viteConfig.optimizeDeps))
 
   return {
     vitestOptions: {
       plugins,
     },
     viteConfig: {
-      ...(viteConfig as InlineConfig & { test?: Record<string, any> }),
-      resolve: {
-        ...viteConfig.resolve,
-        // Use Vite's own `mergeAlias` instead of an object spread: `resolve.alias`
-        // can legally be the array form `[{ find, replacement }]`, and spreading
-        // that into `{ ... }` would turn it into `{ '0': entry, '1': entry }`,
-        // which Vite reads as aliases with `find: '0'` — silently dropping every
-        // user alias in the vitest browser run. `mergeAlias(a, b)` normalizes both
-        // forms and gives `b` (our own aliases) precedence, matching the previous
-        // last-spread-wins behaviour.
-        alias: mergeAlias(viteConfig.resolve?.alias, options.resolveAlias),
-      },
-      define: {
-        ...viteConfig.define,
-        ...options.define,
-      },
-      optimizeDeps: {
-        ...viteConfig.optimizeDeps,
-        ...options.optimizeDeps,
-        include: [
-          ...new Set([
-            ...(options.reachableDependencies ? viteConfig.optimizeDeps?.include ?? [] : getVitestBrowserOptimizeDeps(ctx)),
-            ...((options.optimizeDeps?.include ?? [])),
-          ]),
-        ],
-        noDiscovery: options.optimizeDeps?.noDiscovery ?? viteConfig.optimizeDeps?.noDiscovery,
-        force: options.optimizeDeps?.force ?? viteConfig.optimizeDeps?.force,
-      },
-      plugins,
+      ...(runViteConfig as InlineConfig & { test?: Record<string, any> }),
       test: {
         ...defaultTest,
         ...options.test,
         deps: {
           optimizer: {
-            client: {
-              enabled: true,
-              include: browserDependencyNames,
-              exclude: VITEST_BROWSER_OPTIMIZER_EXCLUDES,
-              entries: options.optimizeDeps?.entries ?? viteConfig.optimizeDeps?.entries ?? [],
-              force: options.optimizeDeps?.force ?? viteConfig.optimizeDeps?.force,
-            },
+            // Vitest applies this to the `client` environment of its Node-side
+            // server, which resolves with Node conditions and never serves the
+            // page (the browser server has its own optimizer). Pre-bundling
+            // browser dependencies there fails on packages without a Node
+            // entry (e.g. `@tiptap/pm`, which has no `.` export).
+            client: { enabled: false },
           },
           ...options.test?.deps,
         },

@@ -149,15 +149,19 @@ it('reuses cleaned-up definitions across reloads and tabs, refreshes explicitly,
     label = 'opaque second'
     sharedNames(await collect(), 'shared two', 'opaque second two')
     expect(effects.length).toBeGreaterThan(opaqueMounts)
-    const dependency = resolve(fixture.root, 'node_modules/unobserved-registration')
+    const dependency = resolve(fixture.root, 'node_modules/installed-registration')
     await mkdir(dependency)
-    await writeFile(resolve(dependency, 'package.json'), '{"name":"unobserved-registration","type":"module","exports":"./index.js"}')
+    await writeFile(resolve(dependency, 'package.json'), '{"name":"installed-registration","type":"module","exports":"./index.js"}')
     await writeFile(resolve(dependency, 'index.js'), `export const suffix=' two'`)
-    await writeFile(resolve(fixture.root, 'helper.ts'), `export {suffix} from 'unobserved-registration'`)
-    label = 'unobserved first'
-    await vi.waitFor(async () => sharedNames(await collect(), 'shared two', 'unobserved first two'), { timeout: 15_000 })
-    label = 'unobserved second'
-    sharedNames(await collect(), 'shared two', 'unobserved second two')
+    await writeFile(resolve(fixture.root, 'helper.ts'), `export {suffix} from 'installed-registration'`)
+    label = 'installed first'
+    await vi.waitFor(async () => sharedNames(await collect(), 'shared two', 'installed first two'), { timeout: 15_000 })
+    label = 'installed second'
+    // Installed packages are fingerprinted leaves: untouched bytes keep definitions.
+    sharedNames(await collect(), 'shared two', 'installed first two')
+    // Reinstalled bytes retire the evidence even though Vite never watches them.
+    await writeFile(resolve(dependency, 'index.js'), `export const suffix=' three'`)
+    sharedNames(await collect(), 'shared two', 'installed second three')
     await rm(resolve(fixture.root, 'Beta.story.vue'))
     await vi.waitFor(() => expect(context().storyFiles.some(file => file.story?.id === 'beta')).toBe(false))
     await vi.waitFor(() => expect(services.dev!.catalog!.updating).toBe(false))

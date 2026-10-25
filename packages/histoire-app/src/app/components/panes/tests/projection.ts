@@ -68,3 +68,19 @@ export function summarizeTestRows(rows: readonly WorkbenchTestRow[]): WorkbenchT
   }
   return summary
 }
+
+/**
+ * First line of the failure of a collection that collected nothing: when
+ * every visible variant of several stories failed to collect, the run itself
+ * failed (e.g. an unresolved import in every generated spec) and one error
+ * replaces the rows. A single failing story and catalog diagnostics keep their
+ * selectable rows.
+ * @param rows Visible rows.
+ * @returns The first row's error line, or null when rows stay listed.
+ */
+export function getCollectionFailure(rows: readonly WorkbenchTestRow[]): string | null {
+  if (!rows.every(row => row.notCollected && row.target.variantId !== null)) return null
+  if (new Set(rows.map(row => row.target.storyId)).size < 2) return null
+  const error = rows[0].error as { message?: unknown } | string
+  return String(typeof error === 'object' && error ? error.message ?? error : error).split('\n')[0]
+}
