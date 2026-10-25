@@ -4,11 +4,14 @@ import fs from 'fs-extra'
 import { globbySync } from 'globby'
 import { defineConfig } from 'vite'
 import { rolldownWatchOptions } from '../../scripts/vite-watch.mjs'
-import { moduleFileName } from './scripts/module-file-name.mjs'
 
 /** Read package dependencies once, including when Vite uses its ESM config runner. */
 const dependencies = Object.keys(fs.readJsonSync(fileURLToPath(new URL('./package.json', import.meta.url))).dependencies)
 
+/** Static entry roots whose modules must have one shared instance per document. */
+const runtimeEntries = new Set(['api', 'sandbox'].map(name => fileURLToPath(new URL(`./src/app/${name}.ts`, import.meta.url))))
+
+/** Build all app consumers together so shared state never crosses separate bundles. */
 export default defineConfig({
   plugins: [
     vue(),
@@ -70,48 +73,38 @@ export default defineConfig({
         return /\$histoire|@histoire/.test(id) || dependencies.some(name => id === name || id.startsWith(`${name}/`))
       },
 
-      // The sandbox document is no longer a bundled app entry: it loads the
-      // generated `virtual:$histoire-preview-runtime` (see bundle-sandbox.js).
-      input: [
-        'src/app/api.ts',
-        'src/app/reusable.ts',
-        'src/app/index.ts',
-        // Generated sandbox runtime imports this bootstrap directly.
-        'src/app/util/controls-document.ts',
-        // Story modules execute only inside generated runtime; preserve its
-        // direct imports even when reusable standalone UI never imports them.
-        'src/app/components/story/GenericMountStory.vue',
-        'src/app/components/story/GenericRenderStory.vue',
-        // Generated runtimes import these paths outside this build's graph.
-        // Explicit entries retain every exported protocol/helper under Rolldown.
-        'src/app/components/story/StoryVariantGridSandbox.vue',
-        'src/app/components/shell/WorkbenchEmptyState.vue',
-        'src/app/plugin.ts',
-        'src/app/stores/preview-settings.ts',
-        'src/app/util/const.ts',
-        'src/app/util/config.ts',
-        'src/app/util/dark.ts',
-        'src/app/util/preview-settings.ts',
-        'src/app/util/runtime-events.ts',
-        'src/app/util/host-channel.ts',
-        'src/app/util/state.ts',
-        'src/app/util/docs.ts',
-        'src/app/util/mapping.ts',
-        'src/app/util/vitest-mocker-shim.ts',
-      ],
+      input: {
+        api: 'src/app/api.ts',
+        index: 'src/app/index.ts',
+        sandbox: 'src/app/sandbox.ts',
+        // Workbench plugins resolve `@histoire/controls/vue` to this entry, so
+        // they share the controls instance compiled into the workbench.
+        controls: fileURLToPath(new URL('../histoire-controls/src/index.ts', import.meta.url)),
+      },
 
       output: {
-        // manualChunks (id) {
-        //   if (id.includes('node_modules')) {
-        //     return 'vendor'
-        //   }
-        // },
-        entryFileNames: moduleFileName,
-        chunkFileNames: moduleFileName,
+        entryFileNames: '[name].js',
+        chunkFileNames: 'chunks/[name]-[hash].js',
+        codeSplitting: {
+          // Static dependencies share one owner; dynamic grid imports stay lazy.
+          // Recursive inclusion is required with strict entry signatures.
+          includeDependenciesRecursively: true,
+          groups: [{
+            // Own chunk, so workbench plugins importing the controls entry don't
+            // load the sandbox runtime (and its virtual modules) with it.
+            name: 'controls',
+            test: /[\\/]histoire-controls[\\/]src[\\/]/,
+            priority: 2,
+          }, {
+            name: 'sandbox-shared',
+            /** Capture both roots and their shared static dependencies. */
+            test(id) {
+              return runtimeEntries.has(id)
+            },
+            priority: 1,
+          }],
+        },
         assetFileNames: '[name][extname]',
-        // hoistTransitiveImports: false,
-        preserveModules: true,
-        preserveModulesRoot: 'src/app',
       },
       treeshake: false,
       preserveEntrySignatures: 'strict',

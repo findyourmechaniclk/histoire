@@ -133,7 +133,7 @@ export function createWorkbenchVueResolver(): NonNullable<VitePlugin['resolveId'
   const appRoot = dirname(dirname(resolveHistoireAppBundledDir()))
   const vendorVue = normalize(realpathSync(createRequire(appIndex).resolve('@histoire/vendors/vue')))
   const sharedRoots = [appRoot, packageRoot(vendorVue, '@histoire/vendors')].filter((root): root is string => !!root)
-  const bundledControls = join(resolveHistoireAppBundledDir(), 'packages/histoire-controls/src/index.js')
+  const bundledControls = join(resolveHistoireAppBundledDir(), 'controls.js')
   const resolvers = new WeakMap<ResolvedConfig, ReturnType<ResolvedConfig['createResolver']>>()
   const vueDependentPackages = new Map<string, boolean>()
   // Optimizer scans see unmarked file ids, so scanned plugin files are tracked here.

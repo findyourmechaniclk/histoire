@@ -3,12 +3,11 @@ import { createEmbedBridgeFixture } from '../../utils/embed/bridge-fixture.js'
 
 /**
  * Upper bound of Histoire-owned module requests one dev sandbox document may
- * make. Bundled runtimes keep it near 45 today (the preserved `@histoire/app`
- * modules and vendor bundles are most of it); unbundled package output was
+ * make. Shared app chunks and vendor bundles keep it below 25; unbundled output was
  * about 180, so going over the budget means a runtime fell back to per-file
  * modules.
  */
-const HISTOIRE_MODULE_BUDGET = 60
+const HISTOIRE_MODULE_BUDGET = 25
 
 /** Matches the Histoire package owning a served file, workspace or installed. */
 const HISTOIRE_PACKAGE_RE = /\/(?:packages\/histoire(?:-([\w-]+))?|node_modules\/(?:@histoire\/([\w-]+)|histoire))\//
@@ -32,7 +31,16 @@ function groupHistoireModuleUrls(urls: string[]): Map<string, string[]> {
 
 describe('dev sandbox module graph', () => {
   it('loads each stateful Histoire runtime once, as a few bundled modules', async () => {
-    const fixture = await createEmbedBridgeFixture({ mode: 'dev' })
+    const fixture = await createEmbedBridgeFixture({
+      mode: 'dev',
+      // A story also consumes the public entry; both paths must share app state.
+      story: `<script setup>
+import { isDark } from 'histoire/client'
+import { ref } from 'vue'
+const dark = ref(isDark())
+</script>
+<template><Story id="overlap" title="Bridge book"><Variant id="main"><button @click="dark = isDark()">Bridge book</button><output>{{ dark ? 'Dark' : 'Light' }}</output></Variant></Story></template>`,
+    })
     try {
       const url = new URL('__sandbox.html?storyId=overlap&variantId=main&embed=true', fixture.bookUrl).href
       // First document may be reloaded by the dep optimizer: measure a later one.
@@ -44,11 +52,37 @@ describe('dev sandbox module graph', () => {
       const page = await fixture.browser.newPage()
       await page.addInitScript(() => performance.setResourceTimingBufferSize(100_000))
       await page.goto(url)
-      await page.getByRole('button', { name: 'Bridge book', exact: true }).waitFor({ timeout: 60_000 })
+      const button = page.getByRole('button', { name: 'Bridge book', exact: true })
+      await button.waitFor({ timeout: 60_000 })
+      const sandboxUrl = await page.evaluate(() => performance.getEntriesByType('resource').map(entry => entry.name).find(url => new URL(url).pathname.endsWith('/dist/bundled/sandbox.js')))
+      expect(sandboxUrl).toBeDefined()
+      // Mutate through the actual loaded sandbox entry and read through the
+      // story API. Explicit reads work across the two independent Vue runtimes.
+      for (const colorScheme of ['dark', 'light']) {
+        // String source keeps Vitest from rewriting this browser-only import.
+        const applied = await page.evaluate(`import(${JSON.stringify(sandboxUrl)}).then(sandbox => {
+          sandbox.applyPreviewSettings({ colorScheme: ${JSON.stringify(colorScheme)} })
+          return sandbox.isDark.value
+        })`)
+        expect(applied).toBe(colorScheme === 'dark')
+        await button.click()
+        await expect.poll(() => page.getByRole('status').textContent()).toBe(colorScheme === 'dark' ? 'Dark' : 'Light')
+      }
       const urls: string[] = await page.evaluate(() => performance.getEntriesByType('resource').map(entry => entry.name))
       await page.close()
 
       const modules = groupHistoireModuleUrls(urls)
+      const appModules = modules.get('app')!
+      expect(appModules.length).toBeGreaterThan(0)
+      // `sandbox.js`, the shared and controls chunks and Rolldown's runtime helper,
+      // plus `bundle-index.js` and `api.js` for the story's `histoire/client` import.
+      expect(appModules.length).toBeLessThanOrEqual(6)
+      expect(appModules.filter(url => url.includes('/dist/embed/'))).toEqual([])
+      const histoireUrls = [...modules.values()].flat()
+      expect(histoireUrls.length).toBe(new Set(histoireUrls).size)
+      // Query variants still instantiate the same file twice, even if URLs differ.
+      const paths = histoireUrls.map(url => decodeURIComponent(new URL(url).pathname))
+      expect(paths.length).toBe(new Set(paths).size)
       // A second URL (another file or another version query) would be a second
       // instance of its module state in this document.
       // Icons are a separate stateless entry, imported by the controls build.

@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto'
 import { createRequire } from 'node:module'
 import { hasProjectVitest } from '../../util/has-vitest.js'
 import { resolveBrowserRuntimeEntry } from '../../util/resolve-browser-runtime.js'
-import { resolveHistoireAppBundledDir } from '../../util/resolve-histoire-app.js'
+import { resolveHistoireAppEntry } from '../../util/resolve-histoire-app.js'
 import { resolveHistoireSharedEntry } from '../../util/resolve-histoire-shared.js'
 import { tryResolveVitestModule } from '../../util/resolve-vitest-package.js'
 import { getStoryCollectTimeout } from '../../util/test-timeouts.js'
@@ -55,8 +55,8 @@ export interface PreviewRuntimeSourceOptions {
   variantTestSessionId: string
   /** Resolved id of the static (build mode) mock runtime module. */
   staticMockRuntimeId: string
-  /** Resolved directory of the bundled `@histoire/app` build. */
-  histoireAppBundledDir: string
+  /** Resolved sandbox entry of the bundled `@histoire/app` build. */
+  histoireAppSandboxId: string
   /** Already resolved browser vendors keep virtual imports out of consumer root. */
   histoireVendorIds: PreviewRuntimePreambleOptions['histoireVendorIds']
   /** Story metadata baked into the runtime at transform time. */
@@ -174,7 +174,7 @@ export function previewRuntime(ctx: Context) {
     histoireSharedId,
     variantTestSessionId,
     staticMockRuntimeId,
-    histoireAppBundledDir: resolveHistoireAppBundledDir(),
+    histoireAppSandboxId: resolveHistoireAppEntry('sandbox'),
     // A virtual module has no dependency owner. Resolve from Histoire's package,
     // as with the app build above; consumers need only depend on Histoire.
     histoireVendorIds: {

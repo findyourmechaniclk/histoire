@@ -37,11 +37,11 @@ export interface PreviewRuntimePreambleOptions {
   /** Resolved id of the static (build mode) mock runtime module. */
   staticMockRuntimeId: string
   /**
-   * Resolved directory of the bundled `@histoire/app` build. Baked as absolute
+   * Resolved sandbox entry of the bundled `@histoire/app` build. Baked as absolute
    * paths because a bare specifier in this virtual module would be resolved
    * from the user's project, which only depends on `histoire`.
    */
-  histoireAppBundledDir: string
+  histoireAppSandboxId: string
   /** Vendor entries resolved from Histoire, never the consumer's virtual root. */
   histoireVendorIds: {
     /** Bundled floating-vue browser entry. */
@@ -77,16 +77,22 @@ export function previewRuntimePreamble({
   histoireSharedId,
   variantTestSessionId,
   staticMockRuntimeId,
-  histoireAppBundledDir,
+  histoireAppSandboxId,
   histoireVendorIds,
   files,
   loaders,
   storyEntryLoaders,
 }: PreviewRuntimePreambleOptions) {
-  /** Quotes an absolute specifier for a module of the bundled app build. */
-  const app = (subpath: string) => JSON.stringify(`${histoireAppBundledDir}/${subpath}`)
-
-  return `import ${app('util/vitest-mocker-shim.js')}
+  return `import {
+  GenericMountStory, GenericRenderStory, setupPluginApi, usePreviewSettingsStore,
+  COLLECT_TESTS, CONTROLS_READY, CONTROLS_RESIZE, HOST_CHANNEL_MESSAGE, PREVIEW_SETTINGS_SYNC,
+  PREVIEW_SYNC, RUN_TEST_CASE, RUN_TESTS, RUNTIME_REQUEST, RUNTIME_RESULT, RUNTIME_FAILED,
+  RUNTIME_LAYOUT, RUNTIME_FOCUS, SANDBOX_READY, SELECT_VARIANT, STATE_SYNC, TEST_CASE_RESULT,
+  TEST_DEFINITIONS, TEST_RESULT, VARIANT_READY, histoireConfig, isDark, setupControlsDocument,
+  applyPreviewSettings, installRuntimeEventScope, installRuntimeHostChannels, toRawDeep,
+  getDynamicSourceCode, createRuntimeState, createRuntimeStatePresets,
+  createStandalonePresetStorage, observeRuntimeLayout, loadStoryVariantGridSandbox,
+} from ${JSON.stringify(histoireAppSandboxId)}
 import 'virtual:$histoire-theme'
 ${hasVitestPreview
   ? `import { createMockInstance } from ${JSON.stringify(vitestSpyId)}
@@ -95,23 +101,6 @@ import { ModuleMocker, ModuleMockerMSWInterceptor } from ${JSON.stringify(vitest
 import FloatingVue from ${JSON.stringify(histoireVendorIds.floatingVue)}
 import { createPinia } from ${JSON.stringify(histoireVendorIds.pinia)}
 import { computed, createApp, defineComponent, h, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from ${JSON.stringify(histoireVendorIds.vue)}
-import GenericMountStory from ${app('components/story/GenericMountStory.vue.js')}
-import GenericRenderStory from ${app('components/story/GenericRenderStory.vue.js')}
-import { setupPluginApi } from ${app('plugin.js')}
-import { usePreviewSettingsStore } from ${app('stores/preview-settings.js')}
-import { COLLECT_TESTS, CONTROLS_READY, CONTROLS_RESIZE, HOST_CHANNEL_MESSAGE, PREVIEW_SETTINGS_SYNC, PREVIEW_SYNC, RUN_TEST_CASE, RUN_TESTS, RUNTIME_REQUEST, RUNTIME_RESULT, RUNTIME_FAILED, RUNTIME_LAYOUT, RUNTIME_FOCUS, SANDBOX_READY, SELECT_VARIANT, STATE_SYNC, TEST_CASE_RESULT, TEST_DEFINITIONS, TEST_RESULT, VARIANT_READY } from ${app('util/const.js')}
-import { histoireConfig } from ${app('util/config.js')}
-import { isDark } from ${app('util/dark.js')}
-import { setupControlsDocument } from ${app('util/controls-document.js')}
-import { applyPreviewSettings } from ${app('util/preview-settings.js')}
-import { installRuntimeEventScope } from ${app('util/runtime-events.js')}
-import { installRuntimeHostChannels } from ${app('util/host-channel.js')}
-import { toRawDeep } from ${app('util/state.js')}
-import { getDynamicSourceCode } from ${app('util/docs.js')}
-import { createRuntimeState } from ${app('../embed/adapters/state.js')}
-import { createRuntimeStatePresets } from ${app('../embed/adapters/state-presets.js')}
-import { createStandalonePresetStorage } from ${app('../embed/app/standalone/presets.js')}
-import { observeRuntimeLayout } from ${app('../embed/adapters/layout.js')}
 import { ELEMENT_PICK_REQUEST, ELEMENT_PICK_RESULT, MEASURE_REQUEST, MEASURE_RESULT, PROPS_OVERRIDE, applyVariantStateUpdate, createControlsOverlayBridge, createControlsStateRevision, createFailedRunSummary, createVariantStateSyncGuards, getFramePurpose, getVariantStateKey, isInteractiveFramePurpose, measureWireValue, serializeTestError } from ${JSON.stringify(histoireSharedId)}
 import { createVariantTestSession, hasVanillaSetupHooks } from ${JSON.stringify(variantTestSessionId)}
 ${hasVitestPreview
@@ -125,7 +114,7 @@ async function ensureGridComponent() {
   if (StoryVariantGridSandbox) return
   if (!gridComponentPromise) {
     gridComponentPromise = (async () => {
-      const module = await import(${app('components/story/StoryVariantGridSandbox.vue.js')})
+      const module = await loadStoryVariantGridSandbox()
       StoryVariantGridSandbox = module.default
     })()
       .catch((error) => {

@@ -1,18 +1,22 @@
 import { createRequire } from 'node:module'
-import { dirname, resolve } from 'pathe'
+import { dirname } from 'pathe'
 
+/** Resolve app entries from Histoire's dependencies, not a virtual module's user root. */
 const require = createRequire(import.meta.url)
 
 /**
- * Resolves the directory of the bundled `@histoire/app` build.
- *
- * The preview runtime is a virtual module, so it has no location on disk: a
- * bare `@histoire/app/...` specifier in it is resolved from the *user's*
- * project root, where only `histoire` is a dependency. Resolving from this
- * package instead — which does depend on `@histoire/app` — makes the generated
- * runtime build in any project, whatever the node_modules layout.
+ * Virtual modules have no filesystem owner. Resolve their app dependency from
+ * Histoire so consumers only need to install `histoire`, regardless of layout.
+ * @param entry Public app entry: `api` (the package root) or `sandbox`.
+ */
+export function resolveHistoireAppEntry(entry: 'api' | 'sandbox') {
+  return require.resolve(entry === 'api' ? '@histoire/app' : '@histoire/app/sandbox')
+}
+
+/**
+ * Directory of the bundled app build: its entries (`index.js`, `sandbox.js`,
+ * `controls.js`, ...) and their shared chunks.
  */
 export function resolveHistoireAppBundledDir() {
-  const packageJsonPath = require.resolve('@histoire/app/package.json')
-  return resolve(dirname(packageJsonPath), 'dist/bundled')
+  return dirname(resolveHistoireAppEntry('sandbox'))
 }

@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { build, transformSync } from 'esbuild'
 import { describe, expect, it } from 'vitest'
@@ -15,10 +16,10 @@ function parseAsModule(source: string) {
 describe('preview runtime generation', () => {
   it('keeps grid-only modules behind selection readiness', () => {
     const source = generatePreviewRuntimeSource()
-    const gridModule = '/stub/histoire-app/dist/bundled/components/story/StoryVariantGridSandbox.vue.js'
+    const sandboxModule = '/stub/histoire-app/dist/bundled/sandbox.js'
 
-    expect(source).not.toContain(`import StoryVariantGridSandbox from ${JSON.stringify(gridModule)}`)
-    expect(source).toContain(`await import(${JSON.stringify(gridModule)})`)
+    expect(source).toContain(`} from ${JSON.stringify(sandboxModule)}`)
+    expect(source).toContain('await loadStoryVariantGridSandbox()')
 
     const selectionStart = source.indexOf('async function syncSelection(nextSelection)')
     const selectionEnd = source.indexOf('async function handleRuntimeRequest', selectionStart)
@@ -43,7 +44,6 @@ describe('preview runtime generation', () => {
       stdin: {
         contents: `${source}
 export { logEvent, isDark, toggleDark, useHostChannel, useHistoireGlobals, useHistoireGlobalsStore } from ${JSON.stringify(`${appDirectory}bundle-index.js`)}
-import ${JSON.stringify(`${appDirectory}bundled/reusable.js`)}
 import ${JSON.stringify(`${appDirectory}bundled/index.js`)}
 `,
         loader: 'js',
@@ -67,11 +67,11 @@ import ${JSON.stringify(`${appDirectory}bundled/index.js`)}
         },
       }],
     })
-    const modules = Object.keys(output.metafile!.inputs).join('\n')
+    const modules = (await Promise.all(Object.keys(output.metafile!.inputs).filter(file => file !== '<stdin>').map(file => readFile(file, 'utf8')))).join('\n')
     // Dynamic imports are traversed too: logEvent's lazy compatibility store
     // must never pull route views or a second selected-story owner into clients.
-    expect(modules).not.toMatch(/histoire-app\/dist\/bundled\/(?:router\.js|stores\/(?:story|folder|tests|preview-runtime)\.js)/)
-    expect(modules).not.toMatch(/histoire-app\/dist\/bundled\/components\/(?:panel|search|tree)\//)
+    expect(modules).not.toMatch(/^\/\/(?:#region)? src\/app\/(?:router\.ts|stores\/(?:story|folder|tests|preview-runtime)\.ts)$/m)
+    expect(modules).not.toMatch(/^\/\/(?:#region)? src\/app\/components\/(?:panel|search|tree)\//m)
     const exports = Object.values(output.metafile!.outputs).flatMap(value => value.exports)
     expect(exports).toEqual(expect.arrayContaining(['logEvent', 'isDark', 'toggleDark', 'useHostChannel', 'useHistoireGlobals', 'useHistoireGlobalsStore']))
   })

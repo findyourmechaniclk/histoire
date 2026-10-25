@@ -81,7 +81,7 @@ export function generatePreviewRuntimeSource(hasVitestPreview = true, { lazyStor
     histoireSharedId: '/stub/node_modules/@histoire/shared/dist/index.js',
     variantTestSessionId: '/stub/histoire/virtual/variant-test-session.js',
     staticMockRuntimeId: '/stub/histoire/virtual/vitest-static-mock-runtime.js',
-    histoireAppBundledDir: '/stub/histoire-app/dist/bundled',
+    histoireAppSandboxId: '/stub/histoire-app/dist/bundled/sandbox.js',
     histoireVendorIds: {
       floatingVue: '/stub/histoire-vendors/dist/client/b-floating-vue.js',
       pinia: '/stub/histoire-vendors/dist/client/b-pinia.js',

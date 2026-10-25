@@ -4,10 +4,9 @@ import type { CollectionModuleAnalysis } from './analysis.js'
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { HistoireSdkError } from '@histoire/protocol'
-import { resolve } from 'pathe'
 import { notifyStoryChange } from '../../stories.js'
 import { debugVitestBrowser } from '../../util/browser-debug.js'
-import { resolveHistoireAppBundledDir } from '../../util/resolve-histoire-app.js'
+import { resolveHistoireAppEntry } from '../../util/resolve-histoire-app.js'
 import { throwIfTestAborted, withTestAbort } from '../../util/test-abort.js'
 import { GENERATED_GLOBAL_SETUP, NOOP_ID, RESOLVED_GENERATED_GLOBAL_SETUP, RESOLVED_GENERATED_SETUP_CODE, SETUP_ID } from '../../virtual/index.js'
 import { histoireSharedPath } from '../../vite/resolve-paths.js'
@@ -55,9 +54,7 @@ const generatedRuntime = fileURLToPath(new URL('../../builtin-plugins/tailwind/r
 /** Public helper exports are trusted only through this owned module, never user aliases. */
 const clientRuntime = fileURLToPath(new URL('../../../../client.js', import.meta.url))
 /** User aliases cannot substitute registration code behind trusted client plumbing. */
-const appClientRuntime = fileURLToPath(import.meta.resolve('@histoire/app'))
-/** Generated story's injected empty-state renderer is Histoire plumbing, not user registration code. */
-const generatedEmptyState = resolve(resolveHistoireAppBundledDir(), 'components/shell/WorkbenchEmptyState.vue.js')
+const appClientRuntime = resolveHistoireAppEntry('api')
 
 /** Inspect closed transformed graphs without executing user modules or mounting variants. */
 export function createTestCollectionEligibility(ctx: Context, server: ViteDevServer) {
@@ -115,7 +112,7 @@ export function createTestCollectionEligibility(ctx: Context, server: ViteDevSer
         return { id: key, imports: [], safe: true }
       }
     }
-    if (isFrameworkRuntime(key) || key === generatedRuntime || key === generatedEmptyState || /(?:\?|&)vue&type=style\b/.test(key) || /\.(?:css|scss|sass|less)(?:\?|$)/.test(key)) return { id: key, imports: [], safe: true }
+    if (isFrameworkRuntime(key) || key === generatedRuntime || key === appClientRuntime || /(?:\?|&)vue&type=style\b/.test(key) || /\.(?:css|scss|sass|less)(?:\?|$)/.test(key)) return { id: key, imports: [], safe: true }
     // Vite ignores installed dependency files. A parsed graph whose edits are
     // unobservable cannot supply reusable evidence or a retained empty proof.
     const ownedPlumbing = key === NOOP_ID || key === RESOLVED_GENERATED_GLOBAL_SETUP || key.startsWith(RESOLVED_GENERATED_SETUP_CODE) || key === '\0plugin-vue:export-helper'

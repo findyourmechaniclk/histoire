@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { RESOLVED_WORKBENCH_PLUGINS_ID, WORKBENCH_PLUGINS_ID } from '../virtual/index.js'
 import { WORKBENCH_MODULE_MARKER } from '../vite/workbench-vue.js'
-import { APP_MODULE, createWorkbenchVueProject, importUrls, VENDOR_VUE } from './utils/workbench-vue-project.js'
+import { APP_CONTROLS, APP_MODULE, createWorkbenchVueProject, importUrls, VENDOR_VUE } from './utils/workbench-vue-project.js'
 
 let project: Awaited<ReturnType<typeof createWorkbenchVueProject>>
 
@@ -50,7 +50,6 @@ describe('workbench Vue resolution in dev', () => {
     await project.withDevServer(async (get) => {
       const app = importUrls(await get(`/@fs${APP_MODULE}`))
       const appVue = app.find(url => url.includes('/b-vue.js'))
-      const appControls = app.find(url => url.includes('histoire-controls/src/index.js'))
       expect(appVue).toBeDefined()
 
       const [entry] = importUrls(await get(RESOLVED_WORKBENCH_PLUGINS_ID))
@@ -58,7 +57,10 @@ describe('workbench Vue resolution in dev', () => {
       const plugin = importUrls(await get(entry))
       // `vue` and `@vue/runtime-core` both land on the exact URL the workbench loads.
       expect(plugin.filter(url => url === appVue)).toHaveLength(2)
-      expect(plugin).toContain(appControls)
+      // Controls come from the app entry, which only re-exports the workbench's controls chunk.
+      const pluginControls = plugin.find(url => url.split('?')[0].endsWith(APP_CONTROLS))
+      expect(pluginControls).toBeDefined()
+      expect(importUrls(await get(pluginControls!)).map(url => url.split('?')[0])).toEqual([`/@fs${APP_MODULE}`])
 
       const shared = plugin.find(url => url.includes('plugins/shared.js'))!
       expect(shared).toContain(WORKBENCH_MODULE_MARKER)

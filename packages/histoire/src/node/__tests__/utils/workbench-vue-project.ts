@@ -1,5 +1,6 @@
 import type { AddressInfo } from 'node:net'
 import type { InlineConfig, ViteDevServer } from 'vite'
+import { readFileSync } from 'node:fs'
 import { mkdir, symlink, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { pathToFileURL } from 'node:url'
@@ -15,8 +16,10 @@ import { createWorkbenchPluginProject } from './workbench-plugin-project.js'
 const appRequire = createRequire(join(resolveHistoireAppBundledDir(), 'index.js'))
 /** Vendor Vue file the prebuilt workbench imports. */
 export const VENDOR_VUE = appRequire.resolve('@histoire/vendors/vue')
-/** Prebuilt app module importing both vendor Vue and the bundled controls copy. */
-export const APP_MODULE = join(resolveHistoireAppBundledDir(), 'components/shell/WorkbenchErrorState.vue_vue_type_script_setup_true_lang.js')
+/** App entry re-exporting the controls copy compiled into the workbench (`@histoire/controls/vue` for plugins). */
+export const APP_CONTROLS = join(resolveHistoireAppBundledDir(), 'controls.js')
+/** Prebuilt app chunk holding that controls copy; it imports vendor Vue. */
+export const APP_MODULE = join(resolveHistoireAppBundledDir(), readFileSync(APP_CONTROLS, 'utf8').match(/from "\.\/(chunks\/controls-[^"]+\.js)"/)![1])
 
 /**
  * Lists static and dynamic import URLs of served or generated module code.
