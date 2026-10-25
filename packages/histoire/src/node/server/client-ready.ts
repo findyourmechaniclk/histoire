@@ -25,3 +25,11 @@ export async function prepareDevClient(server: ViteDevServer): Promise<void> {
   preloads.set(server, getStaticClientPreloads(graph, entries))
   debugVitestBrowser('collection:client-ready', { duration: performance.now() - started, modules: client.moduleGraph.idToModuleMap.size })
 }
+
+/**
+ * Settles the dependency optimizer without warming the app graph: enough when
+ * the dependencies are those of the previous run, and its cache was kept.
+ */
+export async function waitForDevClientOptimizer(server: ViteDevServer): Promise<void> {
+  await finishClientOptimization(server.environments.client)
+}

@@ -1,5 +1,6 @@
 import type { ServerStory, ServerStoryFile } from '@histoire/shared'
 import type { Context } from '../context.js'
+import type { StoryCollectionOutcome } from './outcome.js'
 import { relative } from 'pathe'
 import { createPath } from '../tree.js'
 
@@ -38,4 +39,16 @@ export function finalizeCollectedStoryFile(storyFile: ServerStoryFile, ctx: Cont
   }
   storyFile.treePath = createPath(ctx.config, storyFile.treeFile)
   storyFile.story.title = storyFile.treePath[storyFile.treePath.length - 1]
+}
+
+/** Applies a cached collection outcome to a story file, as if it had just been collected. */
+export function restoreCollectedStoryFile(storyFile: ServerStoryFile, ctx: Context, outcome: StoryCollectionOutcome | undefined) {
+  if (outcome?.status === 'collected' && outcome.story) {
+    // Finalization mutates its input; the cached copy must stay raw.
+    finalizeCollectedStoryFile(storyFile, ctx, structuredClone(outcome.story))
+    return
+  }
+  delete storyFile.story
+  delete storyFile.treePath
+  delete storyFile.treeFile
 }

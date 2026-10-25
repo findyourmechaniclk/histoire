@@ -186,7 +186,7 @@ export interface HistoireConfig extends HistoireUiConfig {
   }
   /**
    * Maximum number of threads used to collect stories.
-   * By default based on available number of cores.
+   * By default 4 in development, based on available number of cores when building.
    */
   collectMaxThreads?: number
   /**

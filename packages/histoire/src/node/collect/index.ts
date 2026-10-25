@@ -12,11 +12,12 @@ import { createBirpc } from 'birpc'
 import path from 'pathe'
 import pc from 'picocolors'
 import { ViteNodeServer } from 'vite-node/server'
-import { hashContent, readRegisteredText } from '../mcp/project/content-index.js'
 import { getContextRegistry } from '../runtime/registry.js'
 import { slash } from '../util/fs.js'
+import { readStorySourceSha256 } from './catalog-cache.js'
 import { formatThrown } from './errors.js'
 import { finalizeCollectedStoryFile } from './finalize.js'
+import { getCollectThreadCount } from './threads.js'
 
 export interface UseCollectStoriesOptions {
   server: ViteDevServer
@@ -46,11 +47,7 @@ export function useCollectStories(options: UseCollectStoriesOptions, ctx: Contex
     transformMode: ctx.config.viteNodeTransformMode,
   })
 
-  const maxThreads = ctx.config.collectMaxThreads ?? cpus().length
-
-  const threadsCount = ctx.mode === 'dev'
-    ? Math.max(Math.min(maxThreads, Math.floor(cpus().length / 2)), 1)
-    : Math.max(Math.min(maxThreads, cpus().length - 1), 1)
+  const threadsCount = getCollectThreadCount(ctx.mode, cpus().length, ctx.config.collectMaxThreads)
   console.log(pc.blue(`Using ${threadsCount} thread${threadsCount === 1 ? '' : 's'} for story collection`))
 
   const threadPool = new Tinypool({
@@ -123,14 +120,7 @@ export function useCollectStories(options: UseCollectStoriesOptions, ctx: Contex
   async function executeStoryFile(storyFile: ServerStoryFile): Promise<StoryCollectionOutcome> {
     let port: MessagePort | undefined
     try {
-      let sourceSha256: string
-      try {
-        sourceSha256 = storyFile.virtual ? hashContent(storyFile.moduleCode ?? '') : (await readRegisteredText(ctx.root, storyFile.path)).sha256
-      }
-      catch {
-        // Content availability does not change existing trusted collection
-        // policy. Unavailable source is diagnosed by the catalog projector.
-      }
+      const sourceSha256 = await readStorySourceSha256(ctx, storyFile)
       const channel = createChannel()
       port = channel.port
       const { workerPort } = channel
@@ -151,16 +141,18 @@ export function useCollectStories(options: UseCollectStoriesOptions, ctx: Contex
         delete storyFile.story
         delete storyFile.treePath
         delete storyFile.treeFile
-        return { status: 'empty' }
+        return { status: 'empty', sourceSha256 }
       }
       else if (storyData.length > 1) {
         console.warn(pc.yellow(`⚠️  Multiple stories not supported: ${storyFile.path}`))
       }
 
+      // Finalization mutates the collected data; the catalog cache keeps the raw copy.
+      const story = structuredClone(storyData[0])
       // Shared with the browser collection: the two collection modes must not
       // produce different story metadata for the same story file.
       finalizeCollectedStoryFile(storyFile, ctx, storyData[0])
-      return { status: 'collected', sourceSha256 }
+      return { status: 'collected', sourceSha256, story }
     }
     catch (e) {
       delete storyFile.story

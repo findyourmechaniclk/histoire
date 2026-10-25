@@ -568,9 +568,9 @@ export default defineConfig({
 
 ## `collectMaxThreads`
 
-`number` - Default: available cpus
+`number` - Default: `4` in development, available cpus when building
 
-Number of maximum threads used to collect stories (both for development and building). Threads count will never go above this limit but might be lower.
+Number of maximum threads used to collect stories (both for development and building). Threads count will never go above this limit but might be lower: half the cpus in development, all cpus but one when building.
 
 ```ts
 export default defineConfig({

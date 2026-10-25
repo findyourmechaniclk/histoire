@@ -1,6 +1,7 @@
 import type { Context } from '../context.js'
 import type { ExecutionService } from '../runtime/execution-service.js'
 import type { CreateServerOptions as ViteServerOptions } from './vite-servers.js'
+import { createCollectionCache } from '../collect/catalog-cache.js'
 import { useCollectStories } from '../collect/index.js'
 import { useModuleLoader } from '../load.js'
 import { createMarkdownFilesWatcher, onMarkdownListChange } from '../markdown.js'
@@ -13,7 +14,7 @@ import { onStoryListChange, watchStories } from '../stories.js'
 import { attachTestCollectionEligibility } from '../test/eligibility/index.js'
 import * as VirtualFiles from '../virtual/index.js'
 import { closeDevPreviewHost } from '../vite/mcp-preview-html.js'
-import { prepareDevClient } from './client-ready.js'
+import { prepareDevClient, waitForDevClientOptimizer } from './client-ready.js'
 import { createStoryCollector } from './collect.js'
 import { registerDevEvents } from './dev-events.js'
 import { createModuleInvalidators } from './invalidate.js'
@@ -109,7 +110,7 @@ export async function createServer(ctx: Context, options: CreateServerOptions = 
       }
       finally { await draining }
     })
-    collector = createStoryCollector({ ctx, server, collectStories, invalidateModule, invalidateModuleSilently, isActive })
+    collector = createStoryCollector({ ctx, server, collectStories, invalidateModule, invalidateModuleSilently, isActive, cache: createCollectionCache(ctx) })
     stopCollection = collector.stop
 
     cleanup.add(onStoryListChange(ctx, () => {
@@ -122,9 +123,20 @@ export async function createServer(ctx: Context, options: CreateServerOptions = 
     cleanup.add(onMarkdownListChange(ctx, () => {
       if (isActive()) invalidateModule(VirtualFiles.RESOLVED_MARKDOWN_FILES)
     }))
-    const ready = collector.collect().then(async () => {
-      await prepareDevClient(server)
+    // The previous run's catalog, when still valid, spares waiting for a first
+    // collection (story files boot the whole app) and for the client warmup:
+    // its stories import what they imported last run. Both run afterwards,
+    // one after the other, so the first frames keep most of the main thread.
+    const ready = collector.restore().then(async (restored) => {
+      if (!restored) {
+        await collector.collect()
+        await prepareDevClient(server)
+        checkActive()
+        return
+      }
+      await waitForDevClientOptimizer(server)
       checkActive()
+      void prepareDevClient(server).then(() => collector.revalidate()).catch(error => console.error(error))
     })
     // Returned readiness still rejects for callers, but ordinary dev never leaks
     // an unhandled rejection while the controller attaches its observer.

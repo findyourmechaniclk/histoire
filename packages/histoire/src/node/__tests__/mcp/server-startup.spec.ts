@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createCollectionCache } from '../../collect/catalog-cache.js'
 import { useCollectStories } from '../../collect/index.js'
 import { createMarkdownFilesWatcher } from '../../markdown.js'
 import { getContextRegistry } from '../../runtime/registry.js'
+import { prepareDevClient } from '../../server/client-ready.js'
 import { createServer } from '../../server/index.js'
 import { registerAgentsChannel } from '../../server/ui-channel/agents.js'
 import { registerAiThreadsChannel } from '../../server/ui-channel/ai-threads.js'
@@ -16,11 +18,13 @@ vi.mock('../../server/vite-servers.js', () => ({ createViteServers: vi.fn() }))
 vi.mock('../../stories.js', () => ({ watchStories: vi.fn(), onStoryChange: () => () => {}, onStoryListChange: () => () => {} }))
 vi.mock('../../markdown.js', () => ({ createMarkdownFilesWatcher: vi.fn(), onMarkdownListChange: () => () => {} }))
 vi.mock('../../collect/index.js', () => ({ useCollectStories: vi.fn() }))
+// No catalog of a previous run: startup collects (the restore path has its own tests).
+vi.mock('../../collect/catalog-cache.js', () => ({ createCollectionCache: vi.fn(() => ({ read: async () => undefined, write: async () => {} })) }))
 vi.mock('../../load.js', () => ({ useModuleLoader: () => ({}) }))
 vi.mock('../../plugin.js', () => ({ DevPluginApi: class {} }))
 vi.mock('../../server/dev-events.js', () => ({ registerDevEvents: vi.fn() }))
 // Client warmup drives real Vite environments; startup ordering only needs its completion.
-vi.mock('../../server/client-ready.js', () => ({ prepareDevClient: vi.fn(async () => {}) }))
+vi.mock('../../server/client-ready.js', () => ({ prepareDevClient: vi.fn(async () => {}), waitForDevClientOptimizer: vi.fn(async () => {}) }))
 // Startup tests own acquisition plumbing. Feature registration is a boundary:
 // real ACP/config/thread initialization must not inspect user settings here.
 vi.mock('../../server/ui-channel/index.js', () => ({ registerUiChannel: vi.fn() }))
@@ -85,7 +89,7 @@ describe('dev startup ownership', () => {
       ready = true
     })
     expect(server.listen).toHaveBeenCalledOnce()
-    expect(execute).toHaveBeenCalledOnce()
+    await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
     const active = vi.mocked(registerUiChannel).mock.calls[0][3]
     expect(registerUiChannel).toHaveBeenCalledWith(ctx, server, expect.any(Object), expect.any(Function))
     expect(registerConfigChannel).toHaveBeenCalledWith(ctx, channel, active)
@@ -126,6 +130,25 @@ describe('dev startup ownership', () => {
     expect(markdownClose).toHaveBeenCalledTimes(['stories', 'markdown'].includes(stage) ? 0 : 1)
     expect(cleanup).toHaveBeenCalledTimes(stage === 'plugin' ? 1 : 0)
     expect(channelClose).toHaveBeenCalledTimes(['listen', 'collector'].includes(stage) ? 1 : 0)
+  })
+
+  it('is ready with a restored catalog before the client warmup, which precedes revalidation', async () => {
+    const warmed = deferred()
+    vi.mocked(prepareDevClient).mockReturnValueOnce(warmed.promise)
+    const execute = vi.fn(async () => ({ status: 'empty' as const }))
+    vi.mocked(useCollectStories).mockReturnValue({ clearCache: vi.fn(), executeStoryFile: execute, destroy } as any)
+    const ctx = context()
+    ctx.storyFiles.push({ fileName: 'story', path: '/project/a.story.vue' })
+    vi.mocked(createCollectionCache).mockReturnValueOnce({ read: async () => new Map([['/project/a.story.vue', { status: 'empty' as const, sourceSha256: 'sha' }]]), write: async () => {} })
+
+    const runtime = await createServer(ctx)
+    await runtime.ready
+
+    // Frames are admitted while the client warmup runs; collection waits for it.
+    expect(execute).not.toHaveBeenCalled()
+    warmed.resolve()
+    await vi.waitFor(() => expect(execute).toHaveBeenCalledOnce())
+    await runtime.close()
   })
 
   it('still closes servers after a plugin cleanup throws', async () => {

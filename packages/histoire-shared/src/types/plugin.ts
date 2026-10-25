@@ -50,6 +50,12 @@ export interface PluginConfigContext {
   readonly tempDir: string
   /** Registers an acquired resource immediately, including partial configuration. */
   onCleanup: (callback: () => Awaitable<void>) => void
+  /**
+   * Directory for generated output that should survive restarts:
+   * `.histoire/<name>` while no other live run of the project uses it,
+   * otherwise `<tempDir>/<name>`. Stable for this run.
+   */
+  claimDir: (name: string) => string
 }
 
 export interface PluginApiBase {

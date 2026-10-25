@@ -3,7 +3,11 @@ import type { Context } from '../context.js'
 import type { ScreenshotSetupOwner } from './browser/setup/types.js'
 import type { ExecutionService } from './execution-service.js'
 import { rm } from 'node:fs/promises'
-import { getRunTempDir } from '../util/temp-paths.js'
+import { join, resolve } from 'pathe'
+import { markGeneratedDir } from '../util/generated-dir.js'
+import { claimPersistentDir } from '../util/persistent-dir.js'
+import { pruneStaleRunDirsOnce } from '../util/stale-run-dirs.js'
+import { getProjectTempDir, getRunTempDir } from '../util/temp-paths.js'
 import { createScreenshotSetupOwner } from './browser/setup/owner.js'
 import { createBrowserSetupPolicy } from './browser/setup/policy.js'
 import { createCleanupStack } from './cleanup.js'
@@ -17,16 +21,33 @@ function createRegistry(ctx: Context) {
   const cleanup = createCleanupStack()
   const events = createProjectEvents()
   const tempDir = getRunTempDir(ctx.root, ctx.mode ?? 'context')
+  // Killed runs leave their temp dir behind; the first context of a project removes them.
+  pruneStaleRunDirsOnce(ctx.root)
+  markGeneratedDir(getProjectTempDir(ctx.root))
   // Mutable generated outputs are unique even for two captures of the same root.
   // Registered first so deletion runs after dependent watchers/servers/plugins.
   // Vite may finish a final optimizer-directory rename while shutdown settles.
   // Bounded filesystem retries affect only this captured output directory.
   cleanup.add(() => rm(tempDir, { recursive: true, force: true, maxRetries: 6, retryDelay: 50 }))
   cleanup.add(() => events.clear())
+  const claimedDirs = new Map<string, string>()
   const pluginContext: PluginConfigContext = {
     root: ctx.root,
     tempDir,
     onCleanup: callback => cleanup.add(callback),
+    claimDir(name) {
+      let dir = claimedDirs.get(name)
+      if (!dir) {
+        const persistent = resolve(ctx.root, '.histoire', name)
+        // Another live run owns it: two runs regenerating the same files race.
+        const release = claimPersistentDir(persistent)
+        if (release) cleanup.add(release)
+        dir = release ? persistent : join(tempDir, name)
+        markGeneratedDir(dir)
+        claimedDirs.set(name, dir)
+      }
+      return dir
+    },
   }
   return {
     /** Reverse-order acquired-resource ownership. */

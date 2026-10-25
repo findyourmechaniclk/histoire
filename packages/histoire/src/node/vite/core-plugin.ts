@@ -59,9 +59,15 @@ export function createHistoireVitePlugin(ctx: Context, options: HistoireVitePlug
           ]
       const optimizeInclude = browserRuntime
         ? []
-        : withPackageDirs([
-            'shiki',
-          ])
+        : [
+            ...withPackageDirs([
+              'shiki',
+            ]),
+            // Imported by Histoire's Vitest browser runtime, past the scan:
+            // discovered when the first document loads them, they reload it.
+            ...browserRuntimePaths.mswBrowser ? ['msw/browser'] : [],
+            ...browserRuntimePaths.mswCoreHttp ? ['msw/core/http'] : [],
+          ]
 
       return {
         resolve: {

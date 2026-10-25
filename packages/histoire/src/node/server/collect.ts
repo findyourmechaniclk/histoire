@@ -1,11 +1,14 @@
 import type { HistoireStoryChangedPayload, ServerStoryFile } from '@histoire/shared'
 import type { ViteDevServer } from 'vite'
+import type { CollectionCache } from '../collect/catalog-cache.js'
 import type { useCollectStories } from '../collect/index.js'
 import type { StoryCollectionOutcome } from '../collect/outcome.js'
 import type { Context } from '../context.js'
 import { performance } from 'node:perf_hooks'
+import { serialize } from 'node:v8'
 import { STORY_CHANGED_EVENT } from '@histoire/shared'
 import pc from 'picocolors'
+import { restoreCollectedStoryFile } from '../collect/finalize.js'
 import { withCleanupDeadline } from '../runtime/cleanup.js'
 import { onStoryChange, onStoryListChange } from '../stories.js'
 import { fileHasVitestMocks } from '../util/story-vitest.js'
@@ -22,6 +25,8 @@ export interface StoryCollectorOptions {
   invalidateModuleSilently: (id: string) => void
   /** Additional generation guard supplied by the runtime controller. */
   isActive?: () => boolean
+  /** Catalog of the previous run, restored by `restore()`; rewritten after each batch. */
+  cache?: Pick<CollectionCache, 'read' | 'write'>
 }
 
 /** Collection lifecycle observed by generation-owned catalog publishers. */
@@ -34,6 +39,16 @@ export interface CollectionEvent {
   error?: unknown
   /** Last completed status of every still-registered file, including unchanged files. */
   outcomes: ReadonlyMap<string, StoryCollectionOutcome>
+  /**
+   * Background collection of a restored catalog: the restored catalog stays
+   * executable while it runs, as it was complete when published.
+   */
+  revalidate?: boolean
+}
+
+/** Comparable snapshot of the collected metadata of all story files. */
+function serializeStories(storyFiles: ServerStoryFile[]) {
+  return serialize(storyFiles.map(file => [file.path, file.story ?? null, file.treePath ?? null]))
 }
 
 /**
@@ -119,7 +134,15 @@ export function createStoryCollector(options: StoryCollectorOptions) {
     }
   })
 
-  async function runBatch() {
+  /** Refreshes the virtual modules that bake story metadata at transform time. */
+  function invalidateCatalogModules() {
+    invalidateModule(VirtualFiles.RESOLVED_STORIES_ID)
+    invalidateModule(VirtualFiles.RESOLVED_SEARCH_TITLE_DATA_ID)
+    invalidateModule(VirtualFiles.RESOLVED_BUILD_INFO_ID)
+    invalidateModuleSilently(VirtualFiles.RESOLVED_PREVIEW_RUNTIME_ID)
+  }
+
+  async function runBatch(revalidate = false) {
     if (!isActive()) return
     collecting = true
 
@@ -133,7 +156,9 @@ export function createStoryCollector(options: StoryCollectorOptions) {
     for (const key of outcomes.keys()) {
       if (!paths.has(key)) outcomes.delete(key)
     }
-    await announce({ phase: 'started', files })
+    const flag = revalidate ? { revalidate } : {}
+    const before = revalidate ? serializeStories(ctx.storyFiles) : undefined
+    await announce({ phase: 'started', files, ...flag })
     /** Records typed outcomes while keeping legacy injected executors compatible. */
     async function execute(file: ServerStoryFile) {
       const outcome = await executeStoryFile(file)
@@ -171,7 +196,7 @@ export function createStoryCollector(options: StoryCollectorOptions) {
       const fileCount = ctx.storyFiles.length
       let loadedFilesCount = 0
       const sendProgress = () => {
-        if (!isActive()) return
+        if (!isActive() || revalidate) return
         server.ws.send('histoire:stories-loading-progress', {
           loadedFileCount: loadedFilesCount,
           totalFileCount: fileCount,
@@ -187,15 +212,14 @@ export function createStoryCollector(options: StoryCollectorOptions) {
       }))
 
       didAllStoriesYet = true
-      if (isActive()) server.ws.send('histoire:all-stories-loaded', {})
+      if (isActive() && !revalidate) server.ws.send('histoire:all-stories-loaded', {})
     }
     if (!isActive()) return
     console.log(`Collect stories end ${pc.bold(pc.blue(Math.round(performance.now() - time)))}ms`)
+    options.cache?.write(ctx.storyFiles, outcomes).catch(error => console.warn(pc.yellow(`Could not write the story collection cache: ${error}`)))
 
-    invalidateModule(VirtualFiles.RESOLVED_STORIES_ID)
-    invalidateModule(VirtualFiles.RESOLVED_SEARCH_TITLE_DATA_ID)
-    invalidateModule(VirtualFiles.RESOLVED_BUILD_INFO_ID)
-    invalidateModuleSilently(VirtualFiles.RESOLVED_PREVIEW_RUNTIME_ID)
+    // Unchanged revalidated metadata must not reload the workbench or its frames.
+    if (!before?.equals(serializeStories(ctx.storyFiles))) invalidateCatalogModules()
 
     // Ordering guarantee: story-changed events are only announced once the
     // virtual modules above are invalidated, so any iframe reload they trigger
@@ -203,18 +227,54 @@ export function createStoryCollector(options: StoryCollectorOptions) {
     for (const changedStory of changedStories) {
       server.ws.send(STORY_CHANGED_EVENT, changedStory)
     }
+    await announce({ phase: 'completed', files, ...flag })
+  }
+
+  /**
+   * Publishes the cached catalog of the previous run, when it is still valid
+   * for every registered story file, instead of waiting for a first collection.
+   * @returns Whether the cached catalog was published; call `revalidate()` then.
+   */
+  async function restore(): Promise<boolean> {
+    if (!isActive() || !options.cache || collecting) return false
+    const cached = await options.cache.read(ctx.storyFiles).catch(() => undefined)
+    if (!cached || !isActive() || collecting) return false
+    const files = ctx.storyFiles.filter(file => cached.has(file.path))
+    for (const file of files) {
+      restoreCollectedStoryFile(file, ctx, cached.get(file.path))
+      outcomes.set(file.path, cached.get(file.path)!)
+    }
+    // Restored catalog is complete: later file changes collect as usual.
+    didAllStoriesYet = true
+    console.log(`Restored ${files.length} story file${files.length === 1 ? '' : 's'} from the collection cache`)
+    invalidateCatalogModules()
     await announce({ phase: 'completed', files })
+    return true
+  }
+
+  /** Collects every story again after `restore()`, publishing only differences. */
+  function revalidate(): Promise<void> {
+    if (!isActive()) return Promise.resolve()
+    // Queued file changes already re-collect them, blocking admission as usual.
+    if (activeCollection || queued) return collect()
+    return run(() => runBatch(true))
   }
 
   /** Joins active work rather than executing two collection batches at once. */
   function collect(): Promise<void> {
     if (!isActive()) return Promise.resolve()
     if (activeCollection) return activeCollection
+    return run(runBatch)
+  }
+
+  /** Runs `first`, then batches queued meanwhile, as the single active collection. */
+  function run(first: () => Promise<void>): Promise<void> {
     activeCollection = (async () => {
       try {
-        do {
+        await first()
+        while (queued && isActive()) {
           await runBatch()
-        } while (queued && isActive())
+        }
       }
       catch (error) {
         await announce({ phase: 'failed', files: currentFiles.slice(), error })
@@ -244,6 +304,8 @@ export function createStoryCollector(options: StoryCollectorOptions) {
 
   return {
     collect,
+    restore,
+    revalidate,
     stop,
     /** Private typed status snapshot used when initial collection finished before subscription. */
     get outcomes() { return new Map(outcomes) },

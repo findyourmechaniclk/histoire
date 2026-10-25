@@ -69,6 +69,20 @@ describe('getViteConfigWithPlugins', () => {
     expect(resolvedConfig.optimizeDeps.exclude).toContain('vitest')
   }, 15000)
 
+  it('pre-bundles the msw modules of the Vitest browser runtime up front', async () => {
+    const ctx = createContext()
+    try {
+      const { viteConfig } = await getViteConfigWithPlugins(false, ctx)
+      const resolvedConfig = await resolveConfig(viteConfig, 'serve')
+
+      // Discovered when the first document loads them, they would reload it.
+      expect(resolvedConfig.optimizeDeps.include).toEqual(expect.arrayContaining(['msw/browser', 'msw/core/http']))
+    }
+    finally {
+      await closeContext(ctx)
+    }
+  }, 15000)
+
   it('allows packaged controls peer assets for the browser', async () => {
     const ctx = createContext()
     const { viteConfig } = await getViteConfigWithPlugins(false, ctx)

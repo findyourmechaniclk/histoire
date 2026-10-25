@@ -27,6 +27,8 @@ export interface HstNuxtOptions {
   /**
    * Nuxt build directory used by Histoire, relative to the Nuxt root.
    * Kept apart from `.nuxt` so a running `nuxt dev` doesn't share generated files.
+   * By default `.histoire/nuxt`, or a run-owned directory while another Histoire
+   * run of the project (e.g. the isolated test collection of `histoire dev`) uses it.
    * @default '.histoire/nuxt'
    */
   buildDir?: string
@@ -40,7 +42,7 @@ export interface HstNuxtOptions {
 
 /** Integrates one Nuxt project with explicit root and startup cleanup ownership. */
 export function HstNuxt(options: HstNuxtOptions = {}): Plugin {
-  const { buildDir = '.histoire/nuxt', prebundle = [] } = options
+  const { prebundle = [] } = options
   let nuxt: Nuxt
   const owner = {}
   let closing: Promise<void> | undefined
@@ -60,6 +62,8 @@ export function HstNuxt(options: HstNuxtOptions = {}): Plugin {
       context?.onCleanup(close)
       let nuxtViteConfig: Awaited<ReturnType<typeof useNuxtViteConfig>>
       try {
+        // Concurrent Nuxt instances must not regenerate the same build dir.
+        const buildDir = options.buildDir ?? context?.claimDir?.('nuxt') ?? '.histoire/nuxt'
         nuxtViteConfig = await useNuxtViteConfig(context?.root ?? process.cwd(), buildDir, (acquired) => {
           nuxt = acquired
         })

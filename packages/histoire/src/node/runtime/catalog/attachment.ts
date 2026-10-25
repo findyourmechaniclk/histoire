@@ -24,7 +24,8 @@ function createAttachment(runtime: ProjectRuntimeHandle, options: SnapshotOption
   }
   const off = runtime.onCollection(async (event) => {
     if (disposed || !runtime.isActive()) return
-    if (event.phase === 'started') catalog.markUpdating()
+    // A restored catalog stays executable while it is collected again.
+    if (event.phase === 'started' && !event.revalidate) catalog.markUpdating()
     if (event.phase === 'completed') await publish(event.outcomes)
     if (event.phase === 'failed') {
       const outcomes = new Map(event.outcomes)

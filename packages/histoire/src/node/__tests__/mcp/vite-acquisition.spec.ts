@@ -9,12 +9,12 @@ vi.mock('../../vite/index.js', () => ({ getViteConfigWithPlugins: vi.fn() }))
 
 describe('sequential Vite acquisition', () => {
   beforeEach(() => {
-    vi.mocked(getViteConfigWithPlugins).mockResolvedValue({ viteConfig: { server: {} }, viteConfigFile: 'vite.config.ts' } as any)
+    vi.mocked(getViteConfigWithPlugins).mockResolvedValue({ viteConfig: { server: {}, plugins: [] }, viteConfigFile: 'vite.config.ts' } as any)
   })
 
   /** Server with observed acquisition and cleanup. */
   function server() {
-    return { close: vi.fn(async () => {}), pluginContainer: { buildStart: vi.fn(async () => {}) } }
+    return { close: vi.fn(async () => {}), pluginContainer: { buildStart: vi.fn(async () => {}) }, watcher: { on: vi.fn() } }
   }
 
   it('evaluates collector first, then book config without parallel acquisition', async () => {
@@ -29,7 +29,7 @@ describe('sequential Vite acquisition', () => {
   })
 
   it.each([true, false, undefined])('preserves client discovery choice %s while collector remains isolated', async (noDiscovery) => {
-    vi.mocked(getViteConfigWithPlugins).mockResolvedValue({ viteConfig: { server: {}, optimizeDeps: { include: ['fixture-dependency'], noDiscovery } } } as any)
+    vi.mocked(getViteConfigWithPlugins).mockResolvedValue({ viteConfig: { server: {}, plugins: [], optimizeDeps: { include: ['fixture-dependency'], noDiscovery } } } as any)
     vi.mocked(createViteServer).mockResolvedValueOnce(server() as any).mockResolvedValueOnce(server() as any)
     await createViteServers({} as any, {})
     const [collector, client] = vi.mocked(createViteServer).mock.calls.slice(-2).map(call => call[0].optimizeDeps)

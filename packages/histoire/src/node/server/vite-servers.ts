@@ -5,6 +5,7 @@ import { RuntimeCleanupError } from '../runtime/cleanup.js'
 import { createHostingHmr, createHostingProxyEvents } from '../runtime/hosting/hmr.js'
 import { acquireViteServer as createViteServer } from '../vite/acquire-server.js'
 import { getViteConfigWithPlugins } from '../vite/index.js'
+import { collectionWatchPlugin, forwardWatcherEvents } from './collection-watcher.js'
 
 export interface CreateServerOptions {
   /** Client-facing Vite port; zero selects an ephemeral port. */
@@ -45,6 +46,9 @@ export async function createViteServers(ctx: Context, options: CreateServerOptio
       // Final config ownership must still pin HMR to the supplied server.
       viteConfig.plugins.push({ name: 'histoire:owned-hosting', enforce: 'post', config: () => ({ base, server: hostingServer }) })
     }
+
+    // The client server crawls the project; its file events are replayed here.
+    if (collecting) viteConfig.plugins.push(collectionWatchPlugin())
 
     if (!collecting) {
       if (options.open !== undefined) {
@@ -104,6 +108,7 @@ export async function createViteServers(ctx: Context, options: CreateServerOptio
   // Run before normal vite to prevent breaking HMR in Nuxt
   try {
     const { server, viteConfigFile } = await getViteServer(false)
+    forwardWatcherEvents(server, nodeServer)
     return { nodeServer, server, viteConfigFile }
   }
   catch (error) {

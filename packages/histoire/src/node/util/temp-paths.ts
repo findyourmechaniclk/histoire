@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto'
+import { hostname } from 'node:os'
 import { normalize, resolve } from 'pathe'
 
 /** Reserved generated run directory, shared only as a parent of isolated outputs. */
@@ -7,6 +8,11 @@ export const HISTOIRE_TEMP_PATH = '.histoire/tmp'
 /** Resolves generated output ancestry without acquiring or deleting a run. */
 export function getProjectTempDir(root: string) {
   return resolve(root, HISTOIRE_TEMP_PATH)
+}
+
+/** Caches kept across runs (optimizer output, story catalog). */
+export function getProjectCacheDir(root: string) {
+  return resolve(root, '.histoire', 'cache')
 }
 
 /**
@@ -19,7 +25,18 @@ export function getProjectTempDir(root: string) {
  * @param kind Name of the generated artifacts, used as parent directory.
  */
 export function getRunTempDir(root: string, kind: string) {
-  return resolve(getProjectTempDir(root), kind, `run-${Date.now().toString(36)}-${randomUUID().slice(0, 8)}`)
+  // The owner tag lets later runs remove directories of runs that were killed.
+  return resolve(getProjectTempDir(root), kind, `run-${Date.now().toString(36)}-${getRunOwnerTag()}-${randomUUID().slice(0, 8)}`)
+}
+
+/** Short tag of this host, so runs never judge processes of another machine sharing the project. */
+export function getHostTag() {
+  return createHash('sha256').update(hostname()).digest('hex').slice(0, 6)
+}
+
+/** `p<pid>h<host>` segment of this process' run directories. */
+function getRunOwnerTag() {
+  return `p${process.pid.toString(36)}h${getHostTag()}`
 }
 
 /**

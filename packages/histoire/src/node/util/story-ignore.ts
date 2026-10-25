@@ -2,13 +2,13 @@ import type { Context } from '../context.js'
 import micromatch from 'micromatch'
 import { relative, resolve } from 'pathe'
 import { isPathWithinRoot } from '../runtime/content/files.js'
-import { getProjectTempDir } from './temp-paths.js'
+import { getProjectCacheDir, getProjectTempDir } from './temp-paths.js'
 
 /** Shares source admission and directory pruning across both filesystem watchers. */
 export function createStoryIgnore(ctx: Context) {
   const temporary = getProjectTempDir(ctx.root)
   // Persistent optimizer caches (see vite/optimizer-cache.ts) are as large.
-  const cache = resolve(ctx.root, '.histoire', 'cache')
+  const cache = getProjectCacheDir(ctx.root)
   const patterns = ctx.config.storyIgnored.map(pattern => resolve(ctx.root, pattern))
   return (file: string) => {
     const absolute = resolve(ctx.root, file)

@@ -1,7 +1,9 @@
 import type { Context } from '../context.js'
 import { join, relative, resolve } from 'pathe'
 import { getContextRegistry } from '../runtime/registry.js'
+import { markGeneratedDir } from '../util/generated-dir.js'
 import { claimPersistentDir } from '../util/persistent-dir.js'
+import { getProjectCacheDir } from '../util/temp-paths.js'
 
 /** Persistent dev client optimizer caches, claimed once per context. */
 const devClientCacheDirs = new WeakMap<Context, string>()
@@ -21,7 +23,8 @@ export function getViteCacheDir(ctx: Context, kind: string) {
   if (ctx.mode !== 'dev' || kind !== 'client') return runDir
   let dir = devClientCacheDirs.get(ctx)
   if (!dir) {
-    const persistent = resolve(ctx.root, '.histoire', 'cache', 'vite', 'dev-client')
+    markGeneratedDir(getProjectCacheDir(ctx.root))
+    const persistent = resolve(getProjectCacheDir(ctx.root), 'vite', 'dev-client')
     const release = claimPersistentDir(persistent)
     if (release) getContextRegistry(ctx).cleanup.add(release)
     dir = release ? persistent : runDir
