@@ -4,6 +4,20 @@ import { deferred } from '../../../histoire-sdk/src/__tests__/fixtures/session.j
 import { canvasStartupCoordinatorFixture, canvasStartupTask } from './fixtures/canvas-startup-coordinator.js'
 
 describe('canvas startup coordinator', () => {
+  it('reports busy while any startup is queued or active', async () => {
+    const busy: boolean[] = []
+    const value = canvasStartupCoordinatorFixture(1, value => busy.push(value))
+    const first = deferred<void>()
+    value.setOrder(['first', 'second'])
+    value.request('first', canvasStartupTask([], 'first', first.promise))
+    const second = value.request('second', canvasStartupTask([], 'second'))
+    expect(busy).toEqual([true])
+    second.cancel()
+    first.resolve()
+    await flushPromises()
+    expect(busy).toEqual([true, false])
+  })
+
   it('starts selected frame alone, then fills slots with nearest admitted siblings', async () => {
     const value = canvasStartupCoordinatorFixture(2)
     const selected = deferred<void>()

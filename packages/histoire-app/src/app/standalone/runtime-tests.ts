@@ -2,6 +2,7 @@ import type { HistoireTestsModel } from '@histoire/vue/internal'
 import type { StandaloneRuntimeBinding } from './runtime-binding.js'
 import { createHistoireTestsModel } from '@histoire/vue/internal'
 import { shallowRef, watch } from 'vue'
+import { whenCanvasStartupIdle } from '../components/canvas/canvas-startup-activity.js'
 import { createStandaloneTests } from './tests.js'
 
 /** Keep one shared badge/panel model while its finite controller follows selected runtime. */
@@ -17,7 +18,9 @@ export function createStandaloneRuntimeTests(runtime: StandaloneRuntimeBinding) 
     // from its disposed session while mounted consumers are retiring.
     if (session.getSnapshot().status === 'disposed') return
     const model = createHistoireTestsModel(session)
-    adapter = createStandaloneTests(session, model)
+    // Collecting mounts the selected story twice more in its frame: wait for
+    // the canvas to start its cells, which share the main thread.
+    adapter = createStandaloneTests(session, model, { defer: whenCanvasStartupIdle })
     stopState = watch(model.state, value => state.value = value, { immediate: true, flush: 'sync' })
   }, { immediate: true, flush: 'sync' })
   /** Stable controller methods prevent mounted panels from retaining a retired controller. */

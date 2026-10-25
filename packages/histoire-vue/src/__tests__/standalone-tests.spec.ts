@@ -93,3 +93,41 @@ describe('standalone shared test collection', () => {
     }
   })
 })
+
+describe('standalone deferred test collection', () => {
+  it('collects once the deferral runs, dropping deferrals of retired targets', async () => {
+    const fixture = sourceFixture()
+    const session = createHistoireSessionWithAdapters({ url: 'https://book.example/' }, fixture.adapters)
+    await session.connect()
+    await session.selection.select({ storyId: 'a:b', variantId: 'c' })
+    const collect = vi.spyOn(session.tests, 'collect').mockResolvedValue({ definitions: [{ id: 'run', name: 'Run', fullName: 'Run' }] })
+    const pending: Array<{ run: () => void, cancel: ReturnType<typeof vi.fn> }> = []
+    const defer = (run: () => void) => {
+      const cancel = vi.fn()
+      pending.push({ run, cancel })
+      return cancel
+    }
+    const model = createHistoireTestsModel(session)
+    const adapter = createStandaloneTests(session, model, { defer })
+    const preview = session.mount(document.createElement('div'), { surface: 'preview' })
+    try {
+      await preview.ready
+      await vi.waitFor(() => expect(pending).toHaveLength(1))
+      expect(collect).not.toHaveBeenCalled()
+      pending[0].run()
+      await vi.waitFor(() => expect(model.state.value.collection?.definitions).toHaveLength(1))
+      // A new target retires the previous deferral before it can collect.
+      for (const listener of fixture.frameListeners) listener({ type: 'runtime', ...fixture.owner(), runtime: { ...fixture.runtime(), status: 'mounting' } })
+      fixture.ready()
+      await vi.waitFor(() => expect(pending).toHaveLength(2))
+      adapter.close()
+      expect(pending[1].cancel).toHaveBeenCalledOnce()
+      expect(collect).toHaveBeenCalledOnce()
+    }
+    finally {
+      adapter.close()
+      await preview.unmount()
+      await session.dispose()
+    }
+  })
+})

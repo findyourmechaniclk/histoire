@@ -2,8 +2,8 @@ import { onTestFinished } from 'vitest'
 import { createCanvasStartupCoordinator } from '../../../../histoire-app/src/app/components/canvas/frame-startup-coordinator.js'
 
 /** Create a startup coordinator and dispose it when the owning test finishes. */
-export function canvasStartupCoordinatorFixture(limit = 2) {
-  const coordinator = createCanvasStartupCoordinator(limit)
+export function canvasStartupCoordinatorFixture(limit = 2, onBusyChange?: (busy: boolean) => void) {
+  const coordinator = createCanvasStartupCoordinator(limit, onBusyChange)
   onTestFinished(() => coordinator.dispose())
   return coordinator
 }

@@ -1,5 +1,6 @@
 import type { InjectionKey, WatchSource } from 'vue'
 import { inject, onBeforeUnmount, provide, watch } from 'vue'
+import { setCanvasStartupBusy } from './canvas-startup-activity.js'
 
 /** One admitted frame's cancellable initial acquisition. */
 export interface CanvasStartupRequest {
@@ -46,8 +47,12 @@ interface FrameStateRecord {
   state: FrameStartupState
 }
 
-/** Create one bounded coordinator for a single mounted canvas. */
-export function createCanvasStartupCoordinator(limit = 2): CanvasStartupCoordinator {
+/**
+ * Create one bounded coordinator for a single mounted canvas.
+ * @param limit Frames starting at once once the anchor is ready
+ * @param onBusyChange Called when startups become pending, or all settle
+ */
+export function createCanvasStartupCoordinator(limit = 2, onBusyChange?: (busy: boolean) => void): CanvasStartupCoordinator {
   const capacity = Math.max(1, Math.floor(Number.isFinite(limit) ? limit : 1))
   const queued: StartupJob[] = []
   const jobs = new Set<StartupJob>()
@@ -59,6 +64,15 @@ export function createCanvasStartupCoordinator(limit = 2): CanvasStartupCoordina
   let order: string[] = []
   let drainScheduled = false
   let disposed = false
+  let busy = false
+
+  /** Publishes whether any startup is queued or active (`jobs` holds both). */
+  function reportBusy(): void {
+    const next = jobs.size > 0
+    if (next === busy) return
+    busy = next
+    onBusyChange?.(busy)
+  }
 
   /** Schedule one microtask so same-patch frame requests share latest order. */
   function scheduleDrain(): void {
@@ -81,6 +95,7 @@ export function createCanvasStartupCoordinator(limit = 2): CanvasStartupCoordina
       job.phase = 'cancelled'
       job.start = undefined
       job.resolve()
+      reportBusy()
     }
     else if (job.phase === 'complete') {
       job.phase = 'cancelled'
@@ -122,6 +137,7 @@ export function createCanvasStartupCoordinator(limit = 2): CanvasStartupCoordina
     if (wasCancelled) job.resolve()
     else if (failed) job.reject(error)
     else job.resolve()
+    reportBusy()
     scheduleDrain()
   }
 
@@ -196,6 +212,7 @@ export function createCanvasStartupCoordinator(limit = 2): CanvasStartupCoordina
       stateByFrame.set(frameId, { sequence: id, state: 'pending' })
       queued.push(job)
       jobs.add(job)
+      reportBusy()
       scheduleDrain()
       return { completion, cancel: () => cancel(job) }
     },
@@ -206,6 +223,11 @@ export function createCanvasStartupCoordinator(limit = 2): CanvasStartupCoordina
       queued.length = 0
       currentByFrame.clear()
       stateByFrame.clear()
+      // Active jobs settle after teardown; this canvas no longer delays anything.
+      if (busy) {
+        busy = false
+        onBusyChange?.(false)
+      }
     },
   }
 }
@@ -214,7 +236,8 @@ const canvasStartupCoordinatorKey: InjectionKey<CanvasStartupCoordinator> = Symb
 
 /** Provide and own startup coordination for one CanvasViewport. */
 export function provideCanvasStartupCoordinator(order: WatchSource<readonly string[]>): CanvasStartupCoordinator {
-  const coordinator = createCanvasStartupCoordinator()
+  const owner = {}
+  const coordinator = createCanvasStartupCoordinator(undefined, busy => setCanvasStartupBusy(owner, busy))
   provide(canvasStartupCoordinatorKey, coordinator)
   watch(order, value => coordinator.setOrder(value), { immediate: true, flush: 'sync' })
   onBeforeUnmount(() => coordinator.dispose())

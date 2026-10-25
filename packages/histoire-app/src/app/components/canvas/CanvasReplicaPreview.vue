@@ -2,11 +2,12 @@
 import type { StoryFrameStatus } from './frames/acquire-story-frame.js'
 import { useHistoireSession, useHistoireSnapshot } from '@histoire/vue'
 import { useHistoireContext } from '@histoire/vue/internal'
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useCanvasFrames, useCanvasFrameState, useCanvasStore } from '../../composables/canvas-settings.js'
 import { useMatrixStore } from '../../stores/matrix.js'
 import { useCanvasStartupCoordinator } from './frame-startup-coordinator.js'
 import { acquireStoryFrame } from './frames/acquire-story-frame.js'
+import { useFrameSnapshot } from './snapshots/useFrameSnapshot.js'
 import { useCanvasContentSizing } from './useCanvasContentSizing.js'
 
 const props = defineProps<{
@@ -22,7 +23,7 @@ const props = defineProps<{
   /** Matrix cell prop projection; never writes into canonical session. */
   propsOverride?: Record<string, unknown>
 }>()
-const emit = defineEmits<{ status: [status: 'loading' | 'ready' | 'error', error?: unknown] }>()
+const emit = defineEmits<{ status: [status: 'loading' | 'ready' | 'error', error?: unknown], snapshot: [shown: boolean] }>()
 const canonical = useHistoireSession()
 const context = useHistoireContext()
 const snapshot = useHistoireSnapshot()
@@ -32,6 +33,9 @@ const container = ref<HTMLElement>()
 const ready = ref(false)
 // eslint-disable-next-line ts/no-use-before-define -- prop acknowledgement is awaited only after startup.
 const contentSizing = useCanvasContentSizing({ canvas: store, canonical, snapshot, container, ready, target: () => props, wait: () => frame.wait() })
+// Last rendering of this cell, shown until its live frame is ready.
+const frameSnapshot = useFrameSnapshot({ canvas: store, snapshot, target: () => props, previewBase: () => props.previewBase, container, ready, content: contentSizing })
+watch(() => !!frameSnapshot.document.value && !ready.value, shown => emit('snapshot', shown), { immediate: true })
 const frame = acquireStoryFrame({
   canonical,
   frames: useCanvasFrames(),
@@ -72,10 +76,16 @@ defineExpose({ retry: frame.start, getSource: frame.getSource })
 </script>
 
 <template>
-  <div ref="container" class="histoire-canvas-replica" :aria-busy="!ready" :inert="!ready ? true : undefined" />
+  <div class="histoire-canvas-replica-root">
+    <div ref="container" class="histoire-canvas-replica" :aria-busy="!ready" :inert="!ready ? true : undefined" />
+    <!-- Script-less copy of the last rendering; same origin only so fonts and assets load. -->
+    <iframe v-if="frameSnapshot.document.value && !ready" class="histoire-canvas-snapshot" :srcdoc="frameSnapshot.document.value" sandbox="allow-same-origin" tabindex="-1" aria-hidden="true" />
+  </div>
 </template>
 
 <style scoped>
 /* Keep a dark host from painting light story iframes opaque. */
+.histoire-canvas-replica-root { position: relative; width: 100%; height: 100%; }
 .histoire-canvas-replica { width: 100%; height: 100%; color-scheme: normal; }
+.histoire-canvas-snapshot { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; color-scheme: normal; pointer-events: none; }
 </style>

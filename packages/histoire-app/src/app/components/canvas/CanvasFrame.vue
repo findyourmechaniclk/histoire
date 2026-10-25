@@ -48,8 +48,12 @@ const test = computed(() => tests?.rows.value.find(row => row.target.storyId ===
 const testIcon = computed(() => test.value?.failed || test.value?.error ? 'error-filled' : test.value?.stale ? 'warning-alt-filled' : test.value?.summary ? 'checkmark-filled' : props.variant.hasTests ? 'subtract' : null)
 const replica = ref<{ retry: () => Promise<void> }>()
 const status = ref<'loading' | 'ready' | 'error'>('loading')
+/** A previous rendering stands in while the cell loads. */
+const snapshotShown = ref(false)
 const error = ref<unknown>()
 const single = computed(() => props.presentation === 'single')
+/** Snapshots need the title row to tell they aren't live yet; Single has none. */
+const showSnapshot = computed(() => snapshotShown.value && !single.value)
 const scale = computed(() => canvas.effectiveZoom)
 const position = computed(() => ({
   'left': single.value ? undefined : `${props.frame.x * canvas.effectiveZoom + canvas.panOffset.x}px`,
@@ -131,16 +135,16 @@ function openMenu(event: MouseEvent | KeyboardEvent) {
 <template>
   <section class="histoire-canvas-frame" :class="{ 'is-single': single, 'is-selected': selected, 'is-stale': stale, 'is-highlighted': highlighted, 'is-dimmed': dimmed }" :style="position" :data-frame-id="frame.id" @contextmenu="openMenu">
     <button v-if="!single" type="button" class="histoire-frame-label" data-canvas-overlay-occluder :aria-pressed="selected" :disabled="!canSelect" @click="select" @keydown="onKeyDown">
-      <span class="histoire-frame-title" :title="variant.title">{{ variant.title }}</span><BuiltinIcon v-if="status === 'error'" icon="error-filled" :size="16" class="is-error" /><HstPulsatingDisc v-else-if="test?.running" :size="14" /><BuiltinIcon v-else-if="testIcon" :icon="testIcon" :size="16" :class="{ 'is-error': test?.failed || test?.error }" />
+      <span class="histoire-frame-title" :title="variant.title">{{ variant.title }}</span><BuiltinIcon v-if="status === 'error'" icon="error-filled" :size="16" class="is-error" /><HstPulsatingDisc v-else-if="test?.running || (showSnapshot && status === 'loading')" :size="14" /><BuiltinIcon v-else-if="testIcon" :icon="testIcon" :size="16" :class="{ 'is-error': test?.failed || test?.error }" />
     </button>
     <div class="histoire-frame-body" data-test-id="responsive-preview-bg" :style="{ height: `${height * scale}px`, ...getBackgroundStyle(background) }" @click="selectFromBody">
       <div class="histoire-frame-content" :style="previewStyle" :aria-busy="status !== 'ready'" :inert="status !== 'ready' || stale ? true : undefined">
-        <CanvasReplicaPreview v-if="live" ref="replica" :frame-id="frame.id" :story-id="frame.storyId" :variant-id="frame.variantId" :preview-base="previewBase" :viewport="single ? { width, height } : undefined" @status="updateStatus" />
+        <CanvasReplicaPreview v-if="live" ref="replica" :frame-id="frame.id" :story-id="frame.storyId" :variant-id="frame.variantId" :preview-base="previewBase" :viewport="single ? { width, height } : undefined" @status="updateStatus" @snapshot="snapshotShown = $event" />
       </div>
       <div v-if="!live" class="histoire-frame-placeholder">
         {{ variant.title }}
       </div>
-      <div v-else-if="status === 'loading'" class="histoire-frame-placeholder" role="status" aria-label="Loading variant">
+      <div v-else-if="status === 'loading' && !showSnapshot" class="histoire-frame-placeholder" role="status" aria-label="Loading variant">
         <CanvasLoadingIndicator />
       </div>
       <div v-else-if="status === 'error'" class="histoire-frame-error" role="alert">
@@ -188,7 +192,8 @@ function openMenu(event: MouseEvent | KeyboardEvent) {
 .histoire-frame-label:focus-visible { outline: 2px solid var(--histoire-accent); outline-offset: 2px; }
 .histoire-frame-label:disabled { opacity: .45; cursor: default; }
 .is-selected .histoire-frame-label { color: var(--histoire-accent); font-weight: 700; }
-.histoire-frame-label :is(svg, .histoire-pulsating-disc) { flex: none; color: var(--histoire-accent); }
+/* Direct children only: the disc draws with its own inner SVGs. */
+.histoire-frame-label > :is(svg, .histoire-pulsating-disc) { flex: none; color: var(--histoire-accent); }
 /* Same 16px slot as status icons, matching tests panel row glyphs. */
 .histoire-frame-label .histoire-pulsating-disc { margin-inline: 1px; color: var(--histoire-muted); } .histoire-frame-label svg.is-error { color: var(--histoire-danger); }
 .histoire-frame-body { position: relative; width: 100%; overflow: hidden; border: 1px solid var(--histoire-border); border-radius: 7px; background: white; }

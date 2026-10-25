@@ -2,6 +2,7 @@ import type { HistoireBridgePublication, HistoireControlsOverlayMessage } from '
 import type { EmbedSurfaceContext } from '../surfaces.js'
 import { getControlsAppearance } from '@histoire/controls/vue'
 import { CONTROLS_APPEARANCE, CONTROLS_FOCUS, CONTROLS_OVERLAY, CONTROLS_OVERLAY_REFRESH, CONTROLS_OVERLAY_RESULT, CONTROLS_READY, CONTROLS_RESIZE, createControlsStateRevision, HistoireSdkError, mapRuntimeViewport, PREVIEW_SETTINGS_SYNC, RUNTIME_FAILED, STATE_SYNC, validateBridgeEventPayload, validateHistoireStateSnapshot } from '@histoire/protocol'
+import { isColorSchemeDark } from '../color-scheme.js'
 import { createRuntimeDocumentOwner } from './document.js'
 import { createControlsReplicaUrl } from './sandbox-urls.js'
 /** Same-origin custom controls replica; all edits resolve through canonical parent runtime. */
@@ -135,7 +136,7 @@ export function createEmbedControlsReplica(context: EmbedSurfaceContext, changed
       }, context.descriptor.config?.storyCollectTimeout ?? 30000)
     }
     post({ type: PREVIEW_SETTINGS_SYNC, settings: snapshot.settings })
-    const dark = snapshot.settings.colorScheme === 'dark' || (snapshot.settings.colorScheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    const dark = isColorSchemeDark(snapshot.settings.colorScheme, window)
     synchronizeAppearance(dark)
     // Canonical acknowledgments may trail later keystrokes. Keep replica's
     // live edit projection until all edits for this document have settled.
