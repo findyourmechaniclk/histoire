@@ -102,6 +102,38 @@ describe('generateCollectionSpecFiles', () => {
     // unescaped path inside a template would corrupt the module syntax.
     expect(() => transformSync(specCode, { loader: 'ts', format: 'esm' })).not.toThrow()
   })
+
+  it('posts results through the fetch the page had before story code replaced it', async () => {
+    const tempDir = fs.mkdtempSync(join(os.tmpdir(), 'histoire-collection-fetch-'))
+    tempDirs.push(tempDir)
+    const story = createStoryFile('src/Story.story.vue')
+    const [file] = await generateCollectionSpecFiles(createContext(tempDir, [story]), 'run-token', join(tempDir, 'collect'), [story])
+    // Runs the generated spec as CommonJS with stubbed imports.
+    const { code } = transformSync(fs.readFileSync(file.path, 'utf8'), { loader: 'ts', format: 'cjs' })
+    const tests: Array<() => Promise<void>> = []
+    const pageFetch = vi.fn(async () => new Response(null, { status: 204 }))
+    const nativeFetch = globalThis.fetch
+    globalThis.fetch = pageFetch as typeof fetch
+    try {
+      const runner = { test: (_name: string, fn: () => Promise<void>) => tests.push(fn) }
+      const collector = {
+        // Story setup may route relative URLs elsewhere, like Nuxt's local
+        // `$fetch` server does while collecting.
+        collectStoryFile: async () => {
+          globalThis.fetch = (async () => new Response(null, { status: 404 })) as typeof fetch
+          return { storyData: [] }
+        },
+      }
+      // eslint-disable-next-line no-new-func -- evaluates the generated module with stubbed imports
+      new Function('require', 'module', 'exports', code)((id: string) => id === '@vitest/runner' ? runner : collector, { exports: {} }, {})
+      await tests[0]()
+      expect(pageFetch).toHaveBeenCalledWith('/__histoire_browser_collect__', expect.objectContaining({ method: 'POST' }))
+    }
+    finally {
+      globalThis.fetch = nativeFetch
+      delete (globalThis as any)[Symbol.for('histoire.collection.fetch')]
+    }
+  })
 })
 
 /**

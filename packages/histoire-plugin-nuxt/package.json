@@ -45,6 +45,7 @@
     "@typescript/native": "catalog:",
     "histoire": "workspace:*",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vue": "^3.5.26"
   }
 }

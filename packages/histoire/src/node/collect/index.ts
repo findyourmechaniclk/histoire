@@ -34,6 +34,7 @@ export function useCollectStories(options: UseCollectStoriesOptions, ctx: Contex
       inline: [
         /histoire\/dist/,
         /histoire\/client/,
+        /histoire\/network/,
         /@histoire\/[\w-]+\/dist/,
         /histoire-[\w-]+\/dist/,
         /@vue\/devtools-api/,

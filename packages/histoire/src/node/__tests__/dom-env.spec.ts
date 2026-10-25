@@ -99,3 +99,42 @@ it('installs jsdom web storage over Node 25+ built-in storage globals', () => {
     }
   }
 })
+
+it('stubs WebSocket so app plugins can open relative URLs without connecting', () => {
+  const nativeWebSocket = globalThis.WebSocket
+  const env = createDomEnv()
+  try {
+    const socket = new WebSocket('/api/realtime/ws')
+    expect(socket.url).toBe('ws://localhost:3000/api/realtime/ws')
+    expect(socket.readyState).toBe(WebSocket.CONNECTING)
+    const closed = vi.fn()
+    socket.addEventListener('close', closed)
+    socket.send('ignored')
+    socket.close()
+    expect(socket.readyState).toBe(WebSocket.CLOSED)
+    expect(closed).toHaveBeenCalledTimes(1)
+  }
+  finally {
+    env.destroy()
+  }
+  expect(globalThis.WebSocket).toBe(nativeWebSocket)
+})
+
+it('provides an in-memory IndexedDB for each collection window', async () => {
+  const env = createDomEnv()
+  try {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('collect', 1)
+      request.onupgradeneeded = () => request.result.createObjectStore('items')
+      request.onsuccess = () => resolve(request.result)
+      request.onerror = () => reject(request.error)
+    })
+    expect([...db.objectStoreNames]).toEqual(['items'])
+    expect(IDBKeyRange.only(1).lower).toBe(1)
+    db.close()
+  }
+  finally {
+    env.destroy()
+  }
+  expect('indexedDB' in globalThis).toBe(false)
+})

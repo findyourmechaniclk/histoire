@@ -11,22 +11,20 @@ function notify() {
 </script>
 
 <template>
-  <UApp>
-    <section class="p-6 text-default">
-      <h2 class="m-0 text-base font-semibold">
-        {{ config.fixture.title }}
-      </h2>
-      <p v-if="loading" role="status">
-        Loading
-      </p>
-      <ul v-else aria-label="Fixture items" class="my-5 space-y-3 text-sm">
-        <li v-for="item in items" :key="item.id">
-          {{ item.label }}
-        </li>
-      </ul>
-      <UButton @click="notify">
-        Show toast
-      </UButton>
-    </section>
-  </UApp>
+  <section class="p-6 text-default">
+    <h2 class="m-0 text-base font-semibold">
+      {{ config.fixture.title }}
+    </h2>
+    <p v-if="loading" role="status">
+      Loading
+    </p>
+    <ul v-else aria-label="Fixture items" class="my-5 space-y-3 text-sm">
+      <li v-for="item in items" :key="item.id">
+        {{ item.label }}
+      </li>
+    </ul>
+    <UButton @click="notify">
+      Show toast
+    </UButton>
+  </section>
 </template>

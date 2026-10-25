@@ -2,6 +2,7 @@ import {
   JSDOM,
   VirtualConsole,
 } from 'jsdom'
+import { createCollectIndexedDb, createCollectWebSocket } from './collect-globals.js'
 import { restoreNativeEventGlobals } from './native-events.js'
 import { populateGlobal } from './util.js'
 
@@ -18,6 +19,12 @@ export function createDomEnv() {
       contentType: 'text/html',
     },
   )
+
+  // Set on the window before populating, so teardown restores them with the rest.
+  Object.assign(dom.window, {
+    WebSocket: createCollectWebSocket(dom.window.location.href),
+    ...(dom.window.indexedDB ? {} : createCollectIndexedDb()),
+  })
 
   const { keys, originals } = populateGlobal(globalThis, dom.window, { bindFunctions: true })
 

@@ -128,8 +128,13 @@ function generateCollectionSpecCode(relativePath: string, collectorModulePath: s
   return `import { test } from '@vitest/runner'
 import { collectStoryFile } from ${JSON.stringify(collectorModulePath)}
 
+// Story setup may replace \`fetch\` (Nuxt answers relative URLs from an
+// in-page server while collecting): results go through the page's own fetch,
+// captured before any story code ran, even when testers share a page.
+const pageFetch = (globalThis[Symbol.for('histoire.collection.fetch')] ??= globalThis.fetch)
+
 async function postResult(payload) {
-  const response = await fetch(${JSON.stringify(BROWSER_COLLECTION_ENDPOINT)}, {
+  const response = await pageFetch(${JSON.stringify(BROWSER_COLLECTION_ENDPOINT)}, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(payload),

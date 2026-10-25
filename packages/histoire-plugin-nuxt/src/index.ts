@@ -3,8 +3,12 @@ import type { UserConfig as ViteConfig, Plugin as VitePlugin } from 'vite'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import replace from '@rollup/plugin-replace'
+import { nuxtDevHandlersPlugin } from './dev-handlers.js'
+import { excludeAppPlugins, type NuxtPluginPattern } from './plugins.js'
 import { prebundleTranspiledDeps, resolveIncludeId } from './prebundle.js'
 import { isolateNuxtResolver } from './resolve.js'
+import { createSetupCode } from './setup-code.js'
+import { findUiAppComponent } from './ui-app.js'
 
 /** Kit owns the loaded Nuxt shape; don't mix separately hoisted schema majors. */
 type Nuxt = Awaited<ReturnType<typeof import('@nuxt/kit').loadNuxt>>
@@ -18,6 +22,8 @@ const ignorePlugins = [
   'nuxt:import-protection',
   // Histoire owns HTTP/HMR; Nuxt's Nitro adapter opens a second HMR listener.
   'nuxt:dev-server',
+  // Looks for Nuxt's client entry, which Histoire doesn't have, and warns.
+  'nuxt:module-preload-polyfill',
 ]
 
 /** Nuxt uses process-wide internals; Vue/Svelte multi-root support does not extend it. */
@@ -38,11 +44,23 @@ export interface HstNuxtOptions {
    * UI libraries (`reka-ui`, `radix-vue`) are always pre-bundled.
    */
   prebundle?: string[]
+  /**
+   * App plugins not to run in stories, e.g. background sync, analytics or PWA
+   * plugins. A string matches a fragment of the plugin file path (forward
+   * slashes), a `RegExp` is tested against that path.
+   */
+  excludePlugins?: NuxtPluginPattern[]
+  /**
+   * Wrap stories in Nuxt UI's `UApp` (tooltips, toasts and overlays need it)
+   * when `@nuxt/ui` is installed.
+   * @default true
+   */
+  uiApp?: boolean
 }
 
 /** Integrates one Nuxt project with explicit root and startup cleanup ownership. */
 export function HstNuxt(options: HstNuxtOptions = {}): Plugin {
-  const { prebundle = [] } = options
+  const { prebundle = [], excludePlugins = [], uiApp = true } = options
   let nuxt: Nuxt
   const owner = {}
   let closing: Promise<void> | undefined
@@ -64,7 +82,7 @@ export function HstNuxt(options: HstNuxtOptions = {}): Plugin {
       try {
         // Concurrent Nuxt instances must not regenerate the same build dir.
         const buildDir = options.buildDir ?? context?.claimDir?.('nuxt') ?? '.histoire/nuxt'
-        nuxtViteConfig = await useNuxtViteConfig(context?.root ?? process.cwd(), buildDir, (acquired) => {
+        nuxtViteConfig = await useNuxtViteConfig(context?.root ?? process.cwd(), { buildDir, excludePlugins }, (acquired) => {
           nuxt = acquired
         })
       }
@@ -77,7 +95,7 @@ export function HstNuxt(options: HstNuxtOptions = {}): Plugin {
         }
         throw error
       }
-      const { viteConfig } = nuxtViteConfig
+      const { viteConfig, integrations } = nuxtViteConfig
 
       nuxt = nuxtViteConfig.nuxt // We save it to close it later
       const plugins = viteConfig.plugins.filter((p: any) => p && !ignorePlugins.includes(p.name)).map(plugin => isolateNuxtResolver(plugin as VitePlugin))
@@ -104,6 +122,7 @@ export function HstNuxt(options: HstNuxtOptions = {}): Plugin {
             dedupe: viteConfig.resolve.dedupe,
           },
           plugins: [
+            nuxtDevHandlersPlugin(nuxt.options.devServerHandlers),
             ...plugins,
             replace({
               values: {
@@ -126,13 +145,13 @@ export function HstNuxt(options: HstNuxtOptions = {}): Plugin {
           vue: viteConfig.vue,
           logLevel: 'info',
         },
-        setupCode: [
-          `${nuxt.options.css.map(file => `import '${file}'`).join('\n')}`,
-          `import { setupNuxtApp } from '@histoire/plugin-nuxt/dist/runtime/app-setup.js'
-export async function setupVue3 (setupApi) {
-  await setupNuxtApp(${JSON.stringify(nuxt.options.runtimeConfig.public)}, setupApi, { ...${JSON.stringify(nuxt.options.app)}, baseURL: import.meta.env.BASE_URL })
-}`,
-        ],
+        setupCode: createSetupCode({
+          css: nuxt.options.css,
+          publicConfig: nuxt.options.runtimeConfig.public,
+          appConfig: nuxt.options.app as unknown as Record<string, unknown>,
+          colorMode: integrations.colorMode,
+          uiApp: uiApp ? integrations.uiApp : undefined,
+        }),
         viteNodeInlineDeps: [
           /\/(nuxt|nuxt3)\//,
           /^#/,
@@ -161,9 +180,15 @@ export async function setupVue3 (setupApi) {
   }
 }
 
+/** Nuxt options of `HstNuxt` applied when loading Nuxt. */
+interface NuxtLoadOptions {
+  buildDir: string
+  excludePlugins: NuxtPluginPattern[]
+}
+
 /** Registers Nuxt before later template/config steps can fail. */
-async function useNuxtViteConfig(root: string, buildDir: string, onAcquire: (nuxt: Nuxt) => void) {
-  const { loadNuxt, buildNuxt } = await import('@nuxt/kit')
+async function useNuxtViteConfig(root: string, { buildDir, excludePlugins }: NuxtLoadOptions, onAcquire: (nuxt: Nuxt) => void) {
+  const { loadNuxt, buildNuxt, hasNuxtModule } = await import('@nuxt/kit')
   const nuxt = await loadNuxt({
     cwd: root,
     ready: false,
@@ -194,6 +219,10 @@ async function useNuxtViteConfig(root: string, buildDir: string, onAcquire: (nux
     { src: join(runtimeDir, 'components.mjs'), filename: 'histoire/components.mjs' },
   )
 
+  nuxt.hook('app:resolve', (app) => {
+    app.plugins = excludeAppPlugins(app.plugins, excludePlugins)
+  })
+
   nuxt.hook('app:templates', (app) => {
     app.templates = app.templates.filter(template => template.filename !== 'app-component.mjs')
     app.templates.push({ src: join(runtimeDir, 'app-component.mjs'), filename: 'app-component.mjs' })
@@ -213,11 +242,17 @@ async function useNuxtViteConfig(root: string, buildDir: string, onAcquire: (nux
     })
   })
 
+  /** Integrations with installed Nuxt modules, detected once modules are set up. */
+  const integrations: { colorMode?: boolean, uiApp?: string } = {}
+
   return {
     viteConfig: await new Promise<ViteConfig>((resolve, reject) => {
       let captured = false
       nuxt.hook('modules:done', () => {
+        integrations.colorMode = hasNuxtModule('@nuxtjs/color-mode', nuxt)
+        const hasUi = hasNuxtModule('@nuxt/ui', nuxt)
         nuxt.hook('components:extend', (components) => {
+          if (hasUi) integrations.uiApp = findUiAppComponent(components, (nuxt.options as { ui?: { prefix?: string } }).ui?.prefix)
           for (const name of ['NuxtLink']) {
             Object.assign(components.find(c => c.pascalName === name) || {}, {
               export: name,
@@ -245,6 +280,7 @@ async function useNuxtViteConfig(root: string, buildDir: string, onAcquire: (nux
         })
     }),
     nuxt,
+    integrations,
   }
 }
 

@@ -140,7 +140,98 @@ export default defineConfig({
 })
 ```
 
-Histoire generates its Nuxt build files in `.histoire/nuxt`, so it can run next to `nuxt dev` without sharing `.nuxt`. Change it with `HstNuxt({ buildDir: '.my-dir' })` (relative to the Nuxt root).
+Ignore `.histoire` in git. Histoire generates its Nuxt build files in `.histoire/nuxt`, so it can run next to `nuxt dev` without sharing `.nuxt`. Change it with `HstNuxt({ buildDir: '.my-dir' })` (relative to the Nuxt root).
+
+Each story app boots your Nuxt app: plugins, modules, `css`, runtime config and auto-imports. There is no Nitro server, so server routes don't answer. The plugin also:
+
+- wraps stories in Nuxt UI's `UApp` when `@nuxt/ui` is installed, so tooltips, toasts and overlays work. Turn it off with `HstNuxt({ uiApp: false })` to add your own [wrapper](./wrapper.md),
+- makes `@nuxtjs/color-mode` follow Histoire's dark mode: `useColorMode()` and the `<html>` classes use your color-mode options (`classSuffix`, `dataValue`...),
+- serves the dev server handlers of Nuxt modules, such as `@nuxt/fonts`,
+- gives story collection (Node) an in-memory IndexedDB and a `WebSocket` that never connects, so plugins that open them at startup don't fail.
+
+### Skip app plugins
+
+App plugins that only do app-wide background work (sync, analytics, PWA...) slow every story down. Skip them with `excludePlugins`. A string matches a part of the plugin file path, a `RegExp` is tested against it:
+
+```js
+HstNuxt({
+  excludePlugins: [
+    '/app/plugins/analytics.client.ts',
+    /@nuxt\/content\/.*websocket/,
+  ],
+})
+```
+
+For module options, `process.env.HISTOIRE` is set while Histoire runs, e.g. to turn off a realtime connection in `nuxt.config`:
+
+```js
+export default defineNuxtConfig({
+  myRealtimeModule: {
+    enabled: !process.env.HISTOIRE,
+  },
+})
+```
+
+### Mock the network
+
+`histoire/network` answers `fetch` requests (and so `$fetch` and `useFetch`) with [msw](https://mswjs.io) request handlers, without a service worker. Install `msw`, then set handlers for every story at the top level of your [setup file](./app-setup.md#global-setup), so they also answer requests made by Nuxt plugins while the app boots:
+
+```ts
+// histoire.setup.ts
+import { mockNetworkDefaults } from 'histoire/network'
+import { http, HttpResponse } from 'msw'
+
+mockNetworkDefaults(
+  http.get('/api/_auth/session', () => HttpResponse.json({ user: { id: 1 } })),
+)
+```
+
+Override them per variant with `mockNetwork()` in `setup-app`. Each call replaces the handlers of the previous one:
+
+```vue
+<script setup lang="ts">
+import { mockNetwork } from 'histoire/network'
+import { http, HttpResponse } from 'msw'
+
+function empty() {
+  mockNetwork(http.get('/api/items', () => HttpResponse.json([])))
+}
+</script>
+
+<template>
+  <Story>
+    <Variant title="Empty" :setup-app="empty">
+      <ItemList />
+    </Variant>
+  </Story>
+</template>
+```
+
+Requests no handler answers go to the network. Mocked requests show up in the Events panel. `XMLHttpRequest` isn't intercepted.
+
+### Types and lint
+
+`Story`, `Variant` and the `Hst*` controls are global components. Add their types to your project, e.g. in a `histoire.d.ts` file:
+
+```ts
+/// <reference types="@histoire/plugin-vue/components" />
+```
+
+With `vue/no-undef-components` (projects that turn off component auto-imports), allow them in story files. This block replaces the rule options, so repeat your own `ignorePatterns`:
+
+```js
+// eslint.config.js
+export default [
+  {
+    files: ['**/*.story.vue'],
+    rules: {
+      'vue/no-undef-components': ['error', {
+        ignorePatterns: ['^Story$', '^Variant$', '^Hst'],
+      }],
+    },
+  },
+]
+```
 
 ## Quasar CLI <Badge type="tip" text="1.0-beta.2+" />
 

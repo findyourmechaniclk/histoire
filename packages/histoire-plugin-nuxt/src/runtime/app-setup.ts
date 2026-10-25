@@ -1,10 +1,15 @@
 import type { Vue3AppHooksApi } from '@histoire/plugin-vue'
 import type { PublicRuntimeConfig } from '@nuxt/schema'
 import type { App } from 'h3'
+import type { Component } from 'vue'
+import type { ColorModeOptions } from './color-mode.js'
 import { createApp } from 'h3'
-import { createFetch } from 'ofetch'
+import { createColorModeSync } from './color-mode.js'
+import { createNuxtFetch } from './fetch.js'
 import { createNuxtSetupContext } from './nuxt-context.js'
 import { assertStoryAppHooks, initializeNuxtPreviewLifecycle } from './nuxt-lifecycle.js'
+import { releaseRouterLink, selectStoryPlugins } from './plugins.js'
+import { createUiAppWrapper } from './ui-app.js'
 
 /** A real Histoire Vue app gets its own Nuxt payload and plugin lifecycle. */
 interface NuxtPreviewSetup {
@@ -12,6 +17,18 @@ interface NuxtPreviewSetup {
   app: any
   /** Story app lifecycle hooks from `@histoire/plugin-vue`. */
   hooks: Vue3AppHooksApi
+  /** Wraps the story, from `@histoire/plugin-vue`. */
+  addWrapper?: (wrapper: Component, options?: { controls?: boolean }) => void
+  /** Histoire dark mode subscription, from `@histoire/plugin-vue`. */
+  onDarkChange?: (listener: (dark: boolean) => void) => void
+}
+
+/** Nuxt modules the story apps integrate with, detected by `HstNuxt`. */
+export interface NuxtIntegrations {
+  /** `@nuxtjs/color-mode` options (`#build/color-mode-options.mjs`). */
+  colorMode?: ColorModeOptions
+  /** Nuxt UI `App` component. */
+  uiApp?: Component
 }
 
 const initializedApps = new WeakMap<object, Promise<void>>()
@@ -19,7 +36,7 @@ let nextApp = 0
 let setupContext: ReturnType<typeof createNuxtSetupContext> | undefined
 
 /** Set up Nuxt on actual story app; existing callers without app retain entry compatibility. */
-export async function setupNuxtApp(publicConfig: PublicRuntimeConfig, setupApi?: NuxtPreviewSetup, appConfig: { baseURL?: string, buildAssetsDir?: string, cdnURL?: string } = { baseURL: '/' }) {
+export async function setupNuxtApp(publicConfig: PublicRuntimeConfig, setupApi?: NuxtPreviewSetup, appConfig: { baseURL?: string, buildAssetsDir?: string, cdnURL?: string } = { baseURL: '/' }, integrations: NuxtIntegrations = {}) {
   if (setupApi?.app) assertStoryAppHooks(setupApi)
   if (setupApi?.app && initializedApps.has(setupApi.app)) return initializedApps.get(setupApi.app)
   const pending = initialize()
@@ -41,7 +58,7 @@ export async function setupNuxtApp(publicConfig: PublicRuntimeConfig, setupApi?:
       const localFetch = createLocalFetch(localCall, globalThis.fetch)
       win.fetch = (init: string, options?: any) => localFetch(typeof init === 'string' && registry.has(init) ? `/_${init}` : init, options)
     }
-    win.$fetch = createFetch({ fetch: win.fetch, Headers: win.Headers })
+    win.$fetch = createNuxtFetch(win)
     win.__registry = registry
     win.__app = h3App
     if (!setupApi?.app) {
@@ -53,6 +70,12 @@ export async function setupNuxtApp(publicConfig: PublicRuntimeConfig, setupApi?:
       await entry.default()
       return
     }
+    // The color-mode plugin reads its helper when its module loads, so install
+    // it before importing the plugins.
+    const syncColorMode = integrations.colorMode && createColorModeSync(win, integrations.colorMode)
+    let colorModeState: (() => any) | undefined
+    if (syncColorMode) setupApi.onDarkChange?.(dark => syncColorMode(dark, colorModeState?.()))
+    if (integrations.uiApp) setupApi.addWrapper?.(createUiAppWrapper(integrations.uiApp), { controls: false })
     // These are Nuxt's own plugin/app services; reuse them rather than mounting
     // its memoized #app/entry root, which shares useState across grid cells.
     // @ts-expect-error Nuxt consumer aliases resolve portable setup at runtime.
@@ -68,6 +91,7 @@ export async function setupNuxtApp(publicConfig: PublicRuntimeConfig, setupApi?:
     win.__NUXT__ = multiApp ? { ...win.__NUXT__, [id]: payload } : payload
     const nuxt = createNuxtApp({ vueApp: setupApi.app, id })
     nuxt.isHydrating = false
+    colorModeState = () => nuxt.$colorMode
     const originalRun = nuxt.runWithContext.bind(nuxt)
     const fallback = getNuxtAppCtx()
     setupContext ??= createNuxtSetupContext(fallback)
@@ -78,7 +102,8 @@ export async function setupNuxtApp(publicConfig: PublicRuntimeConfig, setupApi?:
       if (fallback.tryUse() === nuxt) fallback.unset()
       delete win.__NUXT__?.[id]
     }, () => setupContext.setup(nuxt, async () => {
-      await applyPlugins(nuxt, plugins)
+      releaseRouterLink(setupApi.app)
+      await applyPlugins(nuxt, selectStoryPlugins(plugins, __HST_COLLECT__))
       await nuxt.callHook('app:created', setupApi.app)
     }), stage => setupContext.setup(nuxt, () => originalRun(() => nuxt.callHook(stage, setupApi.app))))
   }

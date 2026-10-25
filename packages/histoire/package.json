@@ -24,6 +24,10 @@
       "types": "./client.d.ts",
       "default": "./client.js"
     },
+    "./network": {
+      "types": "./network.d.ts",
+      "default": "./network.js"
+    },
     "./node": {
       "types": "./dist/node/api/index.d.ts",
       "default": "./dist/node/api/index.js"
@@ -46,6 +50,8 @@
     "client.js",
     "dist",
     "index.d.ts",
+    "network.d.ts",
+    "network.js",
     "plugin.d.ts",
     "plugin.js"
   ],
@@ -104,6 +110,7 @@
     "defu": "^6.1.4",
     "diacritics": "^1.3.0",
     "esbuild": "^0.27.2",
+    "fake-indexeddb": "^6.2.6",
     "fs-extra": "^11.2.0",
     "globby": "^14.0.2",
     "gray-matter": "^4.0.3",
