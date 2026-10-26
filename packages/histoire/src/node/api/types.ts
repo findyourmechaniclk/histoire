@@ -59,7 +59,7 @@ export interface HistoireMiddlewareHandle extends HistoireServerHandle {
 
 /** Static preview validates built data before readiness, without collecting source. */
 export interface HistoirePreviewHandle extends HistoireServerHandle {
-  /** Legacy output stays browsable while capture is explicitly unavailable. */
+  /** Capture is available once the built output is ready. */
   readonly capture: HistoireCapability
 }
 

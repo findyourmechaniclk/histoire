@@ -30,12 +30,9 @@ export type NodeArtifactPackage = {
  * @param version Histoire version recorded in generated package metadata.
  * @param browserDriver Exact optional browser driver selected for this build.
  */
-export function createNodePackage(version: string, browserDriver?: NodeArtifactBrowserDriver | string): NodeArtifactPackage {
-  const selected = typeof browserDriver === 'string'
-    ? browserDriver ? { packageName: 'playwright' as const, version: browserDriver } : undefined
-    : browserDriver
+export function createNodePackage(version: string, browserDriver?: NodeArtifactBrowserDriver): NodeArtifactPackage {
   const metadata = { private: true, type: 'module', version, engines: { node: '>=22' }, scripts: { start: 'node server.mjs' } } as const
-  if (!selected) return metadata
-  const optionalDependencies = { [selected.packageName]: selected.version } as NodeArtifactBrowserDependencies
+  if (!browserDriver) return metadata
+  const optionalDependencies = { [browserDriver.packageName]: browserDriver.version } as NodeArtifactBrowserDependencies
   return { ...metadata, optionalDependencies }
 }

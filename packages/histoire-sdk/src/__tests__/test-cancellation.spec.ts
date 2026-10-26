@@ -87,7 +87,7 @@ describe('remote test cancellation', () => {
     try {
       const pending = parent.request('tests.run', { mode: 'server' }, { ...primaryOwner, signal: controller.signal })
       await Promise.resolve()
-      child.post('readiness.changed', { runtime: { status: 'failed', mountId: owner.mountId, runtimeId: primaryOwner.runtimeId, layout: null, viewports: [], viewport: null } })
+      child.post('readiness.changed', { runtime: { status: 'failed', mountId: owner.mountId, runtimeId: primaryOwner.runtimeId, viewports: [], viewport: null } })
       await Promise.resolve()
       const request = ports.parent.sent.find((value: any) => value.command === 'tests.run') as any
       // Cancellation cannot borrow an active request ID across captured owners.

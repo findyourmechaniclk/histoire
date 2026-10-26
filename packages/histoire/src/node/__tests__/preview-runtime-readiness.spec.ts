@@ -15,7 +15,6 @@ describe('preview runtime readiness bookkeeping', () => {
     expect(source).toContain('const readyVariantIds = new Set()')
     expect(source).toContain('if (!readyVariantIds.has(targetVariant.id))')
     expect(source).toContain('readyVariantIds.add(variantId)')
-    expect(source).toContain('readyVariantIds.add(targetVariant.id)')
   })
 
   it('only emits one SANDBOX_READY on initial mount', () => {

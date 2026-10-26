@@ -22,8 +22,8 @@ describe('automatic Tailwind token books', () => {
         window.primary=session.mount(document.querySelector('#mount'),{surface:'preview'});await primary.ready;
         window.controls=session.mount(document.querySelector('#controls'),{surface:'controls'});await controls.ready;
       })(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Token runtime readiness timed out')),15000))])`)
-      const runtime = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('storyId') === story.id && new URL(frame.url()).searchParams.get('controls') !== 'true')!
-      const controls = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('controls') === 'true')!
+      const runtime = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('storyId') === story.id && new URL(frame.url()).searchParams.get('purpose') !== 'controls')!
+      const controls = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('purpose') === 'controls')!
       const name = version === 3 ? 'ac-bg-brand' : 'bg-brand'
       await expect.poll(() => runtime().locator(`[data-tailwind-value="${name}"]`).evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(18, 52, 86)')
       await controls().getByRole('textbox', { name: 'Filter tokens' }).fill('no-match[')

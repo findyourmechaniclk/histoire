@@ -27,7 +27,7 @@ it('clears outer runtime envelope identity when Explorer inner primary becomes a
     await Promise.resolve()
     expect(parent.getOwner().runtimeId).toBeUndefined()
     expect(parent.getOwner().target).toEqual(owner.target)
-    expect(ports.child.sent).toContainEqual(expect.objectContaining({ kind: 'event', event: 'readiness.changed', runtimeId: undefined, payload: { runtime: { status: 'absent', mountId: owner.mountId, runtimeId: null, layout: null, viewports: [], viewport: null } } }))
+    expect(ports.child.sent).toContainEqual(expect.objectContaining({ kind: 'event', event: 'readiness.changed', runtimeId: undefined, payload: { runtime: { status: 'absent', mountId: owner.mountId, runtimeId: null, viewports: [], viewport: null } } }))
   }
   finally {
     await explorer.close()

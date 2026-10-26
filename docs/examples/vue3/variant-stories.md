@@ -25,7 +25,7 @@ import MyComponent from './MyComponent.vue'
 
 ## Grid
 
-This will display variants in a grid for you to visualize all the variants in the same page. Though, you must fix the width (it can be a percentage).
+This will display variants in a grid for you to visualize all the variants in the same page.
 
 ```vue
 <script lang="ts" setup>
@@ -35,7 +35,7 @@ import MyComponent from './MyComponent.vue'
 <template>
   <Story
     title="MyStory"
-    :layout="{ type: 'grid', width: '200px' }"
+    :layout="{ type: 'grid' }"
   >
     <Variant title="MyVariant 1">
       <MyComponent argument="hello" />
@@ -61,7 +61,7 @@ const args = ['hello', 'world', 'etc', '...']
 <template>
   <Story
     title="MyStory"
-    :layout="{ type: 'grid', width: '200px' }"
+    :layout="{ type: 'grid' }"
   >
     <Variant
       v-for="(argument, key) of args"
@@ -92,7 +92,7 @@ const propsVariants = [
 <template>
   <Story
     title="MyStory"
-    :layout="{ type: 'grid', width: '200px' }"
+    :layout="{ type: 'grid' }"
   >
     <Variant
       v-for="(props, key) of propsVariants"

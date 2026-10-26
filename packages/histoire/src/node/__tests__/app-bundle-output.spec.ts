@@ -20,12 +20,12 @@ describe('shared app bundle output', () => {
     }
 
     // Rolldown emits either simple module comments or region markers.
-    // Require markers from every entry so minification or stale output cannot
-    // make the duplicate check pass without examining actual app modules.
+    // Require markers from entries with own code so minification or stale output
+    // cannot make the duplicate check pass without examining actual app modules.
+    // The sandbox entry only re-exports shared modules, so it has no marker.
     expect([...owners.keys()]).toEqual(expect.arrayContaining([
       'src/app/api.ts',
       'src/app/index.ts',
-      'src/app/sandbox.ts',
     ]))
     const duplicates = [...owners].filter(([, chunks]) => chunks.size > 1).map(([source, chunks]) => ({ source, chunks: [...chunks] }))
     expect(duplicates).toEqual([])

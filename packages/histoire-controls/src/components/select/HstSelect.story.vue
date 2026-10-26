@@ -29,10 +29,7 @@ function initState() {
   <Story
     title="HstSelect"
     group="controls"
-    :layout="{
-      type: 'grid',
-      width: '100%',
-    }"
+    :layout="{ type: 'grid' }"
   >
     <Variant
       title="default"

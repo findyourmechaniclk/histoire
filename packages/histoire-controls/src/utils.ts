@@ -2,7 +2,7 @@ import type { Ref } from 'vue'
 import { ref } from 'vue'
 import { useHistoireControls } from './context'
 
-/** Legacy story-runtime appearance, retained for existing vendor controls entry. */
+/** Story-runtime appearance registry, read by the vendor controls entry inside story frames. */
 export const isDark = ref(false)
 
 // Peer build has no import-time browser work or global active theme. Vendor

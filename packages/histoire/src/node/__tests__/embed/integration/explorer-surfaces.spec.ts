@@ -7,7 +7,7 @@ const hostHtml = '<!doctype html><html><head><title>Host title</title><style>bod
 const story = '<script>if(typeof window!==\'undefined\')window.__HOST_STORY_IMPORTS__=true</script><script setup>const initial=()=>({count:2,enabled:true})</script><template><Story id="normal" title="Normal story"><Variant id="one" title="First" :init-state="initial"><template #default="{state}"><button @click="state.count++">Count:{{state.count}}</button></template></Variant><Variant id="two" title="Second"><button>Second</button></Variant></Story></template>'
 
 describe('shared native and iframe Explorer', () => {
-  it('starts empty, selects docs/stories, joins grid switches, preserves host and isolates HSL palettes', async () => {
+  it('starts empty, selects docs/stories, preserves host and isolates HSL palettes', async () => {
     const fixture = await createEmbedBridgeFixture({ story, hostHtml, hostModules: await createEmbedVueHostAssets(), config: `theme:{colors:{primary:{500:'hsl(280 100% 50% / 80%)',600:'hsl(280 100% 50% / 80%)'}}},`, files: {
       'Book.story.md': '# Mixed story documentation\n\nMixed documentation needle',
       'Guide.story.md': '# Explorer guide',
@@ -20,7 +20,7 @@ describe('shared native and iframe Explorer', () => {
     page.on('console', (message) => {
       if (message.type() === 'error') diagnostics.push(message.text())
     })
-    const primary = () => page.frames().filter(frame => frame.url().includes('__sandbox.html') && !frame.url().includes('controls=true'))
+    const primary = () => page.frames().filter(frame => frame.url().includes('__sandbox.html') && !frame.url().includes('purpose=controls'))
     try {
       await page.goto(`${fixture.hostOrigin}/host.html`)
       const hostBefore = await page.locator('#host-field').boundingBox()
@@ -41,10 +41,6 @@ describe('shared native and iframe Explorer', () => {
       await page.locator('#second').getByRole('spinbutton', { name: 'count', exact: true }).fill('7')
       expect(await page.evaluate('sessions[1].state.get().then(state=>state.value.count)')).toBe(7)
       expect(await page.evaluate('sessions[0].state.get().then(state=>state.value.count)')).toBe(2)
-      await page.locator('#second').getByRole('button', { name: 'Show variant grid' }).click()
-      await expect.poll(() => page.evaluate('sessions[1].getSnapshot().runtime.layout'), { timeout: 15_000 }).toBe('grid')
-      await page.evaluate('sessions[0].selection.select({storyId:"grid"})')
-      await expect.poll(() => page.evaluate('sessions[0].getSnapshot().runtime.layout'), { timeout: 15_000 }).toBe('grid')
       const guide = await page.evaluate('sessions[0].catalog.list().then(stories=>stories.find(story=>story.docsOnly))')
       await page.evaluate(`sessions[0].selection.select({storyId:${JSON.stringify(guide.id)}})`)
       await expect.poll(() => primary().length, { timeout: 15_000 }).toBe(1)
@@ -78,16 +74,17 @@ describe('shared native and iframe Explorer', () => {
         element.style.width = '600px'
         element.style.height = '700px'
       })
-      const nativeGrid = primary().find(frame => frame.parentFrame()?.url().includes('surface=grid'))!
-      await nativeGrid.getByRole('button', { name: 'Count:2', exact: true }).click()
-      expect(await page.evaluate('sessions[1].state.get().then(state=>state.value.count)')).toBe(3)
+      const nativePreview = primary().find(frame => frame.parentFrame()?.url().includes('surface=preview'))!
+      await nativePreview.getByRole('button', { name: 'Count:7', exact: true }).click()
+      expect(await page.evaluate('sessions[1].state.get().then(state=>state.value.count)')).toBe(8)
       const nativeDocument = await page.evaluate('sessions[1].getSnapshot().runtime.runtimeId')
       await chooseHistoireSelectOption(page.locator('#second'), page, 'Variant', 'Second')
       await expect.poll(() => page.evaluate('({variant:sessions[1].getSnapshot().selection.variantId,status:sessions[1].getSnapshot().runtime.status})')).toEqual({ variant: 'two', status: 'ready' })
       await chooseHistoireSelectOption(page.locator('#second'), page, 'Variant', 'First')
       await expect.poll(() => page.evaluate('({variant:sessions[1].getSnapshot().selection.variantId,status:sessions[1].getSnapshot().runtime.status})')).toEqual({ variant: 'one', status: 'ready' })
-      expect(await page.evaluate('sessions[1].state.get().then(state=>state.value.count)')).toBe(3)
-      expect(await page.evaluate('sessions[1].getSnapshot().runtime.runtimeId')).toBe(nativeDocument)
+      // Each variant selection loads a fresh document with the story's initial state.
+      expect(await page.evaluate('sessions[1].state.get().then(state=>state.value.count)')).toBe(2)
+      expect(await page.evaluate('sessions[1].getSnapshot().runtime.runtimeId')).not.toBe(nativeDocument)
       await page.screenshot({ path: '/tmp/histoire-sdk-14-explorer-compact.png', fullPage: true })
       // Native search owns same docs intent; neighbor provider remains isolated.
       const native = page.locator('#second')
@@ -103,10 +100,9 @@ describe('shared native and iframe Explorer', () => {
       await page.evaluate('outer.unmount();app.unmount()')
       await expect.poll(() => primary().length, { timeout: 15_000 }).toBe(0)
       expect(await page.evaluate('sessions.map(session=>session.getSnapshot().status)')).toEqual(['ready', 'ready'])
-      await page.evaluate('sessions[0].selection.select({storyId:"grid"})')
+      await page.evaluate('sessions[0].selection.select({storyId:"grid",variantId:"first"})')
       await page.evaluate('outer=sessions[0].mount(document.querySelector("#first"),{surface:"explorer"});outer.ready')
       await expect.poll(() => primary().length, { timeout: 15_000 }).toBe(1)
-      expect(await page.evaluate('sessions[0].getSnapshot().runtime.layout')).toBe('grid')
       await page.evaluate('Promise.all(sessions.map(session=>session.dispose()))')
       await expect.poll(() => page.locator('iframe').count(), { timeout: 15_000 }).toBe(0)
       expect(await page.evaluate('nativeErrors')).toEqual([])

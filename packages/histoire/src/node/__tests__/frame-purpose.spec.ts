@@ -43,7 +43,7 @@ async function previewStoryCallbackUrl() {
 
 /** Primary runtime document URL as the embed runtime frame emits it. */
 function primaryUrl(base: string) {
-  return createRuntimeFrameUrl(new URL(base), { target, documentId: 'primary', selectionVersion: 1, grid: false, standalone: true })
+  return createRuntimeFrameUrl(new URL(base), { target, documentId: 'primary', selectionVersion: 1, standalone: true })
 }
 
 describe('story frame document purpose', () => {
@@ -57,20 +57,17 @@ describe('story frame document purpose', () => {
   ])('parses %s documents into their runtime purpose', async (_, createUrl, expected) => {
     const url = await createUrl()
     expect(new URL(url).pathname).toBe('/nested/__sandbox.html')
-    // Hosts emit non-default purposes explicitly instead of relying on legacy inference.
+    // Hosts emit non-default purposes explicitly.
     expect(new URL(url).searchParams.get('purpose') ?? 'interactive').toBe(expected.purpose)
     expect(readInitialSelection(url)).toMatchObject({ ...target, ...expected })
   })
 
   it.each([
-    ['?controls=true', 'controls'],
-    ['?testWorker=true', 'test-worker'],
-    ['?mcpNonce=nonce&mcpEpoch=epoch', 'automation'],
+    ['', 'interactive'],
     ['?matrix=true', 'interactive'],
     ['?purpose=unknown', 'interactive'],
-    ['?purpose=unknown&controls=true', 'controls'],
-    ['?purpose=automation&controls=true', 'automation'],
-  ])('resolves legacy or unknown query %s to %s', (search, expected) => {
+    ['?purpose=automation', 'automation'],
+  ])('resolves missing or unknown query %s to %s', (search, expected) => {
     expect(getFramePurpose(new URLSearchParams(search))).toBe(expected)
   })
 })

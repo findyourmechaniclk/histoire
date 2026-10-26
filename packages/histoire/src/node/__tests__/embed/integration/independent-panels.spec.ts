@@ -46,7 +46,7 @@ describe('independent native and iframe parts', () => {
     }
   })
 
-  it('isolates host navigation/focus/settings and attributes single/grid events through retained iframe replay', async () => {
+  it('isolates host navigation/focus/settings and attributes events per session through retained iframe replay', async () => {
     const fixture = await createEmbedBridgeFixture({ story, hostHtml, hostModules: await createEmbedVueHostAssets(), files: { 'Book.story.md': '# Widget docs\n\nNebula documentation.' } })
     const page = await fixture.browser.newPage({ viewport: { width: 1280, height: 1000 } })
     const errors: string[] = []
@@ -56,14 +56,14 @@ describe('independent native and iframe parts', () => {
       await page.goto(`${fixture.hostOrigin}/host.html`)
       await page.evaluate(`(async()=>{
         const link=document.createElement('link');link.rel='stylesheet';link.href='/native.css';document.head.append(link);
-        const {createHistoireSession,createApp,h,ref,HistoireProvider,HistoireStoryTree,HistoireSearch,HistoireToolbar,HistoireEvents,HistoirePreview,HistoireVariantGrid,createRouter,createWebHistory,RouterLink,RouterView}=await import('/native.js');
+        const {createHistoireSession,createApp,h,ref,HistoireProvider,HistoireStoryTree,HistoireSearch,HistoireToolbar,HistoireEvents,HistoirePreview,createRouter,createWebHistory,RouterLink,RouterView}=await import('/native.js');
         const router=createRouter({history:createWebHistory(),routes:[{path:'/host.html',component:{render:()=>h('p','Host home')}},{path:'/other',component:{render:()=>h('p','Host other')}}]});
         createApp({render:()=>h('div',[h(RouterLink,{to:'/other'},()=> 'Host navigation'),h(RouterView)])}).use(router).mount('#router');
         window.hostShortcuts=0;document.addEventListener('keydown',event=>{if(event.ctrlKey&&event.key==='k')hostShortcuts++});
         window.sessions=[];window.apps=[];window.received=[[],[]];window.shown=[ref(false),ref(false)];
         for(let index=0;index<2;index++){
           const session=createHistoireSession({url:${JSON.stringify(fixture.bookUrl)}});await session.connect();sessions.push(session);session.events.subscribe(event=>received[index].push(event));
-          const app=createApp({render:()=>h(HistoireProvider,{session},{default:()=>h('div',{class:'panels'},[h('button','Focus '+index),h(HistoireToolbar),h(HistoireSearch),h(HistoireStoryTree),h(HistoireEvents),shown[index].value?h(index?HistoirePreview:HistoireVariantGrid,{class:'runtime'}):null])})});app.mount(index?'#second':'#first');apps.push(app);
+          const app=createApp({render:()=>h(HistoireProvider,{session},{default:()=>h('div',{class:'panels'},[h('button','Focus '+index),h(HistoireToolbar),h(HistoireSearch),h(HistoireStoryTree),h(HistoireEvents),shown[index].value?h(HistoirePreview,{class:'runtime'}):null])})});app.mount(index?'#second':'#first');apps.push(app);
         }
       })()`)
       await page.locator('#first').getByRole('button', { name: 'Widget / First', exact: true }).click()
@@ -91,37 +91,33 @@ describe('independent native and iframe parts', () => {
       expect(await page.evaluate('sessions[0].getSnapshot().settings')).toMatchObject({ colorScheme: 'dark', textDirection: 'rtl', responsiveWidth: 410 })
       expect(await page.evaluate('sessions[1].getSnapshot().settings.colorScheme')).toBe('auto')
       stage = 'primary creation'
-      await page.evaluate(`(async()=>{await sessions[1].selection.select({storyId:'a:b',variantId:'one:alpha'});shown.forEach(value=>value.value=true)})()`)
+      await page.evaluate(`(async()=>{await sessions[0].selection.select({storyId:'a:b',variantId:'two'});await sessions[1].selection.select({storyId:'a:b',variantId:'one:alpha'});shown.forEach(value=>value.value=true)})()`)
       await expect.poll(() => page.evaluate('sessions.map(session=>session.getSnapshot().runtime.status)')).toEqual(['ready', 'ready'])
       const sandboxes = page.frames().filter(frame => frame.url().includes('__sandbox.html'))
-      const grid = sandboxes.find(frame => new URL(frame.url()).searchParams.get('grid') === 'true')!
-      const single = sandboxes.find(frame => new URL(frame.url()).searchParams.get('grid') === 'false')!
+      const second = sandboxes.find(frame => new URL(frame.url()).searchParams.get('variantId') === 'two')!
+      const first = sandboxes.find(frame => new URL(frame.url()).searchParams.get('variantId') === 'one:alpha')!
       stage = 'source focus shortcut'
-      await grid.getByRole('button', { name: 'Emit first' }).focus()
+      await second.getByRole('button', { name: 'Emit second' }).focus()
       await page.keyboard.press('Control+k')
       await expect.poll(() => page.locator('#first').getByRole('searchbox').evaluate(element => element === document.activeElement)).toBe(true)
       expect(await page.evaluate('hostShortcuts')).toBe(1)
-      stage = 'grid second event'
-      await grid.getByRole('button', { name: 'Emit second' }).click()
+      stage = 'second event'
+      await second.getByRole('button', { name: 'Emit second' }).click()
       await expect.poll(() => page.evaluate('received[0].length')).toBe(2)
       expect(await page.evaluate('received[0].map(event=>event.target)')).toEqual([{ storyId: 'a:b', variantId: 'two' }, { storyId: 'a:b', variantId: 'two' }])
       expect(await page.evaluate('received[0][0].payload.argument')).toMatchObject({ type: 'click', target: 'Node' })
       expect(await page.evaluate('received[0][1].payload.argument')).toEqual({ label: 'second', nested: { count: 2 } })
       expect(await page.evaluate('received[0].every(event=>event.runtimeId===sessions[0].getSnapshot().runtime.runtimeId)')).toBe(true)
-      await expect.poll(() => page.evaluate('sessions[0].getSnapshot().selection')).toEqual({ storyId: 'a:b', variantId: 'two' })
-      await page.evaluate(`sessions[0].selection.select({storyId:'a:b',variantId:'one:alpha'})`)
-      stage = 'grid first event'
-      await grid.getByRole('button', { name: 'Emit first' }).click()
-      stage = 'single event'
-      await single.getByRole('button', { name: 'Emit first' }).click()
-      await expect.poll(() => page.evaluate('received.map(events=>events.length)')).toEqual([4, 2])
+      stage = 'first event'
+      await first.getByRole('button', { name: 'Emit first' }).click()
+      await expect.poll(() => page.evaluate('received.map(events=>events.length)')).toEqual([2, 2])
       stage = 'events view'
       await page.evaluate(`(async()=>{window.eventsView=sessions[0].mount(document.querySelector('#event-frame'),{surface:'events'});await eventsView.ready})()`)
       const events = page.frames().find(frame => new URL(frame.url()).searchParams.get('surface') === 'events')!
       await expect.poll(() => events.getByRole('button', { name: /^nested/ }).count()).toBe(1)
       stage = 'event details'
       await events.getByRole('button', { name: /^nested/ }).click()
-      await expect.poll(() => events.locator('pre').textContent()).toContain('first')
+      await expect.poll(() => events.locator('pre').textContent()).toContain('second')
       stage = 'clear events'
       await events.getByRole('button', { name: 'Clear events', exact: true }).click()
       await expect.poll(() => page.evaluate('sessions[0].getSnapshot().events.items.length')).toBe(0)

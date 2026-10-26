@@ -16,7 +16,7 @@ const late = `<script setup>import {useHostChannel} from 'histoire/client';const
 
 describe('opt-in host application channels', () => {
   for (const mode of ['dev', 'static'] as const) {
-    it(`relays exact grid actors, bounded JSON and lifecycle for ${mode} cross-origin source`, async () => {
+    it(`relays exact actors, bounded JSON and lifecycle for ${mode} cross-origin source`, async () => {
       const fixture = await createEmbedBridgeFixture({ mode, copiedOutput: mode === 'static', channels: ['factory', 'other'], story, files: { 'ChannelChild.vue': child, 'ChannelLate.vue': late }, config: mode === 'dev' ? 'vite:{optimizeDeps:{noDiscovery:true}},' : undefined })
       const page = await fixture.browser.newPage()
       const errors: string[] = []
@@ -27,30 +27,35 @@ describe('opt-in host application channels', () => {
         expect(await page.evaluate('denied')).toBe('CAPABILITY_UNAVAILABLE')
         expect(await page.evaluate('beforeReady')).toBe('PREVIEW_NOT_READY')
         expect(page.frames().some(frame => frame.url().includes('__sandbox.html'))).toBe(false)
-        await page.evaluate(`(async()=>{await session.selection.select({storyId:'channel:book',variantId:'one'});window.mount=session.mount(document.querySelector('#mount'),{surface:'grid'});await mount.ready})()`)
+        await page.evaluate(`(async()=>{await session.selection.select({storyId:'channel:book',variantId:'one'});window.mount=session.mount(document.querySelector('#mount'),{surface:'preview'});await mount.ready})()`)
+        // Variant changes replace the document inside the same iframe.
         const frame = page.frames().find(frame => frame.url().includes('__sandbox.html'))!
-        await expect.poll(() => frame.getByText('two: none', { exact: true }).count()).toBe(1)
+        await expect.poll(() => frame.getByText('one: none', { exact: true }).count()).toBe(1)
         expect(await frame.evaluate('channelActors.one.denied')).toBe('CAPABILITY_UNAVAILABLE')
         await page.evaluate(`window.stopFailure=channel.subscribe(async()=>{throw new Error('Host consumer failure')})`)
-        await frame.evaluate('Promise.all([channelActors.one.post(),channelActors.two.post()])')
-        await expect.poll(() => page.evaluate('messages.length')).toBe(2)
-        await expect.poll(() => page.evaluate('channel.getDroppedCount()')).toBe(2)
+        await frame.evaluate('channelActors.one.post()')
+        await expect.poll(() => page.evaluate('messages.length')).toBe(1)
+        await expect.poll(() => page.evaluate('channel.getDroppedCount()')).toBe(1)
         await page.evaluate('stopFailure()')
-        expect(await page.evaluate('messages.map(message=>message.target.variantId).sort()')).toEqual(['one', 'two:beta'])
+        expect(await page.evaluate('messages.map(message=>message.target.variantId)')).toEqual(['one'])
         expect(await page.evaluate('messages.every(message=>message.runtimeId===session.getSnapshot().runtime.runtimeId)')).toBe(true)
         await frame.evaluate(`(()=>{for(const patch of [{documentId:'retired'},{channel:{name:'factory',type:'malformed',data:new Date()}},{channel:{name:'unlisted',type:'malformed',data:null}}])parent.postMessage({__histoire:true,type:'__histoire:host-channel',documentId:window.__HST_PREVIEW_DOCUMENT_ID__,storyId:'channel:book',variantId:'one',channel:{name:'factory',type:'malformed',data:null},...patch},location.origin)})()`)
         await page.evaluate('new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
-        expect(await page.evaluate('messages.length')).toBe(2)
+        expect(await page.evaluate('messages.length')).toBe(1)
         await page.evaluate(`channel.post('host',{value:'selected-first',command:'selection.select',url:'https://invalid.example'})`)
         await expect.poll(() => frame.getByText('one: selected-first', { exact: true }).count()).toBe(1)
-        expect(await frame.getByText('two: none', { exact: true }).count()).toBe(1)
         expect(await page.evaluate('session.getSnapshot().selection.variantId')).toBe('one')
         await page.evaluate(`channel.post('failure',null)`)
         await expect.poll(() => frame.evaluate('channelActors.one.dropped()')).toBe(1)
-        await page.evaluate(`(async()=>{const selection=session.selection.select({storyId:'channel:book',variantId:'two:beta'});window.transitionMessages=[];window.stopTransition=channel.subscribe(value=>transitionMessages.push(value));await selection})()`)
-        await frame.evaluate('channelActors.one.post()')
-        await expect.poll(() => page.evaluate(`messages.filter(message=>message.type==='actor'&&message.target.variantId==='one').length`)).toBe(2)
-        await expect.poll(() => page.evaluate('transitionMessages.length')).toBe(1)
+        const first = await page.evaluate('session.getSnapshot().runtime.runtimeId')
+        await page.evaluate(`session.selection.select({storyId:'channel:book',variantId:'two:beta'})`)
+        expect(await page.evaluate('session.getSnapshot().runtime.runtimeId')).not.toBe(first)
+        // Runtime replacement retires channel handles; callers reopen explicitly.
+        expect(await page.evaluate(`channel.post('host',null).then(()=>null,error=>error.code)`)).toBe('RUNTIME_CHANGED')
+        await page.evaluate(`stop();window.channel=session.channels.open('factory');window.messages=[];window.stop=channel.subscribe(value=>messages.push(value))`)
+        await expect.poll(() => frame.getByText('two: none', { exact: true }).count()).toBe(1)
+        await frame.evaluate('channelActors.two.post()')
+        await expect.poll(() => page.evaluate(`messages.filter(message=>message.type==='actor'&&message.target.variantId==='two:beta').length`)).toBe(1)
         await page.evaluate(`channel.post('reveal',null)`)
         await expect.poll(() => frame.getByRole('button', { name: 'Late two' }).count()).toBe(1)
         await frame.getByRole('button', { name: 'Late two' }).click()
@@ -58,9 +63,9 @@ describe('opt-in host application channels', () => {
         expect(await page.evaluate(`messages.find(message=>message.type==='late').target.variantId`)).toBe('two:beta')
         expect(await page.evaluate(`channel.post('host',()=>{}).then(()=>null,error=>error.code)`)).toBe('INVALID_ARGUMENT')
         expect(await page.evaluate(`channel.post('host','x'.repeat(65536)).then(()=>null,error=>error.code)`)).toBe('RESULT_TOO_LARGE')
-        const codes = await frame.evaluate('channelActors.one.burst()') as (string | null)[]
+        const codes = await frame.evaluate('channelActors.two.burst()') as (string | null)[]
         expect(codes.filter(code => code === 'RATE_LIMITED').length).toBeGreaterThanOrEqual(5)
-        expect(await frame.evaluate('channelActors.one.dropped()')).toBeGreaterThanOrEqual(5)
+        expect(await frame.evaluate('channelActors.two.dropped()')).toBeGreaterThanOrEqual(5)
         const previous = await page.evaluate('session.getSnapshot().runtime.runtimeId')
         if (mode === 'dev') {
           // Story collection publishes a new revision and replaces owning
@@ -70,14 +75,15 @@ describe('opt-in host application channels', () => {
           await expect.poll(() => page.evaluate('session.getSnapshot().runtime.status')).toBe('ready')
           expect(await page.evaluate(`channel.post('host',null).then(()=>null,error=>error.code)`)).toBe('RUNTIME_CHANGED')
           await page.evaluate(`window.channel=session.channels.open('factory');window.messages=[];window.stop=channel.subscribe(value=>messages.push(value))`)
-          await frame.evaluate(documentId => parent.postMessage({ __histoire: true, type: '__histoire:host-channel', documentId, storyId: 'channel:book', variantId: 'one', channel: { name: 'factory', type: 'actor', data: null } }, location.origin), previous)
-          await frame.evaluate('channelActors.one.post()')
+          await frame.evaluate(documentId => parent.postMessage({ __histoire: true, type: '__histoire:host-channel', documentId, storyId: 'channel:book', variantId: 'two:beta', channel: { name: 'factory', type: 'actor', data: null } }, location.origin), previous)
+          await expect.poll(() => frame.evaluate('Boolean(window.channelActors?.two)')).toBe(true)
+          await frame.evaluate('channelActors.two.post()')
           await expect.poll(() => page.evaluate('messages.length')).toBe(1)
           expect(await page.evaluate('messages[0].runtimeId')).not.toBe(previous)
         }
         await page.evaluate('mount.unmount()')
         expect(await page.evaluate(`channel.post('host',null).then(()=>null,error=>error.code)`)).toBe('PREVIEW_NOT_READY')
-        await page.evaluate('stop();stopTransition();session.dispose()')
+        await page.evaluate('stop();session.dispose()')
         expect(await page.evaluate('session.getSnapshot().status')).toBe('disposed')
         expect(errors).toEqual([])
       }
@@ -88,27 +94,24 @@ describe('opt-in host application channels', () => {
     })
   }
 
-  it('relays channels through iframe Explorer inner grid with document retirement', async () => {
-    const fixture = await createEmbedBridgeFixture({ copiedOutput: true, channels: ['factory'], hostHtml: '<!doctype html><div id="mount" style="width:1100px;height:800px"></div>', story: story.replace('title="Channels"', 'title="Channels" :layout="{type:\'grid\'}"'), files: { 'ChannelChild.vue': child, 'ChannelLate.vue': late, 'Guide.story.md': '# Guide' } })
+  it('relays channels through iframe Explorer primary with document retirement', async () => {
+    const fixture = await createEmbedBridgeFixture({ copiedOutput: true, channels: ['factory'], hostHtml: '<!doctype html><div id="mount" style="width:1100px;height:800px"></div>', story, files: { 'ChannelChild.vue': child, 'ChannelLate.vue': late, 'Guide.story.md': '# Guide' } })
     const page = await fixture.browser.newPage({ viewport: { width: 1300, height: 1000 } })
     const errors: string[] = []
     page.on('pageerror', error => errors.push(error.message))
     try {
       await page.goto(`${fixture.hostOrigin}/host.html`)
-      // Start with grid selection so Explorer's initial primary is that grid;
-      // changing adaptive layout after selection retires preceding document handles.
       await page.evaluate(`(async()=>{const {createHistoireSession}=await import('/sdk.js');window.session=createHistoireSession({url:${JSON.stringify(fixture.bookUrl)}});await session.connect();await session.selection.select({storyId:'channel:book',variantId:'one'});window.messages=[];window.channel=session.channels.open('factory');window.stop=channel.subscribe(value=>messages.push(value));window.mount=session.mount(document.querySelector('#mount'),{surface:'explorer'});await mount.ready})()`)
-      const runtime = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && !frame.url().includes('controls=true'))!
+      const runtime = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && !frame.url().includes('purpose=controls'))!
       expect(runtime().parentFrame()!.url()).toContain('surface=explorer')
       await expect.poll(() => page.evaluate('session.getSnapshot().runtime.status'), { timeout: 30_000 }).toBe('ready')
-      await expect.poll(() => runtime().getByText('two: none', { exact: true }).count()).toBe(1)
-      await runtime().evaluate('Promise.all([channelActors.one.post(),channelActors.two.post()])')
-      await expect.poll(() => page.evaluate('messages.length')).toBe(2)
-      expect(await page.evaluate('messages.map(message=>message.target.variantId).sort()')).toEqual(['one', 'two:beta'])
+      await expect.poll(() => runtime().getByText('one: none', { exact: true }).count()).toBe(1)
+      await runtime().evaluate('channelActors.one.post()')
+      await expect.poll(() => page.evaluate('messages.length')).toBe(1)
+      expect(await page.evaluate('messages.map(message=>message.target.variantId)')).toEqual(['one'])
       expect(await page.evaluate('messages.every(message=>message.runtimeId===session.getSnapshot().runtime.runtimeId)')).toBe(true)
       await page.evaluate(`channel.post('host',{value:'explorer-first'})`)
       await expect.poll(() => runtime().getByText('one: explorer-first', { exact: true }).count()).toBe(1)
-      expect(await runtime().getByText('two: none', { exact: true }).count()).toBe(1)
       await page.evaluate(`(async()=>{const guide=(await session.catalog.list()).find(story=>story.docsOnly);await session.selection.select({storyId:guide.id})})()`)
       await expect.poll(() => page.frames().filter(frame => frame.url().includes('__sandbox.html')).length).toBe(0)
       expect(await page.evaluate(`channel.post('host',null).then(()=>null,error=>error.code)`)).toBe('PREVIEW_NOT_READY')

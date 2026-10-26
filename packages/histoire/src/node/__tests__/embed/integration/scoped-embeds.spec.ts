@@ -36,7 +36,6 @@ describe('generated scoped embeds', () => {
       }, createEmbedSnippet('iframe', options))
       const embed = page.frameLocator('#mount > iframe')
       await expect.poll(() => runtime(page, 'view=embed')?.getByRole('button', { name: 'Count:2', exact: true }).count(), { timeout: 20_000 }).toBe(1)
-      expect(new URL(runtime(page, 'view=embed').url()).searchParams.get('grid')).toBe('false')
       await embed.getByRole('spinbutton', { name: 'count', exact: true }).fill('7')
       await expect.poll(() => runtime(page, 'view=embed')?.getByRole('button', { name: 'Count:7', exact: true }).count()).toBe(1)
       await runtime(page, 'view=embed').getByRole('button', { name: 'Count:7', exact: true }).click()

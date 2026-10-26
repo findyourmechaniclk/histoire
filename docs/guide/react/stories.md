@@ -8,7 +8,7 @@ import { Button } from './Button'
 
 export default function ButtonStory() {
   return (
-    <Story title="Button" group="components" layout={{ type: 'grid', width: 320 }}>
+    <Story title="Button" group="components" layout={{ type: 'grid' }}>
       <Variant title="Default"><Button>Hi</Button></Variant>
       <Variant id="disabled" title="Disabled"><Button disabled>Hi</Button></Variant>
     </Story>

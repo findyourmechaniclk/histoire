@@ -18,7 +18,7 @@ describe('static independent controls surface', () => {
         const controls=document.createElement('div');controls.id='controls';controls.style.cssText='width:420px;height:600px';document.body.append(controls);window.panel=session.mount(controls,{surface:'controls'});await panel.ready;
       })()`)
       const panel = page.frames().find(frame => frame.url().includes('surface=controls'))!
-      const sandbox = page.frames().find(frame => frame.url().includes('__sandbox.html') && !frame.url().includes('controls=true'))!
+      const sandbox = page.frames().find(frame => frame.url().includes('__sandbox.html') && !frame.url().includes('purpose=controls'))!
       await panel.getByRole('spinbutton', { name: 'count', exact: true }).fill('9')
       await expect.poll(() => sandbox.getByRole('button', { name: 'Count:9', exact: true }).isVisible()).toBe(true)
       await panel.getByRole('spinbutton', { name: 'amount', exact: true }).fill('15')

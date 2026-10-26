@@ -1,7 +1,6 @@
 import type { UiAgentRegistryEntry, UiAgentSettings } from '@histoire/shared'
-import { ACP_REGISTRY_ALIASES } from '@histoire/shared'
 
-/** One deduplicated settings row, preserving legacy credential identities. */
+/** One deduplicated settings row, preserving configured preset identities. */
 export interface AgentCatalogRow {
   /** Local ID when configured, otherwise canonical registry ID. */
   id: string
@@ -15,7 +14,7 @@ export interface AgentCatalogRow {
 export function agentCatalogRows(settings: UiAgentSettings, entries: UiAgentRegistryEntry[], query = ''): AgentCatalogRow[] {
   const represented = new Set<string>()
   const rows = settings.presets.map((preset) => {
-    const registryId = preset.registryId ?? ACP_REGISTRY_ALIASES[preset.id] ?? preset.id
+    const registryId = preset.registryId ?? preset.id
     represented.add(registryId)
     return { id: preset.id, name: preset.name, registryEntry: entries.find(entry => entry.id === registryId) }
   })

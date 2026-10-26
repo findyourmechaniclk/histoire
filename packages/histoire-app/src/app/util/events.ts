@@ -13,7 +13,7 @@ import { publishRuntimeEvent, resolveRuntimeEventTarget } from './runtime-events
  *
  * @param name Event name displayed in the panel.
  * @param argument Event payload; DOM members are cleaned by {@link cleanEventPayload}.
- * @param target Explicit structured actor for delayed object-only events in a multi-variant grid.
+ * @param target Explicit structured actor for delayed object-only events.
  */
 export async function logEvent(name: string, argument: unknown, target?: HistoireTarget) {
   console.log('[histoire] Event fired', { name, argument })
@@ -30,7 +30,7 @@ export async function logEvent(name: string, argument: unknown, target?: Histoir
     // so without it every event logged from a
     // story is silently dropped and never reaches the panel.
     // Target our own origin rather than '*': the sandbox is always same-origin
-    // with the host (`getSandboxUrl` builds a relative URL), and a wildcard
+    // with the host (`getSandboxRelativeUrl` builds a relative URL), and a wildcard
     // would leak event payloads to any cross-origin page embedding the sandbox.
     window.parent?.postMessage({
       __histoire: true,

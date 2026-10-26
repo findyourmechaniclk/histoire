@@ -8,9 +8,9 @@ import { publishRuntime } from './runtime.js'
 import { sendCurrentSettings } from './settings.js'
 
 /** Surfaces owning the one canonical story runtime. */
-const primarySurfaces = new Set<HistoireSurface>(['explorer', 'preview', 'grid'])
+const primarySurfaces = new Set<HistoireSurface>(['explorer', 'preview'])
 /** Finite surface validation also applies to untyped JavaScript callers. */
-const surfaces = new Set<HistoireSurface>(['explorer', 'preview', 'grid', 'tree', 'search', 'toolbar', 'controls', 'docs', 'source', 'events', 'tests'])
+const surfaces = new Set<HistoireSurface>(['explorer', 'preview', 'tree', 'search', 'toolbar', 'controls', 'docs', 'source', 'events', 'tests'])
 
 /** Mark inactive before awaits; release primary only after complete cleanup. */
 function unmount(context: SessionContext, owned: OwnedMount): Promise<void> {
@@ -34,7 +34,7 @@ function unmount(context: SessionContext, owned: OwnedMount): Promise<void> {
     context.mounts.delete(id)
     if (context.primaryId === id) {
       context.primaryId = null
-      context.publish({ runtime: { status: 'absent', mountId: null, runtimeId: null, layout: null, viewports: [], viewport: null } })
+      context.publish({ runtime: { status: 'absent', mountId: null, runtimeId: null, viewports: [], viewport: null } })
     }
     if (observerError) throw observerError
   }).catch((error) => {
@@ -101,7 +101,7 @@ export function mountSurface(context: SessionContext, container: HTMLElement | u
     throw error
   }
   if (primary) {
-    context.publish({ state: null, runtime: { status: 'mounting', mountId, runtimeId: null, layout: surface === 'grid' ? 'grid' : 'single', viewports: [], viewport: null } })
+    context.publish({ state: null, runtime: { status: 'mounting', mountId, runtimeId: null, viewports: [], viewport: null } })
   }
   /** Capture before adapter/publication callbacks; late completion cannot adopt a successor. */
   function assertCurrent(): void {

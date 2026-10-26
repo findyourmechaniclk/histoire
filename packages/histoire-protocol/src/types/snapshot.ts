@@ -27,7 +27,7 @@ export interface HistoireRect {
   height: number
 }
 
-/** Ready visible variant geometry, including grid cells. */
+/** Ready visible variant geometry. */
 export interface HistoireViewport extends HistoireRect {
   /** Variant content owner. */
   target: HistoireTarget
@@ -45,8 +45,6 @@ export interface HistoireRuntimeSnapshot {
   mountId: string | null
   /** Current runtime document or null. */
   runtimeId: string | null
-  /** Primary presentation or null before mount. */
-  layout: 'single' | 'grid' | null
   /** Ready visible variant boxes; hidden preview has none. */
   viewports: readonly HistoireViewport[]
   /** Selected visible entry, otherwise null. */

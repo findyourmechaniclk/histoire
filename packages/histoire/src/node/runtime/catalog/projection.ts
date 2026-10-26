@@ -26,7 +26,7 @@ export function projectCatalog(stories: readonly CatalogStory[], diagnostics: re
       ...(story.group == null ? {} : { group: story.group }),
       ...(typeof extra?.icon === 'string' ? { icon: extra.icon } : {}),
       ...(typeof extra?.iconColor === 'string' ? { iconColor: extra.iconColor } : {}),
-      ...(layout?.type === 'single' || layout?.type === 'grid' ? { layout: Object.freeze({ type: layout.type, ...('iframe' in layout && typeof layout.iframe === 'boolean' ? { iframe: layout.iframe } : {}) }) } : {}),
+      ...(layout?.type === 'single' || layout?.type === 'grid' ? { layout: Object.freeze({ type: layout.type }) } : {}),
       variants: Object.freeze(story.variants.map((variant) => {
         const collected = extra?.variants.find(value => value.id === variant.id)
         const hasTests = (collected as { hasTests?: boolean })?.hasTests

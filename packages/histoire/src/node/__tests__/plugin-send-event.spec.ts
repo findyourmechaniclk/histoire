@@ -217,17 +217,6 @@ describe('createDevEventApi', () => {
     await expect(second).resolves.toBe('second')
   })
 
-  it('still settles on a reply carrying no request id', async () => {
-    const channel = createChannel()
-    const { sendEvent } = createDevEventApi(channel.transport)
-
-    // Legacy plugin handlers reply without echoing the request id.
-    const promise = sendEvent('customPluginEvent')
-    channel.reply({ event: 'customPluginEvent', result: 'legacy' })
-
-    await expect(promise).resolves.toBe('legacy')
-  })
-
   it('prefixes request ids per client so two tabs cannot collide', () => {
     const firstTab = createChannel()
     const secondTab = createChannel()

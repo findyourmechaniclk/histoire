@@ -66,8 +66,6 @@ describe('standalone server bundle', () => {
 
   it('generates minimal ESM deployment package with optional browser peer only', () => {
     expect(createNodePackage('1.2.3')).toEqual({ private: true, type: 'module', version: '1.2.3', engines: { node: '>=22' }, scripts: { start: 'node server.mjs' } })
-    expect(createNodePackage('1.2.3', '1.59.1').optionalDependencies).toEqual({ playwright: '1.59.1' })
-    expect(createNodePackage('1.2.3', '')).not.toHaveProperty('optionalDependencies')
     expect(createNodePackage('1.2.3', { packageName: 'playwright', version: '1.59.1' }).optionalDependencies).toEqual({ playwright: '1.59.1' })
     expect(createNodePackage('1.2.3', { packageName: 'playwright-core', version: '1.59.1' }).optionalDependencies).toEqual({ 'playwright-core': '1.59.1' })
     expect(Object.keys(createNodePackage('1.2.3', { packageName: 'playwright-core', version: '1.59.1' }).optionalDependencies ?? {})).toEqual(['playwright-core'])

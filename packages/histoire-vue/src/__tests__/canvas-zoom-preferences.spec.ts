@@ -75,10 +75,8 @@ describe('canvas zoom preferences', () => {
 
   it.each([
     undefined,
-    { zoom: 'fit' },
-    { zoomByArrange: { grid: 'fit', list: 'fit', matrix: 'fit' } },
     { zoomByArrange: { list: 'invalid' } },
-  ])('uses selection fit for fresh and legacy List defaults: %j', (saved) => {
+  ])('uses selection fit for fresh and invalid List defaults: %j', (saved) => {
     const storage = createStorage(saved ? { '_histoire-ui-canvas': saved } : undefined)
     const canvas = createCanvasStore({ storage })
     expect(canvas.zoomByArrange).toEqual({ single: 'fit', grid: 'fit', list: 'selection', matrix: 'fit' })
@@ -98,8 +96,8 @@ describe('canvas zoom preferences', () => {
     expect(canvas.frameBackground).toBe('#abcdef')
   })
 
-  it.each([2, 3])('preserves explicit List canvas Fit from preference version %s', (version) => {
-    const storage = createStorage({ '_histoire-ui-canvas': { version, zoomByArrange: { list: 'fit' } } })
+  it('preserves explicit List canvas Fit', () => {
+    const storage = createStorage({ '_histoire-ui-canvas': { version: 3, zoomByArrange: { list: 'fit' } } })
     const canvas = createCanvasStore({ storage })
     canvas.setArrangement('list')
     expect(canvas.zoom).toBe('fit')
@@ -171,30 +169,9 @@ describe('canvas zoom preferences', () => {
     expect(canvas.zoomByArrange).toEqual({ single: 'fit', grid: 0.5, list: 0.75, matrix: 'fit' })
   })
 
-  it('reads legacy shared zoom but replaces Matrix preference on entry', () => {
-    const storage = createStorage({
-      '_histoire-ui-canvas': { zoom: 0.67, tool: 'pan', frameBackground: '#123456' },
-    })
-    const canvas = createCanvasStore({ storage })
-
-    expect(canvas.zoomByArrange).toEqual({ single: 'fit', grid: 0.67, list: 0.67, matrix: 0.67 })
-    canvas.setArrangement('matrix')
-    expect(canvas.zoom).toBe('fit')
-    canvas.setTool('measure')
-
-    expect(storage.value('_histoire-ui-canvas')).toEqual({
-      version: 3,
-      zoomByArrange: { single: 'fit', grid: 0.67, list: 0.67, matrix: 'fit' },
-      tool: 'measure',
-      frameBackground: '#123456',
-      autoFitContent: false,
-    })
-  })
-
   it('repairs malformed slots, clamps numeric values, and preserves other preferences', () => {
     const storage = createStorage({
       '_histoire-ui-canvas': {
-        zoom: 0.5,
         zoomByArrange: { grid: -3, list: 'invalid', matrix: 9 },
         tool: 'pan',
         frameBackground: '#abcdef',
@@ -202,7 +179,7 @@ describe('canvas zoom preferences', () => {
     })
     const canvas = createCanvasStore({ storage })
 
-    expect(canvas.zoomByArrange).toEqual({ single: 'fit', grid: 0.1, list: 0.5, matrix: 4 })
+    expect(canvas.zoomByArrange).toEqual({ single: 'fit', grid: 0.1, list: 'selection', matrix: 4 })
     expect(canvas.tool).toBe('pan')
     expect(canvas.frameBackground).toBe('#abcdef')
   })

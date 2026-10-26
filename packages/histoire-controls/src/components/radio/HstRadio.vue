@@ -37,7 +37,7 @@ function choose(value: string): void {
 </script>
 
 <template>
-  <HstWrapper tag="div" v-bind="$attrs" role="radiogroup" :aria-label="$attrs['aria-label'] ?? title" :title="title" :layout="layout" class="histoire-radio">
+  <HstWrapper v-bind="$attrs" role="radiogroup" :aria-label="$attrs['aria-label'] ?? title" :title="title" :layout="layout" class="histoire-radio">
     <div ref="choices" class="histoire-choice-list">
       <label v-for="(option, index) in options" :key="index"><input :name="groupId" type="radio" :value="option.value" :checked="modelValue === option.value" :disabled="disabled || option.disabled" @change="!option.disabled && choose(option.value)">{{ option.label }}</label>
     </div>

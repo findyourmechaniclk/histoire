@@ -93,7 +93,7 @@ describe('narrow workbench Search dismissal', () => {
           expect(onSelected).not.toHaveBeenCalled()
           return
         }
-        primarySelection.resolve({ status: 'absent', mountId: core.getSnapshot().runtime.mountId, runtimeId: null, layout: null, viewports: [], viewport: null })
+        primarySelection.resolve({ status: 'absent', mountId: core.getSnapshot().runtime.mountId, runtimeId: null, viewports: [], viewport: null })
       }
       await vi.waitFor(() => expect(navigation.router.currentRoute.value.query.tab).toBe('docs'))
       expect(navigation.router.currentRoute.value.hash).toBe('#part')

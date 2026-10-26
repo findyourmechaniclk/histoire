@@ -12,10 +12,7 @@ function initState() {
 <template>
   <Story
     title="BaseButton"
-    :layout="{
-      type: 'grid',
-      width: 200,
-    }"
+    :layout="{ type: 'grid' }"
   >
     <Variant
       title="playground"

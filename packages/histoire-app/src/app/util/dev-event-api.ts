@@ -13,8 +13,8 @@ import { type HistoireErrorCode, HistoireSdkError } from '@histoire/protocol'
 export interface DevEventResult {
   /** Name of the event this result answers. */
   event: string
-  /** Id of the request it answers; absent for legacy plugin replies. */
-  requestId?: string
+  /** Id of the request it answers. */
+  requestId: string
   /** Value to resolve `sendEvent` with. */
   result?: any
   /** Message to reject `sendEvent` with. */
@@ -182,13 +182,9 @@ export function createDevEventApi(transport: DevEventTransport) {
 
       off = addListener(event, ({ requestId: resultRequestId, result, error, code, progress }) => {
         // Results reach every client and every pending call of this event — only
-        // settle with our own. Replies without a request id come from legacy
-        // plugin handlers and still settle anyone waiting.
-        if (resultRequestId !== undefined && String(resultRequestId) !== requestId) {
-          return
-        }
+        // settle with our own.
+        if (resultRequestId !== requestId) return
         if (progress !== undefined) {
-          if (resultRequestId !== requestId) return
           try {
             onProgress?.(progress)
           }

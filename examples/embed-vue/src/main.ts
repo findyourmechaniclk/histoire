@@ -64,7 +64,7 @@ const Host = defineComponent({
       ]),
       h('label', ['Host field ', h('input', { value: hostValue.value, onInput: (event: Event) => hostValue.value = (event.target as HTMLInputElement).value })]),
       error.value ? h('p', { role: 'alert' }, error.value) : null,
-      h('div', { class: 'books' }, sessions.value.map((session, index) => h(BookPanels, { key: index, session, initialGrid: Boolean(index), onError: report }))),
+      h('div', { class: 'books' }, sessions.value.map((session, index) => h(BookPanels, { key: index, session, onError: report }))),
     ]
   },
 })

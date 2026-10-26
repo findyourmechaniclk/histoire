@@ -16,7 +16,7 @@ vi.mock('../../../../../histoire-app/src/embed/surfaces.js', () => ({
     /** Direct runtime observer publishes before native MessageChannel can deliver queued intent. */
     const publish = () => {
       const target = context.session.getSnapshot().selection
-      if (surface.observe && target?.variantId) context.bridge.post('readiness.changed', { runtime: { status: 'ready', mountId: context.bridge.getOwner().mountId, runtimeId: 'local-document', layout: 'grid', viewports: [], viewport: null } }, { runtimeId: 'local-document', target })
+      if (surface.observe && target?.variantId) context.bridge.post('readiness.changed', { runtime: { status: 'ready', mountId: context.bridge.getOwner().mountId, runtimeId: 'local-document', viewports: [], viewport: null } }, { runtimeId: 'local-document', target })
     }
     const stop = context.session.subscribe(publish)
     publish()
@@ -76,7 +76,7 @@ describe('nested local port capture', () => {
     await session.connect()
     const container = document.createElement('div')
     document.body.append(container)
-    const inner = mountLocalHistoireSurface({ session, sessionId: 'local-session', mountId: 'local', surface: 'grid', hidden: false, container, source: fixture.connection, target: null, settings: fixture.defaults }, 'https://book.test/')
+    const inner = mountLocalHistoireSurface({ session, sessionId: 'local-session', mountId: 'local', surface: 'preview', hidden: false, container, source: fixture.connection, target: null, settings: fixture.defaults }, 'https://book.test/')
     const signal = new AbortController().signal
     try {
       await inner.ready

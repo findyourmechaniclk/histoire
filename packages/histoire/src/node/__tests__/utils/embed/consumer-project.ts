@@ -41,7 +41,7 @@ export async function prepareConsumerBook(root: string, allowedOrigins: readonly
 export async function compileConsumerTypes(root: string) {
   await writeFile(join(root, 'public-types.ts'), `
 import {createHistoireSession,type HistoireSession,type HistoireSurface} from '@histoire/sdk';
-import {HistoireProvider,HistoireExplorer,HistoirePreview,HistoireVariantGrid,HistoireStoryTree,HistoireSearch,HistoireToolbar,HistoireControls,HistoireDocs,HistoireSource,HistoireEvents,HistoireTests,useHistoireSession,useHistoireSnapshot} from '@histoire/vue';
+import {HistoireProvider,HistoireExplorer,HistoirePreview,HistoireStoryTree,HistoireSearch,HistoireToolbar,HistoireControls,HistoireDocs,HistoireSource,HistoireEvents,HistoireTests,useHistoireSession,useHistoireSnapshot} from '@histoire/vue';
 import {HstText} from '@histoire/controls/vue';import {createApp,h,type Component} from 'vue';import {createServer} from 'node:http';import {createHistoireProject} from 'histoire/node';
 import {useHostChannel} from 'histoire/client';
 const session:HistoireSession=createHistoireSession({url:'https://book.example/book/'});
@@ -62,14 +62,14 @@ session.subscribe(value=>{
 const observed=useHistoireSnapshot().value;
 // @ts-expect-error native snapshot observers preserve session immutability
 observed.settings.colorScheme='dark';
-const surfaces:HistoireSurface[]=['explorer','preview','grid','tree','search','toolbar','controls','docs','source','events','tests'];
+const surfaces:HistoireSurface[]=['explorer','preview','tree','search','toolbar','controls','docs','source','events','tests'];
 session.selection.select({storyId:'story'});session.settings.update({colorScheme:'dark',textDirection:'rtl'});
 session.tests.run({mode:'preview',signal:new AbortController().signal});session.source.get({storyId:'story',mode:'raw'});
 const channel=session.channels.open('factory');channel.post('pick',{value:null});channel.subscribe(message=>{const runtimeId:string=message.runtimeId;const variantId:string|null=message.target.variantId;void runtimeId;void variantId});channel.getDroppedCount();
 const storyChannel=useHostChannel('factory');storyChannel.post('pick',{nested:[null,true,3]});storyChannel.on('pick',(data,message)=>{void data;void message.target});
 // @ts-expect-error application channels never accept runtime callbacks
 channel.post('pick',()=>{});
-const components:Component[]=[HistoireExplorer,HistoirePreview,HistoireVariantGrid,HistoireStoryTree,HistoireSearch,HistoireToolbar,HistoireControls,HistoireDocs,HistoireSource,HistoireEvents,HistoireTests,HstText];
+const components:Component[]=[HistoireExplorer,HistoirePreview,HistoireStoryTree,HistoireSearch,HistoireToolbar,HistoireControls,HistoireDocs,HistoireSource,HistoireEvents,HistoireTests,HstText];
 createApp({setup(){useHistoireSession();useHistoireSnapshot();return()=>h(HistoireProvider,{session},()=>components.map(component=>h(component)))}});
 async function node(){
   const project=await createHistoireProject({root:process.cwd()});

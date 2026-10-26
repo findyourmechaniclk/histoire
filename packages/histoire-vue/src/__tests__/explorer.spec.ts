@@ -18,8 +18,6 @@ describe('shared Explorer composition', () => {
     try {
       await vi.waitFor(() => expect(session.getSnapshot().runtime.status).toBe('ready'))
       expect(wrapper.get('[aria-label="Histoire canvas"]').exists()).toBe(true)
-      expect(wrapper.get('[aria-label="Show single variant"]').text()).toBe('Single')
-      expect(wrapper.get('[aria-label="Show variant grid"]').text()).toBe('Grid')
       await selectControl(wrapper, 'second', 'Variant')
       await vi.waitFor(() => expect(session.getSnapshot().selection).toEqual({ storyId: 'a:b', variantId: 'second' }))
       expect(fixture.adapters.mount).toHaveBeenCalledOnce()
@@ -31,9 +29,8 @@ describe('shared Explorer composition', () => {
     }
   })
 
-  it('invalidates delayed layout change when newer docs selection keeps current wrapper', async () => {
+  it('keeps current wrapper when newer docs selection supersedes a pending selection', async () => {
     const fixture = sourceFixture()
-    fixture.descriptor.catalog.stories[1].layout = { type: 'grid' }
     const session = createHistoireSessionWithAdapters({ url: 'https://book.example/' }, fixture.adapters)
     await session.connect()
     await session.selection.select({ storyId: 'a:b', variantId: 'c' })
@@ -54,37 +51,6 @@ describe('shared Explorer composition', () => {
       await vi.waitFor(() => expect(wrapper.find('[aria-label="Histoire documentation"]').exists()).toBe(true))
       expect(fixture.surfaceClose).not.toHaveBeenCalled()
       expect(fixture.adapters.mount).toHaveBeenCalledOnce()
-    }
-    finally {
-      accepted.resolve()
-      wrapper.unmount()
-      await session.dispose()
-    }
-  })
-  it('defers automatic grid replacement until original selection ACK settles', async () => {
-    const fixture = sourceFixture()
-    fixture.descriptor.catalog.stories[1].layout = { type: 'grid' }
-    const session = createHistoireSessionWithAdapters({ url: 'https://book.example/' }, fixture.adapters)
-    await session.connect()
-    await session.selection.select({ storyId: 'a:b', variantId: 'c' })
-    const errors: unknown[] = []
-    const wrapper = mount(HistoireProvider, { props: { session, onError: error => errors.push(error) }, slots: { default: () => h(HistoireExplorer, { showNavigation: false, showSearch: false, showToolbar: false, showPanels: false }) } })
-    const accepted = deferred<void>()
-    const dispatch = fixture.request.getMockImplementation()!
-    try {
-      await vi.waitFor(() => expect(session.getSnapshot().runtime.status).toBe('ready'))
-      fixture.request.mockImplementationOnce(async (command, payload) => {
-        await accepted.promise
-        return dispatch(command, payload)
-      })
-      const selecting = session.selection.select({ storyId: 'a', variantId: 'b:c' })
-      await Promise.resolve()
-      expect(fixture.surfaceClose).not.toHaveBeenCalled()
-      accepted.resolve()
-      await selecting
-      await vi.waitFor(() => expect(fixture.adapters.mount).toHaveBeenCalledTimes(2))
-      expect(fixture.adapters.mount.mock.calls[1][0].surface).toBe('grid')
-      expect(errors).toEqual([])
     }
     finally {
       accepted.resolve()
@@ -131,34 +97,6 @@ describe('shared Explorer composition', () => {
     }
     finally {
       wrapper.unmount()
-      await session.dispose()
-    }
-  })
-
-  it('joins preview teardown before grid replacement and keeps caller session alive', async () => {
-    const fixture = sourceFixture()
-    const session = createHistoireSessionWithAdapters({ url: 'https://book.example/' }, fixture.adapters)
-    await session.connect()
-    await session.selection.select({ storyId: 'a:b', variantId: 'c' })
-    const closed = deferred<void>()
-    const errors: unknown[] = []
-    const wrapper = mount(HistoireProvider, { props: { session, onError: error => errors.push(error) }, slots: { default: () => h(HistoireExplorer, { showNavigation: false, showSearch: false, showToolbar: false, showPanels: false }) } })
-    try {
-      await vi.waitFor(() => expect(session.getSnapshot().runtime.status).toBe('ready'))
-      fixture.surfaceClose.mockImplementationOnce(() => closed.promise)
-      await wrapper.get('[aria-label="Show variant grid"]').trigger('click')
-      expect(fixture.adapters.mount).toHaveBeenCalledOnce()
-      expect(session.getSnapshot().runtime.status).toBe('absent')
-      closed.resolve()
-      await vi.waitFor(() => expect(fixture.adapters.mount).toHaveBeenCalledTimes(2))
-      expect(fixture.adapters.mount.mock.calls[1][0].surface).toBe('grid')
-      expect(errors).toEqual([])
-    }
-    finally {
-      closed.resolve()
-      wrapper.unmount()
-      await vi.waitFor(() => expect(fixture.surfaceClose).toHaveBeenCalledTimes(2))
-      expect(session.getSnapshot().status).toBe('ready')
       await session.dispose()
     }
   })

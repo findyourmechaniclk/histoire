@@ -21,12 +21,6 @@ describe('offline workbench icons', () => {
     }
   })
 
-  it('resolves legacy first-party icon aliases offline', async () => {
-    const { getHistoireIcon } = await import('../../../../histoire-shared/src/icons/index.js')
-    expect(getHistoireIcon('ri:add-line')).toEqual(getHistoireIcon('add'))
-    expect(getHistoireIcon('mdi:drag-vertical-variant')).toEqual(getHistoireIcon('draggable'))
-  })
-
   it('resolves Tailwind logo offline without substituting a generic glyph', async () => {
     const { getHistoireIcon } = await import('../../../../histoire-shared/src/icons/index.js')
     const logo = getHistoireIcon('mdi:tailwind')

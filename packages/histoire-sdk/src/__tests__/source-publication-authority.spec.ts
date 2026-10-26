@@ -19,7 +19,7 @@ describe('source publication authority', () => {
     let child: ReturnType<typeof createBridgePort>
     const dispatch = vi.fn((request: HistoireBridgeRequest) => {
       if (request.command === 'view.sync') {
-        child.post('readiness.changed', { runtime: { status: 'ready', mountId: owner.mountId, runtimeId: 'replacement', layout: 'grid', viewports: [], viewport: null } }, { runtimeId: 'replacement', target })
+        child.post('readiness.changed', { runtime: { status: 'ready', mountId: owner.mountId, runtimeId: 'replacement', viewports: [], viewport: null } }, { runtimeId: 'replacement', target })
         return null
       }
       if (request.command === 'state.patch') return { target, runtimeId: request.runtimeId, value: request.payload }
@@ -31,7 +31,7 @@ describe('source publication authority', () => {
     parent.subscribe(notifications)
     try {
       // HMR can also replace child document before its publications reach host.
-      child.post('readiness.changed', { runtime: { status: 'ready', mountId: owner.mountId, runtimeId: 'unseen-document', layout: 'grid', viewports: [], viewport: null } }, { runtimeId: 'unseen-document' })
+      child.post('readiness.changed', { runtime: { status: 'ready', mountId: owner.mountId, runtimeId: 'unseen-document', viewports: [], viewport: null } }, { runtimeId: 'unseen-document' })
       child.post('catalog.changed', { descriptor }, { revision: descriptor.revision })
       const oldSync = parent.request('view.sync', { ...createEmbedSnapshot(), selection: target }, { ...parent.getOwner(), signal })
       const settled = oldSync.then(() => null, error => error)

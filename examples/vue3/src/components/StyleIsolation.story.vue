@@ -5,10 +5,7 @@ import StyleIsolation from './StyleIsolation.vue'
 <template>
   <Story
     title="Style Isolation"
-    :layout="{
-      type: 'grid',
-      width: 320,
-    }"
+    :layout="{ type: 'grid' }"
   >
     <StyleIsolation />
   </Story>

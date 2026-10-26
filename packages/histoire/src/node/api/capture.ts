@@ -37,7 +37,7 @@ export async function captureProjectScreenshot(services: ProjectServices, option
     const preview = services.preview
     if (preview) {
       const source = preview.current
-      if (preview.handle.status !== 'ready' || !source?.isActive() || !source.snapshot.capture.available) throw new HistoireSdkError('CAPABILITY_UNAVAILABLE', 'Chosen preview capture source unavailable')
+      if (preview.handle.status !== 'ready' || !source?.isActive()) throw new HistoireSdkError('CAPABILITY_UNAVAILABLE', 'Chosen preview capture source unavailable')
       source.snapshot.getTarget(options.storyId, options.variantId)
       defaults = source.snapshot.defaults
       execution = source.execution

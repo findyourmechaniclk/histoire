@@ -1,4 +1,3 @@
-import { logEvent } from '@histoire/app'
 import { pushHistoireTestRegistration } from '@histoire/shared'
 
 export * from '@histoire/app'
@@ -14,12 +13,4 @@ export function isTesting() {
 
 export function onTest(register) {
   pushHistoireTestRegistration(register)
-}
-
-/**
- * @deprecated
- */
-export function hstEvent(...args) {
-  console.warn(`'hstEvent' is deprecated. Use 'logEvent' instead.`)
-  return logEvent(...args)
 }

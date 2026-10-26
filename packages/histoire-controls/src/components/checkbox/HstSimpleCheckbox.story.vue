@@ -19,8 +19,8 @@ function initState() {
     >
       <template #default="{ state }">
         <HstSimpleCheckbox
-          v-model="state.checked"
-          with-toggle
+          :model-value="state.checked"
+          @click="state.checked = !state.checked"
         />
       </template>
     </Variant>

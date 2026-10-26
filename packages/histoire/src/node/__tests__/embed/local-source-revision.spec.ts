@@ -20,7 +20,7 @@ async function createLocalSourceFixture() {
   const unregister = registerEmbedSurface('preview', (context) => {
     surface = context
     const target = context.session.getSnapshot().selection!
-    const runtime = { status: 'ready' as const, mountId: context.bridge.getOwner().mountId, runtimeId: 'local-document', layout: 'single' as const, viewports: [], viewport: null }
+    const runtime = { status: 'ready' as const, mountId: context.bridge.getOwner().mountId, runtimeId: 'local-document', viewports: [], viewport: null }
     context.bridge.post('readiness.changed', { runtime }, { runtimeId: 'local-document', target })
     return { ready: Promise.resolve(runtime), request, close: () => {} }
   })

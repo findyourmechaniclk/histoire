@@ -4,7 +4,7 @@ import { chmod, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { stripVTControlCharacters } from 'node:util'
 import path from 'pathe'
-import { validateAgentEnvironment, validateAgentOverrides, validateAgentSettings } from './validation.js'
+import { validateAgentEnvironment, validateAgentOverrides } from './validation.js'
 
 /** Platform-appropriate private Histoire user settings file. */
 export function agentUserDataFile(): string {
@@ -18,14 +18,11 @@ export function agentUserDataFile(): string {
 export async function readAgentUserData(file: string): Promise<AcpUserData> {
   try {
     const parsed = JSON.parse(await readFile(file, 'utf8'))
-    if (![1, 2].includes(parsed.version) || !parsed.projects || !parsed.env || Array.isArray(parsed.projects) || Array.isArray(parsed.env) || typeof parsed.projects !== 'object' || typeof parsed.env !== 'object') throw new Error('Invalid agent user settings; repair agents.json')
+    if (parsed.version !== 2 || !parsed.projects || !parsed.env || Array.isArray(parsed.projects) || Array.isArray(parsed.env) || typeof parsed.projects !== 'object' || typeof parsed.env !== 'object') throw new Error('Invalid agent user settings; repair agents.json')
     // Disk contents cross the same boundary as browser updates: malformed env
     // values must never reach process.env or the public redactor.
-    for (const [root, settings] of Object.entries(parsed.projects)) parsed.projects[root] = parsed.version === 1 ? validateAgentSettings(settings) : validateAgentOverrides(settings)
+    for (const [root, settings] of Object.entries(parsed.projects)) parsed.projects[root] = validateAgentOverrides(settings)
     for (const [agentId, env] of Object.entries(parsed.env)) parsed.env[agentId] = validateAgentEnvironment({ agentId, env }).env
-    // Legacy snapshots contain no intent metadata: preserve commands/policies
-    // conservatively as explicit overrides until a verified save/reset retires them.
-    parsed.version = 2
     return parsed
   }
   catch (error) {

@@ -17,20 +17,20 @@ describe('native Vue host isolation', () => {
       await page.evaluate(`(async()=>{
         await new Promise((resolve,reject)=>{ const link=document.createElement('link'); link.rel='stylesheet'; link.href='/native.css'; link.onload=resolve; link.onerror=reject; document.head.append(link) });
         const native=await import('/native.js'), sdk=await import('/sdk.js');
-        const {createApp,defineComponent,h,ref,onMounted,HistoireProvider,HistoirePreview,HistoireVariantGrid,HistoireToolbar,useHistoireSnapshot,useHistoireContext,HstText,HstSelect,HistoireDropdown,createRouter,createWebHistory,RouterLink,RouterView}=native;
+        const {createApp,defineComponent,h,ref,onMounted,HistoireProvider,HistoirePreview,HistoireToolbar,useHistoireSnapshot,useHistoireContext,HstText,HstSelect,HistoireDropdown,createRouter,createWebHistory,RouterLink,RouterView}=native;
         window.nativeErrors=[]; window.sessions=[]; window.apps=[]; window.sizes=[]; window.texts=[];
         window.hostSubmits=0; document.querySelector('#host-form').addEventListener('submit',event=>{event.preventDefault();window.hostSubmits++});
         const router=createRouter({history:createWebHistory(),routes:[{path:'/host.html',component:{render:()=>h('p','Host home')}},{path:'/other',component:{render:()=>h('p','Host other')}}]});
         createApp({render:()=>h('div',[h(RouterLink,{to:'/other'},()=> 'Host navigation'),h(RouterView)])}).use(router).mount('#router');
         for(let index=0;index<2;index++){
           const session=sdk.createHistoireSession({url:${JSON.stringify(fixture.bookUrl)}}); await session.connect(); await session.selection.select({storyId:'native',variantId:'one'}); window.sessions.push(session);
-          const text=ref('local-'+index),selected=ref('one'),primary=ref(index?'grid':'preview'); window.texts.push(text);
+          const text=ref('local-'+index),selected=ref('one'); window.texts.push(text);
           const Child=defineComponent({setup(){const snapshot=useHistoireSnapshot(),context=useHistoireContext(); window.sizes[index]=context.size; return()=>h('div',{class:'host-content'},[
             h('output',{'data-native-status':index},snapshot.value.runtime.status),
             h('output',{'data-native-size':index},context.size.value.width+'x'+context.size.value.height),
             index===0?h(HistoireToolbar):null,
             h('div',{class:'native-controls'},[h(HstText,{title:'Text '+index,modelValue:text.value,'onUpdate:modelValue':value=>text.value=value}),h(HstSelect,{title:'Choice '+index,modelValue:selected.value,options:{one:'First option',two:'Second option'},'onUpdate:modelValue':value=>selected.value=value}),h(HistoireDropdown,{placement:'bottom'}, {default:()=>h('button',{type:'button'},'Local menu '+index),popper:()=>h('button',{type:'button'},'Menu content '+index)})]),
-            h(primary.value==='grid'?HistoireVariantGrid:HistoirePreview,{key:primary.value,class:'native-preview',onError:error=>nativeErrors.push(error.code)})
+            h(HistoirePreview,{class:'native-preview',onError:error=>nativeErrors.push(error.code)})
           ])}});
           const app=createApp({render:()=>h(HistoireProvider,{session,onError:error=>nativeErrors.push(error.code)},{default:()=>h(Child)})}); app.mount(index?'#second':'#first'); window.apps.push(app);
         }
@@ -45,7 +45,6 @@ describe('native Vue host isolation', () => {
       expect(await page.evaluate('window.hostSubmits')).toBe(0)
       const sandbox = () => page.frames().filter(frame => frame.url().includes('__sandbox.html'))
       expect(sandbox()).toHaveLength(2)
-      expect(await page.evaluate('sessions[1].getSnapshot().runtime.layout')).toBe('grid')
       expect(await page.evaluate('window.__hst_controls_dark')).toBeUndefined()
       await sandbox()[0].getByRole('button', { name: 'native:2' }).click()
       await expect.poll(() => page.evaluate('sessions[0].state.get().then(state=>state.value.count)')).toBe(3)

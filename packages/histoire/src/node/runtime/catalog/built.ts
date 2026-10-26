@@ -1,4 +1,4 @@
-import type { HistoireCapability, HistoireSettings } from '@histoire/protocol'
+import type { HistoireSettings } from '@histoire/protocol'
 import type { SerializedStoryData } from '../../build-serialize.js'
 import type { NodeArtifact } from '../../deploy/artifact-reader.js'
 import type { CatalogSnapshot, CatalogStory } from './types.js'
@@ -47,8 +47,9 @@ export async function readBuiltPreviewSnapshot(directory: string) {
   const node = await isNodeOutput(outputRoot) ? await readNodeArtifact(outputRoot) : undefined
   const publicRoot = node?.publicDir ?? outputRoot
   const data = node ? undefined : await readStaticData(publicRoot)
-  const captureMetadata = data?.capture == null ? undefined : validateBuiltCapture(data.capture)
-  if (captureMetadata) {
+  if (data && data.capture == null) throw new Error('Built output lacks capture metadata; rebuild it with this Histoire version')
+  const captureMetadata = data ? validateBuiltCapture(data.capture) : undefined
+  if (data && captureMetadata) {
     const { capture, ...catalog } = data
     const { buildId, ...settings } = captureMetadata
     if (await getBuiltCaptureIdentity(publicRoot, catalog, settings) !== buildId) throw new Error('Built capture identity differs from runtime assets/catalog')
@@ -77,12 +78,12 @@ export async function readBuiltPreviewSnapshot(directory: string) {
     Object.freeze(story.treePath)
     Object.freeze(story)
   }
-  const buildId = node?.manifest.buildId ?? captureMetadata?.buildId ?? null
-  const base = node?.manifest.base ?? captureMetadata?.base ?? '/'
+  // Node manifests and static capture metadata share the same identity/settings fields.
+  const recorded = node?.manifest ?? captureMetadata!
+  const { buildId, base } = recorded
   const catalog = projectCatalog(stories, node?.manifest.diagnostics ?? [])
-  const defaults: Pick<HistoireSettings, 'colorScheme' | 'backgroundColor' | 'textDirection' | 'globals'> = Object.freeze({ colorScheme: node?.manifest.defaultColorScheme ?? captureMetadata?.defaultColorScheme ?? 'auto', backgroundColor: node?.manifest.backgroundColor ?? captureMetadata?.backgroundColor ?? 'transparent', textDirection: node?.manifest.textDirection ?? captureMetadata?.textDirection ?? 'ltr', globals: Object.freeze({ ...(node?.manifest.globals ?? captureMetadata?.globals) }) })
-  const capture: HistoireCapability = Object.freeze(buildId ? { available: true } : { available: false, reason: 'CAPABILITY_UNAVAILABLE' })
-  const snapshot: CatalogSnapshot = Object.freeze({ projectId: buildId ?? 'legacy', epoch: buildId ?? 'legacy', revision: buildId ?? 'legacy', stories: Object.freeze(stories), catalog, diagnostics: Object.freeze(node?.manifest.diagnostics ?? []), diagnosticsTruncated: node?.manifest.diagnosticsTruncated ?? false, failed: false, outcome: 'success', contents: immutableMap(new Map()), fingerprint: buildId ?? 'legacy' })
+  const defaults: Pick<HistoireSettings, 'colorScheme' | 'backgroundColor' | 'textDirection' | 'globals'> = Object.freeze({ colorScheme: recorded.defaultColorScheme, backgroundColor: recorded.backgroundColor, textDirection: recorded.textDirection, globals: Object.freeze({ ...recorded.globals }) })
+  const snapshot: CatalogSnapshot = Object.freeze({ projectId: buildId, epoch: buildId, revision: buildId, stories: Object.freeze(stories), catalog, diagnostics: Object.freeze(node?.manifest.diagnostics ?? []), diagnosticsTruncated: node?.manifest.diagnosticsTruncated ?? false, failed: false, outcome: 'success', contents: immutableMap(new Map()), fingerprint: buildId })
   const built = Object.freeze({
     outputRoot,
     publicRoot,
@@ -90,7 +91,6 @@ export async function readBuiltPreviewSnapshot(directory: string) {
     base: normalizeNodeBase(base),
     buildId,
     defaults,
-    capture,
     catalog,
     /** Exact immutable story authority independent of live project files. */
     getStory(storyId: string) { return lookupStory(snapshot, storyId) },

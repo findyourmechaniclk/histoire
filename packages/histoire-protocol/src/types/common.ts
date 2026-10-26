@@ -18,7 +18,7 @@ export interface HistoireSelectionInput {
 }
 
 /** All independently mountable first-party surfaces. */
-export const HISTOIRE_SURFACES = ['explorer', 'preview', 'grid', 'tree', 'search', 'toolbar', 'controls', 'docs', 'source', 'events', 'tests'] as const
+export const HISTOIRE_SURFACES = ['explorer', 'preview', 'tree', 'search', 'toolbar', 'controls', 'docs', 'source', 'events', 'tests'] as const
 /** One independently mountable first-party surface name. */
 export type HistoireSurface = typeof HISTOIRE_SURFACES[number]
 

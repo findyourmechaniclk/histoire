@@ -2,7 +2,7 @@ import type { HistoireCatalog, HistoireReadonly, HistoireSnapshot, HistoireSurfa
 
 /** Own latest view metadata projection for one mount; host catalog remains complete. */
 export function createMountViewSnapshot(surface: HistoireSurface) {
-  const runtimeOnly = surface === 'preview' || surface === 'grid'
+  const runtimeOnly = surface === 'preview'
   let previousCatalog: HistoireReadonly<HistoireCatalog> | undefined
   let previousStoryId: string | null | undefined
   let projectedCatalog: HistoireReadonly<HistoireCatalog> | undefined
@@ -13,7 +13,7 @@ export function createMountViewSnapshot(surface: HistoireSurface) {
     let catalog = snapshot.catalog
     if (runtimeOnly) {
       // Immutable catalog publication replaces its reference. State/layout ACKs
-      // and same-story grid selections reuse this mount's metadata in O(1).
+      // and same-story selections reuse this mount's metadata in O(1).
       if (previousCatalog !== catalog || previousStoryId !== storyId) {
         previousCatalog = catalog
         previousStoryId = storyId

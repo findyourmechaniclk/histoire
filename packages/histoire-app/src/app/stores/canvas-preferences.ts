@@ -9,9 +9,8 @@ import { BUILTIN_CANVAS_ARRANGEMENTS } from './canvas-arrangement.js'
  * Converts a persisted tool into a supported one. Unknown values become Select; a well-formed
  * plugin tool id is kept and checked against the registry once plugins settled.
  */
-export function readCanvasTool(saved: { tool?: unknown, measure?: unknown }): CanvasTool {
-  // Legacy measurement could coexist with Pan; preserve its intent as the exclusive tool.
-  if (saved.tool === 'measure' || saved.measure === true) return 'measure'
+export function readCanvasTool(saved: { tool?: unknown }): CanvasTool {
+  if (saved.tool === 'measure') return 'measure'
   if (saved.tool === 'pan') return 'pan'
   const plugin = typeof saved.tool === 'string' ? parseQualifiedId(saved.tool) : null
   return plugin && plugin.namespace !== BUILTIN_NAMESPACE ? saved.tool as CanvasTool : 'select'
@@ -61,17 +60,8 @@ export function readCanvasPreferences(storage?: CanvasStorage): CanvasPreference
     const saved = JSON.parse(storage?.getItem('_histoire-ui-canvas') ?? 'null')
     if (!saved || typeof saved !== 'object') return defaults
     const tool = readCanvasTool(saved)
-    // Legacy books saved one zoom. Fan it out so every arrangement opens at the familiar scale.
-    const legacyZoom = readZoom(saved.zoom)
     const savedZooms = saved.zoomByArrange && typeof saved.zoomByArrange === 'object' ? saved.zoomByArrange : {}
-    const zoomByArrange = Object.fromEntries(BUILTIN_CANVAS_ARRANGEMENTS.map((arrangement) => {
-      // Single zoom was forced to 100% before version 3, so old values carry no user intent.
-      if (arrangement === 'single') return [arrangement, saved.version === 3 ? readZoom(savedZooms.single, arrangement) ?? 'fit' : 'fit']
-      let zoom = readZoom(savedZooms[arrangement], arrangement) ?? legacyZoom ?? defaults.zoomByArrange[arrangement]
-      // Old List Fit was the default; version 2 distinguishes a new explicit canvas Fit.
-      if (arrangement === 'list' && zoom === 'fit' && saved.version !== 2 && saved.version !== 3) zoom = 'selection'
-      return [arrangement, zoom]
-    })) as CanvasZoomByArrange
+    const zoomByArrange = Object.fromEntries(BUILTIN_CANVAS_ARRANGEMENTS.map(arrangement => [arrangement, readZoom(savedZooms[arrangement], arrangement) ?? defaults.zoomByArrange[arrangement]])) as CanvasZoomByArrange
     Object.assign(zoomByArrange, readPluginZooms(savedZooms))
     return { zoomByArrange, tool, frameBackground: typeof saved.frameBackground === 'string' ? saved.frameBackground : defaults.frameBackground, autoFitContent: saved.autoFitContent === true }
   }

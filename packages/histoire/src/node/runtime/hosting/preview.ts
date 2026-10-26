@@ -28,7 +28,7 @@ export interface PreviewGeneration {
   epoch: string
   /** Actual listened origin. */
   origin: string
-  /** Actual mounted base, including legacy configuration fallback. */
+  /** Actual mounted base recorded by the build. */
   base: string
   /** Canonical built target authority. */
   snapshot: BuiltPreviewSnapshot
@@ -145,7 +145,7 @@ export async function createPreviewHosting(options: {
     const snapshot = await readBuiltPreviewSnapshot(outputRoot)
     const embed = await readBuiltEmbedPolicy(snapshot.publicRoot, { target: snapshot.mode, originOverride: snapshot.mode === 'node' ? process.env.HISTOIRE_EMBED_ORIGINS : undefined })
     if (handleClosed()) throw new HistoireSdkError('DISPOSED', 'Histoire preview closed')
-    base = snapshot.buildId ? snapshot.base : options.context.resolvedViteConfig.base ?? snapshot.base
+    base = snapshot.base
     if (!server.listening) origin = await listenOwnedServer(server, options.port ?? 6006, options.host, options.strictPort)
     if (handleClosed()) throw new HistoireSdkError('DISPOSED', 'Histoire preview closed')
     const registry = createPreviewHostRegistry({ base })
@@ -212,7 +212,7 @@ export async function createPreviewHosting(options: {
         return status
       },
       get capture() {
-        return last?.capture ?? { available: false, reason: 'CAPABILITY_UNAVAILABLE' }
+        return last ? { available: true } : { available: false, reason: 'CAPABILITY_UNAVAILABLE' }
       },
       ready,
       restart() {

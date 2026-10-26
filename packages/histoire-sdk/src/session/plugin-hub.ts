@@ -152,7 +152,7 @@ export function createPluginChannelHub(options: PluginChannelHubOptions) {
       }
       const id = key(payload.pluginId, payload.actorId)
       if (payload.type === 'histoire:attached') {
-        // Grid documents host one actor per rendered variant; each detaches with its own notice.
+        // Each actor detaches with its own notice; a repeated attach is ignored.
         if (entries.has(id)) return
         const actor: HistoirePluginHubActor = Object.freeze({ pluginId: payload.pluginId, actorId: payload.actorId, target: Object.freeze({ ...payload.target }), runtimeId: payload.runtimeId, frameKey })
         entries.set(id, { actor, controller: new AbortController(), listeners: new Set() })

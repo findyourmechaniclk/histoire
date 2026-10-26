@@ -50,7 +50,7 @@ export function createSessionPlugins(context: SessionContext): HistoireSessionPl
       hub.retire(() => true, code)
       return
     }
-    // Only physical document replacement retires actors; grid selection keeps them.
+    // Only physical document replacement retires actors; selection keeps them.
     const owned = currentDocument()
     hub.retire(actor => actor.runtimeId !== owned, 'RUNTIME_CHANGED')
   })

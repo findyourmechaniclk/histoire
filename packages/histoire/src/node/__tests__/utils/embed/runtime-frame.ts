@@ -43,7 +43,7 @@ export async function createRuntimeFrameFixture(options: { standalone?: boolean,
           for (const listener of listeners) listener({ ...owner, epoch: fixture.descriptor.epoch, revision: fixture.descriptor.revision, ...identity, ...notification } as HistoireSessionNotification)
         },
       } as HistoireBridgePort
-      const view = createEmbedRuntimeFrame({ container: context.container!, session: context.session, descriptor: fixture.descriptor, sourceBase: options.sourceBase ?? 'http://localhost/book/', standalone: options.standalone, signal: new AbortController().signal, bridge }, 'single')
+      const view = createEmbedRuntimeFrame({ container: context.container!, session: context.session, descriptor: fixture.descriptor, sourceBase: options.sourceBase ?? 'http://localhost/book/', standalone: options.standalone, signal: new AbortController().signal, bridge })
       return { id: owner.connectionId, ready: view.ready, request: view.request, close: view.close, subscribe(listener) {
         listeners.add(listener)
         return () => listeners.delete(listener)

@@ -12,7 +12,7 @@
  * `detachFrameActors` and `handleFrameStoryChanged` to later sections.
  */
 export function previewFrameActors() {
-  return `/** Slots of mounted variant renderers; the legacy grid sandbox never creates one. */
+  return `/** Slots of mounted variant renderers. */
 const frameActorSlots = new Set()
 
 /** Unique id of one rendered mount. */

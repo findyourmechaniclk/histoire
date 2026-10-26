@@ -3,7 +3,6 @@ import type { FramePluginContext } from '../../../../histoire-plugin-kit/src/typ
 import type { FramePluginManifestEntry } from './utils/preview-runtime-app.js'
 import { VARIANT_READY } from '@histoire/protocol'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { defineComponent, h, onMounted } from 'vue'
 import { createPreviewRuntimeApp } from './utils/preview-runtime-app.js'
 
 type Runtime = ReturnType<typeof createPreviewRuntimeApp>
@@ -195,23 +194,6 @@ describe('frame plugin lifecycle', () => {
     await settle(runtime)
     expect(runtime.messages.some(message => message.type === VARIANT_READY)).toBe(true)
     expect(runtime.framePluginManifestImports).toBe(0)
-    expect(contexts).toEqual([])
-  })
-
-  it('never attaches to the legacy grid sandbox', async () => {
-    const contexts: FramePluginContext[] = []
-    const grid = defineComponent({
-      props: ['story', 'variant'],
-      emits: ['ready'],
-      /** Legacy grid actor reporting readiness for its variant. */
-      setup(props, { emit }) {
-        onMounted(() => emit('ready', props.variant.id))
-        return () => h('div', props.variant.id)
-      },
-    })
-    const runtime = createRuntime({ grid: true, loadGridComponent: async () => grid, framePlugins: [contextPlugin(contexts)] })
-    await settle(runtime)
-    expect(runtime.messages.some(message => message.type === VARIANT_READY)).toBe(true)
     expect(contexts).toEqual([])
   })
 

@@ -23,7 +23,6 @@ export const STATE_SYNC = '__histoire:state-sync'
 export const SANDBOX_READY = '__histoire:sandbox-ready'
 export const EVENT_SEND = '__histoire:event'
 export const PREVIEW_SETTINGS_SYNC = '__histoire:preview-settings-sync'
-export const SELECT_VARIANT = '__histoire:select-variant'
 export const VARIANT_READY = '__histoire:variant-ready'
 export const PREVIEW_SYNC = '__histoire:preview-sync'
 export const CONTROLS_READY = '__histoire:controls-ready'
@@ -104,8 +103,6 @@ export interface HistoirePreviewSyncMessage {
   type: typeof PREVIEW_SYNC
   storyId: string
   variantId: string | null
-  /** True when the preview renders the whole variant grid. */
-  grid: boolean
 }
 
 /** One variant's state, sent in both directions. */
@@ -113,7 +110,7 @@ export interface HistoireStateSyncMessage extends HistoireStoryScopedMessage {
   type: typeof STATE_SYNC
   variantId: string
   state: any
-  /** Controls-only document edit watermark; legacy hosts and primary frames omit it. */
+  /** Controls-only document edit watermark; primary frames omit it. */
   controlsRevision?: number
 }
 
@@ -121,14 +118,6 @@ export interface HistoireStateSyncMessage extends HistoireStoryScopedMessage {
 export interface HistoirePreviewSettingsSyncMessage {
   type: typeof PREVIEW_SETTINGS_SYNC
   settings: Record<string, any>
-}
-
-/** Variant selection, sent by the host (grid mode) or by the preview. */
-export interface HistoireSelectVariantMessage {
-  type: typeof SELECT_VARIANT
-  variantId: string
-  /** Embed host intent version for rejecting delayed grid clicks; legacy hosts may omit it. */
-  selectionVersion?: number
 }
 
 /** The preview document booted (and applied its initial selection). */
@@ -214,7 +203,6 @@ export type HistoireHostMessage =
   | HistoirePreviewSyncMessage
   | HistoireStateSyncMessage
   | HistoirePreviewSettingsSyncMessage
-  | HistoireSelectVariantMessage
   | HistoireCollectTestsMessage
   | HistoireRunTestsMessage
   | HistoireRunTestCaseMessage
@@ -230,7 +218,6 @@ export type HistoirePreviewMessage =
   | HistoireVariantReadyMessage
   | HistoireControlsReadyMessage
   | HistoireControlsResizeMessage
-  | HistoireSelectVariantMessage
   | HistoireEventSendMessage
   | HistoireRuntimeFocusMessage
   | HistoireTestDefinitionsMessage

@@ -84,14 +84,14 @@ export function previewRuntimePreamble({
   storyEntryLoaders,
 }: PreviewRuntimePreambleOptions) {
   return `import {
-  GenericMountStory, GenericRenderStory, setupPluginApi, usePreviewSettingsStore,
+  GenericMountStory, GenericRenderStory, setupPluginApi,
   COLLECT_TESTS, CONTROLS_READY, CONTROLS_RESIZE, HOST_CHANNEL_MESSAGE, PREVIEW_SETTINGS_SYNC,
   PREVIEW_SYNC, RUN_TEST_CASE, RUN_TESTS, RUNTIME_REQUEST, RUNTIME_RESULT, RUNTIME_FAILED,
-  RUNTIME_LAYOUT, RUNTIME_FOCUS, SANDBOX_READY, SELECT_VARIANT, STATE_SYNC, TEST_CASE_RESULT,
+  RUNTIME_LAYOUT, RUNTIME_FOCUS, SANDBOX_READY, STATE_SYNC, TEST_CASE_RESULT,
   TEST_DEFINITIONS, TEST_RESULT, VARIANT_READY, histoireConfig, isDark, setupControlsDocument,
   applyPreviewSettings, installRuntimeEventScope, installRuntimeHostChannels, toRawDeep,
   getDynamicSourceCode, createRuntimeState, createRuntimeStatePresets,
-  createStandalonePresetStorage, observeRuntimeLayout, loadStoryVariantGridSandbox,
+  createStandalonePresetStorage, observeRuntimeLayout,
 } from ${JSON.stringify(histoireAppSandboxId)}
 import 'virtual:$histoire-theme'
 ${hasVitestPreview
@@ -106,24 +106,6 @@ import { createVariantTestSession, hasVanillaSetupHooks } from ${JSON.stringify(
 ${hasVitestPreview
   ? `import { createStaticPreviewMockRpc, createStaticPreviewMswOptions, enableStaticPreviewMockInterception } from ${JSON.stringify(staticMockRuntimeId)}`
   : ''}
-
-let StoryVariantGridSandbox
-let gridComponentPromise
-/** Load grid presentation only when the selected runtime layout needs it. */
-async function ensureGridComponent() {
-  if (StoryVariantGridSandbox) return
-  if (!gridComponentPromise) {
-    gridComponentPromise = (async () => {
-      const module = await loadStoryVariantGridSandbox()
-      StoryVariantGridSandbox = module.default
-    })()
-      .catch((error) => {
-        gridComponentPromise = undefined
-        throw error
-      })
-  }
-  await gridComponentPromise
-}
 
 /**
  * Imports the frame plugin manifest (\`FRAME_PLUGINS_ID\`). Only the frame-plugins
@@ -161,18 +143,18 @@ ${MOCK_RPC_SNIPPET}`
  * from `@histoire/shared` in scope.
  */
 export function previewInitialSelection() {
-  return `const initialSelection = {
+  return `const initialPurpose = getFramePurpose(new URLSearchParams(window.location.search))
+const initialSelection = {
   storyId: new URLSearchParams(window.location.search).get('storyId'),
   variantId: new URLSearchParams(window.location.search).get('variantId'),
-  grid: new URLSearchParams(window.location.search).get('grid') === 'true',
   // Controls mode: this sandbox instance renders only the story's custom
   // #controls slot for the host Controls panel (used for vitest-mocked
   // stories, whose module can only execute where the mocker is active).
-  controls: new URLSearchParams(window.location.search).get('controls') === 'true',
+  controls: initialPurpose === 'controls',
   // Isolated matrix cells consume canonical state without publishing back to it.
   matrix: new URLSearchParams(window.location.search).get('matrix') === 'true',
   // Why this document exists (interactive, test-worker, automation, controls).
-  // Legacy flags still map when a host omits \`purpose\`; Matrix cells stay interactive.
-  purpose: getFramePurpose(new URLSearchParams(window.location.search)),
+  // Matrix cells stay interactive.
+  purpose: initialPurpose,
 }`
 }

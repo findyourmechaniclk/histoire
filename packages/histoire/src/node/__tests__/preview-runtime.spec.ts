@@ -14,22 +14,11 @@ function parseAsModule(source: string) {
 }
 
 describe('preview runtime generation', () => {
-  it('keeps grid-only modules behind selection readiness', () => {
+  it('announces readiness only after selection loads', () => {
     const source = generatePreviewRuntimeSource()
     const sandboxModule = '/stub/histoire-app/dist/bundled/sandbox.js'
 
     expect(source).toContain(`} from ${JSON.stringify(sandboxModule)}`)
-    expect(source).toContain('await loadStoryVariantGridSandbox()')
-
-    const selectionStart = source.indexOf('async function syncSelection(nextSelection)')
-    const selectionEnd = source.indexOf('async function handleRuntimeRequest', selectionStart)
-    const selection = source.slice(selectionStart, selectionEnd)
-    const dependencies = selection.indexOf('Promise.allSettled')
-    const gridLoad = selection.indexOf('nextGrid ? ensureGridComponent()')
-    const storyMount = selection.indexOf('file.value = nextFile')
-    expect(dependencies).toBeGreaterThanOrEqual(0)
-    expect(gridLoad).toBeGreaterThan(dependencies)
-    expect(storyMount).toBeGreaterThan(dependencies)
 
     const previewSyncStart = source.indexOf('if (event.data?.type === PREVIEW_SYNC)')
     const previewSyncEnd = source.indexOf('else if (event.data?.type === STATE_SYNC)', previewSyncStart)

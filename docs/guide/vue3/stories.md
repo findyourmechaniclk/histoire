@@ -66,10 +66,7 @@ You can change the layout of the variant by using the `layout` prop with an obje
 
 This is the default layout, displaying one variant at a time. The story is isolated with an iframe so CSS media queries work correctly.
 
-Additional `layout` properties:
-- `iframe`: **Deprecated** — this option is ignored, stories always render inside an iframe.
-
-Remove `iframe: false` when migrating. Preview runtime owns live state; see [browser runtime migration](../testing.md#state-ownership).
+Stories always render inside an iframe. Remove the `iframe` option when migrating. Preview runtime owns live state; see [browser runtime migration](../testing.md#state-ownership).
 
 ```vue{4}
 <template>
@@ -94,14 +91,11 @@ Remove `iframe: false` when migrating. Preview runtime owns live state; see [bro
 
 Display all the variants in a grid.
 
-Additional `layout` properties:
-- `width`: Column size. Can be number (pixels) or string (like `'100%'`).
-
 ```vue{4}
 <template>
   <Story
     title="Cars"
-    :layout="{ type: 'grid', width: 200 }"
+    :layout="{ type: 'grid' }"
   >
     <Variant title="default">
       🚗

@@ -21,15 +21,14 @@ export function projectValueSignature(value: unknown): string | undefined {
     : item)
 }
 
-/** Loads bounded pending and completed capabilities, including legacy single-receipt storage. */
+/** Loads bounded pending and completed capabilities. */
 export function readProjectSaves(storage: SettingsStorage | undefined, key: string): ProjectSaveReceipt[] {
   try {
     const raw = storage?.getItem(key)
     if (!raw) return []
     if (new TextEncoder().encode(raw).byteLength > 64 * 1024) throw new Error('Invalid pending project save')
-    const parsed = JSON.parse(raw) as ProjectSaveReceipt | ProjectSaveReceipt[]
-    const values = Array.isArray(parsed) ? parsed : [parsed]
-    if (!values.length || values.length > 32) throw new Error('Invalid pending project save')
+    const values = JSON.parse(raw) as ProjectSaveReceipt[]
+    if (!Array.isArray(values) || !values.length || values.length > 32) throw new Error('Invalid pending project save')
     const requestIds = new Set<string>()
     let patchCount = 0
     for (const value of values) {

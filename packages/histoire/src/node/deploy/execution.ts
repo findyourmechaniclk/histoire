@@ -30,7 +30,7 @@ export function resolveNodePreviewOptions(target: McpToolInput<'histoire_capture
   catalog.getTarget(target.storyId, target.variantId, capture.revision)
   const manifest = artifact.manifest
   const setupOwner = launch ? undefined : capture.value.setupOwner
-  return { root: artifact.root, host, launch, ...(setupOwner ? { setupOwner } : {}), target: { origin, storyId: target.storyId, variantId: target.variantId, epoch: capture.epoch, width: target.width, height: target.height, deviceScaleFactor: target.deviceScaleFactor, globals: target.globals ?? manifest.globals ?? {}, colorScheme: target.colorScheme ?? (manifest.defaultColorScheme === 'auto' ? undefined : manifest.defaultColorScheme), textDirection: target.textDirection, backgroundColor: manifest.backgroundColor, isActive: capture.isActive } }
+  return { root: artifact.root, host, launch, ...(setupOwner ? { setupOwner } : {}), target: { origin, storyId: target.storyId, variantId: target.variantId, epoch: capture.epoch, width: target.width, height: target.height, deviceScaleFactor: target.deviceScaleFactor, globals: target.globals ?? manifest.globals, colorScheme: target.colorScheme ?? (manifest.defaultColorScheme === 'auto' ? undefined : manifest.defaultColorScheme), textDirection: target.textDirection, backgroundColor: manifest.backgroundColor, isActive: capture.isActive } }
 }
 
 /** Install production screenshot executor without runtime source or Vite imports. */

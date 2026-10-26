@@ -33,7 +33,7 @@ function toggle(): void {
 </script>
 
 <template>
-  <HstWrapper ref="row" :title="title" :layout="layout ?? 'horizontal'" tag="div" role="checkbox" :aria-labelledby="$slots.default ? labelId : undefined" :aria-label="$attrs['aria-label'] ?? title" :aria-checked="checked" :aria-disabled="disabled || undefined" :tabindex="disabled ? -1 : 0" class="histoire-checkbox" @click="toggle" @keydown.enter.prevent="toggle" @keydown.space.prevent="toggle">
+  <HstWrapper ref="row" :title="title" :layout="layout ?? 'horizontal'" role="checkbox" :aria-labelledby="$slots.default ? labelId : undefined" :aria-label="$attrs['aria-label'] ?? title" :aria-checked="checked" :aria-disabled="disabled || undefined" :tabindex="disabled ? -1 : 0" class="histoire-checkbox" @click="toggle" @keydown.enter.prevent="toggle" @keydown.space.prevent="toggle">
     <HstSimpleCheckbox :model-value="checked" />
     <template v-if="$slots.default" #title>
       <span :id="labelId"><slot /></span>

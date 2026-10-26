@@ -6,7 +6,6 @@ import {
   RUN_TEST_CASE,
   RUN_TESTS,
   RUNTIME_REQUEST,
-  SELECT_VARIANT,
   STATE_SYNC,
   TEST_CASE_RESULT,
   TEST_DEFINITIONS,
@@ -57,18 +56,6 @@ describe('preview runtime inbound message guard', () => {
       throw new Error('Application admission failure')
     })
     await expect(runtime.deliver({ ...message, documentId: 'document' })).resolves.toBeUndefined()
-  })
-  it('drops old or malformed grid versions while retaining legacy host selection', async () => {
-    const runtime = createPreviewRuntime()
-    await runtime.deliver({ __histoire: true, type: SELECT_VARIANT, variantId: 'current', selectionVersion: 2 })
-    for (const selectionVersion of [1, -1, 2.5, Number.NaN]) {
-      await runtime.deliver({ __histoire: true, type: SELECT_VARIANT, variantId: 'stale', selectionVersion })
-      expect(runtime.gridSelectedVariantId.value).toBe('current')
-    }
-    await runtime.deliver({ __histoire: true, type: SELECT_VARIANT, variantId: 'legacy' })
-    expect(runtime.gridSelectedVariantId.value).toBe('legacy')
-    await runtime.deliver({ __histoire: true, type: SELECT_VARIANT, variantId: 'new', selectionVersion: 3 })
-    expect(runtime.gridSelectedVariantId.value).toBe('new')
   })
   it.each([
     { storyId: 'story' },
@@ -153,7 +140,7 @@ describe('preview runtime inbound message guard', () => {
   })
 
   it('tags replies with the variant it actually worked on, not the one selected afterwards', async () => {
-    // A SELECT_VARIANT/PREVIEW_SYNC processed during the collect/run await flips
+    // A PREVIEW_SYNC processed during the collect/run await flips
     // the live selection. Tagging the reply with the post-await value would name
     // the variant that was NOT collected: the host drops the mismatch and the
     // request stalls until its timeout.

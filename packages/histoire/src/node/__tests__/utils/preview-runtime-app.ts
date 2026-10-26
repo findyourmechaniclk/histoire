@@ -24,10 +24,6 @@ export function createPreviewRuntimeApp(options: {
   storyId?: string
   variantId?: string
   documentId?: string
-  /** Starts the initial selection in grid presentation mode. */
-  grid?: boolean
-  /** Resolves the generated runtime's grid component after a test-controlled delay. */
-  loadGridComponent?: () => Promise<vue.Component>
   /** Receives messages posted by the generated runtime. */
   onMessage?: (message: Record<string, any>) => void
   /** Document purpose parsed from the frame URL; defaults to `interactive`. */
@@ -59,7 +55,7 @@ export function createPreviewRuntimeApp(options: {
     createVariantStateSyncGuards,
     getVariantStateKey,
     isInteractiveFramePurpose,
-    initialSelection: { storyId, variantId, grid: options.grid === true, matrix: options.matrix === true, purpose: options.purpose ?? 'interactive' },
+    initialSelection: { storyId, variantId, matrix: options.matrix === true, purpose: options.purpose ?? 'interactive' },
     /** Counts manifest evaluation: the generated runtime's only path to frame plugin modules. */
     async importFramePluginManifest() {
       framePluginManifestImports++
@@ -78,7 +74,6 @@ export function createPreviewRuntimeApp(options: {
     },
     /** Frame timing separates framework readiness from delayed serialized snapshot publication. */
     requestAnimationFrame(callback: FrameRequestCallback) { return callbacks.push(callback) },
-    usePreviewSettingsStore: () => ({ currentSettings: {} }),
     loadStoryFile: async () => file,
     clearRuntimeTestDefinitions: () => {},
     clearStaleRuntimeReloadGuard: () => {},
@@ -100,12 +95,6 @@ export function createPreviewRuntimeApp(options: {
         return () => vue.h('p', props.variant.id)
       },
     }),
-    StoryVariantGridSandbox: undefined,
-  }
-  /** Resolves the generated runtime's lazy grid import through a controlled test gate. */
-  scope.ensureGridComponent = async () => {
-    if (!options.loadGridComponent) throw new Error('Grid component loader unavailable in runtime fixture')
-    scope.StoryVariantGridSandbox = await options.loadGridComponent()
   }
   const globals = new Proxy(scope, {
     has: () => true,
@@ -152,13 +141,12 @@ export function createPreviewRuntimeApp(options: {
       }
     },
     /**
-     * Deliver a trusted selection update, including a layout change to grid mode.
+     * Deliver a trusted selection update.
      * @param variantId Id of the selected story variant.
      * @param selectionVersion Monotone version used to reject stale selection messages.
-     * @param grid Requests grid layout when true.
      */
-    select(variantId: string, selectionVersion: number, grid = false) {
-      return receive({ type: protocol.PREVIEW_SYNC, storyId, variantId, documentId: options.documentId ?? 'document', selectionVersion, grid })
+    select(variantId: string, selectionVersion: number) {
+      return receive({ type: protocol.PREVIEW_SYNC, storyId, variantId, documentId: options.documentId ?? 'document', selectionVersion })
     },
     receive,
     /** Vue watchers and fixture elements belong to this app alone. */

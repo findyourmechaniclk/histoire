@@ -27,20 +27,17 @@ describe('immutable built preview targets', () => {
     await cp(original.outputRoot, join(copied.root, 'copy'), { recursive: true })
     await original.fixture.close()
     const snapshot = await readBuiltPreviewSnapshot(join(copied.root, 'copy'))
-    expect(snapshot).toMatchObject({ mode: 'static', base: '/book/', buildId: original.capture.buildId, capture: { available: true }, defaults: { colorScheme: 'dark', backgroundColor: '#fff', textDirection: 'ltr', globals: {} } })
+    expect(snapshot).toMatchObject({ mode: 'static', base: '/book/', buildId: original.capture.buildId, defaults: { colorScheme: 'dark', backgroundColor: '#fff', textDirection: 'ltr', globals: {} } })
     expect(snapshot.getTarget('a:b', 'c:d').variant.id).toBe('c:d')
     expect(snapshot.catalog.stories[0].fileOrigin).toBe('project')
     expect(Object.isFrozen(snapshot.catalog.stories)).toBe(true)
     expect(JSON.stringify(snapshot.catalog)).not.toContain(original.fixture.root)
   })
 
-  it('keeps legacy outputs browsable but rejects capture and malformed/tampered metadata', async () => {
+  it('rejects outputs without capture metadata and malformed/tampered metadata', async () => {
     const output = await staticOutput()
-    const legacy = { ...output.data, stories: output.data.stories.map(({ fileOrigin: _fileOrigin, ...story }) => story) }
-    await writeFile(join(output.outputRoot, 'histoire.json'), JSON.stringify(legacy))
-    const legacySnapshot = await readBuiltPreviewSnapshot(output.outputRoot)
-    expect(legacySnapshot.capture).toMatchObject({ available: false, reason: 'CAPABILITY_UNAVAILABLE' })
-    expect(legacySnapshot.catalog.stories[0].fileOrigin).toBe('project')
+    await writeFile(join(output.outputRoot, 'histoire.json'), JSON.stringify(output.data))
+    await expect(readBuiltPreviewSnapshot(output.outputRoot)).rejects.toThrow('rebuild')
     await writeFile(join(output.outputRoot, 'histoire.json'), JSON.stringify({ ...output.data, capture: { ...output.capture, buildId: 'bad' } }))
     await expect(readBuiltPreviewSnapshot(output.outputRoot)).rejects.toThrow('malformed')
     await writeFile(join(output.outputRoot, 'histoire.json'), JSON.stringify({ ...output.data, capture: output.capture }))
@@ -51,7 +48,8 @@ describe('immutable built preview targets', () => {
   it('retains generated provenance in static catalog metadata', async () => {
     const output = await staticOutput()
     output.data.stories[0].fileOrigin = 'generated'
-    await writeFile(join(output.outputRoot, 'histoire.json'), JSON.stringify(output.data))
+    const capture = await createStaticCaptureMetadata(output.ctx, output.data, output.outputRoot)
+    await writeFile(join(output.outputRoot, 'histoire.json'), JSON.stringify({ ...output.data, capture }))
     expect((await readBuiltPreviewSnapshot(output.outputRoot)).catalog.stories[0].fileOrigin).toBe('generated')
   })
 
@@ -70,7 +68,7 @@ describe('immutable built preview targets', () => {
     const artifact = await createMcpArtifactFixture('/node/')
     fixtures.push(artifact)
     const snapshot = await readBuiltPreviewSnapshot(artifact.root)
-    expect(snapshot).toMatchObject({ mode: 'node', publicRoot: artifact.publicDir, buildId: artifact.manifest.buildId, base: '/node/', capture: { available: true } })
+    expect(snapshot).toMatchObject({ mode: 'node', publicRoot: artifact.publicDir, buildId: artifact.manifest.buildId, base: '/node/' })
     expect(snapshot.getTarget('story-a', 'default').variant.id).toBe('default')
     expect(JSON.stringify(snapshot.catalog)).not.toContain('private/')
     expect(JSON.stringify(snapshot.catalog)).not.toContain(artifact.root)

@@ -2,7 +2,7 @@
 
 Recipes for popular Vue libraries and frameworks. Most of them go in your [setup file](./app-setup.md#global-setup).
 
-In dark mode, Histoire adds the `dark` class (the `sandboxDarkClass` option) to the `<html>` element of each story. Libraries that support a class-based dark selector follow it automatically. For the others, use [`onDarkChange`](./app-setup.md#dark-mode).
+In dark mode, Histoire adds the `dark` class (the `theme.darkClass` option) to the `<html>` element of each story. Libraries that support a class-based dark selector follow it automatically. For the others, use [`onDarkChange`](./app-setup.md#dark-mode).
 
 ## Nuxt
 

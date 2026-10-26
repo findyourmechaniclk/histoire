@@ -25,7 +25,7 @@ afterEach(async () => {
 
 /** Mount genuine canvas geometry; preview lifetimes do not participate in layout. */
 async function canvasFixture(zoom: number | 'fit' = 'fit', initialHeight = 900, customHeader = false, initialArrangement: 'grid' | 'list' = 'grid', initialVariantId: string | null = 'c') {
-  window.localStorage.setItem('_histoire-ui-canvas', JSON.stringify({ zoom }))
+  window.localStorage.setItem('_histoire-ui-canvas', JSON.stringify({ version: 3, zoomByArrange: { grid: zoom, list: zoom === 'fit' ? 'selection' : zoom, matrix: zoom } }))
   const observers = resizeObserverFixture()
   const geometry = { height: initialHeight, headerHeight: 48, footerHeight: 14 }
   vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {

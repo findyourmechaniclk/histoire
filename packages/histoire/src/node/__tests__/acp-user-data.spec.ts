@@ -25,7 +25,7 @@ describe('private ACP user data', () => {
   it('rejects corrupt saved credentials without echoing their values', async () => {
     const { root } = await configTestProject()
     const file = join(root, 'agents.json')
-    await writeFile(file, JSON.stringify({ version: 1, projects: {}, env: { fake: { TOKEN: { value: 'private-value' } } } }))
+    await writeFile(file, JSON.stringify({ version: 2, projects: {}, env: { fake: { TOKEN: { value: 'private-value' } } } }))
     await expect(readAgentUserData(file)).rejects.toThrow('Cannot read agent user settings; repair agents.json')
     await expect(readAgentUserData(file)).rejects.not.toThrow('private-value')
   })

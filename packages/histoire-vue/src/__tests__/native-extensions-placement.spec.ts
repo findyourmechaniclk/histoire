@@ -69,7 +69,7 @@ describe('native plugin placement', () => {
     const wrapper = mount(HistoireProvider, { attachTo: document.body, props: { session, extensions: host }, slots: { default: () => h(HistoireExplorer, { showNavigation: false }) } })
     await vi.waitFor(() => expect(wrapper.find('.histoire-primary-frame').exists()).toBe(true))
     const toolbar = wrapper.get('.histoire-toolbar button').element
-    const canvas = wrapper.get('[aria-label="Show variant grid"]').element
+    const canvas = wrapper.get('.histoire-explorer-layout').element
     const frame = wrapper.get('.histoire-primary-frame').element
 
     for (const target of [toolbar, canvas, frame]) {

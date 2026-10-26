@@ -28,7 +28,7 @@ describe('tailwind canvas backgrounds', () => {
       const story = fixture.catalog.stories.find(story => version === 3 ? story.id === 'tailwind' : story.title.includes('main.css'))!
       await page.goto(`${fixture.bookUrl}#/story/${encodeURIComponent(story.id)}?variantId=background-color`)
       const token = version === 3 ? 'ac-bg-brand' : 'bg-brand'
-      const runtime = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('storyId') === story.id && new URL(frame.url()).searchParams.get('controls') !== 'true')!
+      const runtime = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('storyId') === story.id && new URL(frame.url()).searchParams.get('purpose') !== 'controls')!
       await expect.poll(() => runtime()?.locator(`[data-tailwind-value="${token}"]`).count(), { timeout: 15_000 }).toBe(1)
       // Isolate the story document: an iframe screenshot also includes its opaque canvas backing.
       await capture.goto(runtime().url())

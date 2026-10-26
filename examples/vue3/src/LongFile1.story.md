@@ -66,14 +66,11 @@ You can change the layout of the variant by using the `layout` prop with an obje
 
 This is default layout, displaying one variant at a time inside iframe runtime.
 
-Additional `layout` properties:
-- `iframe`: deprecated and ignored; stories always run inside iframe.
-
 ```vue{4}
 <template>
   <Story
     title="Cars"
-    :layout="{ type: 'single', iframe: true }"
+    :layout="{ type: 'single' }"
   >
     <Variant title="default">
       🚗
@@ -100,7 +97,7 @@ Additional `layout` properties:
 <template>
   <Story
     title="Cars"
-    :layout="{ type: 'grid', width: 200 }"
+    :layout="{ type: 'grid' }"
   >
     <Variant title="default">
       🚗

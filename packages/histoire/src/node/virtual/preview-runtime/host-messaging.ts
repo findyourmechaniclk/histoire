@@ -47,7 +47,7 @@ function postToParent(payload) {
   }
 
   // Always post to our own origin. Every legitimate host builds the sandbox src
-  // as a same-origin relative URL (getSandboxUrl), so the host is same-origin
+  // as a same-origin relative URL (getSandboxRelativeUrl), so the host is same-origin
   // by construction. Deriving the target from document.referrer instead would
   // leak state/test payloads to any cross-origin page that embeds this sandbox
   // (nothing sets frame-ancestors), and '*' would leak to every origin. A

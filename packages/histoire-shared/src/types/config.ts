@@ -134,11 +134,6 @@ export interface HistoireConfig extends HistoireUiConfig {
    */
   autoApplyContrastColor?: boolean
   /**
-   * Class added to the html root of the story preview when dark mode is enabled.
-   * @deprecated use `theme.darkClass` instead
-   */
-  sandboxDarkClass?: string
-  /**
    * Default props for stories.
    */
   defaultStoryProps?: Omit<StoryProps, 'id' | 'setupApp' | 'title' | 'source'>

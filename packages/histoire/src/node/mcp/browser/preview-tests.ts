@@ -53,8 +53,8 @@ export function createCompiledPreviewTestTask(input: McpToolInput<'histoire_run_
             height: 800,
             colorScheme: manifest.defaultColorScheme === 'auto' ? undefined : manifest.defaultColorScheme,
             backgroundColor: manifest.backgroundColor,
-            textDirection: manifest.textDirection ?? 'ltr',
-            globals: manifest.globals ?? {},
+            textDirection: manifest.textDirection,
+            globals: manifest.globals,
             isActive: capture.isActive,
           } })
           try {

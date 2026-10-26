@@ -1,5 +1,3 @@
-import { mkdir, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { saveAttachment } from '../comments/attachments.js'
 import { writeCommentsFile } from '../comments/file.js'
@@ -74,16 +72,6 @@ describe('pinned threads (canvas comments)', () => {
     expect(errors()).toEqual([FAILED])
     expect(fixture.client.send).toHaveBeenCalledWith('histoire:ui:ai-threads-snapshot', expect.objectContaining({ enabled: true, pinsEnabled: false }))
     expect((await store.list()).map(thread => thread.anchor)).toEqual([undefined])
-  })
-
-  it('imports legacy comments before the first snapshot', async () => {
-    const { title: _title, context, ...legacy } = commentFixture()
-    const { fixture } = await aiThreadsChannelFixture({ before: async (root) => {
-      await mkdir(join(root, '.histoire'))
-      await writeFile(join(root, '.histoire/comments.json'), JSON.stringify({ version: 1, comments: [{ ...legacy, ...context }] }))
-    } })
-    await fixture.request('histoire:ui:ready', {})
-    await vi.waitFor(() => expect(fixture.client.send).toHaveBeenCalledWith('histoire:ui:ai-threads-snapshot', expect.objectContaining({ pinsEnabled: true, threads: [expect.objectContaining({ id: legacy.id, context, anchor: legacy.anchor })] })))
   })
 
   it('refuses forged, missing or wrong-size attachments with the controlled error', async () => {

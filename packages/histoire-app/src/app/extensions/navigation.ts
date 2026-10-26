@@ -29,7 +29,7 @@ type NavigableKind = 'inspector.tab' | 'shell.pane' | 'settings.section' | 'canv
 
 /** Maps a built-in local id to its existing route value, or `undefined` when unknown. */
 const BUILTINS: Record<NavigableKind, (localId: string) => string | undefined> = {
-  // Built-in descriptor ids map to legacy `?tab=` values (Props is the empty value).
+  // Built-in descriptor ids map to built-in `?tab=` values (Props is the empty value).
   'inspector.tab': localId => INSPECTOR_BUILTIN_TABS.find(tab => tab.id === `${BUILTIN_NAMESPACE}:${localId}`)?.value,
   'shell.pane': localId => isShellPane(localId, true) ? localId : undefined,
   'settings.section': localId => SETTINGS_SECTIONS.some(section => section.id === localId) ? localId : undefined,

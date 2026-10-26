@@ -44,10 +44,9 @@ export function registerDevEvents(ctx: Context, server: ViteDevServer, moduleLoa
     })
   }
 
-  /** Returns a safe per-socket ID while preserving legacy numeric request IDs. */
+  /** Returns the per-socket run key; request IDs are strings minted by the client. */
   function requestKey(requestId: unknown) {
-    if (typeof requestId === 'string') return `string:${requestId}`
-    if (typeof requestId === 'number' && Number.isFinite(requestId)) return `number:${requestId}`
+    if (typeof requestId === 'string') return requestId
   }
 
   /** Cancels every handle owned by one retired browser socket. */

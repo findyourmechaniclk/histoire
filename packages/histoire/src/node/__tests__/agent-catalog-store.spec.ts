@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest'
 import { createAgentsStore } from '../../../../histoire-app/src/app/stores/agents.js'
 import { agentCatalogRows } from '../../../../histoire-app/src/app/util/agent-catalog-rows.js'
 
-/** Existing custom launch with legacy identity must survive remote discovery unchanged. */
-const settings: UiAgentsSnapshot = { enabled: true, enabledIds: ['claude'], presets: [{ id: 'claude', name: 'My Claude', command: '/custom/claude', default: true, model: 'model-a', effort: 'deep' }], agents: [], permissions: { fileEdits: 'never', terminal: 'ask' }, context: { exposeMcp: true, attachScreenshot: true, includeSource: true, askEachTime: false } }
-/** Catalog exceeds configured preset limit and includes canonical legacy identity. */
+/** Custom launch bound to a registry entry must survive remote discovery unchanged. */
+const settings: UiAgentsSnapshot = { enabled: true, enabledIds: ['claude'], presets: [{ id: 'claude', registryId: 'claude-acp', name: 'My Claude', command: '/custom/claude', default: true, model: 'model-a', effort: 'deep' }], agents: [], permissions: { fileEdits: 'never', terminal: 'ask' }, context: { exposeMcp: true, attachScreenshot: true, includeSource: true, askEachTime: false } }
+/** Catalog exceeds configured preset limit and includes the configured registry identity. */
 const registry: UiAgentRegistry = { status: { state: 'fresh' }, entries: [{ id: 'claude-acp', name: 'Claude', available: true, command: 'npx', args: ['--yes', 'claude@1'] }, ...Array.from({ length: 40 }, (_, index) => ({ id: `agent-${index}`, name: `Agent ${index}`, available: true, command: 'uvx', args: ['agent'] }))] }
 
 /** Browser store executes real catalog/ownership logic with remote transport boundary. */
@@ -17,7 +17,7 @@ function storeWith(configOptions: NonNullable<Parameters<typeof createAgentsStor
 }
 
 describe('full catalog and scoped browser discovery', () => {
-  it('deduplicates legacy IDs, preserves custom default and searches all entries without configuring them', async () => {
+  it('deduplicates registry IDs, preserves custom default and searches all entries without configuring them', async () => {
     const store = storeWith(async agentId => ({ agentId }))
     try {
       await store.loadRegistry()

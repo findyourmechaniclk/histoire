@@ -67,7 +67,7 @@ it('requires actual runtime acknowledgement for captured selected mount', async 
   try {
     await session.connect()
     await session.selection.select({ storyId: 'a:b', variantId: 'c' })
-    await expect(session.mount(container, { surface: 'grid' }).ready).rejects.toMatchObject({ code: 'PREVIEW_NOT_READY' })
+    await expect(session.mount(container, { surface: 'preview' }).ready).rejects.toMatchObject({ code: 'PREVIEW_NOT_READY' })
   }
   finally { await session.dispose() }
 })

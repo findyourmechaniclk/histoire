@@ -49,7 +49,7 @@ export function getDefaultConfig(): HistoireConfig {
     ui: { defaultArrange: 'grid', frameBudget: 6, matrix: { numericValues: [...HISTOIRE_MATRIX_NUMERIC_VALUES] } },
     agents: { enabled: false, presets: [], permissions: { fileEdits: 'ask', terminal: 'ask' } },
     // `enabled` gates pinned threads only; `file` is the legacy source imported into threads.json.
-    comments: { enabled: true, file: '.histoire/comments.json' },
+    comments: { enabled: true },
     responsivePresets: [
       {
         label: 'Mobile (Small)',
@@ -119,7 +119,6 @@ export function getDefaultConfig(): HistoireConfig {
         contrastColor: '#eee',
       },
     ],
-    sandboxDarkClass: 'dark',
     routerMode: 'history',
     build: {
       target: 'static',

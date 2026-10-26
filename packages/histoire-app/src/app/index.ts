@@ -5,8 +5,6 @@ import './util/vitest-mocker-shim'
 import 'virtual:$histoire-vitest-browser-runtime'
 import 'virtual:$histoire-theme'
 
-export { default as StoryVariantGridSandbox } from './components/story/StoryVariantGridSandbox.vue'
-
 /** Existing bundle mounts #app; first-party consumers may provide explicit element or selector. */
 export function mountMainApp(target: string | HTMLElement = '#app') {
   const container = typeof target === 'string' ? document.querySelector<HTMLElement>(target) : target

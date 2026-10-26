@@ -20,7 +20,7 @@ import SourceDrawer from './SourceDrawer.vue'
 import { createInspectorEventCounter, getInspectorTabId, getInspectorTabKey, getInspectorTabs, isInspectorTestsEnabled, resolveInspectorTab } from './state.js'
 
 const props = defineProps<{
-  /** Route tab value supplied by standalone routing adapter: legacy value or plugin tab id. */
+  /** Route tab value supplied by standalone routing adapter: built-in value or plugin tab id. */
   activeTab?: string
   /** Current documentation anchor supplied by standalone adapter. */
   docsAnchor?: string

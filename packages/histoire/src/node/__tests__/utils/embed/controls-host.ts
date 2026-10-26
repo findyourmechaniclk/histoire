@@ -52,6 +52,6 @@ export async function waitEmbedControlsReady(page: Page, index = 0, previousId?:
 export function embedCustomControlsFrame(page: Page, index = 0) {
   const bridge = page.frames().filter(frame => frame.url().includes('__embed.html') && new URL(frame.url()).searchParams.get('view') === 'bridge')[index]
   const sessionId = bridge && new URL(bridge.url()).searchParams.get('sessionId')
-  return page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('controls') === 'true'
+  return page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('purpose') === 'controls'
     && frame.parentFrame()?.url().includes('__embed.html') && new URL(frame.parentFrame()!.url()).searchParams.get('sessionId') === sessionId)!
 }

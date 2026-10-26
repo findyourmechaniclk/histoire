@@ -121,7 +121,7 @@ await session.dispose()
 
 Give the mount container a real width and height. `ready` resolves after the surface is ready; iframe `load` alone does not establish story runtime readiness. Construction and package imports are safe without browser globals. `connect()` and mounting belong in the client lifecycle. Full explorer needs usable space for navigation, toolbar, preview, and panels: iframe acceptance covers 1100×800, while native compact acceptance covers 600×700. For smaller native hosts, use `showNavigation`, `showToolbar`, and `showPanels` to leave a measurable preview; zero preview height cannot establish runtime readiness.
 
-`selection.select()` waits for selected runtime in current primary. Explorer may then replace preview/grid presentation to match story layout. Before acting on replacement iframe DOM or geometry, observe its current `runtimeId` with `runtime.status === 'ready'`; operations captured for retired document reject.
+`selection.select()` waits for selected runtime in current primary. Before acting on replacement iframe DOM or geometry, observe its current `runtimeId` with `runtime.status === 'ready'`; operations captured for retired document reject.
 
 ## Compose independent surfaces
 
@@ -144,9 +144,9 @@ await session.settings.update({
 await session.state.patch({ label: 'Updated' })
 ```
 
-Supported names are `explorer`, `preview`, `grid`, `tree`, `search`, `toolbar`, `controls`, `docs`, `source`, `events`, and `tests`. Inspect `session.getSnapshot().capabilities` before presenting an operation.
+Supported names are `explorer`, `preview`, `tree`, `search`, `toolbar`, `controls`, `docs`, `source`, `events`, and `tests`. Inspect `session.getSnapshot().capabilities` before presenting an operation.
 
-Each session permits one primary preview or grid, including the preview inside an explorer. A second primary fails with `RUNTIME_IN_USE`. Await the first handle's `unmount()` before replacing it. Create separate sessions to show independent books, targets, or theme directions.
+Each session permits one primary preview, including the preview inside an explorer. A second primary fails with `RUNTIME_IN_USE`. Await the first handle's `unmount()` before replacing it. Create separate sessions to show independent books, targets, or theme directions.
 
 Catalog, search, docs, and raw source reads do not mount story modules. State operations, custom controls, dynamic source, and preview tests require a ready primary runtime. For headless interaction, create one explicitly:
 
@@ -225,7 +225,7 @@ Panel part classes, source-action visibility, and passive extension views are do
 
 The story runtime owns canonical state. `state.get()` exposes a cleaned mirror; `state.patch()` merges serializable edits without replacing runtime callbacks, instances, or omitted values. `state.reset()` restores the initial runtime snapshot. Use structured `{ storyId, variantId }` targets, including IDs containing `:`; never split or concatenate them to infer identity.
 
-Globals are per-session scalar values. Vue/Nuxt stories read them reactively through `useHistoireGlobals()` from `histoire/client`; Svelte/vanilla stories can subscribe through `useHistoireGlobalsStore()`. Grid variants share the session's globals.
+Globals are per-session scalar values. Vue/Nuxt stories read them reactively through `useHistoireGlobals()` from `histoire/client`; Svelte/vanilla stories can subscribe through `useHistoireGlobalsStore()`. All variants of a session share its globals.
 
 ```ts
 const abort = new AbortController()
@@ -265,7 +265,7 @@ const stop = channel.on('ping', (data) => {
 // Call stop() when this listener is no longer needed.
 ```
 
-After connecting and explicitly mounting a ready primary preview or grid, the host uses the same configured name:
+After connecting and explicitly mounting a ready primary preview, the host uses the same configured name:
 
 ```ts
 const channel = session.channels.open('preview-bridge')
@@ -276,7 +276,7 @@ await channel.post('ping', { requestId: 'check-1' })
 stop()
 ```
 
-Channels relay bounded JSON application data. They share a 50-message-per-second budget per runtime and direction, with a 64 KiB application-message limit. Host posts target the selected variant; grid replies retain their originating variant. Runtime replacement retires handles and listeners, so open and subscribe again explicitly. No automatic replay occurs. See [channel reference](../reference/sdk.md#application-channels) for errors, dormant collection behavior, and dropped counters.
+Channels relay bounded JSON application data. They share a 50-message-per-second budget per runtime and direction, with a 64 KiB application-message limit. Host posts target the selected variant; replies retain their originating variant. Runtime replacement retires handles and listeners, so open and subscribe again explicitly. No automatic replay occurs. See [channel reference](../reference/sdk.md#application-channels) for errors, dormant collection behavior, and dropped counters.
 
 ## Standalone command compatibility
 

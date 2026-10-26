@@ -9,11 +9,6 @@ export { useHistoireGlobals, useHistoireGlobalsStore } from '@histoire/shared'
 export type { HistoireControlsOverlay, HistoireControlsOverlayHandle, HistoireControlsOverlayResult, HistoireGlobalsStore } from '@histoire/shared'
 
 /**
- * @deprecated
- */
-export function hstEvent(name: string, argument): void
-
-/**
  * Logs an event to the 'Events' sidepane.
  * @param name Event name
  * @param argument Additional log data displayed when inspecting the event.

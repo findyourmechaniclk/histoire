@@ -3,11 +3,11 @@ import { createEmbedSnapshot } from '../../../histoire/src/node/__tests__/utils/
 import { createMountViewSnapshot } from '../mounts/view-snapshot.js'
 
 describe('mounted view metadata projection', () => {
-  it.each(['preview', 'grid'] as const)('retains selected story and every sibling variant for %s', (surface) => {
+  it('retains selected story and every sibling variant for preview', () => {
     const snapshot = createEmbedSnapshot()
     snapshot.selection = { storyId: 'a:b', variantId: 'c' }
     snapshot.events = { items: [], droppedCount: 7 }
-    const project = createMountViewSnapshot(surface)
+    const project = createMountViewSnapshot('preview')
     const view = project(snapshot)
     expect(view.catalog.stories).toEqual([snapshot.catalog.stories[0]])
     expect(view.catalog.stories[0].variants.map(variant => variant.id)).toEqual(['c', 'other'])
@@ -21,7 +21,7 @@ describe('mounted view metadata projection', () => {
     const snapshot = createEmbedSnapshot()
     snapshot.selection = { storyId: 'a:b', variantId: 'c' }
     snapshot.catalog = { ...snapshot.catalog, stories: [...snapshot.catalog.stories, { ...snapshot.catalog.stories[0], title: 'Duplicate' }] }
-    const view = createMountViewSnapshot('grid')(snapshot)
+    const view = createMountViewSnapshot('preview')(snapshot)
     expect(view.catalog.stories.map(story => story.title)).toEqual(['First', 'Duplicate'])
   })
 
@@ -49,7 +49,7 @@ describe('mounted view metadata projection', () => {
   it('reuses current-story metadata for state updates and replaces it after catalog publication', () => {
     const snapshot = createEmbedSnapshot()
     snapshot.selection = { storyId: 'a:b', variantId: 'c' }
-    const project = createMountViewSnapshot('grid')
+    const project = createMountViewSnapshot('preview')
     const initial = project(snapshot)
     const edited = project({ ...snapshot, selection: { storyId: 'a:b', variantId: 'other' }, state: { target: snapshot.selection, runtimeId: 'runtime', value: { count: 2 } } })
     expect(edited.catalog).toBe(initial.catalog)
@@ -66,7 +66,7 @@ describe('mounted view metadata projection', () => {
     const snapshot = createEmbedSnapshot()
     snapshot.selection = { storyId: 'a:b', variantId: 'c' }
     const left = createMountViewSnapshot('preview')
-    const right = createMountViewSnapshot('grid')
+    const right = createMountViewSnapshot('preview')
     const first = left(snapshot)
     const second = right(snapshot)
     expect(first.catalog).not.toBe(second.catalog)

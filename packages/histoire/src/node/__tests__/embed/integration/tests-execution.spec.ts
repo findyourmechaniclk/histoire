@@ -34,7 +34,7 @@ describe('explicit embedded test execution', () => {
       await page.evaluate('abort.abort()')
       expect(await page.evaluate('pending')).toBe('CANCELLED')
       // Cases run in isolated hidden worker documents: cancellation removes them and keeps primary runtime usable.
-      await expect.poll(() => page.frames().some(frame => frame.url().includes('testWorker=true'))).toBe(false)
+      await expect.poll(() => page.frames().some(frame => frame.url().includes('purpose=test-worker'))).toBe(false)
       expect(await page.evaluate('session.getSnapshot().runtime')).toMatchObject({ status: 'ready', runtimeId: slowRuntimeId })
       await page.evaluate('session.selection.select({storyId:"tests",variantId:"pass"})')
       expect(await page.evaluate('session.tests.run({mode:"preview"})')).toMatchObject({ ok: true, total: 2, passed: 2 })

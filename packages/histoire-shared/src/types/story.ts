@@ -16,14 +16,8 @@ export interface StoryFile {
 
 export type StoryLayout = {
   type: 'single'
-  /**
-   * @deprecated The preview now always renders stories inside an iframe —
-   * this option is ignored.
-   */
-  iframe?: boolean
 } | {
   type: 'grid'
-  width?: number | string
 }
 
 export interface CommonProps {

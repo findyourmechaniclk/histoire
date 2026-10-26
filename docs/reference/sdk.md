@@ -46,7 +46,7 @@ An explicit unknown story/variant rejects. Omitting `variantId` restores a remem
 
 Repeated same-target selections share pending acknowledgment and its outcome. Initial mount/reload still waits for runtime readiness. Failed or stale same-target runtime rejects with `PREVIEW_NOT_READY`; recover through explicit unmount/remount after confirmed teardown. Ready same-target selection performs no duplicate execution.
 
-`selection.select()` waits for selected runtime in current primary. Explorer may then replace preview/grid presentation to match story layout. Before acting on replacement iframe DOM or geometry, observe its current `runtimeId` with `runtime.status === 'ready'`; operations captured for retired document reject. Selection completion does not await final Vue presentation flush.
+`selection.select()` waits for selected runtime in current primary. Before acting on replacement iframe DOM or geometry, observe its current `runtimeId` with `runtime.status === 'ready'`; operations captured for retired document reject. Selection completion does not await final Vue presentation flush.
 
 The host mirror does not own runtime callbacks, component instances, or omitted non-serializable values. Patches and reset preserve those runtime identities. Dynamic source reports `explicit`, `slot`, or `generated` provenance. Raw source reports physical/virtual file origin. Present empty content differs from absent content.
 
@@ -80,7 +80,7 @@ Settings patches support:
 | `colorScheme` | `'light'`, `'dark'`, or `'auto'` |
 | `globals` | Up to 32 named scalar values: string, finite number, boolean, or `null` |
 
-Globals updates replace that map and reach running variants reactively. Keys begin with a letter and contain up to 64 letters/digits/underscore/hyphen; strings are bounded to 1 KiB. Grid cells share session globals. Settings do not change host document theme or browser storage unless persistence was requested.
+Globals updates replace that map and reach running variants reactively. Keys begin with a letter and contain up to 64 letters/digits/underscore/hyphen; strings are bounded to 1 KiB. All variants of a session share its globals. Settings do not change host document theme or browser storage unless persistence was requested.
 
 Events carry `sequence`, `timestamp`, exact `target`, `runtimeId`, and cleaned payload. Latest 1,000 events remain in `snapshot.events.items`; `droppedCount` reports retention/rate loss.
 
@@ -88,9 +88,9 @@ Events carry `sequence`, `timestamp`, exact `target`, `runtimeId`, and cleaned p
 
 `embed.channels` opts into named application channels. Names match `^[a-z][a-z0-9-]{0,31}$`; configuration accepts at most 100 names. The source advertises allowed names through the `hostChannels` capability. Unlisted names reject with `CAPABILITY_UNAVAILABLE`.
 
-`session.channels.open(name)` returns `post(type, data): Promise<void>`, `subscribe(listener): () => void`, and `getDroppedCount(): number`. Open before an explicit primary mount is supported. Posting requires a selected ready primary. Host messages reach only its selected variant; story messages can originate from any ready cell in the current grid. Subscriptions receive `{ name, type, data, runtimeId, target: { storyId, variantId } }`.
+`session.channels.open(name)` returns `post(type, data): Promise<void>`, `subscribe(listener): () => void`, and `getDroppedCount(): number`. Open before an explicit primary mount is supported. Posting requires a selected ready primary. Host messages reach only its selected variant. Subscriptions receive `{ name, type, data, runtimeId, target: { storyId, variantId } }`.
 
-Story code imports `useHostChannel(name)` from `histoire/client` and captures its handle during framework initialization. The handle exposes `post(type, data)`, `on(type, listener)`, and `getDroppedCount()`. Listener arguments are `(data, message)`. Captured handles remain usable after `await` and retain their exact originating variant when grid selection changes. Collection and custom-controls replicas create inert handles; posting there rejects with `CAPABILITY_UNAVAILABLE`.
+Story code imports `useHostChannel(name)` from `histoire/client` and captures its handle during framework initialization. The handle exposes `post(type, data)`, `on(type, listener)`, and `getDroppedCount()`. Listener arguments are `(data, message)`. Captured handles remain usable after `await` and retain their exact originating variant when selection changes. Collection and custom-controls replicas create inert handles; posting there rejects with `CAPABILITY_UNAVAILABLE`.
 
 Payloads contain JSON only and fit a 64 KiB UTF-8 application message. Each runtime admits at most 50 messages per elapsed second per direction, shared across names and handles. Excess posts reject with `RATE_LIMITED`; inbound excess messages are dropped. Callback exceptions stay isolated. `getDroppedCount()` reports the local, saturated rate/callback loss counter, including inbound validation losses where recorded; host counters reset when the runtime retires. It is not an end-to-end delivery receipt.
 
@@ -100,11 +100,11 @@ Unmount, navigation, source disconnect, or runtime replacement retires channel h
 
 ```ts
 type HistoireSurface =
-  | 'explorer' | 'preview' | 'grid' | 'tree' | 'search' | 'toolbar'
+  | 'explorer' | 'preview' | 'tree' | 'search' | 'toolbar'
   | 'controls' | 'docs' | 'source' | 'events' | 'tests'
 ```
 
-One session permits one primary preview/grid, including explorer preview and hidden preview. Competing mounts reject with `RUNTIME_IN_USE`. Await full unmount before replacement. Multiple independent data-only surfaces and multiple sessions are supported. A failed mount still belongs to caller and must be unmounted.
+One session permits one primary preview, including explorer preview and hidden preview. Competing mounts reject with `RUNTIME_IN_USE`. Await full unmount before replacement. Multiple independent data-only surfaces and multiple sessions are supported. A failed mount still belongs to caller and must be unmounted.
 
 ### Scoped embed presentation
 
@@ -138,7 +138,6 @@ Import `@histoire/vue/style.css` once. Host Vue is a peer dependency; imports re
 | `HistoireExplorer` | Shared composition with navigation/toolbar/preview/panels slots |
 | `HistoireEmbed` | Captured story/variant composition; required `scope`, optional `panels`, `ready`/`error` events |
 | `HistoirePreview` | Isolated single primary runtime |
-| `HistoireVariantGrid` | Isolated grid primary runtime |
 | `HistoireStoryTree` | Catalog navigation |
 | `HistoireSearch` | Metadata/docs target search |
 | `HistoireToolbar` | Session settings and capability-gated dev actions |

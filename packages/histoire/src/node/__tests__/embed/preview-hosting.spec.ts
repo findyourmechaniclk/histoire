@@ -106,17 +106,13 @@ describe('immutable Node preview hosting', () => {
     }
   }, 30_000)
 
-  it('keeps legacy output browsable with capture unavailable and no development source scan', async () => {
+  it('refuses output without capture metadata and scans no development source', async () => {
     const output = await createEmbedBuiltOutput()
     await writeFile(join(output.outputRoot, 'histoire.json'), JSON.stringify(output.data))
     const project = await configurePreview(output.fixture.root, 'output')
     try {
-      const handle = await project.preview({ port: 0, host: '127.0.0.1' })
-      expect(handle.capture).toMatchObject({ available: false, reason: 'CAPABILITY_UNAVAILABLE' })
-      expect((await fetch(handle.url)).status).toBe(200)
+      await expect(project.preview({ port: 0, host: '127.0.0.1' })).rejects.toThrow('rebuild')
       expect(getProjectServices(project).dev).toBeUndefined()
-      expect(getProjectServices(project).preview.current.snapshot.catalog.stories[0].id).toBe('a:b')
-      await handle.close()
     }
     finally {
       await project.close()

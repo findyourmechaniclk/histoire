@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, nextTick, ref, shallowRef } from 'vue'
 import { deferred, sourceFixture } from '../../../histoire-sdk/src/__tests__/fixtures/session.js'
-import { HistoirePreview, HistoireProvider, HistoireVariantGrid, useHistoireSession, useHistoireSnapshot } from '../index.js'
+import { HistoirePreview, HistoireProvider, useHistoireSession, useHistoireSnapshot } from '../index.js'
 import { useHistoireContext } from '../provider/context.js'
 
 /** Existing SDK fixture retains runtime ownership while Vue exercises its own lifecycle. */
@@ -113,22 +113,22 @@ describe('native provider ownership', () => {
     fixture.surfaceClose.mockImplementationOnce(() => closed.promise)
     const closing = preview.value!.unmount()
     expect(closing).toBeInstanceOf(Promise)
-    expect(() => session.mount(document.createElement('div'), { surface: 'grid' })).toThrow('Session already owns a primary runtime.')
+    expect(() => session.mount(document.createElement('div'), { surface: 'preview' })).toThrow('Session already owns a primary runtime.')
     closed.resolve()
     await closing
     wrapper.unmount()
-    const replacement = session.mount(document.createElement('div'), { surface: 'grid' })
+    const replacement = session.mount(document.createElement('div'), { surface: 'preview' })
     await replacement.ready
     await replacement.unmount()
     await session.dispose()
     expect(fixture.surfaceClose).toHaveBeenCalledTimes(2)
   })
 
-  it('surfaces competing preview/grid error and observes teardown rejection', async () => {
+  it('surfaces competing primary error and observes teardown rejection', async () => {
     const { fixture, session } = await sessionFixture()
     const errors: unknown[] = []
     const shown = ref(true)
-    const wrapper = mount(HistoireProvider, { props: { session, onError: (error: unknown) => errors.push(error) }, slots: { default: () => shown.value ? [h(HistoirePreview), h(HistoireVariantGrid)] : [] } })
+    const wrapper = mount(HistoireProvider, { props: { session, onError: (error: unknown) => errors.push(error) }, slots: { default: () => shown.value ? [h(HistoirePreview), h(HistoirePreview)] : [] } })
     await vi.waitFor(() => expect(errors.some((error: any) => error.code === 'RUNTIME_IN_USE')).toBe(true))
     expect(fixture.adapters.mount).toHaveBeenCalledOnce()
     fixture.surfaceClose.mockRejectedValueOnce(new Error('close failed'))

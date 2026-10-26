@@ -61,10 +61,7 @@ function collection<T extends { label: string }>(options: { defaults: () => T[],
         if (item.value !== null) options.validate(item.value)
       }
       nextLocalId = Math.max(0, ...saved.map(item => item.localId ?? 0)) + 1
-      // Old local additions used their first visible label as identity. Migrate
-      // once so renaming then reusing that label cannot overwrite their row.
-      const defaults = new Set(options.defaults().map(item => item.label))
-      overrides.value = saved.map(item => item.localId === undefined && !defaults.has(item.label) ? { ...item, localId: nextLocalId++ } : item)
+      overrides.value = saved
     }
   }
   catch {

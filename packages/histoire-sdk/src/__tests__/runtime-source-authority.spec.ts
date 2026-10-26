@@ -5,7 +5,7 @@ import { deferred } from './fixtures/session.js'
 
 /** Source metadata stays readable while physical document remains retired. */
 const owner = { protocolVersion: 1, sessionId: 'session', connectionId: 'connection', mountId: 'preview', sourceId: 'book', epoch: 'epoch', revision: 'revision', runtimeId: 'document', target: { storyId: 'a:b', variantId: 'c' } }
-const runtime = { status: 'failed', mountId: owner.mountId, runtimeId: owner.runtimeId, layout: 'single', viewports: [], viewport: null }
+const runtime = { status: 'failed', mountId: owner.mountId, runtimeId: owner.runtimeId, viewports: [], viewport: null }
 
 it.each(['docs.get', 'source.get'] as const)('preserves pending and fresh %s metadata through document retirement', async (command) => {
   const ports = createEmbedPortPair()

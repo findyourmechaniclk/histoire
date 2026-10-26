@@ -42,7 +42,7 @@ export async function probeEmbedHandshake(page: any, input: {
           resolve(event.data)
         }
       })
-      const role = !input.surface ? 'data' : ['explorer', 'preview', 'grid'].includes(input.surface) ? 'primary' : input.surface === 'controls' ? 'controls' : 'view'
+      const role = !input.surface ? 'data' : ['explorer', 'preview'].includes(input.surface) ? 'primary' : input.surface === 'controls' ? 'controls' : 'view'
       const hello = { kind: 'histoire:hello', protocolRange: input.range ?? { min: 1, max: 1 }, nonce: 'probe-nonce', sessionId: input.hintMismatch ? 'forged-session' : sessionId, mountId, parentOrigin, role }
       const transferred = channels.slice(0, input.ports ?? 1).map(channel => channel.port2)
       if (sibling) {

@@ -80,7 +80,7 @@ export default defineComponent({
     if (renderContext?.mode !== 'render' && mountVariant.value && implicitState) {
       // Hidden mount pass still needs each variant to start with its own
       // snapshot of story-level exposed/setup/data state so detected controls
-      // and props are collected deterministically for every grid cell.
+      // and props are collected deterministically for every variant.
       applyState(mountVariant.value.state, toRawDeep(implicitState()))
     }
 

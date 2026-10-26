@@ -27,8 +27,6 @@ The destination follows **Settings → AI agents → Canvas comments go to**. **
 
 Threads are created lazily in `.histoire/threads.json`, and attachments in `.histoire/attachments/`. They contain original messages, canvas anchors, optional captured props and screenshots, agent replies, and timestamps. Keep `.histoire/` ignored for local review work; it can contain captured application data. Uploads that no thread references are removed after an hour.
 
-Projects that used the earlier `comments.json` storage are migrated on the next development start: its comments become pinned threads, and the file is renamed to `comments.migrated.json`.
-
 ```ts
 export default defineConfig({
   comments: {

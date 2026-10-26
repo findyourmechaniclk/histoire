@@ -60,14 +60,14 @@ describe('dev-event handler', () => {
     const server = register()
     const client = createClient()
 
-    await server.emit({ event: 'runStoryTests', payload: { storyId: 'story', variantId: 'variant' }, requestId: 7 }, client)
+    await server.emit({ event: 'runStoryTests', payload: { storyId: 'story', variantId: 'variant' }, requestId: '7' }, client)
 
     // Request ids are per-client counters, so a broadcast reply could settle
     // another tab's pending request that happens to share the same id.
     expect(server.ws.send).not.toHaveBeenCalled()
     expect(client.send).toHaveBeenCalledWith('histoire:dev-event-result', {
       event: 'runStoryTests',
-      requestId: 7,
+      requestId: '7',
       result: { ok: true },
     })
   })
@@ -82,7 +82,7 @@ describe('dev-event handler', () => {
     await server.emit({
       event: 'runStoryTests',
       payload: { storyId: 'story', variantId: 'variant', rawVitestArgs: ['--config', 'evil.mjs'] },
-      requestId: 1,
+      requestId: '1',
     }, createClient())
 
     expect(runHistoireTests).toHaveBeenCalledWith(expect.anything(), {
@@ -106,14 +106,14 @@ describe('dev-event handler', () => {
     const server = register(ctx)
     const client = createClient()
 
-    await server.emit({ event: 'runStoryTests', payload: {}, requestId: 8 }, client)
+    await server.emit({ event: 'runStoryTests', payload: {}, requestId: '8' }, client)
 
     expect(runHistoireTests).toHaveBeenCalledTimes(1)
     const [captured, options] = runHistoireTests.mock.calls[0]
     expect(captured.storyFiles.map((file: { id: string }) => file.id)).toEqual(['first', 'second'])
     expect(captured.storyFiles[0].story).not.toBe(ctx.storyFiles[0].story)
     expect(options).toMatchObject({ storyId: undefined, variantId: undefined, isolate: true, strictCleanup: true })
-    expect(client.send).toHaveBeenCalledWith('histoire:dev-event-result', { event: 'runStoryTests', requestId: 8, result: { ok: true } })
+    expect(client.send).toHaveBeenCalledWith('histoire:dev-event-result', { event: 'runStoryTests', requestId: '8', result: { ok: true } })
   })
 
   it('answers a failed run with a serialized error instead of leaving it pending', async () => {
@@ -121,10 +121,10 @@ describe('dev-event handler', () => {
     const server = register()
     const client = createClient()
 
-    await expect(server.emit({ event: 'runStoryTests', requestId: 3 }, client)).resolves.not.toThrow()
+    await expect(server.emit({ event: 'runStoryTests', requestId: '3' }, client)).resolves.not.toThrow()
 
     const [, reply] = client.send.mock.calls[0]
-    expect(reply.requestId).toBe(3)
+    expect(reply.requestId).toBe('3')
     expect(reply.error).toContain('run exploded')
   })
 
@@ -133,11 +133,11 @@ describe('dev-event handler', () => {
     const server = register()
     const client = createClient()
 
-    await server.emit({ event: 'runStoryTests', requestId: 4 }, client)
+    await server.emit({ event: 'runStoryTests', requestId: '4' }, client)
 
     expect(client.send).toHaveBeenCalledWith('histoire:dev-event-result', expect.objectContaining({
       event: 'runStoryTests',
-      requestId: 4,
+      requestId: '4',
       code: 'RUNTIME_CHANGED',
     }))
   })
@@ -151,8 +151,8 @@ describe('dev-event handler', () => {
     const second = createClient()
 
     await Promise.all([
-      server.emit({ event: 'runStoryTests', payload: { storyId: 'first' }, requestId: 1 }, first),
-      server.emit({ event: 'runStoryTests', payload: { storyId: 'second' }, requestId: 2 }, second),
+      server.emit({ event: 'runStoryTests', payload: { storyId: 'first' }, requestId: '1' }, first),
+      server.emit({ event: 'runStoryTests', payload: { storyId: 'second' }, requestId: '2' }, second),
     ])
 
     // A single-flight latch would answer the second request with the first
@@ -178,9 +178,9 @@ describe('dev-event handler', () => {
     })
     const first = createClient()
     const third = createClient()
-    const a = server.emit({ event: 'runStoryTests', payload: { storyId: 'ui-a' }, requestId: 1 }, first)
+    const a = server.emit({ event: 'runStoryTests', payload: { storyId: 'ui-a' }, requestId: '1' }, first)
     const b = execution.enqueue(createHistoireTestTask(ctx, { storyId: 'mcp-b' })).result
-    const c = server.emit({ event: 'runStoryTests', payload: { storyId: 'ui-c' }, requestId: 3 }, third)
+    const c = server.emit({ event: 'runStoryTests', payload: { storyId: 'ui-c' }, requestId: '3' }, third)
     await vi.waitFor(() => expect(order).toEqual(['ui-a']))
     release()
     await Promise.all([a, b, c])
@@ -243,7 +243,7 @@ describe('dev-event handler', () => {
     })
     const server = register(createContext(), undefined, () => active)
     const client = createClient()
-    await server.emit({ event: 'runStoryTests', payload: { storyId: 'old' }, requestId: 1 }, client)
+    await server.emit({ event: 'runStoryTests', payload: { storyId: 'old' }, requestId: '1' }, client)
     expect(client.send).not.toHaveBeenCalled()
   })
 
@@ -256,11 +256,11 @@ describe('dev-event handler', () => {
     const server = register(ctx)
     const client = createClient()
 
-    await expect(server.emit({ event: 'customEvent', requestId: 5 }, client)).resolves.not.toThrow()
+    await expect(server.emit({ event: 'customEvent', requestId: '5' }, client)).resolves.not.toThrow()
 
     expect(client.send.mock.calls[0][1]).toMatchObject({
       event: 'customEvent',
-      requestId: 5,
+      requestId: '5',
     })
     expect(client.send.mock.calls[0][1].error).toContain('plugin exploded')
   })

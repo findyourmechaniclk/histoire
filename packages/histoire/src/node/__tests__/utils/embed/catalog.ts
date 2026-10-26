@@ -16,7 +16,7 @@ export function createEmbedDescriptor(): HistoireSourceDescriptor {
     serverTests: entry(),
     openInEditor: entry(),
     hostChannels: entry(),
-    surfaces: { explorer: entry(), preview: entry(), grid: entry(), tree: entry(), search: entry(), toolbar: entry(), controls: entry(), docs: entry(), source: entry(), events: entry(), tests: entry() },
+    surfaces: { explorer: entry(), preview: entry(), tree: entry(), search: entry(), toolbar: entry(), controls: entry(), docs: entry(), source: entry(), events: entry(), tests: entry() },
   }
   return {
     descriptorVersion: 1,
@@ -40,7 +40,7 @@ export function createEmbedSnapshot(): HistoireSnapshot {
     catalog: descriptor.catalog,
     diagnostics: descriptor.catalog.diagnostics,
     selection: null,
-    runtime: { status: 'absent', mountId: null, runtimeId: null, layout: null, viewports: [], viewport: null },
+    runtime: { status: 'absent', mountId: null, runtimeId: null, viewports: [], viewport: null },
     state: null,
     settings: createDefaultHistoireSettings(),
     capabilities: descriptor.capabilities,

@@ -16,7 +16,7 @@ it.each(['epoch', 'revision'] as const)('cannot publish late mount readiness or 
     const owner = { protocolVersion: 1, sessionId: capture.sessionId, connectionId: 'surface-connection', mountId: capture.mountId, sourceId: fixture.descriptor.sourceId, epoch: fixture.descriptor.epoch, revision: fixture.descriptor.revision, target: capture.target! }
     const parent = createBridgePort({ port: ports.parent as unknown as MessagePort, owner, role: 'primary' })
     child = createBridgePort({ port: ports.child as unknown as MessagePort, owner, role: 'primary', child: true })
-    oldRuntime = { status: 'ready', mountId: capture.mountId, runtimeId: 'old-source-document', layout: 'single', viewports: [], viewport: null }
+    oldRuntime = { status: 'ready', mountId: capture.mountId, runtimeId: 'old-source-document', viewports: [], viewport: null }
     return {
       id: owner.connectionId,
       ready: waitBridgeRuntime(parent, abort.signal, 2_000),

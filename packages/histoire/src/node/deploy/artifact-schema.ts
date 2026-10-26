@@ -60,10 +60,10 @@ export const artifactManifestSchema = z.strictObject({
   defaultColorScheme: z.enum(['auto', 'light', 'dark']),
   /** Initial preview background shared by dev and deployed screenshot targets. */
   backgroundColor: z.string().max(4096).refine(value => value.isWellFormed()),
-  /** Additive defaults absent from legacy artifacts; readers use ltr/empty. */
-  textDirection: z.enum(['ltr', 'rtl']).optional(),
+  /** Default preview text direction. */
+  textDirection: z.enum(['ltr', 'rtl']),
   /** Same bounded primitive runtime globals as SDK preview settings. */
-  globals: previewGlobalsSchema.optional(),
+  globals: previewGlobalsSchema,
   mcpEnabled: z.boolean(),
   testRuntimeIncluded: z.boolean(),
   timeouts: z.strictObject({ collect: z.number().int().positive().max(2 ** 31 - 1), storyCollect: z.number().int().positive().max(2 ** 31 - 1), run: z.number().int().positive().max(2 ** 31 - 1) }),

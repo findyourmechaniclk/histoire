@@ -54,11 +54,5 @@ export interface HistoireUiConfig {
   comments?: {
     /** Enable pinned threads (canvas comments) in dev; other AI threads are unaffected. Defaults to true. */
     enabled?: boolean
-    /**
-     * Legacy project-relative comments file, only read once to import its comments as pinned
-     * threads; it is then renamed to `comments.migrated.json`. Defaults to '.histoire/comments.json'.
-     * @deprecated Comments now live in `.histoire/threads.json`; this is only the migration source.
-     */
-    file?: string
   }
 }

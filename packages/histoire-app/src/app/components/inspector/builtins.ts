@@ -23,7 +23,7 @@ export interface InspectorBuiltinView {
 }
 
 /**
- * Built-in tab views keyed by legacy route value; identity and order live in
+ * Built-in tab views keyed by route value; identity and order live in
  * `INSPECTOR_BUILTIN_TABS`. A new built-in panel adds one entry in each, never a template branch.
  */
 export const INSPECTOR_BUILTIN_VIEWS: Readonly<Record<BuiltinInspectorTabValue, InspectorBuiltinView>> = {

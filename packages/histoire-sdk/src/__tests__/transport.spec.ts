@@ -105,7 +105,7 @@ describe('bound bridge transport', () => {
     const test = fixture('primary')
     const notifications: any[] = []
     test.bridge.subscribe(value => notifications.push(value))
-    const ready = (runtimeId: string, sequence: number) => test.child.postMessage({ ...owner, runtimeId, kind: 'event', event: 'readiness.changed', sequence, payload: { runtime: { status: 'ready', mountId: owner.mountId, runtimeId, layout: 'single', viewports: [], viewport: null } } })
+    const ready = (runtimeId: string, sequence: number) => test.child.postMessage({ ...owner, runtimeId, kind: 'event', event: 'readiness.changed', sequence, payload: { runtime: { status: 'ready', mountId: owner.mountId, runtimeId, viewports: [], viewport: null } } })
     ready('document-1', 1)
     ready('document-2', 2)
     ready('document-1', 3)
@@ -117,7 +117,7 @@ describe('bound bridge transport', () => {
 
   it('keeps initiating selection pending across runtime replacement while rejecting old state work', async () => {
     const test = fixture('primary')
-    const ready = (runtimeId: string, sequence: number) => test.child.postMessage({ ...owner, target: test.bridge.getOwner().target, runtimeId, kind: 'event', event: 'readiness.changed', sequence, payload: { runtime: { status: 'ready', mountId: owner.mountId, runtimeId, layout: 'single', viewports: [], viewport: null } } })
+    const ready = (runtimeId: string, sequence: number) => test.child.postMessage({ ...owner, target: test.bridge.getOwner().target, runtimeId, kind: 'event', event: 'readiness.changed', sequence, payload: { runtime: { status: 'ready', mountId: owner.mountId, runtimeId, viewports: [], viewport: null } } })
     ready('document-1', 1)
     await Promise.resolve()
     const selection = test.bridge.request('selection.select', { storyId: 'next', variantId: 'variant' }, { ...test.capture, target: { storyId: 'next', variantId: 'variant' } })

@@ -207,7 +207,7 @@ export function createBridgePort(options: BridgePortOptions) {
       emit({ type: 'disconnect', ...notificationOwner() })
     }
     else {
-      emit({ type: 'runtime', ...notificationOwner(), runtime: { status: 'stale', mountId: owner.mountId, runtimeId: owner.runtimeId ?? null, layout: null, viewports: [], viewport: null } })
+      emit({ type: 'runtime', ...notificationOwner(), runtime: { status: 'stale', mountId: owner.mountId, runtimeId: owner.runtimeId ?? null, viewports: [], viewport: null } })
     }
     closePort()
   }

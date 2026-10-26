@@ -86,7 +86,7 @@ export default defineConfig({
         entryFileNames: '[name].js',
         chunkFileNames: 'chunks/[name]-[hash].js',
         codeSplitting: {
-          // Static dependencies share one owner; dynamic grid imports stay lazy.
+          // Static dependencies share one owner; dynamic imports stay lazy.
           // Recursive inclusion is required with strict entry signatures.
           includeDependenciesRecursively: true,
           groups: [{

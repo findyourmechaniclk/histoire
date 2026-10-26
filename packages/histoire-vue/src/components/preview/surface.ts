@@ -6,7 +6,7 @@ import { useHistoireContext, useHistoireResource } from '../../provider/context.
 import { focusHistoireSearch, requestHistoireUiShow, requestHistoireUiToggle } from '../../provider/shortcuts.js'
 
 /** Build native primary wrapper around SDK-owned source runtime; no host story imports. */
-export function createHistoirePrimary(name: string, surface: 'preview' | 'grid') {
+export function createHistoirePrimary(name: string, surface: 'preview') {
   return defineComponent({
     name,
     inheritAttrs: false,

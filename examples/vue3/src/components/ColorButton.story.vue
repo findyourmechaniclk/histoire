@@ -14,10 +14,7 @@ function initState() {
   <Story
     :meta="{ wrapper: false }"
     title="Color Button"
-    :layout="{
-      type: 'grid',
-      width: 200,
-    }"
+    :layout="{ type: 'grid' }"
   >
     <Variant
       title="playground"

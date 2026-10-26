@@ -26,10 +26,6 @@ Id of the story used in the URL. By default, the id is automatically generated f
 
 Layout of the story. Object with the following properties:
   - `type`: `'single'` or `'grid'`
-  - with `type: 'single'` you can specify:
-    - `iframe`: **Deprecated** and ignored. Stories always run inside iframe runtime.
-  - with `type: 'grid'` you can specify:
-    - `width`: Column size. Can be number (pixels) or string (like `'100%'`).
 
 [Learn more](../../guide/svelte3/stories.md#layout)
 

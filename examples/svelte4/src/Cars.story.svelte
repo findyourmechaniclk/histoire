@@ -4,7 +4,7 @@
 
 <Hst.Story
   title="Cars"
-  layout={{ type: 'grid', width: 200 }}
+  layout={{ type: 'grid' }}
   icon="carbon:car"
   iconColor="gray"
 >

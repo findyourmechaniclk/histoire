@@ -2,19 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { createRuntimeDocumentId, createRuntimeDocumentOwner } from '../../../../../histoire-app/src/embed/adapters/document.js'
 
 describe('runtime document ownership', () => {
-  it('rejects delayed grid selection after newer host intent, including return to same target', () => {
-    const owner = createRuntimeDocumentOwner()
-    owner.replace('document', { storyId: 'story', variantId: 'one' })
-    const delayed = { documentId: 'document', storyId: 'story', variantId: 'two', selectionVersion: owner.selectionVersion }
-    expect(owner.acceptsSelection(delayed)).toBe(true)
-    owner.select({ storyId: 'story', variantId: 'two' })
-    owner.select({ storyId: 'story', variantId: 'one' })
-    expect(owner.acceptsSelection(delayed)).toBe(false)
-    expect(owner.acceptsSelection({ ...delayed, selectionVersion: owner.selectionVersion })).toBe(true)
-    expect(owner.acceptsSelection({ ...delayed, selectionVersion: undefined })).toBe(false)
-    owner.replace('replacement', { storyId: 'story', variantId: 'one' })
-    expect(owner.acceptsSelection({ ...delayed, selectionVersion: owner.selectionVersion })).toBe(false)
-  })
   it('mints distinct replacement documents when nested Explorer reuses primary mount identity', () => {
     const retired = createRuntimeDocumentId('explorer:primary')
     const replacement = createRuntimeDocumentId('explorer:primary')

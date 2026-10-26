@@ -97,7 +97,7 @@ export default defineConfig({
 })
 ```
 
-Vue/Nuxt stories read `useHistoireGlobals()` from `histoire/client`; Svelte/vanilla use `useHistoireGlobalsStore()`. Initial appearance still comes from `theme.defaultColorScheme`. Grid variants share session globals. See [SDK settings](./sdk.md#snapshots-and-settings).
+Vue/Nuxt stories read `useHistoireGlobals()` from `histoire/client`; Svelte/vanilla use `useHistoireGlobalsStore()`. Initial appearance still comes from `theme.defaultColorScheme`. All variants of a session share its globals. See [SDK settings](./sdk.md#snapshots-and-settings).
 
 ## `browser` <Badge type="tip" text="1.0-beta.2+" />
 
@@ -315,7 +315,6 @@ export default defineConfig({
     iconColor: '#00c5a5',
     layout: {
       type: 'grid',
-      width: 300,
     },
     responsiveDisabled: true,
     autoPropsDisabled: true,
@@ -778,12 +777,6 @@ export default defineConfig({
   comments: { enabled: false },
 })
 ```
-
-## `comments.file` <Badge type="tip" text="1.0-beta.2+" /> <Badge type="warning" text="deprecated" />
-
-`string` - Default: `'.histoire/comments.json'`
-
-Earlier comment storage. Threads are now stored in `.histoire/threads.json`; on the next development start, comments found at this path are imported as pinned threads and the file is renamed to `comments.migrated.json`. The path must stay inside the project; symlink escapes are rejected. See [local storage](../guide/ui-comments.md#local-storage).
 
 ## `build.changedSince` <Badge type="tip" text="1.0-beta.2+" />
 

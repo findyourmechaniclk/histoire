@@ -118,7 +118,7 @@ describe('canvas geometry ownership', () => {
   })
 
   it('preserves saved numeric zoom and reveals oversized frame starts instead of trailing edges', () => {
-    const canvas = createCanvasStore({ storage: { getItem: () => '{"zoom":0.67}', setItem: () => {} } })
+    const canvas = createCanvasStore({ storage: { getItem: () => '{"zoomByArrange":{"grid":0.67}}', setItem: () => {} } })
     canvas.setGeometry({ width: 800, height: 500 }, bounds, 300, { topInset: 120, bottomInset: 40 })
     canvas.focusFrame({ ...frame, x: 1000, y: 1000, width: 1000, height: 1000 })
     expect(canvas.zoom).toBe(0.67)

@@ -39,7 +39,7 @@ export function resolveRuntimeEventTarget(argument: unknown, explicit?: Histoire
   const target = targetAt(node, scope) ?? (scope.event?.eventPhase ? scope.actor : undefined)
   if (target) return target
   // Single visible runtime has one attributable actor, including delayed callbacks.
-  // Multiple grid cells are deliberately ambiguous rather than attributed to selection.
+  // Multiple rendered variants are deliberately ambiguous rather than attributed to selection.
   const cells = document.querySelectorAll('[data-histoire-runtime-content]')
   if (cells.length === 1) return targetAt(cells[0], scope)
 }

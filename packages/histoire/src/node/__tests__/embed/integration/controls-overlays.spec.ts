@@ -29,7 +29,7 @@ describe('cross-origin controls overlays', () => {
       const hostBefore = await page.locator('#host-field').boundingBox()
       await mountEmbedControlsHost(page, fixture.bookUrl)
       await Promise.all([waitEmbedControlsReady(page), waitEmbedControlsReady(page, 1)])
-      await expect.poll(() => page.frames().filter(frame => frame.url().includes('controls=true')).length, { timeout: 30000 }).toBe(2)
+      await expect.poll(() => page.frames().filter(frame => frame.url().includes('purpose=controls')).length, { timeout: 30000 }).toBe(2)
       const custom = () => embedCustomControlsFrame(page)
       await expect.poll(() => embedCustomControlsFrame(page, 1)?.getByRole('button', { name: 'Choice', exact: true }).isVisible(), { timeout: 30000 }).toBe(true)
       await expect.poll(() => custom()?.getByRole('button', { name: 'Choice', exact: true }).isVisible()).toBe(true)

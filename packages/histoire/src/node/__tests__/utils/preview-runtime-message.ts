@@ -9,7 +9,6 @@ import {
   RUN_TESTS,
   RUNTIME_REQUEST,
   SANDBOX_READY,
-  SELECT_VARIANT,
   STATE_SYNC,
   TEST_CASE_RESULT,
   TEST_DEFINITIONS,
@@ -50,7 +49,6 @@ export function createPreviewRuntime(options: { onCollect?: () => void, onRun?: 
   const hostWindow = {}
   const story: { value: { id: string } | null } = { value: { id: 'story-a' } }
   const variant: { value: { id: string } | null } = { value: { id: 'variant-a' } }
-  const gridSelectedVariantId = { value: 'variant-a' }
   const stubs: Record<string, any> = {
     getHostWindow: () => hostWindow,
     window: {
@@ -77,7 +75,7 @@ export function createPreviewRuntime(options: { onCollect?: () => void, onRun?: 
     initialSelection: { controls: options.controls === true },
     controlsRevision,
     mounted: true,
-    selection: { grid: false },
+    selection: {},
     frameworkReadyVariants: new WeakSet(),
     applyVariantStateUpdate,
     getVariantById: vi.fn(),
@@ -87,7 +85,6 @@ export function createPreviewRuntime(options: { onCollect?: () => void, onRun?: 
     RUN_TEST_CASE,
     RUN_TESTS,
     SANDBOX_READY,
-    SELECT_VARIANT,
     STATE_SYNC,
     TEST_CASE_RESULT,
     TEST_DEFINITIONS,
@@ -97,8 +94,6 @@ export function createPreviewRuntime(options: { onCollect?: () => void, onRun?: 
     syncSelection,
     story,
     variant,
-    gridSelectedVariantId,
-    gridSelectionVersion: undefined,
     variantTestSession: { collectVariantTests, runPreviewTestCase },
     runVariantTests,
     runPreviewTestCase,
@@ -128,7 +123,6 @@ export function createPreviewRuntime(options: { onCollect?: () => void, onRun?: 
     handleElementInspection,
     applyPropsOverride,
     variant,
-    gridSelectedVariantId,
     /** Delivers a message to the runtime, awaiting the async dispatch. */
     async deliver(data: Record<string, any>, overrides: { source?: unknown, origin?: string } = {}) {
       await listener!({

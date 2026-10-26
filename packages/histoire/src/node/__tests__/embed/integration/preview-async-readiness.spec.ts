@@ -49,7 +49,7 @@ describe('actual Vue Suspense readiness', () => {
     page.on('pageerror', error => errors.push(error.message))
     /** Identify current story canvas, excluding controls replicas. */
     function sandbox() {
-      return page.frames().find(frame => frame.url().includes('__sandbox.html') && !frame.url().includes('controls=true'))
+      return page.frames().find(frame => frame.url().includes('__sandbox.html') && !frame.url().includes('purpose=controls'))
     }
     try {
       await page.goto(`${fixture.hostOrigin}/host.html`)

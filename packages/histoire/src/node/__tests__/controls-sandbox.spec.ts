@@ -21,7 +21,7 @@ describe('controls sandbox mode (preview runtime)', () => {
   const source = generatePreviewRuntimeSource()
 
   it('parses the controls mode from the sandbox URL', () => {
-    expect(source).toContain(`controls: new URLSearchParams(window.location.search).get('controls') === 'true'`)
+    expect(source).toContain(`controls: initialPurpose === 'controls'`)
   })
 
   it('renders the story controls slot over a hidden story mount', () => {

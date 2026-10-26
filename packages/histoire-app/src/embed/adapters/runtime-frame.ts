@@ -1,7 +1,7 @@
 import type { HistoireRuntimeSnapshot, HistoireStateSnapshot, HistoireTarget, HistoireViewport } from '@histoire/protocol'
 import type { HistoireRequestCapture } from '@histoire/sdk/internal'
 import type { EmbedSurfaceContext } from '../surfaces.js'
-import { COLLECT_TESTS, EVENT_SEND, HistoireSdkError, HOST_CHANNEL_MESSAGE, PREVIEW_SETTINGS_SYNC, PREVIEW_SYNC, RUNTIME_FAILED, RUNTIME_FOCUS, RUNTIME_LAYOUT, RUNTIME_REQUEST, RUNTIME_RESULT, SELECT_VARIANT, STATE_SYNC, TEST_DEFINITIONS, TEST_RESULT, validateHistoireStateSnapshot, validateHistoireViewports, validateWireValue, VARIANT_READY } from '@histoire/protocol'
+import { COLLECT_TESTS, EVENT_SEND, HistoireSdkError, HOST_CHANNEL_MESSAGE, PREVIEW_SETTINGS_SYNC, PREVIEW_SYNC, RUNTIME_FAILED, RUNTIME_FOCUS, RUNTIME_LAYOUT, RUNTIME_REQUEST, RUNTIME_RESULT, STATE_SYNC, TEST_DEFINITIONS, TEST_RESULT, validateHistoireStateSnapshot, validateHistoireViewports, validateWireValue, VARIANT_READY } from '@histoire/protocol'
 import { createEmbedHostChannels } from './channels.js'
 import { createRuntimeDocumentId, createRuntimeDocumentOwner } from './document.js'
 import { mapRuntimeViewport } from './geometry.js'
@@ -16,7 +16,7 @@ import { createEmbedTestWorkers } from './test-workers.js'
 import { createEmbedPreviewTests } from './tests.js'
 
 /** Existing same-origin story sandbox, owned by one parent-backed primary surface. */
-export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 'single' | 'grid') {
+export function createEmbedRuntimeFrame(context: EmbedSurfaceContext) {
   const owner = createRuntimeDocumentOwner()
   const iframe = context.container.ownerDocument.createElement('iframe')
   context.container.style.cssText = 'margin:0;width:100%;height:100%;overflow:auto;display:flex;align-items:flex-start;'
@@ -46,13 +46,13 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
     createDocumentId: () => createRuntimeDocumentId(context.bridge.getOwner().mountId),
     createUrl: (target, documentId) => createTestWorkerUrl(base, target, documentId),
   })
-  const loading = createRuntimeLoadRecovery(settings, () => active && !retired && owner.id && selected && context.standalone && layout === 'single' ? owner.selectionVersion : null, () => {
+  const loading = createRuntimeLoadRecovery(settings, () => active && !retired && owner.id && selected && context.standalone ? owner.selectionVersion : null, () => {
     requests.invalidate()
     states.clear()
     owner.select(selected!, true)
     mounting(true)
-    post({ type: PREVIEW_SYNC, ...selected!, grid: false, selectionVersion: owner.selectionVersion })
-  }, () => post({ type: PREVIEW_SYNC, ...selected!, grid: false, selectionVersion: owner.selectionVersion }), {
+    post({ type: PREVIEW_SYNC, ...selected!, selectionVersion: owner.selectionVersion })
+  }, () => post({ type: PREVIEW_SYNC, ...selected!, selectionVersion: owner.selectionVersion }), {
     failed: () => !iframe.contentDocument,
     // Same URL and document identity: pending readiness stays valid, and the
     // load after it restores later intent like any physical reload.
@@ -85,7 +85,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
   }
   /** Portable runtime status aliases currently selected visible content cell. */
   function snapshot(status: HistoireRuntimeSnapshot['status']): HistoireRuntimeSnapshot {
-    return { status, mountId: context.bridge.getOwner().mountId, runtimeId: owner.id, layout, viewports, viewport: viewports.find(viewport => viewport.target.variantId === selected?.variantId) ?? null }
+    return { status, mountId: context.bridge.getOwner().mountId, runtimeId: owner.id, viewports, viewport: viewports.find(viewport => viewport.target.variantId === selected?.variantId) ?? null }
   }
   /** Runtime identity transitions reach parent before state/layout of replacement. */
   function publish(status: HistoireRuntimeSnapshot['status']) {
@@ -94,13 +94,13 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
     context.bridge.post('readiness.changed', { runtime }, { runtimeId: owner.id ?? undefined, target: selected ?? undefined })
     return runtime
   }
-  /** Each selected actor must acknowledge before requests resume. */
+  /** Selected actor must acknowledge before requests resume. */
   function mounting(retainPending = false) {
     readyIds.clear()
     readiness.reset(retainPending)
     publish('mounting')
   }
-  /** Only selected runtime state is host mirror; other grid states remain local. */
+  /** Only selected runtime state is host mirror. */
   function publishState() {
     const value = selected?.variantId ? states.get(selected.variantId) : undefined
     if (!value || !selected || !owner.id || !readyIds.has(selected.variantId!)) return
@@ -125,7 +125,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
     appliedSettings = { settings: value, document: owner.id }
     const width = value.rotate && value.responsiveHeight ? value.responsiveHeight : value.responsiveWidth
     const height = value.rotate ? value.responsiveWidth : value.responsiveHeight
-    iframe.style.width = layout === 'grid' ? '100%' : `${width}px`
+    iframe.style.width = `${width}px`
     iframe.style.height = height ? `${height}px` : '100%'
     iframe.style.minHeight = height ? '' : '240px'
     post({ type: PREVIEW_SETTINGS_SYNC, settings: value })
@@ -161,7 +161,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
     viewports = []
     sandboxViewports = []
     mounting()
-    iframe.src = createRuntimeFrameUrl(base, { target, documentId: owner.id!, selectionVersion: owner.selectionVersion, grid: layout === 'grid', standalone: context.standalone })
+    iframe.src = createRuntimeFrameUrl(base, { target, documentId: owner.id!, selectionVersion: owner.selectionVersion, standalone: context.standalone })
     if (!iframe.isConnected) context.container.append(iframe)
     settings()
   }
@@ -184,23 +184,16 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
       }
       return
     }
-    if (!owner.id || target.storyId !== selected?.storyId || (layout === 'single' && !context.standalone && target.variantId !== selected?.variantId) || sourceOwner.changed(context.session.getSnapshot(), target)) {
+    if (!owner.id || target.storyId !== selected?.storyId || (!context.standalone && target.variantId !== selected?.variantId) || sourceOwner.changed(context.session.getSnapshot(), target)) {
       navigate(target)
     }
     else if (target.variantId !== selected?.variantId) {
       requests.invalidate()
       selected = target
       owner.select(target)
-      if (layout === 'single') {
-        // Source cache retains variant state; each rendered actor must acknowledge new intent.
-        mounting()
-        post({ type: PREVIEW_SYNC, ...target, grid: false, selectionVersion: owner.selectionVersion })
-      }
-      else {
-        post({ type: SELECT_VARIANT, variantId: target.variantId, selectionVersion: owner.selectionVersion })
-        publish(readyIds.has(target.variantId) ? 'ready' : 'mounting')
-        publishState()
-      }
+      // Source cache retains variant state; rendered actor must acknowledge new intent.
+      mounting()
+      post({ type: PREVIEW_SYNC, ...target, selectionVersion: owner.selectionVersion })
     }
     settings(false)
   }
@@ -209,7 +202,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
     if (!active || !owner.id || event.source !== iframe.contentWindow || event.origin !== window.location.origin || !event.data?.__histoire) return
     const message = event.data
     if (message.documentId !== owner.id) return
-    if (context.standalone && layout === 'single' && message.selectionVersion !== owner.selectionVersion) {
+    if (context.standalone && message.selectionVersion !== owner.selectionVersion) {
       if (message.type === VARIANT_READY && message.variantId === selected?.variantId) loading.missed()
       return
     }
@@ -217,7 +210,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
       fail(new HistoireSdkError('PREVIEW_NOT_READY', message.error?.message ?? 'Story mount failed'))
       return
     }
-    if (!owner.accepts(message, [RUNTIME_LAYOUT, STATE_SYNC, VARIANT_READY, EVENT_SEND, SELECT_VARIANT, HOST_CHANNEL_MESSAGE].includes(message.type))) return
+    if (!owner.accepts(message, [RUNTIME_LAYOUT, STATE_SYNC, VARIANT_READY, EVENT_SEND, HOST_CHANNEL_MESSAGE].includes(message.type))) return
     if ((message.type === STATE_SYNC || message.type === VARIANT_READY) && !context.session.getSnapshot().catalog.stories.some(story => story.id === message.storyId && story.variants.some(variant => variant.id === message.variantId))) return
     if (message.type === HOST_CHANNEL_MESSAGE) {
       channels.receive(message)
@@ -265,9 +258,6 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext, layout: 's
     }
     else if (message.type === RUNTIME_FOCUS && typeof message.focused === 'boolean' && (message.action === undefined || message.action === 'search' || message.action === 'toggle-ui' || message.action === 'show-ui')) {
       context.bridge.post('focus.changed', { focused: message.focused, ...(message.action ? { action: message.action } : {}) }, { runtimeId: owner.id!, target: selected! })
-    }
-    else if (message.type === SELECT_VARIANT && owner.acceptsSelection(message) && readyIds.has(message.variantId) && context.session.getSnapshot().catalog.stories.some(story => story.id === message.storyId && story.variants.filter(variant => variant.id === message.variantId).length === 1)) {
-      void context.session.selection.select({ storyId: message.storyId, variantId: message.variantId }).catch(() => {})
     }
   }
   window.addEventListener('message', receive)

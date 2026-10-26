@@ -15,7 +15,7 @@ export function createSessionChannels(context: SessionContext) {
   let generation = 0
   let status = context.snapshot.status
   let sourceIdentity: string | undefined
-  /** Public readiness can be transiently empty while same grid document stays owned. */
+  /** Public readiness can be transiently empty while same document stays owned. */
   function currentDocument() {
     const primary = context.primaryId ? context.mounts.get(context.primaryId) : undefined
     return primary?.active ? primary.runtimeId : null
@@ -27,8 +27,8 @@ export function createSessionChannels(context: SessionContext) {
     if (!context.engine?.hostChannels.channels?.includes(name)) throw new HistoireSdkError('CAPABILITY_UNAVAILABLE', 'Host channel is not enabled.', { name })
   }
   context.listeners.add((snapshot) => {
-    // Selection briefly clears public runtimeId even when grid keeps actual
-    // document. Only physical owned-document retirement releases subscribers.
+    // Selection briefly clears public runtimeId even when actual document stays.
+    // Only physical owned-document retirement releases subscribers.
     const ownedDocument = currentDocument()
     const nextSource = snapshot.source ? JSON.stringify([snapshot.source.sourceId, snapshot.source.epoch]) : undefined
     const retiredSource = (status === 'ready' && snapshot.status !== 'ready') || (sourceIdentity !== undefined && nextSource !== sourceIdentity)

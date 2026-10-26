@@ -132,10 +132,10 @@ describe('selection intent authority', () => {
     ports.child.start()
     const target = { storyId: 'docs', variantId: null }
     const operation = parent.request('view.sync', { ...createEmbedSnapshot(), selection: target }, { ...owner, signal: new AbortController().signal })
-    ports.child.postMessage({ ...owner, kind: 'event', event: 'readiness.changed', sequence: 1, payload: { runtime: { status: 'ready', mountId: owner.mountId, runtimeId: owner.runtimeId, layout: 'single', viewports: [], viewport: null } } })
+    ports.child.postMessage({ ...owner, kind: 'event', event: 'readiness.changed', sequence: 1, payload: { runtime: { status: 'ready', mountId: owner.mountId, runtimeId: owner.runtimeId, viewports: [], viewport: null } } })
     await Promise.resolve()
     expect(parent.getOwner().target).toEqual(target)
-    ports.child.postMessage({ ...owner, runtimeId: undefined, target: undefined, kind: 'event', event: 'readiness.changed', sequence: 2, payload: { runtime: { status: 'absent', mountId: owner.mountId, runtimeId: null, layout: null, viewports: [], viewport: null } } })
+    ports.child.postMessage({ ...owner, runtimeId: undefined, target: undefined, kind: 'event', event: 'readiness.changed', sequence: 2, payload: { runtime: { status: 'absent', mountId: owner.mountId, runtimeId: null, viewports: [], viewport: null } } })
     await Promise.resolve()
     expect(parent.getOwner().target).toEqual(target)
     ports.child.postMessage({ ...owner, kind: 'request', requestId: 'retired-intent', command: 'selection.select', payload: { storyId: 'a', variantId: 'b:c' } })
@@ -152,7 +152,7 @@ describe('selection intent authority', () => {
     try {
       const target = { storyId: 'a:b', variantId: 'other' }
       await parent.request('view.sync', { ...createEmbedSnapshot(), selection: target }, { ...parent.getOwner(), signal: new AbortController().signal })
-      const absence = { ...owner, runtimeId: undefined, kind: 'event', event: 'readiness.changed', sequence: 1, payload: { runtime: { status: 'absent', mountId: owner.mountId, runtimeId: null, layout: null, viewports: [], viewport: null } } }
+      const absence = { ...owner, runtimeId: undefined, kind: 'event', event: 'readiness.changed', sequence: 1, payload: { runtime: { status: 'absent', mountId: owner.mountId, runtimeId: null, viewports: [], viewport: null } } }
       // Absence attributed to earlier selection cannot undo accepted host target.
       ports.child.postMessage(absence)
       await Promise.resolve()
@@ -162,7 +162,7 @@ describe('selection intent authority', () => {
       await Promise.resolve()
       expect(parent.getOwner().target).toEqual(target)
       expect(parent.getOwner().runtimeId).toBeUndefined()
-      ports.child.postMessage({ ...owner, runtimeId: 'replacement', target, kind: 'event', event: 'readiness.changed', sequence: 3, payload: { runtime: { status: 'ready', mountId: owner.mountId, runtimeId: 'replacement', layout: 'single', viewports: [], viewport: null } } })
+      ports.child.postMessage({ ...owner, runtimeId: 'replacement', target, kind: 'event', event: 'readiness.changed', sequence: 3, payload: { runtime: { status: 'ready', mountId: owner.mountId, runtimeId: 'replacement', viewports: [], viewport: null } } })
       await Promise.resolve()
       expect(parent.getOwner().target).toEqual(target)
       expect(parent.getOwner().runtimeId).toBe('replacement')

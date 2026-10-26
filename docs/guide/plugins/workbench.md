@@ -333,7 +333,7 @@ api.canvas.addView({
 
 ## Frame plugins
 
-The frame module is imported only by **interactive** story frames: the primary frame, canvas frames, Matrix cells and leased frames. It is never evaluated during story collection, in test workers, in controls replicas, in screenshot or MCP automation documents, or by the legacy virtualized grid.
+The frame module is imported only by **interactive** story frames: the primary frame, canvas frames, Matrix cells and leased frames. It is never evaluated during story collection, in test workers, in controls replicas, or in screenshot or MCP automation documents.
 
 - `attach(frame)` runs once per rendered **actor** (one mount of one variant), after the variant reported it is ready. `frame.actorId` identifies the actor; a remount is a new actor.
 - `frame.element` is the rendered variant root; `frame.state` is a readonly view of the variant state with `subscribe`; `frame.target` and `frame.options` describe what and how.

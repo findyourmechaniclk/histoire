@@ -96,7 +96,7 @@ describe('explicit runtime ownership and state', () => {
     await session.selection.select({ storyId: 'a:b' })
     await expect(session.state.get()).rejects.toMatchObject({ code: 'PREVIEW_NOT_READY' })
     const mount = session.mount(container, { surface: 'preview' })
-    expect(() => session.mount(container, { surface: 'grid' })).toThrow(expect.objectContaining({ code: 'RUNTIME_IN_USE' }))
+    expect(() => session.mount(container, { surface: 'preview' })).toThrow(expect.objectContaining({ code: 'RUNTIME_IN_USE' }))
     await mount.ready
     expect((await session.state.get()).value).toMatchObject({ count: 5 })
     const teardown = deferred<void>()

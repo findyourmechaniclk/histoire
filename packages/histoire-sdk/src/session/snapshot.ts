@@ -35,7 +35,7 @@ export function emptyCapabilities(reason = 'NOT_CONNECTED'): HistoireCapabilitie
     serverTests: no(),
     openInEditor: no(),
     hostChannels: no(),
-    surfaces: { explorer: no(), preview: no(), grid: no(), tree: no(), search: no(), toolbar: no(), controls: no(), docs: no(), source: no(), events: no(), tests: no() },
+    surfaces: { explorer: no(), preview: no(), tree: no(), search: no(), toolbar: no(), controls: no(), docs: no(), source: no(), events: no(), tests: no() },
   }
 }
 
@@ -48,7 +48,7 @@ export function initialSnapshot(): HistoireSnapshot {
     catalog: { stories: [], tree: [], diagnostics: [] },
     diagnostics: [],
     selection: null,
-    runtime: { status: 'absent', mountId: null, runtimeId: null, layout: null, viewports: [], viewport: null },
+    runtime: { status: 'absent', mountId: null, runtimeId: null, viewports: [], viewport: null },
     state: null,
     settings: createDefaultHistoireSettings(),
     capabilities: emptyCapabilities(),

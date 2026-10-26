@@ -3,13 +3,13 @@ import type { HistoireSnapshot } from '@histoire/protocol'
 import type { Component } from 'vue'
 import { BUILTIN_INSPECTOR_TABS, BUILTIN_NAMESPACE, parseQualifiedId } from '@histoire/plugin-kit'
 
-/** Legacy `?tab=` values of the built-in tabs; Props is the empty value. */
+/** `?tab=` values of the built-in tabs; Props is the empty value. */
 export type BuiltinInspectorTabValue = BuiltinInspectorTabDescriptor['value']
 
-/** Route tab value: a built-in legacy value or a qualified plugin tab id (`acme:panel`). */
+/** Route tab value: a built-in value or a qualified plugin tab id (`acme:panel`). */
 export type InspectorTab = string
 
-/** Built-in tab identity: qualified descriptor id (sections, navigation) and legacy route value. */
+/** Built-in tab identity: qualified descriptor id (sections, navigation) and route value. */
 export type InspectorBuiltinTab = BuiltinInspectorTabDescriptor
 
 /** Built-in tabs in display order; plugin tabs follow them. Shared with native explorer panels. */
@@ -31,7 +31,7 @@ export function normalizeInspectorTab(value: unknown, testsEnabled = true): Buil
 }
 
 /**
- * Qualified descriptor id of a displayed tab value: `builtin:<name>` for legacy values,
+ * Qualified descriptor id of a displayed tab value: `builtin:<name>` for built-in values,
  * the plugin id itself otherwise. Sections attach to these ids.
  * @param value Displayed tab value.
  */
@@ -66,7 +66,7 @@ export interface InspectorTabItem {
 
 /** Route tab resolved against built-ins and the plugin tabs available now. */
 export interface InspectorTabResolution {
-  /** Displayed tab: legacy built-in value or available plugin tab id. */
+  /** Displayed tab: built-in value or available plugin tab id. */
   value: InspectorTab
   /** The route names a plugin tab while plugins are still setting up: show a loading state. */
   pending: boolean
@@ -85,10 +85,10 @@ export interface InspectorTabResolutionOptions {
 }
 
 /**
- * Resolves the route `?tab=` value. Legacy values behave as before. A qualified plugin id is
+ * Resolves the route `?tab=` value. Built-in values map to their tab. A qualified plugin id is
  * shown when available; before plugin setup settles it stays pending instead of falling back,
  * so deep links survive startup. Afterwards an unknown plugin id falls back to Props and asks
- * for a route rewrite. `builtin:` ids map to their legacy value.
+ * for a route rewrite. `builtin:` ids map to their built-in value.
  * @param requested Route value.
  * @param options Available tabs and host readiness.
  */

@@ -11,10 +11,7 @@ function initState() {
 <template>
   <Story
     title="Auto State & Props"
-    :layout="{
-      type: 'grid',
-      width: 200,
-    }"
+    :layout="{ type: 'grid' }"
   >
     <Variant title="Naked">
       <AutoStateProps />

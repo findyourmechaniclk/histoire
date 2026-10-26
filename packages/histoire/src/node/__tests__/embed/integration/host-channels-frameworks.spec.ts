@@ -13,7 +13,7 @@ const svelteStory = `<script context="module">
 import {useHostChannel} from 'histoire/client';const dormant=useHostChannel('factory');
 dormant.on('host',()=>{window.dormantMessages=(window.dormantMessages||0)+1});
 </script><script>import Actor from './ChannelActor.svelte';export let Hst</script>
-<Hst.Story id="svelte-channels" layout={{type:'grid',width:250}}>
+<Hst.Story id="svelte-channels" layout={{type:'grid'}}>
 <Hst.Variant id="one"><Actor label="one"/></Hst.Variant>
 <Hst.Variant id="two"><Actor label="two"/></Hst.Variant></Hst.Story>`
 
@@ -38,13 +38,13 @@ function variant(id){return{id,title:id,async onMount({el,onUnmount}){
   const off=channel.on('host',data=>{received=data.value;update()});onUnmount(off);el.append(text);update();
   window.channelActors??={};window.channelActors[id]={async postLater(wait){await wait;return channel.post('actor',{label:id})}}
 }}}
-export default{id:'vanilla-channels',title:'Vanilla channels',layout:{type:'grid',width:250},variants:[variant('one'),variant('two')]}`
+export default{id:'vanilla-channels',title:'Vanilla channels',layout:{type:'grid'},variants:[variant('one'),variant('two')]}`
 
 const nuxtStory = `<script>
 import {useHostChannel} from 'histoire/client';const dormant=useHostChannel('factory');
 dormant.on('host',()=>{window.dormantMessages=(window.dormantMessages||0)+1});
 </script><script setup>import Actor from './ChannelActor.vue'</script>
-<template><Story id="nuxt-channels" :layout="{type:'grid',width:250}">
+<template><Story id="nuxt-channels" :layout="{type:'grid'}">
 <Variant id="one"><Actor label="one"/></Variant><Variant id="two"><Actor label="two"/></Variant></Story></template>`
 
 const nuxtActor = `<script setup>
@@ -66,32 +66,26 @@ async function exerciseChannels(page: any, bookUrl: string, storyId: string, lat
   page.on('pageerror', (error: Error) => errors.push(error.message))
   await page.evaluate(`(async()=>{const{createHistoireSession}=await import('/sdk.js');window.session=createHistoireSession({url:${JSON.stringify(bookUrl)}});await session.connect();await session.catalog.getStory(${JSON.stringify(storyId)});window.messages=[];window.channel=session.channels.open('factory');window.stop=channel.subscribe(message=>messages.push(message))})()`)
   expect(page.frames().some(frame => frame.url().includes('__sandbox.html'))).toBe(false)
-  expect(await attemptEmbedPrimary(page, bookUrl, { storyId, variantId: 'one' }, 'grid', { reuseSession: true })).toBeNull()
+  expect(await attemptEmbedPrimary(page, bookUrl, { storyId, variantId: 'one' }, 'preview', { reuseSession: true })).toBeNull()
   const frame = page.frames().find(frame => frame.url().includes('__sandbox.html'))!
   await expect.poll(() => frame.getByText('one:none', { exact: true }).count()).toBe(1)
-  await expect.poll(() => frame.getByText('two:none', { exact: true }).count()).toBe(1)
   const documentId = await page.evaluate('session.getSnapshot().runtime.runtimeId')
 
-  // Handles capture during each initialization. Both callbacks resume after
-  // host changes selected variant, without relying on ambient async ownership.
-  await frame.evaluate(`window.releaseActors={};window.pendingActors=Promise.all(['one','two'].map(id=>channelActors[id].postLater(new Promise(resolve=>releaseActors[id]=resolve))));undefined`)
-  await page.evaluate(`session.selection.select({storyId:${JSON.stringify(storyId)},variantId:'two'})`)
-  await expect.poll(() => page.evaluate('session.getSnapshot().runtime.status')).toBe('ready')
-  await frame.evaluate('(async()=>{releaseActors.one();releaseActors.two();await pendingActors})()')
-  await expect.poll(() => page.evaluate('messages.length')).toBe(2)
-  expect(await page.evaluate('messages.map(message=>message.target.variantId).sort()')).toEqual(['one', 'two'])
-  expect(await page.evaluate(`messages.every(message=>message.runtimeId===${JSON.stringify(documentId)}&&message.target.storyId===${JSON.stringify(storyId)}&&message.data.label===message.target.variantId)`)).toBe(true)
+  // Handle captured during initialization still resumes after an await,
+  // without relying on ambient async ownership.
+  await frame.evaluate(`window.releaseActor=undefined;window.pendingActor=channelActors.one.postLater(new Promise(resolve=>releaseActor=resolve));undefined`)
+  await frame.evaluate('(async()=>{releaseActor();await pendingActor})()')
+  await expect.poll(() => page.evaluate('messages.length')).toBe(1)
+  expect(await page.evaluate(`messages.every(message=>message.runtimeId===${JSON.stringify(documentId)}&&message.target.storyId===${JSON.stringify(storyId)}&&message.target.variantId==='one'&&message.data.label==='one')`)).toBe(true)
 
-  await page.evaluate(`channel.post('host',{value:'selected-two'})`)
-  await expect.poll(() => frame.getByText('two:selected-two', { exact: true }).count()).toBe(1)
-  expect(await frame.getByText('one:none', { exact: true }).count()).toBe(1)
+  await page.evaluate(`channel.post('host',{value:'selected-one'})`)
+  await expect.poll(() => frame.getByText('one:selected-one', { exact: true }).count()).toBe(1)
   expect(await frame.evaluate('window.dormantMessages')).toBeUndefined()
   if (lateChild) {
     await page.evaluate(`channel.post('reveal',null)`)
-    await frame.getByRole('button', { name: 'Late two', exact: true }).click()
+    await frame.getByRole('button', { name: 'Late one', exact: true }).click()
     await expect.poll(() => page.evaluate(`messages.filter(message=>message.type==='late').length`)).toBe(1)
-    expect(await page.evaluate(`messages.find(message=>message.type==='late').target`)).toEqual({ storyId, variantId: 'two' })
-    expect(await frame.getByRole('button', { name: 'Late one', exact: true }).count()).toBe(0)
+    expect(await page.evaluate(`messages.find(message=>message.type==='late').target`)).toEqual({ storyId, variantId: 'one' })
   }
   expect(await page.evaluate('session.getSnapshot().runtime.runtimeId')).toBe(documentId)
   await page.evaluate('primary.unmount()')
@@ -128,7 +122,7 @@ describe('framework-owned story channels', () => {
     finally { await closeMcpFixtures(cleanup) }
   })
 
-  it('captures vanilla mount actor before await and preserves callback origin after selection', async () => {
+  it('captures vanilla mount actor before await and preserves callback origin', async () => {
     const fixture = await createEmbedBridgeFixture({ copiedOutput: true, channels: ['factory'], config: 'storyMatch:[\'*.story.js\'],', files: { 'Channel.story.js': vanillaStory } })
     const page = await fixture.browser.newPage()
     try {

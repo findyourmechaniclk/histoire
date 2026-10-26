@@ -49,7 +49,7 @@ describe('canvas preference ownership', () => {
 
   it('clamps saved zoom and persists preferences without pan or selected target', () => {
     const setItem = vi.fn()
-    const store = createCanvasStore({ storage: { getItem: () => '{"zoom":99,"tool":"pan","measure":true,"frameBackground":"white"}', setItem } })
+    const store = createCanvasStore({ storage: { getItem: () => '{"zoomByArrange":{"grid":99,"list":99,"matrix":99},"tool":"measure","frameBackground":"white"}', setItem } })
     expect(store.zoom).toBe(4)
     expect(store.tool).toBe('measure')
     expect(setItem).not.toHaveBeenCalled()
@@ -70,9 +70,9 @@ describe('canvas preference ownership', () => {
   })
 
   it.each([
-    { saved: { tool: 'select', measure: true }, tool: 'measure' },
-    { saved: { tool: 'pan', measure: false }, tool: 'pan' },
-    { saved: { tool: 'unknown', measure: 'true' }, tool: 'select' },
+    { saved: { tool: 'measure' }, tool: 'measure' },
+    { saved: { tool: 'pan' }, tool: 'pan' },
+    { saved: { tool: 'unknown' }, tool: 'select' },
     { saved: null, tool: 'select' },
   ])('normalizes saved preferences $saved', ({ saved, tool }) => {
     expect(createCanvasStore({ storage: { getItem: () => JSON.stringify(saved), setItem: vi.fn() } }).tool).toBe(tool)

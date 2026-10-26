@@ -22,7 +22,7 @@ describe('vue variant implicit state sync', () => {
   it('seeds hidden mount variants from an implicit state SNAPSHOT', () => {
     // The hidden mount pass must start each variant from its own detached copy
     // of the story-level state, so detected controls and auto-props are
-    // collected deterministically for every grid cell.
+    // collected deterministically for every variant.
     expect(source).toContain('renderContext?.mode !== \'render\' && mountVariant.value && implicitState')
     expect(source).toContain('applyState(mountVariant.value.state, toRawDeep(implicitState()))')
     // A live two-way sync (the previous behavior) made every hidden variant

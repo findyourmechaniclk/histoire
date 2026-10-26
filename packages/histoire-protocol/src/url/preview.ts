@@ -4,10 +4,8 @@ export interface SandboxUrlOptions {
   base: string
   /** Exact collected story identity. */
   storyId: string
-  /** Exact variant identity; omission selects grid view. */
-  variantId?: string
-  /** Explicit grid selection, normally implied by omitted variant. */
-  grid?: boolean
+  /** Exact variant identity. */
+  variantId: string
 }
 
 /** Canonical deployment base must remain on the current origin. */
@@ -22,9 +20,7 @@ export function normalizePreviewBase(value: string): string {
 
 /** Build a relative sandbox URL with exact identities in query parameters. */
 export function getSandboxRelativeUrl(options: SandboxUrlOptions): string {
-  const query = new URLSearchParams({ storyId: options.storyId })
-  if (options.variantId !== undefined) query.set('variantId', options.variantId)
-  if (options.grid ?? options.variantId === undefined) query.set('grid', 'true')
+  const query = new URLSearchParams({ storyId: options.storyId, variantId: options.variantId })
   const base = normalizePreviewBase(options.base)
   return `${base}__sandbox.html?${query}`
 }

@@ -19,5 +19,5 @@ export function getBridgeRequestTimeout(command: HistoireBridgeCommand, payload:
 }
 /** Port authority derives from requested first-party surface, never message hints. */
 export function getBridgeSurfaceRole(surface: string): 'primary' | 'controls' | 'view' {
-  return ['explorer', 'preview', 'grid'].includes(surface) ? 'primary' : surface === 'controls' ? 'controls' : 'view'
+  return ['explorer', 'preview'].includes(surface) ? 'primary' : surface === 'controls' ? 'controls' : 'view'
 }

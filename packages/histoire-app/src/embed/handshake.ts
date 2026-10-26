@@ -88,7 +88,7 @@ export function installEmbedHandshake(sourcePromise: Promise<EmbedSourceConnecti
             }).catch((error) => {
               // Docs/null retires the first promise while the surface stays live.
               if (!(error instanceof HistoireSdkError && error.code === 'RUNTIME_CHANGED') && currentReadiness()) {
-                bridge.post('readiness.changed', { runtime: { status: 'failed', mountId: capture.mountId, runtimeId: capture.runtimeId ?? null, layout: null, viewports: [], viewport: null } }, capture)
+                bridge.post('readiness.changed', { runtime: { status: 'failed', mountId: capture.mountId, runtimeId: capture.runtimeId ?? null, viewports: [], viewport: null } }, capture)
               }
             })
             await instance.ready

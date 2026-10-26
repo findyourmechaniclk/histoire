@@ -33,7 +33,7 @@ function initThreeFieldState() {
 <template>
   <Story
     title="Detected State Pane"
-    :layout="{ type: 'grid', width: 260 }"
+    :layout="{ type: 'grid' }"
   >
     <Variant
       title="single field"

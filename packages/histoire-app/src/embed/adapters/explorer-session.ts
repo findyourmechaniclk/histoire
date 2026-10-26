@@ -29,7 +29,7 @@ export function createExplorerViewSession(context: EmbedSurfaceContext) {
   })
   const session: HistoireSession = { ...context.session, mount(container, { surface }) {
     if (!active) throw new HistoireSdkError('DISPOSED', 'Explorer detached')
-    const isPrimary = ['preview', 'grid'].includes(surface)
+    const isPrimary = surface === 'preview'
     if (surface === 'explorer' || (isPrimary && primary)) throw new HistoireSdkError('RUNTIME_IN_USE', 'Explorer already owns primary runtime')
     const owner = context.bridge.getOwner()
     const snapshot = session.getSnapshot()
@@ -51,7 +51,7 @@ export function createExplorerViewSession(context: EmbedSurfaceContext) {
       if (event.type === 'event') context.bridge.post('events.appended', { items: [event.event] }, identity)
       if (event.type === 'dropped') context.bridge.post('events.appended', { items: [], droppedCount: event.count }, identity)
       // Inner port has validated document/origin actor; outer envelope still
-      // belongs to Explorer's current selection, including non-selected grid actors.
+      // belongs to Explorer's current selection.
       if (event.type === 'channel' && !primaryClosing) context.bridge.post('channel.message', event.message, identity)
       // Frame plugin traffic of the owned primary reaches the outer SDK session the same way.
       if (event.type === 'plugin' && !primaryClosing) context.bridge.post('plugin.message', event.message, identity)
@@ -68,7 +68,7 @@ export function createExplorerViewSession(context: EmbedSurfaceContext) {
     const handle: HistoireMount = { id: mountId, ready: transport.ready.then((runtime) => {
       if (isPrimary && runtime) readyRuntime = runtime
     }),
-    /** Local child close joins actual runtime before allowing grid replacement. */
+    /** Local child close joins actual runtime before allowing primary replacement. */
     unmount() {
       if (closing) return closing
       if (primary === transport) primaryClosing = true
@@ -85,7 +85,7 @@ export function createExplorerViewSession(context: EmbedSurfaceContext) {
             primary = undefined
             primaryClosing = false
             readyRuntime = undefined
-            if (active) context.bridge.post('readiness.changed', { runtime: { status: 'absent', mountId: owner.mountId, runtimeId: null, layout: null, viewports: [], viewport: null } }, { runtimeId: undefined })
+            if (active) context.bridge.post('readiness.changed', { runtime: { status: 'absent', mountId: owner.mountId, runtimeId: null, viewports: [], viewport: null } }, { runtimeId: undefined })
             for (const notify of transitions) notify()
           }
         }

@@ -41,7 +41,7 @@ const emit = defineEmits<{ 'update:modelValue': [value: any] }>()
 </script>
 
 <template>
-  <HstWrapper tag="div" role="group" v-bind="$attrs" :aria-label="$attrs['aria-label'] ?? title" :title="title" :layout="layout" :block="block" class="histoire-button-group">
+  <HstWrapper role="group" v-bind="$attrs" :aria-label="$attrs['aria-label'] ?? title" :title="title" :layout="layout" :block="block" class="histoire-button-group">
     <div ref="choices" class="histoire-button-group-options" :class="classes?.options" :data-block="block || undefined">
       <HstButton v-for="(option, index) in options" :key="index" :class="classes?.option" color="flat" :disabled="disabled || option.disabled" :aria-label="option.label" :title="option.label" :aria-pressed="Object.is(option.value, modelValue)" @click="!disabled && !option.disabled && emit('update:modelValue', option.value)">
         {{ option.label }}

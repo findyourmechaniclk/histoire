@@ -55,7 +55,7 @@ export function createTailwindStory(snapshot: TailwindSnapshot, EmptyState: any)
     group: 'design-system',
     icon: 'mdi:tailwind',
     responsiveDisabled: true,
-    layout: { type: 'single', iframe: true },
+    layout: { type: 'single' },
     variants: [
       ...snapshot.categories.map((category) => {
         // These immutable projections belong to category metadata, not render/update work.

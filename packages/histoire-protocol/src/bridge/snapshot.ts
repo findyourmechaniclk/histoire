@@ -26,10 +26,9 @@ export function validateHistoireRuntimeSnapshot(value: unknown): HistoireRuntime
   for (const key of ['mountId', 'runtimeId']) {
     if (!(input[key] === null || wireId(input[key]))) invalid('Invalid runtime owner')
   }
-  if (!(input.layout === null || ['single', 'grid'].includes(input.layout as string))) invalid('Invalid runtime layout')
   validateHistoireViewports(input.viewports)
   if (input.viewport !== null) validateHistoireViewports([input.viewport])
-  if (input.status === 'ready' && (!wireId(input.mountId) || !wireId(input.runtimeId) || input.layout === null)) invalid('Ready runtime requires owner')
+  if (input.status === 'ready' && (!wireId(input.mountId) || !wireId(input.runtimeId))) invalid('Ready runtime requires owner')
   return input as unknown as HistoireRuntimeSnapshot
 }
 

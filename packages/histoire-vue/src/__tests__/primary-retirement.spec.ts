@@ -27,7 +27,7 @@ afterEach(() => vi.unstubAllGlobals())
 async function createPrimary(closing?: Promise<void>, standalone = false) {
   const fixture = sourceFixture()
   fixture.descriptor.config = { title: 'Book', autoApplyContrastColor: false, theme: { defaultColorScheme: 'light', darkClass: 'dark' }, responsivePresets: [], backgroundPresets: [], storyCollectTimeout: 1000 }
-  const unregister = registerEmbedSurface('preview', context => createEmbedRuntimeFrame(context, 'single'))
+  const unregister = registerEmbedSurface('preview', context => createEmbedRuntimeFrame(context))
   const adapters = { ...fixture.adapters, mount: vi.fn((context) => {
     const transport = mountLocalHistoireSurface(context, 'https://book.example/')
     if (!closing) return transport

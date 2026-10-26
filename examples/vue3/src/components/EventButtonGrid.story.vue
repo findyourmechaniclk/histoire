@@ -6,7 +6,7 @@ import EventButton from './EventButton.vue'
 <template>
   <Story
     title="events/EventButtonGrid"
-    :layout="{ type: 'grid', width: 500 }"
+    :layout="{ type: 'grid' }"
   >
     <Variant
       v-for="n in 9"

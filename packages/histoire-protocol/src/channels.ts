@@ -12,7 +12,7 @@ export interface HistoireHostChannelPayload {
   data: HistoireJsonValue
 }
 
-/** Exact originating actor, including non-selected cells of current grid. */
+/** Exact originating actor. */
 export interface HistoireHostChannelMessage extends HistoireHostChannelPayload {
   /** Actual runtime document, never a WindowProxy identity. */
   runtimeId: string

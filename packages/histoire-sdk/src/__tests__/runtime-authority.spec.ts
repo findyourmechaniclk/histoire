@@ -9,7 +9,7 @@ const owner: HistoireBridgeIdentity = { protocolVersion: 1, sessionId: 'session'
 
 /** Portable lifecycle publication retains the failing document's identity. */
 function runtime(status: HistoireRuntimeSnapshot['status'], runtimeId = owner.runtimeId!): HistoireRuntimeSnapshot {
-  return { status, mountId: owner.mountId, runtimeId, layout: 'single', viewports: [], viewport: null }
+  return { status, mountId: owner.mountId, runtimeId, viewports: [], viewport: null }
 }
 
 describe('primary document authority', () => {

@@ -51,8 +51,7 @@ The Vue-free canonical collection/helper lives in
 `packages/histoire-shared/src/icons/`, exposed through
 `@histoire/shared/dist/icons/index.js`. `BuiltinIcon` uses this shared data and
 registers the collection for user stories that import Iconify directly. The
-workbench utility retains compatibility exports, and legacy MDI, Fluent, and
-Remix first-party names resolve to Carbon aliases. User-authored story
+workbench utility retains compatibility exports. User-authored story
 components keep their own icon integrations.
 
 Add glyphs to `packages/histoire-shared/src/icons/icon-names.json`, then run
@@ -110,8 +109,7 @@ pnpm --filter histoire exec vitest run src/node/__tests__/workbench-theme.spec.t
 ```
 
 These tests cover default/custom font variables, color channels and alpha,
-semantic accent mapping, all bundled glyphs with networking unavailable, and
-legacy alias resolution. Font asset packaging and browser layout are verified
+semantic accent mapping, and all bundled glyphs with networking unavailable. Font asset packaging and browser layout are verified
 through the app build and example browser validation.
 
 ## Tailwind v4 theme

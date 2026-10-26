@@ -102,18 +102,6 @@ describe('aCP field-level project overrides', () => {
     expect(JSON.parse(await readFile(join(root, 'user/agents.json'), 'utf8')).projects[root].presets).toBeUndefined()
   })
 
-  it('preserves ambiguous legacy custom commands and explicit policy until verified path retirement', async () => {
-    const { root } = await configTestProject()
-    const file = join(root, 'agents.json')
-    const settings = { enabled: false, enabledIds: [], presets: [{ id: 'custom', name: 'Legacy', command: 'legacy-command' }], permissions: { fileEdits: 'never', terminal: 'ask' }, context: { exposeMcp: false, attachScreenshot: true, includeSource: true, askEachTime: true } }
-    await writeFile(file, JSON.stringify({ version: 1, projects: { [root]: settings }, env: { custom: { TOKEN: 'legacy-private' } } }))
-    const manager = testAgentManager({ root, dataFile: file, config: { presets: [{ id: 'project', name: 'Project', command: 'project-command' }], permissions: { fileEdits: 'allow-src', terminal: 'never' } } })
-    await manager.ready
-    expect(manager.snapshot()).toMatchObject(settings)
-    await manager.resetProjectOverrides(['agents.presets'])
-    expect(manager.snapshot()).toMatchObject({ presets: [{ id: 'project' }], permissions: settings.permissions, context: settings.context })
-    expect(JSON.parse(await readFile(file, 'utf8')).env.custom.TOKEN).toBe('legacy-private')
-  })
   it('round-trips registry/model/effort defaults through project save and reset without moving credentials', async () => {
     const { root, manager } = await fakeManager('normal', false)
     await manager.ready

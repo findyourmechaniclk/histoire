@@ -1,7 +1,7 @@
 /**
  * Emits the inbound `message` listener installed by the preview app: the
  * origin/source guard followed by the dispatch over PREVIEW_SYNC, STATE_SYNC,
- * PREVIEW_SETTINGS_SYNC, SELECT_VARIANT, COLLECT_TESTS and RUN_TESTS.
+ * PREVIEW_SETTINGS_SYNC, COLLECT_TESTS and RUN_TESTS.
  *
  * Emitted at the indentation of the app `setup()` body — it is spliced inside
  * it by {@link previewApp}.
@@ -69,7 +69,7 @@ export function previewMessageHandler() {
           return
         }
         // Reload can restore the URL's same actor after its initial ready event.
-        if (!initialSelection.controls && !selection.grid && currentVariant && variant.value === currentVariant && frameworkReadyVariants.has(currentVariant)) {
+        if (!initialSelection.controls && currentVariant && variant.value === currentVariant && frameworkReadyVariants.has(currentVariant)) {
           await markVariantReady(currentVariant.id)
           if (selectionToken !== syncedToken) return
         }
@@ -98,20 +98,9 @@ export function previewMessageHandler() {
       }
       else if (event.data?.type === PREVIEW_SETTINGS_SYNC) {
         applyPreviewSettings(event.data.settings)
-        if (selection.grid) {
-          Object.assign(previewSettingsStore.currentSettings, event.data.settings)
-        }
       }
       else if (event.data?.type === RUNTIME_REQUEST) {
         await handleRuntimeRequest(event.data)
-      }
-      else if (event.data?.type === SELECT_VARIANT) {
-        if (event.data.selectionVersion !== undefined) {
-          if (!Number.isSafeInteger(event.data.selectionVersion) || event.data.selectionVersion < 0 || (gridSelectionVersion !== undefined && event.data.selectionVersion < gridSelectionVersion)) return
-          gridSelectionVersion = event.data.selectionVersion
-          previewSelectionVersion = event.data.selectionVersion
-        }
-        gridSelectedVariantId.value = event.data.variantId
       }
       else if (event.data?.type === HOST_CHANNEL_MESSAGE && event.data.plugin !== undefined) {
         // Plugin traffic addresses one actor by id, never the selected variant.
@@ -148,7 +137,7 @@ export function previewMessageHandler() {
         }
 
         // Capture the selection synchronously. The await below can span a
-        // SELECT_VARIANT/PREVIEW_SYNC message that flips story/variant, so
+        // PREVIEW_SYNC message that flips story/variant, so
         // re-reading story.value/variant.value afterwards would tag the reply
         // with the variant we did NOT collect. The host matches replies by this
         // key against its pending request and drops mismatches — a stale key

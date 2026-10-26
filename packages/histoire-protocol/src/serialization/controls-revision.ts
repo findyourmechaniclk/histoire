@@ -3,7 +3,7 @@ import { HistoireSdkError } from '../types/error.js'
 /** One controls document owns revision counter; source wrapper keeps admitted watermark. */
 export function createControlsStateRevision() {
   let revision = 0
-  /** Optional legacy field remains valid; present revisions must be finite counters. */
+  /** Optional field (primary frames omit it); present revisions must be finite counters. */
   function valid(value: unknown): value is number {
     return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0
   }

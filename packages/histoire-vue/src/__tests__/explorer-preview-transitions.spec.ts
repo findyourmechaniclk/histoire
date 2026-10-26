@@ -1,7 +1,7 @@
 import { createHistoireSessionWithAdapters } from '@histoire/sdk/internal'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
-import { h, nextTick } from 'vue'
+import { h, nextTick, ref } from 'vue'
 import { deferred, sourceFixture } from '../../../histoire-sdk/src/__tests__/fixtures/session.js'
 import { ExplorerPreview } from '../components/explorer/ExplorerPreview.js'
 import { HistoireProvider } from '../provider/HistoireProvider.js'
@@ -15,11 +15,16 @@ describe('explorer teardown transition ownership', () => {
     await session.selection.select(target)
     const closed = deferred<void>()
     const errors: unknown[] = []
-    const wrapper = mount(HistoireProvider, { props: { session, onError: error => errors.push(error) }, slots: { default: () => h(ExplorerPreview) } })
+    const active = ref(true)
+    const wrapper = mount(HistoireProvider, { props: { session, onError: error => errors.push(error) }, slots: { default: () => h(ExplorerPreview, { active: active.value }) } })
     try {
       await vi.waitFor(() => expect(session.getSnapshot().runtime.status).toBe('ready'))
       fixture.surfaceClose.mockImplementationOnce(() => closed.promise)
-      await wrapper.get('[aria-label="Show variant grid"]').trigger('click')
+      // Deactivating starts primary teardown; reactivation must join it.
+      active.value = false
+      await nextTick()
+      active.value = true
+      await nextTick()
       await session.selection.select({ storyId: 'docs' })
       await nextTick()
       if (returnBeforeClose) {
@@ -39,7 +44,7 @@ describe('explorer teardown transition ownership', () => {
       expect(session.getSnapshot().selection).toEqual(target)
       expect(fixture.adapters.mount).toHaveBeenCalledTimes(2)
       expect(fixture.surfaceClose).toHaveBeenCalledOnce()
-      expect(() => session.mount(document.createElement('div'), { surface: 'grid' })).toThrow(expect.objectContaining({ code: 'RUNTIME_IN_USE' }))
+      expect(() => session.mount(document.createElement('div'), { surface: 'preview' })).toThrow(expect.objectContaining({ code: 'RUNTIME_IN_USE' }))
       expect(errors).toEqual([])
     }
     finally {

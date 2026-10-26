@@ -9,8 +9,6 @@ export interface RuntimeFrameUrlOptions {
   documentId: string
   /** Selection generation acknowledged by the document. */
   selectionVersion: number
-  /** Grid presentation of the runtime frame. */
-  grid: boolean
   /** Standalone workbench host, which forwards its own base presentation flags. */
   standalone?: boolean
 }
@@ -30,7 +28,6 @@ function createSandboxUrl(base: string | URL, target: HistoireTarget) {
  */
 export function createRuntimeFrameUrl(base: URL, options: RuntimeFrameUrlOptions): string {
   const url = createSandboxUrl(base, options.target)
-  url.searchParams.set('grid', String(options.grid))
   url.searchParams.set('documentId', options.documentId)
   url.searchParams.set('selectionVersion', String(options.selectionVersion))
   url.searchParams.set('embed', 'true')

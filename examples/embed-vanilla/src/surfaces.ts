@@ -57,7 +57,7 @@ export function connectDemo(url: string, mode: string, container: HTMLElement, r
           const column = document.createElement('article')
           container.append(column)
           subscriptions.push(addSelection(column, current, report))
-          for (const name of ['toolbar', 'search', 'tree', index ? 'grid' : 'preview', 'controls', 'docs', 'source', 'events', 'tests'] as const) surface(current, column, name)
+          for (const name of ['toolbar', 'search', 'tree', 'preview', 'controls', 'docs', 'source', 'events', 'tests'] as const) surface(current, column, name)
         }
       }
       else {

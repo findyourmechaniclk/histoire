@@ -11,11 +11,10 @@ describe('workbench public config', () => {
     expect(output).toContain('agent')
   })
 
-  it('omits agent launch settings and comments paths from static client modules', () => {
-    const ctx = { mode: 'build', config: { agents: { enabled: true, presets: [{ command: 'private-command' }] }, comments: { file: 'private-comments.json' }, ui: { frameBudget: 12 } } } as Context
+  it('omits agent launch settings from static client modules', () => {
+    const ctx = { mode: 'build', config: { agents: { enabled: true, presets: [{ command: 'private-command' }] }, ui: { frameBudget: 12 } } } as Context
     const output = resolvedConfig(ctx)
     expect(output).not.toContain('private-command')
-    expect(output).not.toContain('private-comments')
     expect(output).toContain('"frameBudget":12')
   })
 

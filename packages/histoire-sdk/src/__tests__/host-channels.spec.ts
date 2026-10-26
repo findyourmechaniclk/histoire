@@ -10,7 +10,7 @@ it('keeps handle and subscriptions during grid selection that retains actual own
   const session = createHistoireSessionWithAdapters({ url: 'https://book.test/' }, fixture.adapters)
   await session.connect()
   await session.selection.select({ storyId: 'a:b', variantId: 'c' })
-  await session.mount({} as HTMLElement, { surface: 'grid' }).ready
+  await session.mount({} as HTMLElement, { surface: 'preview' }).ready
   const channel = session.channels.open('factory')
   const received = vi.fn()
   channel.subscribe(received)
@@ -67,7 +67,7 @@ it('requires explicitly enabled names and ready primary, never queues a post', a
   await expect(channel.post('pick', null)).rejects.toMatchObject({ code: 'PREVIEW_NOT_READY' })
   expect(() => enabled.channels.open('other')).toThrowError(expect.objectContaining({ code: 'CAPABILITY_UNAVAILABLE' }))
   await enabled.selection.select({ storyId: 'a:b', variantId: 'c' })
-  await enabled.mount({} as HTMLElement, { surface: 'grid' }).ready
+  await enabled.mount({} as HTMLElement, { surface: 'preview' }).ready
   fixture.request.mockImplementation(async () => null)
   await channel.post('pick', { command: 'selection.select' })
   expect(fixture.request).toHaveBeenLastCalledWith('channel.post', { name: 'factory', type: 'pick', data: { command: 'selection.select' } }, expect.objectContaining({ runtimeId: 'document-1', target: { storyId: 'a:b', variantId: 'c' } }))
@@ -80,7 +80,7 @@ it('preserves grid origin, isolates subscribers, drops stale traffic and pending
   const session = createHistoireSessionWithAdapters({ url: 'https://book.test/' }, fixture.adapters)
   await session.connect()
   await session.selection.select({ storyId: 'a:b', variantId: 'c' })
-  await session.mount({} as HTMLElement, { surface: 'grid' }).ready
+  await session.mount({} as HTMLElement, { surface: 'preview' }).ready
   const channel = session.channels.open('factory')
   const received = vi.fn()
   channel.subscribe(() => {
@@ -110,7 +110,7 @@ it('observes asynchronous listener failures without charging a replacement runti
   const session = createHistoireSessionWithAdapters({ url: 'https://book.test/' }, fixture.adapters)
   await session.connect()
   await session.selection.select({ storyId: 'a:b', variantId: 'c' })
-  await session.mount({} as HTMLElement, { surface: 'grid' }).ready
+  await session.mount({} as HTMLElement, { surface: 'preview' }).ready
   const channel = session.channels.open('factory')
   const late = deferred<void>()
   channel.subscribe(async () => {
@@ -141,7 +141,7 @@ it('shares rate budgets across handles and channel names and rejects malformed i
   const session = createHistoireSessionWithAdapters({ url: 'https://book.test/' }, fixture.adapters)
   await session.connect()
   await session.selection.select({ storyId: 'a:b', variantId: 'c' })
-  await session.mount({} as HTMLElement, { surface: 'grid' }).ready
+  await session.mount({} as HTMLElement, { surface: 'preview' }).ready
   fixture.request.mockImplementation(async () => null)
   const channels = [session.channels.open('factory'), session.channels.open('other')]
   const received = vi.fn()

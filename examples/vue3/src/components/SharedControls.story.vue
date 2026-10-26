@@ -26,7 +26,7 @@ defineExpose({
   <Story
     :meta="{ wrapper: false }"
     title="Variant-scoped Controls"
-    :layout="{ type: 'grid', width: 280 }"
+    :layout="{ type: 'grid' }"
   >
     <template #controls>
       <HstText

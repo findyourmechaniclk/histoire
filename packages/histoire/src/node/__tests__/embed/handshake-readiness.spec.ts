@@ -26,7 +26,7 @@ async function createHandshake() {
     removeEventListener: events.removeEventListener.bind(events),
   } as unknown as Window
   /** Each document status carries exact current mount identity. */
-  const runtime = (runtimeId: string | null, status: HistoireRuntimeSnapshot['status']): HistoireRuntimeSnapshot => ({ status, runtimeId, mountId: 'mount', layout: 'single', viewports: [], viewport: null })
+  const runtime = (runtimeId: string | null, status: HistoireRuntimeSnapshot['status']): HistoireRuntimeSnapshot => ({ status, runtimeId, mountId: 'mount', viewports: [], viewport: null })
   const unregister = registerEmbedSurface('preview', (value) => {
     context = value
     value.bridge.post('readiness.changed', { runtime: runtime('document-1', 'mounting') }, { runtimeId: 'document-1', target: value.session.getSnapshot().selection! })

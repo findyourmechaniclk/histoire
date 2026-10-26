@@ -10,7 +10,7 @@ import { invalid, wireId, wireRecord } from './validation.js'
 const operations = ['catalog', 'search', 'docs', 'rawSource', 'dynamicSource', 'state', 'customControls', 'previewTests', 'serverTests', 'openInEditor', 'hostChannels']
 /** Optional operation keys; absent in legacy descriptors. */
 const optionalOperations = ['framePlugins']
-const surfaces = ['explorer', 'preview', 'grid', 'tree', 'search', 'toolbar', 'controls', 'docs', 'source', 'events', 'tests']
+const surfaces = ['explorer', 'preview', 'tree', 'search', 'toolbar', 'controls', 'docs', 'source', 'events', 'tests']
 
 /** Validates complete availability maps before framework/UI code consumes them. */
 export function validateHistoireCapabilities(value: unknown): void {
@@ -64,7 +64,7 @@ export function validateHistoireCatalogStory(value: unknown): HistoireCatalogSto
   if (input.hasCustomControls !== undefined && typeof input.hasCustomControls !== 'boolean') invalid('Invalid custom controls availability')
   if (input.layout !== undefined) {
     const layout = wireRecord(input.layout)
-    if (!['single', 'grid'].includes(layout.type as string) || (layout.iframe !== undefined && typeof layout.iframe !== 'boolean')) invalid('Invalid story layout')
+    if (!['single', 'grid'].includes(layout.type as string)) invalid('Invalid story layout')
   }
   if (input.matrix !== undefined) {
     const axes = wireRecord(wireRecord(input.matrix).axes)

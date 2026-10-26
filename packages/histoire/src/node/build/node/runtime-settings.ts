@@ -20,12 +20,3 @@ export async function resolveBuildBrowserDriver(root: string): Promise<NodeArtif
   }
   return { packageName: result.identity.packageName, version: result.identity.version }
 }
-
-/**
- * Compatibility projection for callers that only need the legacy Playwright version.
- * @param root Project root used by shared browser-driver resolution.
- */
-export async function resolveBuildPlaywrightVersion(root: string): Promise<string | undefined> {
-  const browserDriver = await resolveBuildBrowserDriver(root)
-  return browserDriver?.packageName === 'playwright' ? browserDriver.version : undefined
-}

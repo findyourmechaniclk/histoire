@@ -16,7 +16,6 @@ app.use(FloatingVue, {
 app.mount(root)
 
 watch(isDark, value => {
-  document.documentElement.classList.toggle(histoireConfig.sandboxDarkClass, value)
   document.documentElement.classList.toggle(histoireConfig.theme.darkClass, value)
 }, {
   immediate: true,

@@ -56,7 +56,7 @@ export interface HistoireCatalogStory {
   /** Standalone documentation story. */
   docsOnly: boolean
   /** Preview layout advertised by source. */
-  layout?: { type: 'single' | 'grid', iframe?: boolean }
+  layout?: { type: 'single' | 'grid' }
   /** Explicit layout declaration, absent on older sources. */
   layoutExplicit?: boolean
   /** Finite prop domains for two-axis preview matrices. */

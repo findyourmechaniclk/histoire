@@ -21,15 +21,7 @@ export function finalizeCollectedStoryFile(storyFile: ServerStoryFile, ctx: Cont
   // Finalization can repeat; its own fallback must never become an author declaration.
   storyData.layoutExplicit ??= !!storyData.layout
 
-  if (!storyData.layout) {
-    storyData.layout = { type: 'single', iframe: true }
-  }
-  else if (storyData.layout.type === 'single' && storyData.layout.iframe !== true) {
-    storyData.layout = {
-      ...storyData.layout,
-      iframe: true,
-    }
-  }
+  storyData.layout ??= { type: 'single' }
 
   storyFile.id = storyData.id
   storyFile.story = storyData

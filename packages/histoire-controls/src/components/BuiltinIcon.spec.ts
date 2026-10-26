@@ -60,15 +60,6 @@ describe('builtin icon', () => {
     }
   })
 
-  it('renders legacy aliases through the bundled Carbon glyph data', () => {
-    const alias = mount(BuiltinIcon, { props: { icon: 'mdi:drag-vertical-variant' } })
-    const canonical = mount(BuiltinIcon, { props: { icon: 'draggable' } })
-
-    expect(alias.element.innerHTML).toBe(canonical.element.innerHTML)
-    alias.unmount()
-    canonical.unmount()
-  })
-
   it('delegates other namespaced identifiers to Iconify', () => {
     const wrapper = mount(BuiltinIcon, {
       props: { icon: 'noto:paintbrush', size: '1.5em' },

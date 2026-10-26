@@ -13,10 +13,7 @@ function initState() {
   <Story
     title="HstText"
     group="controls"
-    :layout="{
-      type: 'grid',
-      width: '100%',
-    }"
+    :layout="{ type: 'grid' }"
   >
     <Variant
       title="default"

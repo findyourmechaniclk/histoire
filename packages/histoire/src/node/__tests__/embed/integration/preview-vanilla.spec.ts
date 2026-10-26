@@ -12,11 +12,11 @@ function variant(id,count){return{id,title:id,onMount({el,state,onUpdate,onUnmou
   const click=()=>state.increment();button.addEventListener('click',click);el.append(button);update()
   onUpdate(update);onUnmount(()=>button.removeEventListener('click',click))
 }}}
-export default{id:'vanilla',title:'Vanilla runtime',layout:{type:'grid',width:250},variants:[variant('one',3),variant('two',4)]}
+export default{id:'vanilla',title:'Vanilla runtime',layout:{type:'grid'},variants:[variant('one',3),variant('two',4)]}
 `
 
 describe('built-in vanilla runtime embeddability', () => {
-  it.each(['dev', 'static'] as const)('keeps data lazy and canonical grid callbacks isolated in %s', async (mode) => {
+  it.each(['dev', 'static'] as const)('keeps data lazy and canonical callbacks isolated in %s', async (mode) => {
     const fixture = await createEmbedBridgeFixture({ mode, copiedOutput: mode === 'static', config: 'storyMatch:[\'*.story.js\'],', files: { 'Native.story.js': vanilla } })
     // Slow runners can finish cold dev optimization after mount readiness and
     // retire the session mid-test; a separate page settles it first.
@@ -34,7 +34,7 @@ describe('built-in vanilla runtime embeddability', () => {
       await page.evaluate('session.selection.select({storyId:"vanilla",variantId:"one"})')
       let runtime: typeof bridge
       try {
-        await page.evaluate('window.primary=session.mount(document.querySelector("#mount"),{surface:"grid"});primary.ready')
+        await page.evaluate('window.primary=session.mount(document.querySelector("#mount"),{surface:"preview"});primary.ready')
         runtime = page.frames().find(frame => frame.url().includes('__sandbox.html'))!
         await expect.poll(() => runtime.getByRole('button', { name: 'one:3', exact: true }).count()).toBe(1)
       }
@@ -45,33 +45,25 @@ describe('built-in vanilla runtime embeddability', () => {
         // explicitly closes retired resources before requesting a new session.
         await page.evaluate('session.dispose()')
         expect(await page.locator('iframe').count()).toBe(0)
-        expect(await attemptEmbedPrimary(page, fixture.bookUrl, { storyId: 'vanilla', variantId: 'one' }, 'grid')).toBeNull()
+        expect(await attemptEmbedPrimary(page, fixture.bookUrl, { storyId: 'vanilla', variantId: 'one' }, 'preview')).toBeNull()
         runtime = page.frames().find(frame => frame.url().includes('__sandbox.html'))!
         await expect.poll(() => runtime.getByRole('button', { name: 'one:3', exact: true }).count()).toBe(1)
       }
-      expect(await runtime.getByRole('button', { name: 'two:4', exact: true }).count()).toBe(1)
-      const documentId = await page.evaluate('session.getSnapshot().runtime.runtimeId')
-      // Hold actual child intents so host can change selection before delivery.
-      await runtime.evaluate(`window.deferredSelections=[];window.sendSelection=window.parent.postMessage.bind(window.parent);window.parent.postMessage=(message,...args)=>{if(message.type==='__histoire:select-variant')deferredSelections.push([message,...args]);else sendSelection(message,...args)}`)
       await page.evaluate('session.state.patch({count:7,increment:"invalid wire replacement"})')
       await runtime.getByRole('button', { name: 'one:7', exact: true }).click()
       await expect.poll(() => runtime.getByRole('button', { name: 'one:9', exact: true }).count()).toBe(1)
-      expect(await runtime.getByRole('button', { name: 'two:4', exact: true }).count()).toBe(1)
       await page.evaluate('session.state.reset()')
       await runtime.getByRole('button', { name: 'one:3', exact: true }).click()
       await expect.poll(() => runtime.getByRole('button', { name: 'one:5', exact: true }).count()).toBe(1)
-      expect(await runtime.evaluate('deferredSelections.length')).toBe(0)
-      await runtime.getByRole('button', { name: 'two:4', exact: true }).click()
-      expect(await runtime.evaluate('deferredSelections.length')).toBe(1)
-      await page.evaluate('(async()=>{await session.selection.select({storyId:"vanilla",variantId:"two"});await session.selection.select({storyId:"vanilla",variantId:"one"})})()')
-      await runtime.evaluate('for(const selection of deferredSelections)sendSelection(...selection);deferredSelections=[];window.parent.postMessage=sendSelection')
       const retained = await page.evaluate('session.state.get()')
       expect(retained.target).toEqual({ storyId: 'vanilla', variantId: 'one' })
       expect(retained.value.count).toBe(5)
+      // Another variant gets its own document with its own canonical callbacks.
       await page.evaluate('(async()=>{await session.selection.select({storyId:"vanilla",variantId:"two"});await session.state.patch({count:8})})()')
-      await expect.poll(() => runtime.getByRole('button', { name: 'two:8', exact: true }).count()).toBe(1)
-      expect(await runtime.getByRole('button', { name: 'one:5', exact: true }).count()).toBe(1)
-      expect(await page.evaluate('session.getSnapshot().runtime.runtimeId')).toBe(documentId)
+      const second = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('variantId') === 'two')
+      await expect.poll(() => second()?.getByRole('button', { name: 'two:8', exact: true }).count()).toBe(1)
+      await second()!.getByRole('button', { name: 'two:8', exact: true }).click()
+      await expect.poll(() => second()?.getByRole('button', { name: 'two:10', exact: true }).count()).toBe(1)
       expect(await page.evaluate('window.__VANILLA_IMPORTS__')).toBeUndefined()
       await page.evaluate('session.dispose()')
       await expect.poll(() => page.locator('iframe').count()).toBe(0)

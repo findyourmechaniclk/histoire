@@ -77,7 +77,7 @@ export async function setupNuxtApp(publicConfig: PublicRuntimeConfig, setupApi?:
     if (syncColorMode) setupApi.onDarkChange?.(dark => syncColorMode(dark, colorModeState?.()))
     if (integrations.uiApp) setupApi.addWrapper?.(createUiAppWrapper(integrations.uiApp), { controls: false })
     // These are Nuxt's own plugin/app services; reuse them rather than mounting
-    // its memoized #app/entry root, which shares useState across grid cells.
+    // its memoized #app/entry root, which shares useState across mounted variants.
     // @ts-expect-error Nuxt consumer aliases resolve portable setup at runtime.
     const { createNuxtApp, applyPlugins, getNuxtAppCtx } = await import('#app/nuxt')
     // @ts-expect-error Generated consumer plugin inventory.

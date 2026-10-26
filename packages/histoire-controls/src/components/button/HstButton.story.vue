@@ -12,7 +12,7 @@ const variants: Array<{ name: string, bind?: unknown }> = [
   <Story
     title="HstButton"
     group="controls"
-    :layout="{ type: 'grid', width: '200px' }"
+    :layout="{ type: 'grid' }"
   >
     <Variant
       v-for="(variant, key) of variants"

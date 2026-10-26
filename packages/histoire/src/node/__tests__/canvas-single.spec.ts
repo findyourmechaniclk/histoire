@@ -17,7 +17,7 @@ describe('single variant geometry and camera', () => {
 
   it('fits oversized Single viewports without changing logical dimensions or camera pan', () => {
     const storage = memoryStorage()
-    storage.setItem('_histoire-ui-canvas', JSON.stringify({ version: 2, zoomByArrange: { grid: 0.5, list: 'selection', matrix: 'fit', single: 2 } }))
+    storage.setItem('_histoire-ui-canvas', JSON.stringify({ version: 3, zoomByArrange: { grid: 0.5, list: 'selection', matrix: 'fit' } }))
     const canvas = createCanvasStore({ storage })
     const offset = { ...canvas.panOffset }
     canvas.setArrangement('single')
@@ -45,9 +45,9 @@ describe('single variant geometry and camera', () => {
     expect(canvas.panOffset).toEqual(offset)
   })
 
-  it('remembers independent Single manual zoom and migrates old forced zoom to Fit', () => {
+  it('remembers independent Single manual zoom', () => {
     const storage = memoryStorage()
-    storage.setItem('_histoire-ui-canvas', JSON.stringify({ version: 2, zoomByArrange: { single: 1, list: 'fit' } }))
+    storage.setItem('_histoire-ui-canvas', JSON.stringify({ version: 3, zoomByArrange: { list: 'fit' } }))
     const canvas = createCanvasStore({ storage })
     expect(canvas.zoomByArrange.single).toBe('fit')
     expect(canvas.zoomByArrange.list).toBe('fit')

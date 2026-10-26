@@ -34,7 +34,7 @@ describe('canonical runtime digest projection', () => {
     expect(fixture.catalog.current.catalog.stories.find(story => story.id === fixture.story.story.id)!.runtimeRevision).toBe(firstDigest)
     expect(fixture.catalog.current.catalog.stories.find(story => story.id === 'second')!.runtimeRevision).not.toBe(secondDigest)
     const changedSource = fixture.catalog.current.catalog.stories.find(story => story.id === 'second')!.runtimeRevision
-    second.story.layout = { type: 'grid', width: 500 }
+    second.story.layout = { type: 'grid' }
     await fixture.catalog.publish(fixture.context)
     const changedLayout = fixture.catalog.current.catalog.stories.find(story => story.id === 'second')!.runtimeRevision
     expect(changedLayout).not.toBe(changedSource)
@@ -80,14 +80,14 @@ describe('canonical runtime digest projection', () => {
   })
 
   it('detaches layout and matrix metadata when publication is queued', async () => {
-    const layout = { type: 'grid' as const, width: 100 }
+    const layout: { type: 'single' | 'grid' } = { type: 'grid' }
     const values = ['sm']
     fixture.story.story.layout = layout
     fixture.story.story.matrix = { axes: { size: values } }
     await fixture.catalog.publish(fixture.context)
     const initial = fixture.catalog.current.catalog.stories[0].runtimeRevision
     const pending = fixture.catalog.publish(fixture.context)
-    layout.width = 200
+    layout.type = 'single'
     values.push('lg')
     await pending
     expect(fixture.catalog.current.catalog.stories[0].runtimeRevision).toBe(initial)

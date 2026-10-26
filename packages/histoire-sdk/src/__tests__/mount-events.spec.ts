@@ -9,7 +9,7 @@ describe('retained event surface stream', () => {
     const session = createHistoireSessionWithAdapters({ url: 'https://book.test/' }, fixture.adapters)
     await session.connect()
     await session.selection.select({ storyId: 'a:b', variantId: 'c' })
-    const primary = session.mount({} as any, { surface: 'grid' })
+    const primary = session.mount({} as any, { surface: 'preview' })
     await primary.ready
     for (let index = 0; index < 70; index++) fixture.emitEvent(index)
     const publish = vi.fn()
@@ -33,7 +33,7 @@ describe('retained event surface stream', () => {
     const session = createHistoireSessionWithAdapters({ url: 'https://book.test/' }, fixture.adapters)
     await session.connect()
     await session.selection.select({ storyId: 'a:b', variantId: 'c' })
-    await session.mount({} as any, { surface: 'grid' }).ready
+    await session.mount({} as any, { surface: 'preview' }).ready
     const listener = vi.fn()
     const stop = session.events.subscribe(listener)
     const event = { sequence: 1, timestamp: 1, target: { storyId: 'a:b', variantId: 'other' }, runtimeId: 'document-1', payload: { name: 'other', argument: { count: 1 } } }

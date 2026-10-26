@@ -8,7 +8,6 @@ import type { UiChannelClient, UiChannelServer } from './types.js'
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 import { isPinnedThread } from '@histoire/shared'
-import { CommentsMigrationError, migrateComments } from '../../ai-threads/migrate-comments.js'
 import { aiProjectContext } from '../../ai-threads/project-context.js'
 import { aiThreadContext, aiThreadPrompt, commentAgentContext, commentPrompt } from '../../ai-threads/prompt.js'
 import { aiThreadsCodec, THREADS_FILE, validateAiThreadDraft } from '../../ai-threads/validate.js'
@@ -54,7 +53,6 @@ export function aiThreadsSnapshotParts(threads: UiAiThread[], enabled: boolean, 
 /**
  * Register development-only conversations persisted in `.histoire/threads.json`: free-form
  * AI threads and pinned threads (canvas comments), with their file search and upload routes.
- * Legacy `comments.json` content is imported once before the first snapshot.
  * @param ctx Dev context.
  * @param channel UI channel.
  * @param agents ACP bridge.
@@ -65,8 +63,6 @@ export function registerAiThreadsChannel(ctx: Context, channel: UiChannelServer,
   const enabled = ctx.mode === 'dev'
   const pinsEnabled = enabled && ctx.config.comments?.enabled !== false
   let closed = false
-  /** Controlled import failure shown with every ready snapshot; threads stay usable. */
-  let migrationNotice: string | undefined
   const running = new Set<string>()
   /** Publish complete snapshots to one client or all. */
   function send(threads: UiAiThread[], client?: UiChannelClient, error?: string, requestId?: string) {
@@ -77,14 +73,8 @@ export function registerAiThreadsChannel(ctx: Context, channel: UiChannelServer,
   const store = createCommentsStore({ root: ctx.root, file: THREADS_FILE, enabled, codec: aiThreadsCodec, validateDraft: validateAiThreadDraft, changed: threads => send(threads) })
   const index = createProjectFileIndex(ctx.root)
   if (server && enabled) channel.addCleanup(registerCommentsHttp(ctx, server, index, () => !closed && isActive()))
-  // Import before recovery, so interrupted legacy work also returns to its idle status.
-  const migrated = pinsEnabled
-    ? migrateComments(ctx.root, ctx.config.comments?.file ?? '.histoire/comments.json').then(() => {}, (error) => {
-        migrationNotice = error instanceof CommentsMigrationError ? error.message : 'Canvas comments could not be imported; original file preserved.'
-      })
-    : Promise.resolve()
-  const ready = migrated.then(() => store.recover())
-  // Observe failures immediately; each explicit ready/request still receives the controlled notice.
+  const ready = store.recover()
+  // Observe failures immediately; each explicit ready/request still receives the controlled error.
   void ready.catch(() => {})
   // Uploads whose message was never saved are dropped once the threads file is readable.
   if (enabled) void ready.then(() => sweepAttachments(ctx.root, [{ file: THREADS_FILE, codec: aiThreadsCodec }])).catch(() => {})
@@ -148,7 +138,7 @@ export function registerAiThreadsChannel(ctx: Context, channel: UiChannelServer,
       finally { running.delete(thread.id) }
     }, options)
   }
-  channel.onReady(client => void ready.then(() => store.list()).then(threads => send(threads, client, migrationNotice)).catch(() => failed(client)))
+  channel.onReady(client => void ready.then(() => store.list()).then(threads => send(threads, client)).catch(() => failed(client)))
   handle('histoire:ui:ai-thread-save', async value => store.upsert(await validateDraft(value?.draft)))
   handle('histoire:ui:ai-thread-create', async (value) => {
     if (typeof value?.agentId !== 'string' || !value.agentId) throw new Error('Invalid AI thread agent')

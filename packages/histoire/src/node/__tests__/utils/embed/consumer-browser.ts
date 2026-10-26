@@ -4,7 +4,7 @@ import { launchEmbedBrowser } from './browser.js'
 // Controls replicas share sandbox URL, but never reserve primary runtime ownership.
 /** Lists actual primary documents separately from controls replicas. */
 function primaryFrames(page: any) {
-  return page.frames().filter((frame: any) => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('controls') !== 'true')
+  return page.frames().filter((frame: any) => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('purpose') !== 'controls')
 }
 
 /** Real copied examples exercise installed SDK/native runtime, never repository aliases. */
@@ -33,15 +33,13 @@ export async function probeConsumerExamples(origin: string, bookUrl: string, mod
           await variants.nth(1).click()
           await expect.poll(() => primaryFrames(page).length, { timeout: 45_000 }).toBe(2)
           await expect.poll(async () => {
-            const first = primaryFrames(page).find((frame: any) => new URL(frame.url()).searchParams.get('grid') === 'false')
+            const first = primaryFrames(page)[0]
             return first?.locator('[data-capture-label]').textContent().catch(() => null)
           }, { timeout: 45_000 }).toContain('|packed')
           await page.getByRole('textbox', { name: 'Host field', exact: true }).fill('Host remains reactive')
           expect(await page.getByRole('textbox', { name: 'Host field', exact: true }).inputValue()).toBe('Host remains reactive')
           await page.getByRole('textbox', { name: 'Host Vue control', exact: true }).first().fill('Host peer Vue')
           expect(await page.getByText('Host peer Vue', { exact: true }).count()).toBe(1)
-          await page.getByRole('button', { name: 'Show variant grid', exact: true }).click()
-          await expect.poll(() => primaryFrames(page).filter((frame: any) => new URL(frame.url()).searchParams.get('grid') === 'true').length, { timeout: 45_000 }).toBe(2)
           await page.screenshot({ path: '/tmp/histoire-sdk15-packed-native.png', fullPage: true })
         }
         else {

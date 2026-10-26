@@ -28,8 +28,8 @@ describe('tailwind Single variant workbench', () => {
       const surface = page.locator('.histoire-single-variant')
       const iframe = surface.locator('iframe')
       await expect.poll(() => iframe.count(), { timeout: 15_000 }).toBe(1)
-      const runtime = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('storyId') === story.id && new URL(frame.url()).searchParams.get('controls') !== 'true')!
-      const controls = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('controls') === 'true')!
+      const runtime = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('storyId') === story.id && new URL(frame.url()).searchParams.get('purpose') !== 'controls')!
+      const controls = () => page.frames().find(frame => frame.url().includes('__sandbox.html') && new URL(frame.url()).searchParams.get('purpose') === 'controls')!
       const token = version === 3 ? 'ac-bg-brand' : 'bg-brand'
       await expect.poll(() => runtime().locator(`[data-tailwind-value="${token}"]`).count(), { timeout: 15_000 }).toBe(1)
       expect(await runtime().evaluate(() => {

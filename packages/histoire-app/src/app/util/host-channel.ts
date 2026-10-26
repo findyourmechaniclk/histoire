@@ -20,7 +20,7 @@ interface HostChannelScope {
   documentId: string
   /** Current story reader only used while capturing actor, never for later posts. */
   storyId: () => string | undefined
-  /** Actual target readiness, including non-selected grid cells. */
+  /** Actual target readiness. */
   ready: (target: HistoireTarget) => boolean
   /** Existing same-origin parent messaging path. */
   post: (payload: HistoireHostChannelPayload, target: HistoireTarget) => void
