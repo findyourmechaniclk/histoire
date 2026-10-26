@@ -100,15 +100,21 @@ function isPlainObject(value: unknown): value is Record<string, any> {
  * values are skipped and read-only properties are left as they are.
  * @param target Bindings to update, e.g. the Vue story's implicit state
  * @param state Serialized snapshot, e.g. from the controls panel
+ * @param merged Target/state pairs already merged; structured-clone state can be
+ * cyclic, so each pair is visited once instead of recursing forever.
  */
-export function applyStateToBindings(target: Record<string, any>, state: Record<string, any>) {
+export function applyStateToBindings(target: Record<string, any>, state: Record<string, any>, merged = new WeakMap<object, WeakSet<object>>()) {
+  const mergedStates = merged.get(target) ?? new WeakSet<object>()
+  if (mergedStates.has(state)) return
+  mergedStates.add(state)
+  merged.set(target, mergedStates)
   for (const key in state) {
     const current = target[key]
     const value = state[key]
     if (Object.is(current, value)) continue
     if (isObject(current) && !Array.isArray(current) && !isPlainObject(current)) continue
     if (isPlainObject(current) && isPlainObject(value)) {
-      applyStateToBindings(current, value)
+      applyStateToBindings(current, value, merged)
       continue
     }
     try {

@@ -87,4 +87,18 @@ describe('applyStateToBindings', () => {
     expect(bindings.state.count).toBe(2)
     expect(bindings.readonly.value).toBe('fixed')
   })
+
+  it('merges cyclic structured-clone state into cyclic bindings', () => {
+    const cycle: Record<string, any> = { label: 'cyclic' }
+    cycle.self = cycle
+    const bindings = reactive({ cycle, count: 1 })
+    const next: Record<string, any> = { label: 'changed' }
+    next.self = next
+
+    applyStateToBindings(bindings, { cycle: next, count: 2 })
+
+    expect(bindings.count).toBe(2)
+    expect(bindings.cycle.label).toBe('changed')
+    expect(toRaw(bindings.cycle.self)).toBe(cycle)
+  })
 })
