@@ -57,17 +57,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="layer" class="histoire-agent-cursor-layer" :style="{ right: `${canvas.inspectorWidth}px` }" aria-hidden="true">
-    <div v-if="mcp.current && position" class="histoire-agent-cursor" :style="{ left: `${position.x}px`, top: `${position.y}px` }">
-      <BuiltinIcon icon="cursor-1" :size="20" />
-      <span>{{ mcp.clientName(mcp.current.clientId) }} · {{ mcp.current.tool }}</span>
+  <div ref="layer" class="histoire-agent-cursor-layer htw:absolute htw:inset-0 htw:z-[10] htw:overflow-hidden htw:pointer-events-none" :style="{ right: `${canvas.inspectorWidth}px` }" aria-hidden="true">
+    <div v-if="mcp.current && position" class="htw:absolute htw:grid htw:justify-items-start htw:text-agent" :style="{ left: `${position.x}px`, top: `${position.y}px` }">
+      <BuiltinIcon class="htw:[filter:drop-shadow(0_1px_1px_rgb(0_0_0_/_25%))]" icon="cursor-1" :size="20" />
+      <span class="htw:ml-3 htw:max-w-[220px] htw:px-[7px] htw:py-[3px] htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap htw:rounded-[6px] htw:text-white htw:bg-agent htw:text-[11px] htw:font-semibold">{{ mcp.clientName(mcp.current.clientId) }} · {{ mcp.current.tool }}</span>
     </div>
   </div>
 </template>
-
-<style scoped>
-.histoire-agent-cursor-layer { position: absolute; inset: 0; z-index: 10; overflow: hidden; pointer-events: none; }
-.histoire-agent-cursor { position: absolute; display: grid; justify-items: start; color: var(--histoire-agent); }
-.histoire-agent-cursor > svg { filter: drop-shadow(0 1px 1px rgb(0 0 0 / 25%)); }
-.histoire-agent-cursor > span { margin: 0 0 0 12px; max-width: 220px; padding: 3px 7px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border-radius: 6px; color: #fff; background: var(--histoire-agent); font-size: 11px; font-weight: 600; }
-</style>

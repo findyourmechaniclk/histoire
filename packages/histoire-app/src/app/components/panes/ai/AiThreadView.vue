@@ -60,16 +60,16 @@ function submit() {
 </script>
 
 <template>
-  <section class="ai-thread" aria-label="AI thread">
+  <section class="htw:flex htw:flex-1 htw:flex-col htw:min-h-0" aria-label="AI thread">
     <AiThreadHeader :title="thread.title" @back="model.back()">
-      <HstButton icon-only color="flat" type="button" :disabled="disabled" :aria-label="thread.status === 'resolved' ? 'Restore thread' : 'Archive thread'" :title="thread.status === 'resolved' ? 'Restore' : 'Archive'" @click="model.archive(thread.id, thread.status !== 'resolved')">
+      <HstButton class="htw:text-muted" icon-only color="flat" type="button" :disabled="disabled" :aria-label="thread.status === 'resolved' ? 'Restore thread' : 'Archive thread'" :title="thread.status === 'resolved' ? 'Restore' : 'Archive'" @click="model.archive(thread.id, thread.status !== 'resolved')">
         <BuiltinIcon :icon="thread.status === 'resolved' ? 'renew' : 'checkmark'" :size="16" />
       </HstButton>
-      <HstButton icon-only color="flat" type="button" :disabled="disabled || busy" aria-label="Delete thread" title="Delete" @click="model.remove(thread.id)">
+      <HstButton class="htw:text-muted" icon-only color="flat" type="button" :disabled="disabled || busy" aria-label="Delete thread" title="Delete" @click="model.remove(thread.id)">
         <BuiltinIcon icon="trash-can" :size="16" />
       </HstButton>
     </AiThreadHeader>
-    <div ref="scroller" class="ai-thread-messages">
+    <div ref="scroller" class="htw:flex-1 htw:min-h-0 htw:overflow-auto htw:py-4 htw:px-pane-gutter">
       <div ref="log">
         <ThreadMessage author="user" name="You" :at="thread.createdAt" :body="thread.body" :attachments="thread.attachments" />
         <ThreadMessage
@@ -95,14 +95,8 @@ function submit() {
         <AiCreatedStories :changes="changes" @select="emit('select', $event)" />
       </div>
     </div>
-    <form class="ai-thread-reply" @submit.prevent="submit">
+    <form class="htw:p-pane-gutter htw:border-t htw:border-solid htw:border-border" @submit.prevent="submit">
       <AgentPrompt :key="thread.id" ref="prompt" :capture="capture" :model-value="draft.body" :attachments="draft.attachments" :options="options ?? thread.options" compact label="Reply to thread" :placeholder="busy ? 'Agent is working…' : keptPlanning ? PLAN_FOLLOW_UP_PLACEHOLDER : 'Reply…'" :agents="thread.agentId ? agents : usable" :agent-id="thread.agentId ?? agentId" :agent-locked="Boolean(thread.agentId)" :busy="busy" :disabled="disabled" @update:model-value="edit({ body: $event })" @update:attachments="edit({ attachments: $event })" @update:options="chooseOptions" @choose="choose" @send="submit" />
     </form>
   </section>
 </template>
-
-<style scoped>
-.ai-thread { display: flex; flex: 1; flex-direction: column; min-height: 0; }
-.ai-thread-messages { flex: 1; min-height: 0; overflow: auto; padding: 16px var(--histoire-pane-gutter); }
-.ai-thread-reply { padding: var(--histoire-pane-gutter); border-top: 1px solid var(--histoire-border); }
-</style>

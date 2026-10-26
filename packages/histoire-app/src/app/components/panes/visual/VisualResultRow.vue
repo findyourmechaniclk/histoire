@@ -20,43 +20,23 @@ function toggle(): void {
 </script>
 
 <template>
-  <div class="visual-row" :data-tone="status.tone" :aria-current="model.selectedResultId.value === result.id ? 'true' : undefined">
-    <span v-if="selectable" class="visual-row-check">
-      <input v-if="approvable" type="checkbox" :disabled="model.approvalPending(result)" :aria-label="`Select ${result.case.label} ${result.spec.id} for approval`" :checked="checked" @change="toggle">
+  <div class="htw:group/visual-row htw:flex htw:items-center htw:gap-1 htw:h-[var(--histoire-virtual-row-height,_39px)] htw:py-0 htw:px-1 htw:rounded-[6px] htw:hover:bg-accent-soft htw:aria-[current=true]:bg-accent-soft" :data-tone="status.tone" :aria-current="model.selectedResultId.value === result.id ? 'true' : undefined">
+    <span v-if="selectable" class="htw:grid htw:place-items-center htw:flex-none htw:w-5">
+      <input v-if="approvable" class="htw:m-0 htw:accent-accent htw:cursor-pointer" type="checkbox" :disabled="model.approvalPending(result)" :aria-label="`Select ${result.case.label} ${result.spec.id} for approval`" :checked="checked" @change="toggle">
     </span>
-    <button class="visual-row-main" type="button" :aria-label="`Review ${result.case.label} ${result.spec.id}, ${model.approvalPending(result) ? 'Saving baseline' : result.staleReason ? 'Stale' : status.label}`" :title="statusTitle" @click="model.review(result)">
+    <button class="htw:flex htw:items-center htw:gap-2 htw:flex-1 htw:min-w-0 htw:h-full htw:py-0 htw:px-1 htw:bg-transparent htw:border-0 htw:text-text htw:[font-family:inherit] htw:[font-size:inherit] htw:[font-weight:inherit] htw:leading-4.5 htw:text-start htw:cursor-pointer htw:focus-visible:[outline:2px_solid_var(--histoire-accent)] htw:focus-visible:outline-offset-[-2px] htw:focus-visible:rounded-[6px]" type="button" :aria-label="`Review ${result.case.label} ${result.spec.id}, ${model.approvalPending(result) ? 'Saving baseline' : result.staleReason ? 'Stale' : status.label}`" :title="statusTitle" @click="model.review(result)">
       <HstPulsatingDisc v-if="model.busy(result) || model.approvalPending(result)" :size="12" />
-      <BuiltinIcon v-else :icon="status.icon" :size="16" />
-      <span class="visual-row-content">
-        <span class="visual-row-label" :title="label">{{ label }}</span>
-        <span class="visual-row-profile" :title="result.spec.id">{{ result.spec.id }}</span>
+      <BuiltinIcon v-else class="htw:flex-none htw:text-muted htw:group-data-[tone=passed]/visual-row:text-accent htw:group-data-[tone=danger]/visual-row:text-danger htw:group-data-[tone=warn]/visual-row:text-warn" :icon="status.icon" :size="16" />
+      <span class="htw:flex htw:flex-col htw:flex-1 htw:min-w-0 htw:overflow-hidden">
+        <span class="htw:overflow-hidden htw:whitespace-nowrap htw:text-ellipsis" :title="label">{{ label }}</span>
+        <span class="htw:min-w-0 htw:overflow-hidden htw:whitespace-nowrap htw:text-ellipsis htw:text-muted htw:font-mono htw:text-[11px] htw:leading-3.5" :title="result.spec.id">{{ result.spec.id }}</span>
       </span>
     </button>
-    <HstButton color="flat" icon-only type="button" class="visual-row-remove" :disabled="!!model.requestId.value || model.approvalPending(result)" :aria-label="`Run again ${result.case.label} ${result.spec.id}`" title="Run again" @click="model.rerun(result)">
+    <HstButton color="flat" icon-only type="button" class="htw:flex-none htw:opacity-0 htw:group-hover/visual-row:opacity-100 htw:focus-visible:opacity-100" :disabled="!!model.requestId.value || model.approvalPending(result)" :aria-label="`Run again ${result.case.label} ${result.spec.id}`" title="Run again" @click="model.rerun(result)">
       <BuiltinIcon icon="renew" :size="14" />
     </HstButton>
-    <HstButton v-if="result.case.kind === 'matrix'" color="flat" icon-only type="button" class="visual-row-remove" :aria-label="`Remove saved case ${result.case.label}`" title="Remove saved case" @click="model.remove(result.case)">
+    <HstButton v-if="result.case.kind === 'matrix'" color="flat" icon-only type="button" class="htw:flex-none htw:opacity-0 htw:group-hover/visual-row:opacity-100 htw:focus-visible:opacity-100" :aria-label="`Remove saved case ${result.case.label}`" title="Remove saved case" @click="model.remove(result.case)">
       <BuiltinIcon icon="trash-can" :size="14" />
     </HstButton>
   </div>
 </template>
-
-<style scoped>
-.visual-row { display: flex; align-items: center; gap: 4px; height: var(--histoire-virtual-row-height, 39px); padding: 0 4px; border-radius: 6px; }
-.visual-row:hover, .visual-row[aria-current=true] { background: var(--histoire-accent-soft); }
-.visual-row-check { display: grid; place-items: center; flex: none; width: 20px; }
-.visual-row-check input { margin: 0; accent-color: var(--histoire-accent); cursor: pointer; }
-.visual-row-main { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; height: 100%; padding: 0 4px; background: transparent; border: 0; color: var(--histoire-text); font: inherit; line-height: 18px; text-align: start; cursor: pointer; }
-.visual-row-main:focus-visible { outline: 2px solid var(--histoire-accent); outline-offset: -2px; border-radius: 6px; }
-.visual-row-main > svg { flex: none; color: var(--histoire-muted); }
-.visual-row[data-tone=passed] .visual-row-main > svg { color: var(--histoire-accent); }
-.visual-row[data-tone=danger] .visual-row-main > svg { color: var(--histoire-danger); }
-.visual-row[data-tone=warn] .visual-row-main > svg { color: var(--histoire-warn); }
-/* Two bounded text lines keep the case readable and reserve separate action space. */
-.visual-row-content { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; }
-.visual-row-label { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.visual-row-profile { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--histoire-muted); font-family: var(--histoire-font-mono); font-size: 11px; line-height: 14px; }
-/* Destructive action stays out of the way until row is hovered or focused. */
-.visual-row-remove { flex: none; opacity: 0; }
-.visual-row:hover .visual-row-remove, .visual-row-remove:focus-visible { opacity: 1; }
-</style>

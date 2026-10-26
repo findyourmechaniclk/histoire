@@ -5,6 +5,7 @@ import { HistoireSdkError, isStoryRouteHash } from '@histoire/protocol'
 import { getAcceptedHistoireSessionDescriptor, getHistoireDocsPolicy, selectHistoireStoryLink } from '@histoire/sdk/internal'
 import { defineComponent, h, nextTick, onMounted, shallowRef, watch } from 'vue'
 import { createHistoireContentController } from '../../content/controller.js'
+import { mergePartClass, partClassesProp } from '../../foundation/parts.js'
 import { useHistoireContext, useHistoireResource } from '../../provider/context.js'
 import { scrollDocsAnchor } from './anchors.js'
 import { prepareHistoireDocs } from './content.js'
@@ -14,6 +15,8 @@ import { getDocsStoryHref, resolveDocsStoryLink } from './links.js'
 export const HistoireDocs = defineComponent({
   name: 'HistoireDocs',
   props: {
+    /** Host utilities for documented component parts; package markers remain intact. */
+    classes: partClassesProp<'root'>(),
     anchor: { type: String, default: '' },
     /** Embedded docs open book links without changing the scoped session. */
     storyLinkBehavior: { type: String as PropType<'select' | 'open'>, default: 'select' },
@@ -105,7 +108,7 @@ export const HistoireDocs = defineComponent({
     }
     return () => {
       const value = state.value.value
-      return h('section', { 'ref': root, 'class': 'histoire-docs', 'aria-label': 'Histoire documentation', 'aria-busy': state.value.status === 'loading', 'onClick': click }, [
+      return h('section', { 'ref': root, 'class': mergePartClass('histoire-docs', props.classes?.root), 'aria-label': 'Histoire documentation', 'aria-busy': state.value.status === 'loading', 'onClick': click }, [
         state.value.error ? h('p', { role: 'alert' }, (state.value.error as Error).message ?? String(state.value.error)) : null,
         value ? (value.html === null ? h('pre', value.content.body) : h('div', { innerHTML: value.html })) : null,
       ])

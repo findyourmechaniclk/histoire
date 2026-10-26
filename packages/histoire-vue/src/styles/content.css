@@ -1,22 +1,22 @@
-.histoire-provider :is(.histoire-docs, .histoire-source) { min-width: 0; min-height: 0; flex: 1; overflow: auto; }
-.histoire-provider .histoire-docs { padding: 16px; }
-.histoire-provider .histoire-docs :is(h1, h2, h3, h4) { margin: 1.2em 0 .5em; line-height: 1.25; }
-.histoire-provider .histoire-docs a { color: var(--histoire-accent); }
-.histoire-provider .histoire-docs :is(img, video) { max-width: 100%; height: auto; }
-.histoire-provider .histoire-docs :is(pre, code) { font-family: ui-monospace, monospace; }
-.histoire-provider .histoire-docs pre { padding: 12px; overflow: auto; background: var(--histoire-panel); }
+:where(.histoire-provider) :is(.histoire-docs, .histoire-source) { min-width: 0; min-height: 0; flex: 1; overflow: auto; }
+:where(.histoire-provider) .histoire-docs { padding: 16px; }
+:where(.histoire-provider) .histoire-docs :is(h1, h2, h3, h4) { margin: 1.2em 0 .5em; line-height: 1.25; }
+:where(.histoire-provider) .histoire-docs :where(a) { color: var(--histoire-accent); }
+:where(.histoire-provider) .histoire-docs :is(img, video) { max-width: 100%; height: auto; }
+:where(.histoire-provider) .histoire-docs :is(pre, code) { font-family: ui-monospace, monospace; }
+:where(.histoire-provider) .histoire-docs :where(pre) { padding: 12px; overflow: auto; background: var(--histoire-panel); }
 /* One shared container keeps document and story fences compact without utility CSS. */
-.histoire-provider .histoire-docs .__histoire-code { position: relative; margin: 18px 0 26px; border-radius: 10px; background: var(--histoire-code, #24292e); color: #e6e7ea; }
-.histoire-provider .histoire-docs .__histoire-code > pre { margin: 0; padding: 12px 16px; border-radius: inherit; background: transparent !important; }
-.histoire-provider .histoire-docs .__histoire-code > :is(.__histoire-code-language, div:first-child) { position: absolute; top: 8px; right: 12px; color: rgb(255 255 255 / .4); font: 10px/1.5 var(--histoire-font-mono, ui-monospace, monospace); pointer-events: none; user-select: none; }
+:where(.histoire-provider) .histoire-docs .__histoire-code { position: relative; margin: 18px 0 26px; border-radius: 10px; background: var(--histoire-code, #24292e); color: #e6e7ea; }
+:where(.histoire-provider) .histoire-docs .__histoire-code > :where(pre) { margin: 0; padding: 12px 16px; border-radius: inherit; background: transparent !important; }
+:where(.histoire-provider) .histoire-docs .__histoire-code > :is(.__histoire-code-language, div:first-child) { position: absolute; top: 8px; right: 12px; color: rgb(255 255 255 / .4); font: 10px/1.5 var(--histoire-font-mono, ui-monospace, monospace); pointer-events: none; user-select: none; }
 /* Cached and older remote docs can still include MarkdownIt's redundant outer pre. */
-.histoire-provider .histoire-docs pre:has(> code > .__histoire-code) { margin: 0; padding: 0; overflow: visible; white-space: normal; background: transparent; }
-.histoire-provider .histoire-docs pre > code:has(> .__histoire-code) { display: block; font: inherit; }
-.histoire-provider .histoire-source { display: flex; flex-direction: column; }
-.histoire-provider .histoire-content-actions { display: flex; gap: 4px; padding: 8px; border-bottom: 1px solid var(--histoire-border); }
-.histoire-provider .histoire-content-actions button {    padding: 4px 10px;  }
-.histoire-provider .histoire-content-actions button[aria-pressed="true"] { color: var(--histoire-accent); border-color: currentColor; }
-.histoire-provider .histoire-content-actions button:disabled {   }
-.histoire-provider .histoire-source-content { flex: 1; min-height: 0; overflow: auto; }
-.histoire-provider .histoire-source pre { margin: 0; padding: 16px; min-width: max-content; font-family: ui-monospace, monospace; }
-.histoire-provider :is(.histoire-docs, .histoire-source) [role="alert"] { margin: 12px; color: #dc2626; }
+:where(.histoire-provider) .histoire-docs :where(pre):has(> code > .__histoire-code) { margin: 0; padding: 0; overflow: visible; white-space: normal; background: transparent; }
+:where(.histoire-provider) .histoire-docs :where(pre) > :where(code):has(> .__histoire-code) { display: block; font: inherit; }
+:where(.histoire-provider) .histoire-source { display: flex; flex-direction: column; }
+:where(.histoire-provider) .histoire-content-actions { display: flex; gap: 4px; padding: 8px; border-bottom: 1px solid var(--histoire-border); }
+:where(.histoire-provider) .histoire-content-actions :where(button) {    padding: 4px 10px;  }
+:where(.histoire-provider) :where(.histoire-content-actions) :where(button)[aria-pressed="true"] { color: var(--histoire-accent); border-color: currentColor; }
+:where(.histoire-provider) .histoire-content-actions :where(button):disabled {   }
+:where(.histoire-provider) .histoire-source-content { flex: 1; min-height: 0; overflow: auto; }
+:where(.histoire-provider) .histoire-source :where(pre) { margin: 0; padding: 16px; min-width: max-content; font-family: ui-monospace, monospace; }
+:where(.histoire-provider) :is(.histoire-docs, .histoire-source) :where([role="alert"]) { margin: 12px; color: #dc2626; }

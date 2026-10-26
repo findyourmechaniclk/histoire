@@ -14,31 +14,18 @@ const shell = useShell()
 </script>
 
 <template>
-  <aside :id="id" class="histoire-inspector-frame" :aria-label="label ?? 'Story inspector'" :style="{ width: `${shell.inspectorWidth.value}px` }">
+  <aside :id="id" class="histoire-inspector-frame htw:flex htw:flex-col htw:absolute htw:inset-y-3 htw:end-3 htw:w-[344px] htw:max-w-[calc(100%-24px)] htw:z-30 htw:rounded-[16px] htw:bg-surface htw:shadow-panel htw:[@container(max-width:640px)]:top-16" :aria-label="label ?? 'Story inspector'" :style="{ width: `${shell.inspectorWidth.value}px` }">
     <PanelResizeHandle :controls="id" label="Resize inspector" edge="start" :model-value="shell.inspectorWidth.value" :min="shell.inspectorWidthBounds.value.min" :max="shell.inspectorWidthBounds.value.max" @update:model-value="shell.setInspectorWidth" />
-    <div class="histoire-inspector-frame-surface">
-      <header v-if="$slots.header" class="histoire-inspector-frame-header">
+    <div class="htw:flex htw:flex-col htw:flex-1 htw:min-h-0 htw:rounded-[inherit] htw:overflow-hidden">
+      <header v-if="$slots.header" class="htw:flex htw:items-center htw:justify-between htw:gap-3 htw:p-4">
         <slot name="header" />
-        <HstButton icon-only color="flat" type="button" aria-label="Close inspector" @click="emit('close')">
+        <HstButton class="htw:[--histoire-icon-button-size:28px]" icon-only color="flat" type="button" aria-label="Close inspector" @click="emit('close')">
           <BuiltinIcon icon="close" :size="18" />
         </HstButton>
       </header>
-      <div class="histoire-inspector-frame-content">
+      <div class="htw:flex htw:flex-col htw:flex-1 htw:min-h-0 htw:overflow-auto">
         <slot />
       </div>
     </div>
   </aside>
 </template>
-
-<style scoped>
-/* Rounded content stays clipped without cutting off the outer half of the handle. */
-.histoire-inspector-frame { display: flex; flex-direction: column; position: absolute; inset-block: 12px; inset-inline-end: 12px; width: 344px; max-width: calc(100% - 24px); z-index: 30; border-radius: 16px; background: var(--histoire-surface); box-shadow: var(--histoire-shadow-panel); }
-.histoire-inspector-frame-surface { display: flex; flex-direction: column; flex: 1; min-height: 0; border-radius: inherit; overflow: hidden; }
-.histoire-inspector-frame-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px; }
-.histoire-inspector-frame-header button { --histoire-icon-button-size: 28px; }
-.histoire-inspector-frame-header button:hover { background: var(--histoire-chip); }
-.histoire-inspector-frame-content { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: auto; }
-@container (max-width: 640px) {
-  .histoire-inspector-frame { inset-block-start: 64px; }
-}
-</style>

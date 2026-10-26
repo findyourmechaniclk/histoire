@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { EmbedController } from './controller.js'
-import { HstButton } from '@histoire/controls/vue'
 import { useHistoireSnapshot } from '@histoire/vue'
 import { ref } from 'vue'
+import PopoverRow from '../base/popover/PopoverRow.vue'
 import ToolbarPopover from '../canvas/toolbar/ToolbarPopover.vue'
 
 const props = defineProps<{
@@ -26,11 +26,11 @@ function open(scope: 'story' | 'variant'): void {
 
 <template>
   <ToolbarPopover id="embed" ref="popover" :open="props.open" label="Embed" icon="code" :width="220" @update:open="emit('update:open', $event)">
-    <HstButton color="flat" class="popover-row" :disabled="!snapshot.selection?.variantId || !controller.available(snapshot.selection.storyId, snapshot.selection.variantId)" @click="open('variant')">
+    <PopoverRow :disabled="!snapshot.selection?.variantId || !controller.available(snapshot.selection.storyId, snapshot.selection.variantId)" @click="open('variant')">
       Embed this variant
-    </HstButton>
-    <HstButton color="flat" class="popover-row" :disabled="!snapshot.selection || !controller.available(snapshot.selection.storyId)" @click="open('story')">
+    </PopoverRow>
+    <PopoverRow :disabled="!snapshot.selection || !controller.available(snapshot.selection.storyId)" @click="open('story')">
       Embed this story
-    </HstButton>
+    </PopoverRow>
   </ToolbarPopover>
 </template>

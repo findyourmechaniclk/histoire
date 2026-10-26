@@ -6,13 +6,19 @@ import { HistoireSdkError } from '@histoire/protocol'
 import { computed, defineComponent, h, onMounted, shallowRef, watch } from 'vue'
 import { useHistoireSnapshot } from '../../composables/snapshot.js'
 import { createHistoireContentController } from '../../content/controller.js'
+import { mergePartClass, partClassesProp } from '../../foundation/parts.js'
 import { useHistoireContext, useHistoireResource } from '../../provider/context.js'
 import { prepareHistoireSource } from './content.js'
+import { renderSourceContent } from './render.js'
 
 /** Explicit raw/dynamic source modes; unavailable dynamic never creates preview or silently switches. */
 export const HistoireSource = defineComponent({
   name: 'HistoireSource',
   props: {
+    /** Host utilities for documented component parts; package markers remain intact. */
+    classes: partClassesProp<'root' | 'pre' | 'alert'>(),
+    /** Hide built-in mode and copy actions when the host supplies its own. */
+    showActions: { type: Boolean, default: true },
     /** Explicit source mode; never silently switches to another generation. */
     mode: { type: String as PropType<'raw' | 'dynamic'>, default: 'raw' },
     /** Code surface appearance can differ from surrounding provider. */
@@ -62,14 +68,16 @@ export const HistoireSource = defineComponent({
     }
     return () => {
       const value = state.value.value
-      return h('section', { 'class': 'histoire-source', 'aria-label': 'Histoire source', 'aria-busy': state.value.status === 'loading' }, [
-        h('div', { 'class': 'histoire-content-actions', 'role': 'group', 'aria-label': 'Source mode' }, [
-          h(HstButton, { 'color': 'flat', 'type': 'button', 'aria-pressed': mode.value === 'raw', 'disabled': !snapshot.value.capabilities.rawSource.available, 'onClick': () => choose('raw') }, { default: () => 'Raw' }),
-          h(HstButton, { 'color': 'flat', 'type': 'button', 'aria-pressed': mode.value === 'dynamic', 'onClick': () => choose('dynamic') }, { default: () => 'Dynamic' }),
-          h(HstButton, { color: 'flat', type: 'button', disabled: !value, onClick: copy }, { default: () => 'Copy' }),
-        ]),
-        state.value.error ? h('p', { role: 'alert' }, (state.value.error as Error).message ?? String(state.value.error)) : null,
-        value ? h('div', { class: 'histoire-source-content' }, value.html === null ? h('pre', value.content.body) : h('div', { innerHTML: value.html })) : null,
+      return h('section', { 'class': mergePartClass('histoire-source', props.classes?.root), 'aria-label': 'Histoire source', 'aria-busy': state.value.status === 'loading' }, [
+        props.showActions
+          ? h('div', { 'class': 'histoire-content-actions', 'role': 'group', 'aria-label': 'Source mode' }, [
+              h(HstButton, { 'color': 'flat', 'type': 'button', 'aria-pressed': mode.value === 'raw', 'disabled': !snapshot.value.capabilities.rawSource.available, 'onClick': () => choose('raw') }, { default: () => 'Raw' }),
+              h(HstButton, { 'color': 'flat', 'type': 'button', 'aria-pressed': mode.value === 'dynamic', 'onClick': () => choose('dynamic') }, { default: () => 'Dynamic' }),
+              h(HstButton, { color: 'flat', type: 'button', disabled: !value, onClick: copy }, { default: () => 'Copy' }),
+            ])
+          : null,
+        state.value.error ? h('p', { role: 'alert', class: props.classes?.alert }, (state.value.error as Error).message ?? String(state.value.error)) : null,
+        value ? renderSourceContent(value, props.classes?.pre) : null,
       ])
     }
   },

@@ -26,10 +26,6 @@ watch(() => props.icon, (icon) => {
 
 <template>
   <!-- Masking keeps registry logos monochrome in currentColor without inlining remote SVG. -->
-  <span v-if="icon && loaded" class="agent-logo" aria-hidden="true" :style="style" />
+  <span v-if="icon && loaded" class="htw:inline-block htw:flex-none htw:bg-current htw:[mask:var(--agent-logo)_center/contain_no-repeat]" aria-hidden="true" :style="style" />
   <BuiltinIcon v-else icon="bot" :size="size" />
 </template>
-
-<style scoped>
-.agent-logo { display: inline-block; flex: none; background-color: currentColor; mask: var(--agent-logo) center / contain no-repeat; -webkit-mask: var(--agent-logo) center / contain no-repeat; }
-</style>

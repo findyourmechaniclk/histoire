@@ -8,6 +8,8 @@ import { useCommentDestination } from './destination.js'
 import AgentPrompt from './prompt/AgentPrompt.vue'
 
 const props = defineProps<{
+  /** Scroll wrapper owns elevation in canvas overlays. */
+  flat?: boolean
   /** Current exact-frame draft. */
   draft: UiAiThreadDraft
   /** Collected story and variant display label. */
@@ -61,25 +63,16 @@ function send() {
 </script>
 
 <template>
-  <form class="comment-card comment-composer" aria-label="Comment for AI" @submit.prevent="send" @keydown.escape.stop.prevent="emit('close')">
-    <div class="comment-composer-header">
-      <CommentContext :title="title" :thread="draft" hide-screenshot />
-      <HstButton icon-only color="flat" type="button" class="icon-button close-button" aria-label="Close comment" title="Close comment (Esc)" @click="emit('close')">
+  <form class="htw:w-90 htw:[max-width:calc(100vw_-_24px)] htw:bg-surface htw:text-text htw:rounded-panel htw:overflow-hidden" :class="flat ? 'htw:shadow-none' : 'htw:shadow-panel'" aria-label="Comment for AI" @submit.prevent="send" @keydown.escape.stop.prevent="emit('close')">
+    <div class="htw:flex htw:items-start htw:border-b htw:border-border">
+      <CommentContext :title="title" :thread="draft" hide-screenshot borderless class="htw:flex-1 htw:min-w-0" />
+      <HstButton icon-only color="flat" type="button" class="htw:text-muted htw:flex-none htw:mt-3 htw:mr-3 htw:mb-0 htw:ml-0" aria-label="Close comment" title="Close comment (Esc)" @click="emit('close')">
         <BuiltinIcon icon="close" :size="16" />
       </HstButton>
     </div>
-    <div class="comment-composer-body">
+    <div class="htw:p-3">
       <!-- Keyed by draft so a late upload of the previous draft cannot land in this one. -->
       <AgentPrompt :key="draft.id" ref="prompt" v-model="body" v-model:attachments="attachments" v-model:options="options" label="Comment message" placeholder="Describe what to change…" :agents="usable" :agent-id="agentId" :pending="capturing" :capture="attach" :screenshot="draft.screenshot" @remove-screenshot="emit('removeScreenshot')" @choose="choose" @send="send" @setup-agent="emit('setupAgent')" />
     </div>
   </form>
 </template>
-
-<style scoped>
-.comment-card { width: 360px; max-width: calc(100vw - 24px); background: var(--histoire-surface); color: var(--histoire-text); border-radius: var(--histoire-radius-panel); box-shadow: var(--histoire-shadow-panel); overflow: hidden; }
-.comment-composer-header { display: flex; align-items: flex-start; border-bottom: 1px solid var(--histoire-border); }
-.comment-composer-header :deep(.comment-context) { flex: 1; min-width: 0; border-bottom: 0; }
-.icon-button { color: var(--histoire-muted); }
-.close-button { flex: none; margin: 12px 12px 0 0; }
-.comment-composer-body { padding: 12px; }
-</style>

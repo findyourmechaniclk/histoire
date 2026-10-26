@@ -44,13 +44,9 @@ function pickScreenshot(path: string): void {
 </script>
 
 <template>
-  <HstButton ref="trigger" icon-only color="flat" type="button" class="attach-menu" :aria-label="capturing ? 'Capturing screenshot' : 'Add to message'" aria-haspopup="menu" :aria-expanded="open" :title="capturing ? 'Capturing screenshot' : 'Add to message'" :disabled="disabled" @click="toggle">
+  <HstButton ref="trigger" icon-only color="flat" type="button" class="htw:text-muted" :aria-label="capturing ? 'Capturing screenshot' : 'Add to message'" aria-haspopup="menu" :aria-expanded="open" :title="capturing ? 'Capturing screenshot' : 'Add to message'" :disabled="disabled" @click="toggle">
     <HstPulsatingDisc v-if="capturing" :size="12" />
     <BuiltinIcon v-else icon="add" :size="16" />
   </HstButton>
   <AttachMenuPanel v-if="open" :anchor="anchor" :actions="actions" @action="pick" @screenshot="pickScreenshot" @close="close" />
 </template>
-
-<style scoped>
-.attach-menu { color: var(--histoire-muted); }
-</style>

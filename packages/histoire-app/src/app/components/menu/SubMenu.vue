@@ -41,14 +41,10 @@ function keyboard(event: KeyboardEvent) {
 </script>
 
 <template>
-  <div ref="root" class="histoire-submenu">
+  <div ref="root">
     <MenuItem :label="action.label" :icon="action.icon" submenu :ai="action.group === 'ai'" :aria-expanded="open" @click="show" @keydown.right.prevent.stop="show" />
-    <div v-if="open" ref="menu" class="histoire-submenu-panel histoire-control-popover" role="menu" :aria-label="action.label" :style="{ left: `${position.left}px`, top: `${position.top}px` }" @keydown="keyboard">
+    <div v-if="open" ref="menu" class="histoire-submenu-panel histoire-control-popover htw:fixed htw:z-[61] htw:w-60 htw:max-w-[calc(100vw-16px)] htw:p-[5px]" role="menu" :aria-label="action.label" :style="{ left: `${position.left}px`, top: `${position.top}px` }" @keydown="keyboard">
       <MenuItem v-for="item in items" :key="item.id" :label="item.label" :icon="item.icon" :disabled="item.disabled?.(target)" :shortcut="item.shortcut ? shortcuts?.hint(item.shortcut) : undefined" :ai="item.group === 'ai'" @click="emit('action', item)" />
     </div>
   </div>
 </template>
-
-<style scoped>
-.histoire-submenu-panel { position: fixed; z-index: 61; width: 240px; max-width: calc(100vw - 16px); padding: 5px;  }
-</style>

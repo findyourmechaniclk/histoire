@@ -58,9 +58,9 @@ function send() {
 </script>
 
 <template>
-  <section class="ai-thread-new" aria-label="New AI thread">
+  <section class="htw:flex htw:flex-1 htw:flex-col htw:min-h-0" aria-label="New AI thread">
     <AiThreadHeader title="New thread" @back="model.back()" />
-    <form class="ai-thread-composer" @submit.prevent="send">
+    <form class="htw:p-pane-gutter" @submit.prevent="send">
       <AgentPrompt ref="prompt" v-model="body" v-model:attachments="attachments" v-model:options="options" :capture="capture" label="New AI thread" placeholder="Ask the agent to create or change stories…" :agents="usable" :agent-id="agentId" :pending="model.pending.value" :disabled="!model.available.value" @choose="choose" @send="send" @setup-agent="emit('setupAgent')">
         <template v-if="context" #chips>
           <ContextChip :label="context.label" title="Story sent as context" removable @remove="storyRemoved = true" />
@@ -69,8 +69,3 @@ function send() {
     </form>
   </section>
 </template>
-
-<style scoped>
-.ai-thread-new { display: flex; flex: 1; flex-direction: column; min-height: 0; }
-.ai-thread-composer { padding: var(--histoire-pane-gutter); }
-</style>

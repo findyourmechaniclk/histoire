@@ -3,7 +3,8 @@ import { HstButton, HstTextarea } from '@histoire/controls/vue'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useMatrixStore } from '../../../stores/matrix.js'
 import { formatMatrixCustomValues, parseMatrixCustomValues } from '../../../util/matrix-values.js'
-import './matrix-axis-form.css'
+import MatrixAxisForm from './MatrixAxisForm.vue'
+import MatrixAxisFormActions from './MatrixAxisFormActions.vue'
 
 const props = defineProps<{
   /** Exact local axis name; drafts belong to current story and domain. */
@@ -36,16 +37,16 @@ function apply(): void {
 </script>
 
 <template>
-  <div class="histoire-matrix-axis-form" role="group" :aria-label="`${name} custom values`" @keydown.esc.stop="emit('close')" @keydown.enter.ctrl.exact.prevent="apply" @keydown.enter.meta.exact.prevent="apply">
-    <HstTextarea ref="field" v-model="draft" title="Values" aria-label="Values" placeholder="One value per line" spellcheck="false" :rows="Math.min(Math.max(draft.split('\n').length, 3), 8)" />
-    <span v-if="error" role="alert">{{ error }}</span>
-    <div class="histoire-matrix-axis-form-actions">
+  <MatrixAxisForm role="group" :aria-label="`${name} custom values`" @keydown.esc.stop="emit('close')" @keydown.enter.ctrl.exact.prevent="apply" @keydown.enter.meta.exact.prevent="apply">
+    <HstTextarea ref="field" v-model="draft" input-class="htw:font-mono htw:text-[12px]" title="Values" aria-label="Values" placeholder="One value per line" spellcheck="false" :rows="Math.min(Math.max(draft.split('\n').length, 3), 8)" />
+    <span v-if="error" class="htw:text-danger htw:text-[12px]" role="alert">{{ error }}</span>
+    <MatrixAxisFormActions>
       <HstButton color="flat" type="button" @click="emit('close')">
         Cancel
       </HstButton>
       <HstButton color="primary" type="button" @click="apply">
         Apply
       </HstButton>
-    </div>
-  </div>
+    </MatrixAxisFormActions>
+  </MatrixAxisForm>
 </template>

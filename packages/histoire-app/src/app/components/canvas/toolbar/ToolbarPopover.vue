@@ -2,6 +2,7 @@
 import type { ComponentPublicInstance } from 'vue'
 import { shallowRef, watch } from 'vue'
 import { useOverflowToolbar } from '../../base/overflow/context.js'
+import { useToolbarPresentation } from '../../base/overflow/presentation.js'
 import BasePopover from '../../base/popover/BasePopover.vue'
 import { useCanvasPopoverBounds } from './bounds.js'
 import ToolbarButton from './ToolbarButton.vue'
@@ -40,19 +41,17 @@ watch(() => props.open === props.id, (opened) => {
 
 /** Consumers opening a modal can restore focus to actual toolbar trigger. */
 defineExpose({ trigger })
+
+const presentation = useToolbarPresentation()
 </script>
 
 <template>
-  <span class="histoire-toolbar-anchor">
+  <span :data-presentation="presentation" class="htw:inline-flex htw:data-[presentation=menu]:flex htw:data-[presentation=menu]:w-full">
     <ToolbarButton :ref="setTrigger" :label="label" :icon="icon" :icon-only="iconOnly" :shortcut="shortcut" :pressed="open === id" menu-role="menuitem" aria-haspopup="dialog" :aria-expanded="open === id" @click="emit('update:open', open === id ? null : id)">
       <template v-if="$slots.trigger" #default><slot name="trigger" /></template>
     </ToolbarButton>
-    <BasePopover class="histoire-toolbar-popover" :open="open === id" :anchor="trigger" :label="label" :width="width" :overlay-target="overlayTarget" :bounds="bounds" @update:open="emit('update:open', null)">
+    <BasePopover :open="open === id" :anchor="trigger" :label="label" :width="width" :overlay-target="overlayTarget" :bounds="bounds" @update:open="emit('update:open', null)">
       <template #default="slot"><slot :close="slot.close" /></template>
     </BasePopover>
   </span>
 </template>
-
-<style scoped>
-.histoire-toolbar-anchor { display: inline-flex; }
-</style>

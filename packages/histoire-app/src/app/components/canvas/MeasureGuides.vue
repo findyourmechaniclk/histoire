@@ -23,14 +23,8 @@ function lineStyle(segment: MeasureSegment) {
 </script>
 
 <template>
-  <div v-for="segment in segments" :key="segment.id" class="histoire-measure-guide" :data-equal="segment.equal || undefined" :style="lineStyle(segment)" />
-  <span v-for="label in labels" :key="label.id" class="histoire-measure-label" :data-equal="label.equal || undefined" :style="{ left: `${label.x}px`, top: `${label.y}px` }">
+  <div v-for="segment in segments" :key="segment.id" class="htw:fixed htw:z-[26] htw:pointer-events-none htw:bg-measure htw:data-[equal]:bg-measure-gap" :data-equal="segment.equal || undefined" :style="lineStyle(segment)" />
+  <span v-for="label in labels" :key="label.id" class="htw:fixed htw:z-[27] htw:box-border htw:h-[18px] htw:py-[3px] htw:px-[5px] htw:rounded-[4px] htw:bg-measure htw:text-white htw:font-mono htw:text-[10px] htw:leading-[12px] htw:whitespace-nowrap htw:pointer-events-none htw:data-[equal]:bg-measure-gap" :data-equal="label.equal || undefined" :style="{ left: `${label.x}px`, top: `${label.y}px` }">
     {{ label.text }}
   </span>
 </template>
-
-<style scoped>
-.histoire-measure-guide { position: fixed; z-index: 26; pointer-events: none; background: var(--histoire-measure); }
-.histoire-measure-label { position: fixed; z-index: 27; box-sizing: border-box; height: 18px; padding: 3px 5px; border-radius: 4px; background: var(--histoire-measure); color: #fff; font: 10px/12px var(--histoire-font-mono); white-space: nowrap; pointer-events: none; }
-.histoire-measure-guide[data-equal], .histoire-measure-label[data-equal] { background: var(--histoire-measure-gap); }
-</style>

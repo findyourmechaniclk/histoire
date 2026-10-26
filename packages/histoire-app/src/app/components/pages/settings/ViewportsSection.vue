@@ -5,6 +5,8 @@ import { BuiltinIcon, HstButton, HstNumber, HstText } from '@histoire/controls/v
 import { defineAsyncComponent, ref } from 'vue'
 import { usePresetConfigStore } from '../../../stores/presets-config.js'
 import { histoireConfig } from '../../../util/config.js'
+import SettingsCard from './SettingsCard.vue'
+import SettingsRow from './SettingsRow.vue'
 
 const props = defineProps<{ embedded?: boolean }>()
 const SaveToProject = __HISTOIRE_DEV__ ? defineAsyncComponent(() => import('./SaveToProject.vue')) : undefined
@@ -33,49 +35,42 @@ function save(): void {
 </script>
 
 <template>
-  <section :class="{ 'histoire-settings-embedded': props.embedded }">
-    <h1 v-if="!embedded">
+  <section class="htw:w-[min(100%,_740px)] htw:mx-auto" :class="{ 'histoire-settings-embedded': props.embedded }">
+    <h1 v-if="!embedded" class="htw:text-[25px] htw:font-bold htw:m-[0_0_22px]">
       Viewports
     </h1>
-    <div class="histoire-settings-card">
-      <header>
-        <strong>Viewport presets</strong><HstButton color="default" class="histoire-settings-action" type="button" @click="edit(null)">
+    <SettingsCard>
+      <header class="htw:flex htw:items-center htw:justify-between htw:gap-[10px] htw:p-[13px_20px] htw:[border-bottom:1px_solid_var(--histoire-border,_#e4e4e7)]">
+        <strong>Viewport presets</strong><HstButton color="default" class="htw:inline-flex htw:items-center htw:gap-[6px]" type="button" @click="edit(null)">
           + Add preset
         </HstButton>
       </header>
-      <div v-for="(preset, index) in presets.responsivePresets.value" :key="presets.viewportKey(index)" class="histoire-settings-row histoire-viewport-row">
-        <BuiltinIcon :icon="preset.width < 600 ? 'mobile' : preset.width < 1000 ? 'tablet' : preset.width < 1280 ? 'laptop' : 'screen'" :size="17" /><strong>{{ preset.label }}</strong><code>{{ preset.width }} × {{ preset.height ?? 'Auto' }}</code>
-        <HstButton icon-only color="default" class="histoire-settings-action" type="button" :aria-label="`Edit ${preset.label}`" @click="edit(index)">
+      <SettingsRow v-for="(preset, index) in presets.responsivePresets.value" :key="presets.viewportKey(index)" viewport>
+        <BuiltinIcon :icon="preset.width < 600 ? 'mobile' : preset.width < 1000 ? 'tablet' : preset.width < 1280 ? 'laptop' : 'screen'" :size="17" /><strong class="htw:first:flex-1 htw:flex-1">{{ preset.label }}</strong><code class="htw:w-[125px] htw:text-muted htw:text-[12px]">{{ preset.width }} × {{ preset.height ?? 'Auto' }}</code>
+        <HstButton icon-only color="default" class="htw:border-0 htw:bg-transparent htw:[&:hover]:bg-transparent htw:text-muted" type="button" :aria-label="`Edit ${preset.label}`" @click="edit(index)">
           <BuiltinIcon icon="edit" :size="15" />
         </HstButton>
-        <HstButton icon-only color="default" class="histoire-settings-action" type="button" :aria-label="`Remove ${preset.label}`" @click="presets.removeViewport(index)">
+        <HstButton icon-only color="default" class="htw:border-0 htw:bg-transparent htw:[&:hover]:bg-transparent htw:text-muted" type="button" :aria-label="`Remove ${preset.label}`" @click="presets.removeViewport(index)">
           <BuiltinIcon icon="trash-can" :size="15" />
         </HstButton>
-      </div>
-      <form v-if="editing !== null" class="histoire-settings-row" @submit.prevent="save">
-        <HstText v-model="draft.label" layout="inline" class="histoire-settings-field" aria-label="Preset name" placeholder="Name" required />
-        <HstNumber v-model="draft.width" layout="inline" class="histoire-settings-field" aria-label="Viewport width" min="1" required style="width: 90px" />
-        <HstNumber layout="inline" :model-value="typeof draft.height === 'number' ? draft.height : null" class="histoire-settings-field" aria-label="Viewport height" min="1" placeholder="Auto" style="width: 90px" @update:model-value="draft.height = $event" />
-        <HstButton color="default" class="histoire-settings-action" type="submit">
+      </SettingsRow>
+      <SettingsRow v-if="editing !== null" as="form" @submit.prevent="save">
+        <HstText v-model="draft.label" layout="inline" class="htw:min-w-0" aria-label="Preset name" placeholder="Name" required />
+        <HstNumber v-model="draft.width" layout="inline" class="htw:min-w-0 htw:w-[90px]" aria-label="Viewport width" min="1" required />
+        <HstNumber layout="inline" :model-value="typeof draft.height === 'number' ? draft.height : null" class="htw:min-w-0 htw:w-[90px]" aria-label="Viewport height" min="1" placeholder="Auto" @update:model-value="draft.height = $event" />
+        <HstButton color="default" type="submit">
           Save
-        </HstButton><HstButton color="default" class="histoire-settings-action" type="button" @click="editing = null">
+        </HstButton><HstButton color="default" type="button" @click="editing = null">
           Cancel
         </HstButton>
         <span v-if="error" role="alert">{{ error }}</span>
-      </form>
+      </SettingsRow>
       <SaveToProject v-if="SaveToProject" path="responsivePresets" :value="presets.responsivePresets.value" :project-value="histoireConfig.responsivePresets" :local="presets.viewportsOverridden.value" @reset="presets.resetViewports" @saved="presets.resetViewports" />
-      <div v-else-if="presets.viewportsOverridden.value" class="histoire-settings-project">
-        <HstButton color="default" class="histoire-settings-action" type="button" @click="presets.resetViewports">
+      <div v-else-if="presets.viewportsOverridden.value" class="htw:flex htw:flex-wrap htw:items-center htw:gap-[8px] htw:p-[10px_20px] htw:text-[12px]">
+        <HstButton color="default" type="button" @click="presets.resetViewports">
           Reset to project
         </HstButton>
       </div>
-    </div>
+    </SettingsCard>
   </section>
 </template>
-
-<style scoped>
-.histoire-viewport-row { padding-block: var(--histoire-viewport-row-padding, 13px); }
-.histoire-viewport-row > strong { flex: 1; }
-.histoire-viewport-row > .histoire-settings-action { border: 0; background: transparent; color: var(--histoire-muted, #71717a); }
-.histoire-viewport-row code { width: 125px; color: var(--histoire-muted, #71717a); font-size: 12px; }
-</style>

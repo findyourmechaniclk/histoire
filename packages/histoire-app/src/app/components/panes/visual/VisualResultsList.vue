@@ -28,26 +28,16 @@ function toggle(storyId: string): void {
 </script>
 
 <template>
-  <div class="visual-results">
+  <div class="htw:flex-1 htw:min-h-0 htw:overflow-hidden htw:pt-0 htw:px-pane-gutter htw:pb-2">
     <WorkbenchVirtualList :items="entries" :item-size="40" list-tag="ul" item-tag="li">
       <template #default="{ item }">
-        <HstButton v-if="item.kind === 'heading'" color="flat" type="button" class="visual-story" :aria-expanded="!closed.has(item.storyId)" @click="toggle(item.storyId)">
-          <BuiltinIcon :icon="closed.has(item.storyId) ? 'chevron-right' : 'chevron-down'" :size="16" />
-          <strong>{{ item.title }}</strong>
-          <span :title="`${item.passed} of ${item.total} passed`">{{ item.passed }} / {{ item.total }}</span>
+        <HstButton v-if="item.kind === 'heading'" color="flat" type="button" class="htw:flex htw:items-center htw:gap-2 htw:w-full htw:h-[var(--histoire-virtual-row-height,_39px)] htw:py-2.5 htw:px-pane-row-inset htw:text-text htw:leading-4.5 htw:text-left htw:hover:bg-chip htw:focus-visible:[outline:2px_solid_var(--histoire-accent)] htw:focus-visible:outline-offset-[-2px]" :aria-expanded="!closed.has(item.storyId)" @click="toggle(item.storyId)">
+          <BuiltinIcon class="htw:flex-none htw:text-muted" :icon="closed.has(item.storyId) ? 'chevron-right' : 'chevron-down'" :size="16" />
+          <strong class="htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:whitespace-nowrap htw:text-ellipsis htw:font-[750]">{{ item.title }}</strong>
+          <span class="htw:text-[11px] htw:font-mono htw:text-muted" :title="`${item.passed} of ${item.total} passed`">{{ item.passed }} / {{ item.total }}</span>
         </HstButton>
         <VisualResultRow v-else-if="item.kind === 'result'" :result="item.result" :label="item.label" :approvable="canApprove(item.result)" :selectable="selectable" />
       </template>
     </WorkbenchVirtualList>
   </div>
 </template>
-
-<style scoped>
-.visual-results { flex: 1; min-height: 0; overflow: hidden; padding: 0 var(--histoire-pane-gutter) 8px; }
-.visual-story { display: flex; align-items: center; gap: 8px; width: 100%; height: var(--histoire-virtual-row-height, 39px); padding: 10px 8px; color: var(--histoire-text); line-height: 18px; text-align: left; }
-.visual-story:hover { background: var(--histoire-chip); }
-.visual-story:focus-visible { outline: 2px solid var(--histoire-accent); outline-offset: -2px; }
-.visual-story > svg { flex: none; color: var(--histoire-muted); }
-.visual-story strong { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 750; }
-.visual-story span { font-size: 11px; font-family: var(--histoire-font-mono); color: var(--histoire-muted); }
-</style>

@@ -139,15 +139,16 @@ defineExpose({
 </script>
 
 <template>
-  <div class="agent-prompt" :class="{ compact, disabled: locked }" :data-drop="files.dropping.value || undefined" @dragover="files.dragover" @dragleave="files.dragleave" @drop="files.drop">
+  <div class="agent-prompt htw:[--histoire-control-accent:var(--histoire-agent)] htw:[--histoire-control-on-accent:#fff] htw:relative htw:flex htw:flex-col htw:border htw:border-border htw:rounded-control htw:bg-surface htw:[transition:border-color_120ms_ease,_box-shadow_120ms_ease] htw:group/prompt htw:focus-within:border-agent htw:focus-within:shadow-[0_0_0_3px_rgb(var(--histoire-agent-rgb)/0.2)] htw:data-[drop]:border-agent htw:data-[drop]:shadow-[0_0_0_3px_rgb(var(--histoire-agent-rgb)/0.2)]" :data-compact="compact" :data-disabled="locked" :data-drop="files.dropping.value || undefined" @dragover="files.dragover" @dragleave="files.dragleave" @drop="files.drop">
     <PromptSuggestions v-if="showSuggestions" :id="listId" :label="suggestions.trigger.value?.char === '/' ? 'Commands' : 'Project files'" :items="suggestions.items.value" :active="suggestions.active.value" :empty="emptyText" @pick="suggestions.pick" />
-    <div v-if="$slots.chips" class="agent-prompt-context">
+    <div v-if="$slots.chips" class="htw:flex htw:flex-wrap htw:gap-1.5 htw:pt-2 htw:px-2.5 htw:pb-0">
       <slot name="chips" />
     </div>
-    <AttachmentStrip v-if="attachments.length || screenshot || files.uploading.value" class="agent-prompt-attachments" :attachments="attachments" :screenshot="screenshot" :uploading="files.uploading.value" removable @remove="files.remove" @remove-screenshot="emit('removeScreenshot')" />
+    <AttachmentStrip v-if="attachments.length || screenshot || files.uploading.value" class="htw:pt-2 htw:px-2.5 htw:pb-0" :attachments="attachments" :screenshot="screenshot" :uploading="files.uploading.value" removable @remove="files.remove" @remove-screenshot="emit('removeScreenshot')" />
+    <!-- Auto-grow owns height; compact mode changes only its bounds. -->
     <textarea
       ref="input"
-      class="agent-prompt-input"
+      class="htw:box-border htw:block htw:w-full htw:[min-height:4.5rem] htw:max-h-60 htw:m-0 htw:pt-2.5 htw:px-3 htw:pb-1 htw:border-0 htw:outline-none htw:bg-transparent htw:text-text htw:[font-family:inherit] htw:[font-weight:inherit] htw:[font-style:inherit] htw:text-[13px] htw:leading-[1.45] htw:resize-none htw:overflow-y-auto htw:group-data-[compact=true]/prompt:min-h-9 htw:group-data-[compact=true]/prompt:max-h-40 htw:placeholder:text-muted htw:disabled:cursor-not-allowed"
       rows="1"
       maxlength="8192"
       :value="modelValue"
@@ -165,40 +166,22 @@ defineExpose({
       @blur="suggestions.close"
       @paste="files.paste"
     />
-    <p v-if="files.notice.value" class="agent-prompt-notice" role="status">
+    <p v-if="files.notice.value" class="htw:m-0 htw:py-0.5 htw:px-3 htw:text-danger htw:text-[12px]" role="status">
       {{ files.notice.value }}
     </p>
-    <div class="agent-prompt-toolbar">
+    <div class="htw:flex htw:flex-wrap htw:items-center htw:gap-0.5 htw:pt-1 htw:px-1.5 htw:pb-1.5">
       <PromptAttachMenu :disabled="locked" :capture="Boolean(capture)" :capturing="Boolean(actions.capturing.value || pending)" :commands="commands.length > 0" :hints="{ files: actions.hint('comment.attach'), screenshot: actions.hint('comment.screenshot') }" @action="runAction" @screenshot="files.addScreenshot" />
       <input ref="picker" type="file" multiple hidden @change="picked">
       <slot name="tools" />
       <SessionPicker v-if="hasAgent" :agents="agents" :agent-id="agentId" :locked="agentLocked" :config="discovery?.value" :loading="discovery?.loading" :options="options" :disabled="locked" @choose="emit('choose', $event)" @update:options="emit('update:options', $event)" />
-      <HstButton v-else color="flat" type="button" class="setup-agent" @click="emit('setupAgent')">
+      <HstButton v-else color="flat" type="button" class="htw:py-1 htw:px-2 htw:text-agent htw:text-[12px] htw:font-semibold" @click="emit('setupAgent')">
         <BuiltinIcon icon="bot" :size="14" />Set up an agent
       </HstButton>
-      <span class="agent-prompt-spacer" />
-      <HstButton icon-only color="primary" type="button" class="agent-prompt-send" :disabled="!canSend" :aria-label="busy ? 'Agent is working' : 'Send'" :title="busy ? 'Agent is working' : `Send (${sendHint})`" @click="send">
+      <span class="htw:flex-1" />
+      <HstButton icon-only color="primary" type="button" class="htw:[--histoire-icon-button-size:28px] htw:rounded-full" :disabled="!canSend" :aria-label="busy ? 'Agent is working' : 'Send'" :title="busy ? 'Agent is working' : `Send (${sendHint})`" @click="send">
         <HstPulsatingDisc v-if="busy" :size="12" />
         <BuiltinIcon v-else icon="send-alt-filled" :size="14" />
       </HstButton>
     </div>
   </div>
 </template>
-
-<style scoped>
-.agent-prompt { --histoire-control-accent: var(--histoire-agent); --histoire-control-on-accent: #fff; position: relative; display: flex; flex-direction: column; border: 1px solid var(--histoire-border); border-radius: var(--histoire-radius-control); background: var(--histoire-surface); transition: border-color 120ms ease, box-shadow 120ms ease; }
-.agent-prompt:focus-within, .agent-prompt[data-drop] { border-color: var(--histoire-agent); box-shadow: 0 0 0 3px rgb(var(--histoire-agent-rgb) / 20%); }
-.agent-prompt-context { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 10px 0; }
-.agent-prompt-attachments { padding: 8px 10px 0; }
-/* Height comes from autogrow; min/max bound it and overflow scrolls past max. */
-.agent-prompt-input { box-sizing: border-box; display: block; width: 100%; min-height: 4.5rem; max-height: 240px; margin: 0; padding: 10px 12px 4px; border: 0; outline: none; background: transparent; color: var(--histoire-text); font: inherit; font-size: 13px; line-height: 1.45; resize: none; overflow-y: auto; }
-.agent-prompt.compact .agent-prompt-input { min-height: 2.25rem; max-height: 160px; }
-.agent-prompt-input::placeholder { color: var(--histoire-muted); }
-.agent-prompt-input:disabled { cursor: not-allowed; }
-.agent-prompt-notice { margin: 0; padding: 2px 12px; color: var(--histoire-danger); font-size: 12px; }
-.agent-prompt-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 4px 6px 6px; }
-.agent-prompt-toolbar :deep(button) { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.agent-prompt-spacer { flex: 1; }
-.setup-agent { padding: 4px 8px; color: var(--histoire-agent); font-size: 12px; font-weight: 600; }
-.agent-prompt-send { --histoire-icon-button-size: 28px; border-radius: 999px; }
-</style>

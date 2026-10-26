@@ -2,9 +2,12 @@
 import type { UiAiThread, UiAiThreadDraft } from '@histoire/shared'
 import { BuiltinIcon, HstButton } from '@histoire/controls/vue'
 import { computed } from 'vue'
+import CommentContextChip from './CommentContextChip.vue'
 import { compactSelectorPath, propsSummary, selectorParts } from './presentation'
 
 const props = defineProps<{
+  /** Composer provides its own dividing border. */
+  borderless?: boolean
   /** Human-readable story and variant. */
   title: string
   /** Persisted pinned thread or canvas draft. */
@@ -33,47 +36,21 @@ const propLines = computed(() => propsSummary(props.thread.props))
 </script>
 
 <template>
-  <header class="comment-context">
-    <div class="context-title">
-      <BuiltinIcon icon="cube" :size="16" />
-      <span class="title-text">{{ title }}</span>
-      <div v-if="minimizable || $slots.actions" class="context-actions">
+  <header :class="borderless ? '' : 'htw:border-b htw:border-border'" class="htw:flex htw:flex-col htw:gap-2 htw:py-2.5 htw:px-3">
+    <div class="htw:flex htw:items-center htw:gap-1.5 htw:min-w-0 htw:min-h-6 htw:text-text htw:text-[12px] htw:font-semibold">
+      <BuiltinIcon icon="cube" :size="13" class="htw:flex-none htw:text-muted" />
+      <span class="htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap">{{ title }}</span>
+      <div v-if="minimizable || $slots.actions" class="htw:flex-none htw:flex htw:gap-0.5 htw:-mt-0.5 htw:-mr-1 htw:-mb-0.5 htw:ml-0 htw:[--histoire-icon-button-size:24px] htw:text-muted">
         <slot name="actions" />
-        <HstButton v-if="minimizable" icon-only color="flat" type="button" aria-label="Minimize comment" title="Minimize" @click="emit('minimize')">
-          <BuiltinIcon icon="subtract" :size="16" />
+        <HstButton v-if="minimizable" icon-only color="flat" type="button" aria-label="Minimize comment" title="Minimize" class="htw:text-muted" @click="emit('minimize')">
+          <BuiltinIcon icon="subtract" :size="16" class="htw:flex-none htw:text-muted" />
         </HstButton>
       </div>
     </div>
-    <div v-if="element || propLines.length || (thread.screenshot && !hideScreenshot)" class="context-chips">
-      <span v-if="element" class="chip" :title="element.full">
-        <BuiltinIcon icon="code" :size="16" />
-        <span class="chip-text">{{ element.label }}<code v-if="element.path">{{ element.path }}</code></span>
-      </span>
-      <span v-if="propLines.length" class="chip" :title="propLines.join('\n')">
-        <BuiltinIcon icon="settings-adjust" :size="16" />
-        <span class="chip-text">Props<code>{{ propLines.join(', ') }}</code></span>
-      </span>
-      <span v-if="thread.screenshot && !hideScreenshot" class="chip" :title="thread.screenshot">
-        <BuiltinIcon icon="camera" :size="16" />
-        <span class="chip-text">Screenshot</span>
-      </span>
+    <div v-if="element || propLines.length || (thread.screenshot && !hideScreenshot)" class="htw:flex htw:gap-1 htw:min-w-0">
+      <CommentContextChip v-if="element" :label="element.label" icon="code" :title="element.full" :detail="element.path" />
+      <CommentContextChip v-if="propLines.length" label="Props" icon="settings-adjust" :title="propLines.join('\n')" :detail="propLines.join(', ')" />
+      <CommentContextChip v-if="thread.screenshot && !hideScreenshot" label="Screenshot" icon="camera" :title="thread.screenshot" />
     </div>
   </header>
 </template>
-
-<style scoped>
-.comment-context { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--histoire-border); }
-/* Story/variant heading shares its row with card actions so chips get full width. */
-.context-title { display: flex; align-items: center; gap: 6px; min-width: 0; min-height: 24px; color: var(--histoire-text); font-size: 12px; font-weight: 600; }
-.context-title > svg { flex: none; width: 13px; height: 13px; color: var(--histoire-muted); }
-.title-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.context-actions { flex: none; display: flex; gap: 2px; margin: -2px -4px -2px 0; }
-.context-actions :deep(button) { --histoire-icon-button-size: 24px; color: var(--histoire-muted); }
-/* One line of context; chips shrink and truncate instead of wrapping. */
-.context-chips { display: flex; gap: 4px; min-width: 0; }
-.chip { display: inline-flex; flex: 0 1 auto; align-items: center; gap: 5px; min-width: 0; height: 22px; padding: 0 7px; border-radius: 5px; background: var(--histoire-chip); color: var(--histoire-body); font-size: 11px; line-height: 1; white-space: nowrap; }
-.chip svg { flex: none; width: 13px; height: 13px; color: var(--histoire-muted); }
-.chip-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-/* Detail after the label reads as secondary metadata. */
-.chip-text code { margin-left: 6px; color: var(--histoire-muted); font-family: var(--histoire-font-mono, "JetBrains Mono", monospace); font-size: 10.5px; }
-</style>

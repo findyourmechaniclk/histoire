@@ -29,15 +29,5 @@ onBeforeUnmount(controller.close)
 </script>
 
 <template>
-  <div ref="handle" class="histoire-panel-resize-handle" :data-edge="edge" :data-resizing="controller.active.value" role="separator" tabindex="0" aria-orientation="vertical" :aria-label="label" :aria-controls="controls" :aria-valuenow="modelValue" :aria-valuemin="min" :aria-valuemax="max" :aria-valuetext="`${Math.round(modelValue)} pixels`" @pointerdown="controller.onPointerDown" @lostpointercapture="controller.onPointerEnd" @keydown="controller.onKeyDown" />
+  <div ref="handle" class="htw:absolute htw:inset-y-0 htw:w-2 htw:z-2 htw:cursor-col-resize htw:touch-none htw:select-none htw:data-[edge=end]:-end-1 htw:data-[edge=start]:-start-1 htw:after:content-[''] htw:after:absolute htw:after:inset-y-0 htw:after:start-[calc(50%-0.5px)] htw:after:w-px htw:after:bg-transparent htw:hover:after:bg-accent htw:data-[resizing=true]:after:bg-accent htw:focus-visible:after:bg-accent htw:focus-visible:outline-2 htw:focus-visible:outline-accent htw:focus-visible:-outline-offset-2" :data-edge="edge" :data-resizing="controller.active.value" role="separator" tabindex="0" aria-orientation="vertical" :aria-label="label" :aria-controls="controls" :aria-valuenow="modelValue" :aria-valuemin="min" :aria-valuemax="max" :aria-valuetext="`${Math.round(modelValue)} pixels`" @pointerdown="controller.onPointerDown" @lostpointercapture="controller.onPointerEnd" @keydown="controller.onKeyDown" />
 </template>
-
-<style scoped>
-.histoire-panel-resize-handle { position: absolute; inset-block: 0; width: 8px; z-index: 2; cursor: col-resize; touch-action: none; user-select: none; }
-/* Center the hit area and its visible divider on the actual panel boundary. */
-.histoire-panel-resize-handle[data-edge="end"] { inset-inline-end: -4px; }
-.histoire-panel-resize-handle[data-edge="start"] { inset-inline-start: -4px; }
-.histoire-panel-resize-handle::after { content: ''; position: absolute; inset-block: 0; inset-inline-start: calc(50% - 0.5px); width: 1px; background: transparent; }
-.histoire-panel-resize-handle:hover::after, .histoire-panel-resize-handle[data-resizing="true"]::after, .histoire-panel-resize-handle:focus-visible::after { background: var(--histoire-accent); }
-.histoire-panel-resize-handle:focus-visible { outline: 2px solid var(--histoire-accent); outline-offset: -2px; }
-</style>

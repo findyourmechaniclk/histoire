@@ -85,23 +85,23 @@ function selectIndex(index: number) {
 </script>
 
 <template>
-  <div class="histoire-prompt-select htw-relative htw-group">
+  <div class="htw:relative htw:group/prompt">
     <HstText
       v-model="model"
       layout="inline"
       :required="prompt.required"
       tabindex="-1"
-      class="htw-absolute htw-inset-0 htw-opacity-0 htw-pointer-events-none"
+      class="htw:absolute htw:inset-0 htw:opacity-0 htw:pointer-events-none"
     />
-    <label class="htw-flex htw-flex-col htw-gap-2 htw-p-2">
-      <span class="htw-px-2 htw-flex">
+    <label class="htw:flex htw:flex-col htw:gap-2 htw:p-2">
+      <span class="htw:px-2 htw:flex">
         <span>{{ prompt.label }}</span>
         <span
           v-if="prompt.required"
-          class="htw-opacity-70"
+          class="htw:opacity-70"
         >*</span>
 
-        <span class="htw-opacity-40 htw-text-sm htw-ml-auto htw-invisible group-focus-within:htw-visible">
+        <span class="htw:opacity-40 htw:text-sm htw:ml-auto htw:invisible htw:group-focus-within/prompt:visible">
           Press <BaseKeyboardShortcut shortcut="Space" /> to select
         </span>
       </span>
@@ -109,14 +109,14 @@ function selectIndex(index: number) {
         :ref="value => { input = getControlElement(value) as HTMLInputElement }"
         v-model="search"
         layout="inline"
-        class="htw-w-full"
+        class="htw:w-full"
         @keydown.down.prevent="selectNext()"
         @keydown.up.prevent="selectPrevious()"
         @keydown.space.prevent="selectIndex(selectedIndex)"
       />
     </label>
 
-    <div class="htw-overflow-auto max-h-[300px] htw-mb-2">
+    <div class="htw:overflow-auto max-h-[300px] htw:mb-2">
       <HstButton
         v-for="(option, index) of formattedOptions"
         :key="option.value"
@@ -125,20 +125,20 @@ function selectIndex(index: number) {
         tabindex="-1"
         :class="[
           model === option.value
-            ? 'htw-bg-primary-500/20'
+            ? 'htw:bg-primary-500/20'
             : index === selectedIndex
-              ? 'htw-bg-primary-500/10'
-              : 'htw-bg-transparent',
+              ? 'htw:bg-primary-500/10'
+              : 'htw:bg-transparent',
         ]"
-        class="htw-w-full htw-text-left htw-px-4 htw-py-2 hover:htw-bg-primary-500/10 htw-flex htw-items-center"
+        class="htw:w-full htw:text-left htw:px-4 htw:py-2 htw:hover:bg-primary-500/10 htw:flex htw:items-center"
         @click="model = option.value"
       >
-        <span class="htw-flex-1">{{ option.label }}</span>
+        <span class="htw:flex-1">{{ option.label }}</span>
 
         <BuiltinIcon
           v-if="model === option.value"
           icon="carbon:checkmark"
-          class="htw-w-4 htw-h-4 htw-text-primary-500"
+          class="htw:w-4 htw:h-4 htw:text-primary-500"
         />
       </HstButton>
     </div>

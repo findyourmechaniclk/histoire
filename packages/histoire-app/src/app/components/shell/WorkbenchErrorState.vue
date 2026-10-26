@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { BuiltinIcon } from '@histoire/controls/vue'
-import './workbench-state.css'
+import WorkbenchStateLayout from './WorkbenchStateLayout.vue'
 
 withDefaults(defineProps<{
   /** Offline Carbon glyph name shown in danger badge. */
   icon?: string
   /** Short headline describing operation that failed. */
   title: string
+  /** Grow to fill available flex-panel space. */
+  fill?: boolean
+  /** Leave outer spacing to the parent layout. */
+  flush?: boolean
 }>(), { icon: 'error-filled' })
 defineSlots<{
   /** Optional error detail beneath headline. */
@@ -17,21 +21,17 @@ defineSlots<{
 </script>
 
 <template>
-  <div class="workbench-state workbench-error-state" role="alert" aria-atomic="true">
-    <span class="workbench-state-visual workbench-error-state-icon" aria-hidden="true">
-      <BuiltinIcon :icon="icon" :size="22" />
-    </span>
-    <strong>{{ title }}</strong>
-    <p v-if="$slots.default">
+  <WorkbenchStateLayout :title="title" :fill="fill" :flush="flush" role="alert" atomic>
+    <template #visual>
+      <span class="htw:grid htw:place-items-center htw:flex-none htw:size-12 htw:mb-2 htw:rounded-full htw:text-danger-text htw:bg-danger-soft" aria-hidden="true">
+        <BuiltinIcon :icon="icon" :size="22" />
+      </span>
+    </template>
+    <template v-if="$slots.default" #default>
       <slot />
-    </p>
-    <div v-if="$slots.actions" class="workbench-state-actions">
+    </template>
+    <template v-if="$slots.actions" #actions>
       <slot name="actions" />
-    </div>
-  </div>
+    </template>
+  </WorkbenchStateLayout>
 </template>
-
-<style scoped>
-.workbench-error-state-icon { border-radius: 50%; color: var(--histoire-danger-text); background: var(--histoire-danger-soft); }
-.workbench-state-actions :deep(.histoire-button[data-color="flat"]) { color: var(--histoire-danger-text); }
-</style>

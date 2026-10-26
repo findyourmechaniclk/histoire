@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useShortcutRegistry } from '../../../util/shortcuts.js'
+import SettingsCard from './SettingsCard.vue'
+import SettingsRow from './SettingsRow.vue'
 
 const registry = useShortcutRegistry()
 const entries = computed(() => [...(registry?.reference.values() ?? [])].filter(item => __HISTOIRE_DEV__ || !item.devOnly))
@@ -12,13 +14,15 @@ function conflicts(id: string): boolean {
 </script>
 
 <template>
-  <section>
-    <h1>Keyboard shortcuts</h1><div class="histoire-settings-card">
-      <div v-for="entry in entries" :key="entry.id" class="histoire-settings-row">
-        <strong>{{ entry.label }}</strong><kbd>{{ registry?.hint(entry.id) }}</kbd><span v-if="conflicts(entry.id)" role="status">Conflict</span>
-      </div><div v-if="!entries.length" class="histoire-settings-row">
+  <section class="htw:w-[min(100%,_740px)] htw:mx-auto">
+    <h1 class="htw:text-[25px] htw:font-bold htw:m-[0_0_22px]">
+      Keyboard shortcuts
+    </h1><SettingsCard>
+      <SettingsRow v-for="entry in entries" :key="entry.id">
+        <strong class="htw:first:flex-1">{{ entry.label }}</strong><kbd>{{ registry?.hint(entry.id) }}</kbd><span v-if="conflicts(entry.id)" role="status">Conflict</span>
+      </SettingsRow><SettingsRow v-if="!entries.length">
         No shortcuts registered.
-      </div>
-    </div>
+      </SettingsRow>
+    </SettingsCard>
   </section>
 </template>

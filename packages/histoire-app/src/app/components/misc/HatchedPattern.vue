@@ -1,13 +1,3 @@
 <template>
-  <div class="__histoire-hatched-pattern" />
+  <div class="htw:bg-[repeating-linear-gradient(135deg,transparent_0px,transparent_32px,currentColor_32px,currentColor_64px)]" />
 </template>
-
-<style scoped>
-.__histoire-hatched-pattern {
-  background: repeating-linear-gradient(135deg,
-  transparent 0px,
-  transparent 32px,
-  currentColor 32px,
-  currentColor 64px);
-}
-</style>

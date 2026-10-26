@@ -19,14 +19,9 @@ const stories = computed(() => createdStories(props.changes, snapshot.value.cata
 </script>
 
 <template>
-  <nav v-if="stories.length" class="ai-created-stories" aria-label="Stories changed by the agent">
-    <HstButton v-for="story in stories" :key="story.id" color="flat" type="button" @click="emit('select', { storyId: story.id, variantId: story.variants[0]?.id ?? null })">
+  <nav v-if="stories.length" class="htw:flex htw:flex-wrap htw:gap-1.5 htw:mt-2" aria-label="Stories changed by the agent">
+    <HstButton v-for="story in stories" :key="story.id" class="htw:inline-flex htw:items-center htw:gap-1.5 htw:font-semibold" color="flat" type="button" @click="emit('select', { storyId: story.id, variantId: story.variants[0]?.id ?? null })">
       <BuiltinIcon icon="catalog" :size="16" />{{ story.title }}
     </HstButton>
   </nav>
 </template>
-
-<style scoped>
-.ai-created-stories { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.ai-created-stories button { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
-</style>

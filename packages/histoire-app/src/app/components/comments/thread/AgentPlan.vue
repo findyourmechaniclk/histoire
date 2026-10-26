@@ -2,6 +2,7 @@
 import type { UiAgentPlanEntry } from '@histoire/shared'
 import { BuiltinIcon, HstPulsatingDisc } from '@histoire/controls/vue'
 import { computed, ref } from 'vue'
+import AgentDisclosure from './AgentDisclosure.vue'
 
 const props = defineProps<{
   /** Plan entries in agent order. */
@@ -19,35 +20,20 @@ const icons: Record<UiAgentPlanEntry['status'], string> = { pending: 'circle-das
 </script>
 
 <template>
-  <section class="agent-plan" aria-label="Agent plan">
-    <button type="button" class="plan-row" :aria-expanded="open" @click="toggled = !open">
-      <BuiltinIcon class="chevron" :class="{ open }" icon="chevron-right" :size="12" />
+  <section class="htw:min-w-0 htw:mb-1.5 htw:text-[11px] htw:text-muted" aria-label="Agent plan">
+    <AgentDisclosure :aria-expanded="open" @click="toggled = !open">
+      <BuiltinIcon class="htw:[transition:transform_120ms_ease-out] htw:data-[open=true]:rotate-90 htw:motion-reduce:transition-none" :data-open="open" icon="chevron-right" :size="12" />
       <BuiltinIcon icon="list-checked" :size="14" />
-      <strong>Plan</strong>
+      <strong class="htw:text-body htw:font-semibold">Plan</strong>
       <span class="summary">{{ done }}/{{ entries.length }} done</span>
-    </button>
-    <ol v-if="open" class="plan-entries">
-      <li v-for="(entry, index) in entries" :key="index" :data-status="entry.status">
-        <HstPulsatingDisc v-if="live && entry.status === 'in_progress'" class="status" :size="10" />
-        <BuiltinIcon v-else class="status" :icon="icons[entry.status]" :size="12" />
-        <span class="content">{{ entry.content }}</span>
+    </AgentDisclosure>
+    <!-- Escape the status underscore: Tailwind turns unescaped arbitrary-value underscores into spaces. -->
+    <ol v-if="open" class="htw:grid htw:gap-0.75 htw:mt-0.5 htw:mx-0 htw:mb-1 htw:pt-0 htw:pr-0 htw:pb-0 htw:pl-4.5 htw:list-none">
+      <li v-for="(entry, index) in entries" :key="index" :data-status="entry.status" class="htw:flex htw:items-start htw:gap-1.5 htw:min-w-0 htw:leading-[1.45] htw:group/entry">
+        <HstPulsatingDisc v-if="live && entry.status === 'in_progress'" class="status htw:flex-none htw:w-3 htw:mt-0.5 htw:group-data-[status=completed]/entry:text-accent-link" :size="10" />
+        <BuiltinIcon v-else class="status htw:flex-none htw:w-3 htw:mt-0.5 htw:group-data-[status=completed]/entry:text-accent-link" :icon="icons[entry.status]" :size="12" />
+        <span class="content htw:min-w-0 htw:wrap-anywhere htw:group-data-[status=in\_progress]/entry:text-body htw:group-data-[status=in\_progress]/entry:font-semibold htw:group-data-[status=completed]/entry:line-through">{{ entry.content }}</span>
       </li>
     </ol>
   </section>
 </template>
-
-<style scoped>
-.agent-plan { min-width: 0; margin-bottom: 6px; font-size: 11px; color: var(--histoire-muted); }
-.plan-row { display: flex; align-items: center; gap: 6px; width: 100%; min-width: 0; padding: 3px 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-.plan-row strong { color: var(--histoire-body); font-weight: 600; }
-.chevron { transition: transform 120ms ease-out; }
-.chevron.open { transform: rotate(90deg); }
-.plan-entries { display: grid; gap: 3px; margin: 2px 0 4px; padding: 0 0 0 18px; list-style: none; }
-.plan-entries li { display: flex; align-items: flex-start; gap: 6px; min-width: 0; line-height: 1.45; }
-.status { flex: none; width: 12px; margin-top: 2px; }
-.content { min-width: 0; overflow-wrap: anywhere; }
-[data-status="in_progress"] .content { color: var(--histoire-body); font-weight: 600; }
-[data-status="completed"] .content { text-decoration: line-through; }
-[data-status="completed"] .status { color: var(--histoire-accent-link); }
-@media (prefers-reduced-motion: reduce) { .chevron { transition: none; } }
-</style>

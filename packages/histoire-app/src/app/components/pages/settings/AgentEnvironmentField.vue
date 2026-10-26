@@ -49,17 +49,17 @@ function replace(name: string): void {
 </script>
 
 <template>
-  <div class="histoire-agent-env">
-    <div v-if="savedKeys.length" class="histoire-agent-env-saved">
-      <HstButton v-for="name in savedKeys" :key="name" color="default" type="button" class="histoire-settings-action histoire-agent-env-key" :title="`Replace ${name}`" @click="replace(name)">
-        {{ name }}<span aria-hidden="true">••••</span>
+  <div class="htw:min-w-0 htw:flex htw:flex-col htw:gap-[6px]">
+    <div v-if="savedKeys.length" class="htw:flex htw:flex-wrap htw:gap-[6px]">
+      <HstButton v-for="name in savedKeys" :key="name" color="default" type="button" class="htw:inline-flex htw:items-center htw:gap-[6px] htw:[font:11px_var(--histoire-font-mono,_monospace)]" :title="`Replace ${name}`" @click="replace(name)">
+        {{ name }}<span class="htw:text-muted htw:[letter-spacing:1px]" aria-hidden="true">••••</span>
       </HstButton>
     </div>
     <!-- Enter saves this variable instead of submitting the surrounding launch settings form. -->
-    <div class="histoire-agent-env-fields" @keydown.enter.prevent="save">
-      <HstText v-model="key" layout="inline" class="histoire-settings-field histoire-agent-command" placeholder="NAME" :aria-label="`${label} environment variable name`" spellcheck="false" autocomplete="off" />
-      <HstText ref="valueField" v-model="value" layout="inline" class="histoire-settings-field" type="password" placeholder="Value" :aria-label="`${label} environment value`" autocomplete="new-password" />
-      <HstButton color="default" type="button" class="histoire-settings-action" :disabled="saving || !key" @click="save">
+    <div class="htw:grid htw:[grid-template-columns:minmax(0,_1fr)_minmax(0,_1fr)_auto] htw:gap-[6px] htw:[@media(max-width:_600px)]:[grid-template-columns:minmax(0,_1fr)_auto]" @keydown.enter.prevent="save">
+      <HstText v-model="key" layout="inline" class="htw:min-w-0 htw:[@media(max-width:_600px)]:[&:first-child]:[grid-column:1_/_-1]" placeholder="NAME" :aria-label="`${label} environment variable name`" spellcheck="false" autocomplete="off" />
+      <HstText ref="valueField" v-model="value" layout="inline" class="htw:min-w-0 htw:[@media(max-width:_600px)]:[&:first-child]:[grid-column:1_/_-1]" type="password" placeholder="Value" :aria-label="`${label} environment value`" autocomplete="new-password" />
+      <HstButton color="default" type="button" class="htw:[@media(max-width:_600px)]:[&:first-child]:[grid-column:1_/_-1]" :disabled="saving || !key" @click="save">
         {{ savedKeys.includes(key) ? 'Replace' : 'Add' }}
       </HstButton>
     </div>

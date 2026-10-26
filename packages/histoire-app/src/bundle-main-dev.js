@@ -1,4 +1,4 @@
 import { mountMainApp } from './app/index'
-import './app/style/main.pcss'
+import '../dist/style.css'
 
 mountMainApp()

@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { HstButtonGroup } from '@histoire/controls/vue'
 import { useHistoireSession, useHistoireSnapshot } from '@histoire/vue'
 import { computed, defineAsyncComponent, ref } from 'vue'
 import { useUiSettingsStore } from '../../../stores/settings.js'
 import { histoireConfig } from '../../../util/config.js'
 import BackgroundsSection from './BackgroundsSection.vue'
+import SettingsCard from './SettingsCard.vue'
+import SettingsChoices from './SettingsChoices.vue'
+import SettingsRow from './SettingsRow.vue'
 import ViewportsSection from './ViewportsSection.vue'
 
 const SaveToProject = __HISTOIRE_DEV__ ? defineAsyncComponent(() => import('./SaveToProject.vue')) : undefined
@@ -34,22 +36,24 @@ function clearColorPreference(): void {
 </script>
 
 <template>
-  <section>
-    <h1>Appearance</h1>
-    <div class="histoire-settings-card">
-      <div v-if="!histoireConfig.theme.hideColorSchemeSwitch" class="histoire-settings-row">
-        <strong>Color scheme</strong>
-        <HstButtonGroup layout="inline" aria-label="Color scheme" :model-value="scheme" :options="[{ value: 'auto', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]" @update:model-value="setScheme" />
-      </div>
+  <section class="htw:w-[min(100%,_740px)] htw:mx-auto">
+    <h1 class="htw:text-[25px] htw:font-bold htw:m-[0_0_22px]">
+      Appearance
+    </h1>
+    <SettingsCard>
+      <SettingsRow v-if="!histoireConfig.theme.hideColorSchemeSwitch" wrap>
+        <strong class="htw:first:flex-1">Color scheme</strong>
+        <SettingsChoices aria-label="Color scheme" :model-value="scheme" :options="[{ value: 'auto', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]" @update:model-value="setScheme" />
+      </SettingsRow>
       <SaveToProject v-if="SaveToProject && !histoireConfig.theme.hideColorSchemeSwitch" path="theme.defaultColorScheme" :value="scheme" :project-value="histoireConfig.theme.defaultColorScheme" :local="scheme !== histoireConfig.theme.defaultColorScheme" @reset="setScheme(histoireConfig.theme.defaultColorScheme ?? 'auto')" @saved="clearColorPreference" />
-      <div class="histoire-settings-row">
-        <strong>Density</strong>
-        <HstButtonGroup layout="inline" aria-label="Density" :model-value="settings.state.density" :options="[{ value: 'comfortable', label: 'Comfortable' }, { value: 'compact', label: 'Compact' }]" @update:model-value="settings.update({ density: $event })" />
-      </div>
+      <SettingsRow wrap>
+        <strong class="htw:first:flex-1">Density</strong>
+        <SettingsChoices aria-label="Density" :model-value="settings.state.density" :options="[{ value: 'comfortable', label: 'Comfortable' }, { value: 'compact', label: 'Compact' }]" @update:model-value="settings.update({ density: $event })" />
+      </SettingsRow>
       <p v-if="error" role="alert">
         {{ error }}
       </p>
-    </div>
+    </SettingsCard>
     <ViewportsSection embedded />
     <BackgroundsSection />
   </section>

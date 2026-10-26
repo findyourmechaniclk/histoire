@@ -42,12 +42,6 @@ const marginStyle = computed(() => {
 </script>
 
 <template>
-  <div class="histoire-measure-spacing margin" :style="marginStyle" />
-  <div class="histoire-measure-spacing padding" :style="paddingStyle" />
+  <div class="margin htw:fixed htw:z-[25] htw:box-border htw:border-solid htw:pointer-events-none htw:[border-color:rgb(var(--histoire-measure-margin-rgb)_/_.25)]" :style="marginStyle" />
+  <div class="padding htw:fixed htw:z-[25] htw:box-border htw:border-solid htw:pointer-events-none htw:[border-color:rgb(var(--histoire-measure-padding-rgb)_/_.3)]" :style="paddingStyle" />
 </template>
-
-<style scoped>
-.histoire-measure-spacing { position: fixed; z-index: 25; box-sizing: border-box; border-style: solid; pointer-events: none; }
-.margin { border-color: rgb(var(--histoire-measure-margin-rgb) / .25); }
-.padding { border-color: rgb(var(--histoire-measure-padding-rgb) / .3); }
-</style>

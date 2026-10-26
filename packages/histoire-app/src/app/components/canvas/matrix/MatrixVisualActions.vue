@@ -41,17 +41,12 @@ async function save(): Promise<void> {
 </script>
 
 <template>
-  <div v-if="visual" class="matrix-visual-actions">
+  <div v-if="visual" class="htw:relative htw:shrink-0">
     <HstButton color="flat" type="button" :disabled="visual.saving.value || !matrix.metadataReady.value || (scope === 'selected' ? !matrix.selectedCell.value : !matrix.cells.value.length)" @click="save">
       <HstPulsatingDisc v-if="visual.saving.value" :size="12" />{{ scope === 'selected' ? 'Add visual case' : 'Add visual cases' }}
     </HstButton>
-    <p v-if="error" role="alert">
+    <p v-if="error" class="htw:absolute htw:z-[40] htw:end-0 htw:top-full htw:w-[300px] htw:max-h-[240px] htw:overflow-auto htw:my-1 htw:mx-0 htw:p-3 htw:border htw:border-solid htw:border-border htw:rounded-[10px] htw:bg-surface htw:text-danger-text htw:[box-shadow:0_8px_24px_rgb(0_0_0_/_12%)] htw:whitespace-pre-line htw:text-[12px]" role="alert">
       {{ error }}
     </p>
   </div>
 </template>
-
-<style scoped>
-.matrix-visual-actions { position: relative; flex-shrink: 0; }
-p { position: absolute; z-index: 40; inset-inline-end: 0; top: 100%; width: 300px; max-height: 240px; overflow: auto; margin: 4px 0; padding: 12px; border: 1px solid var(--histoire-border); border-radius: 10px; background: var(--histoire-surface); color: var(--histoire-danger-text); box-shadow: 0 8px 24px rgb(0 0 0 / 12%); white-space: pre-line; font-size: 12px; }
-</style>

@@ -4,7 +4,8 @@ import { getHistoireMatrixRange, getHistoireMatrixRangeValues, getHistoireNumeri
 import { computed, ref, watch } from 'vue'
 import { useMatrixStore } from '../../../stores/matrix.js'
 import { parseMatrixNumber, parseMatrixNumericValues } from '../../../util/matrix-numeric.js'
-import './matrix-axis-form.css'
+import MatrixAxisForm from './MatrixAxisForm.vue'
+import MatrixAxisFormActions from './MatrixAxisFormActions.vue'
 
 const props = defineProps<{
   /** Selected numeric prop; its store owns defaults and persisted overrides. */
@@ -70,17 +71,17 @@ function apply(): void {
 </script>
 
 <template>
-  <div class="histoire-matrix-axis-form" role="group" :aria-label="`${name} numeric values`" @keydown.esc.stop="emit('close')">
+  <MatrixAxisForm role="group" :aria-label="`${name} numeric values`" @keydown.esc.stop="emit('close')">
     <HstButtonGroup v-model="mode" layout="inline" :aria-label="`${name} value input`" :options="[{ value: 'values', label: 'Values' }, { value: 'range', label: 'Range' }]" />
     <HstText v-if="mode === 'values'" v-model="values" title="Values" :aria-label="`${name} values`" spellcheck="false" @keydown.enter.prevent="apply" />
-    <div v-else class="histoire-matrix-range">
+    <div v-else class="htw:grid htw:grid-cols-3 htw:gap-2">
       <HstText v-model="min" title="Min" :aria-label="`${name} min`" @keydown.enter.prevent="apply" />
       <HstText v-model="max" title="Max" :aria-label="`${name} max`" @keydown.enter.prevent="apply" />
       <HstText v-model="step" title="Step" :aria-label="`${name} step`" @keydown.enter.prevent="apply" />
     </div>
-    <span v-if="error" role="alert">{{ error }}</span>
-    <div class="histoire-matrix-axis-form-actions">
-      <HstButton class="histoire-matrix-axis-form-secondary" color="flat" type="button" @click="reset">
+    <span v-if="error" class="htw:text-danger htw:text-[12px]" role="alert">{{ error }}</span>
+    <MatrixAxisFormActions>
+      <HstButton class="htw:me-auto" color="flat" type="button" @click="reset">
         Reset values
       </HstButton>
       <HstButton color="flat" type="button" @click="emit('close')">
@@ -89,10 +90,6 @@ function apply(): void {
       <HstButton color="primary" type="button" @click="apply">
         Apply
       </HstButton>
-    </div>
-  </div>
+    </MatrixAxisFormActions>
+  </MatrixAxisForm>
 </template>
-
-<style scoped>
-.histoire-matrix-range { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-</style>

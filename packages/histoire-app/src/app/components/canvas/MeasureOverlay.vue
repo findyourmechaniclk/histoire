@@ -243,20 +243,10 @@ onBeforeUnmount(() => {
 
 <template>
   <!-- Rendered inside the canvas, under its toolbars and hint bar, so canvas chrome always wins interaction. -->
-  <div v-if="enabled && bounds" class="histoire-measure-layer">
-    <div class="histoire-measure-hit" role="button" tabindex="0" :aria-label="locked ? 'Unlock measurement' : 'Lock measurement'" :aria-pressed="locked" :style="{ left: `${bounds.left}px`, top: `${bounds.top}px`, width: `${bounds.width}px`, height: `${bounds.height}px` }" @pointerdown.prevent.stop="pointerDown" @pointermove="pointerMove" @pointerup="pointerEnd" @pointercancel="pointerCancel" @pointerleave="leave" @click.prevent.stop="click" @keydown="keydown" />
+  <div v-if="enabled && bounds" class="htw:absolute htw:inset-0 htw:z-[3] htw:pointer-events-none">
+    <div class="histoire-measure-hit htw:fixed htw:z-[25] htw:cursor-crosshair htw:pointer-events-auto htw:focus-visible:outline-2 htw:focus-visible:outline-solid htw:focus-visible:outline-measure htw:focus-visible:-outline-offset-2" role="button" tabindex="0" :aria-label="locked ? 'Unlock measurement' : 'Lock measurement'" :aria-pressed="locked" :style="{ left: `${bounds.left}px`, top: `${bounds.top}px`, width: `${bounds.width}px`, height: `${bounds.height}px` }" @pointerdown.prevent.stop="pointerDown" @pointermove="pointerMove" @pointerup="pointerEnd" @pointercancel="pointerCancel" @pointerleave="leave" @click.prevent.stop="click" @keydown="keydown" />
     <MeasureBoxModel v-if="result && !target && projection" :box="project(result.rect)" :padding="result.padding" :margin="result.margin" :scale="projection" />
-    <div v-for="item in boxes" :key="item.id" class="histoire-measure-box" :data-locked="item.locked" :data-target="item.id === 'target' || undefined" :style="{ left: `${item.box.left}px`, top: `${item.box.top}px`, width: `${item.box.width}px`, height: `${item.box.height}px` }" />
+    <div v-for="item in boxes" :key="item.id" class="histoire-measure-box htw:fixed htw:z-[25] htw:border htw:border-solid htw:border-measure htw:[background:rgb(var(--histoire-measure-rgb)_/_.05)] htw:pointer-events-none htw:data-[target]:border-dashed" :data-locked="item.locked" :data-target="item.id === 'target' || undefined" :style="{ left: `${item.box.left}px`, top: `${item.box.top}px`, width: `${item.box.width}px`, height: `${item.box.height}px` }" />
     <MeasureGuides :segments="segments" :labels="labels" />
   </div>
 </template>
-
-<style scoped>
-/* Own stacking context below canvas chrome (hint bar z-index 4, toolbar 10); fixed children keep viewport coordinates. */
-.histoire-measure-layer { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
-.histoire-measure-hit, .histoire-measure-box { position: fixed; z-index: 25; }
-.histoire-measure-hit { cursor: crosshair; pointer-events: auto; }
-.histoire-measure-hit:focus-visible { outline: 2px solid var(--histoire-measure); outline-offset: -2px; }
-.histoire-measure-box { border: 1px solid var(--histoire-measure); background: rgb(var(--histoire-measure-rgb) / .05); pointer-events: none; }
-.histoire-measure-box[data-target] { border-style: dashed; }
-</style>

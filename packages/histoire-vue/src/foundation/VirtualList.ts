@@ -57,6 +57,8 @@ export const HistoireVirtualList = defineComponent({
     pageMode: { type: Boolean, default: false },
     /** Preserve native list semantics where the calling surface uses them. */
     listTag: { type: String, default: 'div' },
+    /** Host classes applied to the native list inside the scroller. */
+    listClass: { type: String, default: undefined },
     /** Native list item or generic tree presentation wrapper. */
     itemTag: { type: String, default: 'div' },
   },
@@ -139,6 +141,7 @@ export const HistoireVirtualList = defineComponent({
           // Flow keeps source order in DOM, including keyboard and screen-reader reading.
           flowMode: true,
           listTag: props.listTag,
+          listClass: props.listClass,
           itemTag: props.itemTag,
           buffer: 160,
           prerender: 12,

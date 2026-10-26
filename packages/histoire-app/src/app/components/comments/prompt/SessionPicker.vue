@@ -40,17 +40,10 @@ const label = computed(() => {
 </script>
 
 <template>
-  <HstButton ref="trigger" color="flat" type="button" class="session-chip" aria-haspopup="dialog" :aria-expanded="open" :title="`${agent?.name ?? agentId}: ${label}`" :disabled="disabled" @click="toggle">
-    <AgentLogo :icon="agent?.icon" :size="14" /><span class="session-chip-label">{{ label }}</span><BuiltinIcon icon="chevron-down" :size="12" />
+  <HstButton ref="trigger" color="flat" type="button" class="htw:inline-flex htw:items-center htw:gap-1.5 htw:min-w-0 htw:max-w-50 htw:py-1 htw:px-2 htw:text-body htw:text-[12px]" aria-haspopup="dialog" :aria-expanded="open" :title="`${agent?.name ?? agentId}: ${label}`" :disabled="disabled" @click="toggle">
+    <span class="htw:flex htw:flex-none htw:text-agent"><AgentLogo :icon="agent?.icon" :size="14" /></span><span class="htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap">{{ label }}</span><BuiltinIcon icon="chevron-down" :size="12" class="htw:flex-none htw:text-muted" />
   </HstButton>
   <SessionPopover v-if="open" :anchor="anchor" @close="close">
     <SessionSettings :agents="agents" :agent-id="agentId" :locked="locked" :config="config" :loading="loading" :options="options" :disabled="disabled" @choose="emit('choose', $event)" @update:options="emit('update:options', $event)" />
   </SessionPopover>
 </template>
-
-<style scoped>
-.session-chip { display: inline-flex; align-items: center; gap: 6px; min-width: 0; max-width: 200px; padding: 4px 8px; color: var(--histoire-body); font-size: 12px; }
-.session-chip > :first-child { flex: none; color: var(--histoire-agent); }
-.session-chip > :last-child { flex: none; color: var(--histoire-muted); }
-.session-chip-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-</style>

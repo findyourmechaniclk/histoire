@@ -31,17 +31,17 @@ const processedTokens = computed(() => processTokens(props.tokens, props.getName
     :tokens="processedTokens"
     :dark="dark"
     layout="list"
-    class="histoire-token-list htw-my-8"
+    class="histoire-token-list htw:my-8"
   >
     <template #default="{ token }">
-      <div class="htw-flex htw-flex-col htw-gap-2">
+      <div class="htw:flex htw:flex-col htw:gap-2">
         <slot :token="token" />
-        <HstTokenDetails :name="token.name" :value="token.value" class="htw-mx-4" />
+        <HstTokenDetails :name="token.name" :value="token.value" class="htw:mx-4" />
       </div>
     </template>
   </HstTokenVirtualRows>
-  <div v-for="token of processedTokens" v-else :key="token.key" :data-histoire-control-appearance="dark ? 'dark' : 'light'" class="histoire-token-list htw-flex htw-flex-col htw-gap-2 htw-my-8">
+  <div v-for="token of processedTokens" v-else :key="token.key" :data-histoire-control-appearance="dark ? 'dark' : 'light'" class="histoire-token-list htw:flex htw:flex-col htw:gap-2 htw:my-8">
     <slot :token="token" />
-    <HstTokenDetails :name="token.name" :value="token.value" class="htw-mx-4" />
+    <HstTokenDetails :name="token.name" :value="token.value" class="htw:mx-4" />
   </div>
 </template>

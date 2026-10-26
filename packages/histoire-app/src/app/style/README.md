@@ -74,26 +74,26 @@ preserving dark primary-400, custom palette alpha, and portable SDK styling.
 
 Workbench panes and inspector tabs share `--histoire-pane-gutter` (16px),
 defined in `density.css` and retained in compact mode. Use this inset for
-headers, filters, content surfaces, and footers. Lists subtract their row's
-horizontal padding from the outer inset so row content aligns with headers.
+headers, filters, content surfaces, and footers. List rows use `htw:px-pane-row-inset` inside the shared gutter so row backgrounds
+and controls align.
 Place segmented-control spacing on a native container; inline control
 wrappers reset their own margins and padding.
 
-`main.pcss` composes document styles, controls, native Vue surfaces, tokens, and
+`main.css` composes document styles, controls, native Vue surfaces, tokens, and
 fonts in their existing order. `document.pcss` owns the standalone document
 reset; reusable native surfaces do not import it. The story runtime document
-loads the same `main.pcss` output, which also hides the hidden story mount
+loads the same `main.css` output, which also hides the hidden story mount
 (`.htw-sandbox-hidden`). Generated Markdown code blocks use shared native docs styles in
-`histoire-vue/src/styles/content.css`; prose compatibility rules remain in
-`main.pcss`.
+`histoire-vue/src/styles/content.css`; prose compatibility rules live in
+`theme.css`.
 
 Native `HistoireStoryTree` variant counts belong to
 `packages/histoire-vue/src/styles/navigation.css`, scoped to the provider's
 tree. The superseded standalone header, search dialog, command modal, home,
 split-pane shadows, and tab/mobile/startup transitions have no current source
 consumers; their standalone stylesheet and transition stylesheet were removed.
-Current workbench empty/loading states retain
-`components/shell/workbench-state.css` and component-owned styling.
+Current workbench empty/loading states share `WorkbenchStateLayout.vue` and
+use literal utility classes. No component stylesheets or Vue style blocks remain.
 
 `scripts/copy.mjs` preserves source assets and shared licensed fonts.
 `scripts/watchAndCopy.mjs` removes only the emitted target of an unlinked source
@@ -113,3 +113,57 @@ These tests cover default/custom font variables, color channels and alpha,
 semantic accent mapping, all bundled glyphs with networking unavailable, and
 legacy alias resolution. Font asset packaging and browser layout are verified
 through the app build and example browser validation.
+
+## Tailwind v4 theme
+
+App and controls compile package-local Tailwind v4 with `htw:` utilities and no
+preflight. The root Tailwind v3 config remains for docs and example stories.
+`theme.css` maps semantic `--histoire-*-rgb`/`-alpha` colors, fonts, radii,
+shadows, easing and density spacing to inline theme entries. For example:
+`htw:bg-surface`, `htw:bg-accent/15`, `htw:px-pane-gutter`, `htw:h-control`,
+`htw:rounded-control`, `htw:shadow-popover` and `htw:ease-histoire`.
+The theme emits only prefixed `--htw-*` variables. Host token overrides stay live.
+
+`htw:dark:*` accepts both `.htw-dark` and `[data-histoire-appearance="dark"]`.
+Shared controls theme files preserve the v3 palette and radius scale; regenerate
+them with `pnpm --filter @histoire/controls generate:peer-theme`.
+
+Vite and `scripts/build-tailwind.mjs` use the same PostCSS pipeline. The latter
+also supports `--watch`; source development consumes its built `dist/style.css`
+so an example's v3 PostCSS config cannot process the v4 entry. CSS-first inputs
+use components/utilities layers; compatibility output unwraps them and emits
+utilities last. This preserves existing specificity against unlayered host
+resets and prevents v3 consumers from interpreting v4 layer blocks as directives.
+The document-reset layer stays first.
+The shared isolation step drops only the universal `properties` fallback layer;
+`@property` registrations and layer-order declarations stay outside app `@scope`.
+Supported browsers therefore need native `@property` support (Tailwind v4's
+[Safari 16.4+, Chrome 111+, Firefox 128+ baseline](https://tailwindcss.com/docs/upgrade-guide#browser-requirements)).
+
+## Utility authoring and new tokens
+
+Use literal `htw:` classes in templates, including complete strings for conditional
+classes. Public token utilities include:
+
+- Colors: `htw:bg-surface`, `htw:text-muted`, `htw:border-border`, `htw:bg-accent/15`.
+- Density: `htw:h-control`, `htw:px-pane-gutter`, `htw:px-pane-row-inset`,
+  `htw:py-row-comment`, `htw:p-control-wrapper-padding`.
+- Type and shape: `htw:font-sans`, `htw:font-mono`, `htw:rounded-control`,
+  `htw:rounded-button`, `htw:shadow-popover`, `htw:ease-histoire`.
+
+To add a public token, define its defaults and dark override in `tokens.pcss`
+(or density values in `density.css`), map it in `theme.css`'s `@theme inline`,
+then extend `packages/histoire-controls/src/style/tailwind-theme.spec.ts` to
+compile its utility and verify the public variable remains referenced.
+Do not hard-code a value already represented by a token.
+
+Use package props, variants and class passthrough for package components.
+Allowed global styles and necessary important modifiers are documented in
+`plans/tailwind-only/exceptions.md`; the app source guard rejects new stylesheets,
+Vue style blocks and deep selectors.
+
+Shared empty/loading/error states retain default panel margins. When a parent
+owns that spacing, pass `flush` and supply the complete outer margin utilities
+(e.g. `flush class="htw:my-6 htw:mx-0"`). This avoids competing with the layout's
+default margin classes. Use a child prop/variant for other inherited defaults,
+such as `HomeRow`'s `muted` treatment, instead of important modifiers.

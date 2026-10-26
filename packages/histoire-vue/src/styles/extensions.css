@@ -1,12 +1,17 @@
 /* Native state and pane layout components handed to plugin views (components/extensions/workbench-components.ts). */
-.histoire-provider .histoire-state{display:flex;flex-direction:column;align-items:center;gap:6px;margin:32px 16px;color:var(--histoire-muted);font-size:12px;text-align:center}
-.histoire-provider .histoire-state-visual{display:grid;place-items:center;width:40px;height:40px;margin-bottom:6px;border-radius:50%;color:var(--histoire-accent);background:var(--histoire-accent-soft)}
-.histoire-provider .histoire-state[data-state="loading"] .histoire-state-visual{background:none}
-.histoire-provider .histoire-state[data-state="error"] .histoire-state-visual{color:var(--histoire-danger-text,#b91c1c);background:var(--histoire-danger-soft,rgb(220 38 38 / .08))}
-.histoire-provider .histoire-state>strong{color:var(--histoire-text);font-size:14px;font-weight:600}
-.histoire-provider .histoire-state>p{max-width:100%;margin:0;overflow-wrap:anywhere}
-.histoire-provider .histoire-state-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:6px}
-.histoire-provider .histoire-pane-header{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 16px}
-.histoire-provider .histoire-pane-header>h2{flex:1;min-width:0;margin:0;overflow:hidden;color:var(--histoire-text);font-size:14px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}
-.histoire-provider .histoire-pane-toolbar{display:flex;gap:8px;padding:0 16px 12px}
-.histoire-provider .histoire-pane-list{min-height:0;overflow:auto;padding:0 16px 16px}
+:where(.histoire-provider) .histoire-state{display:flex;flex-direction:column;align-items:center;gap:6px;margin:32px 16px;color:var(--histoire-muted);font-size:12px;text-align:center}
+:where(.histoire-provider) .histoire-state-visual{display:grid;place-items:center;width:40px;height:40px;margin-bottom:6px;border-radius:50%;color:var(--histoire-accent);background:var(--histoire-accent-soft)}
+:where(.histoire-provider) .histoire-state[data-state="loading"] .histoire-state-visual{background:none}
+:where(.histoire-provider) .histoire-state[data-state="error"] .histoire-state-visual{color:var(--histoire-danger-text,#b91c1c);background:var(--histoire-danger-soft,rgb(220 38 38 / .08))}
+:where(.histoire-provider) .histoire-state>:where(strong){color:var(--histoire-text);font-size:14px;font-weight:600}
+:where(.histoire-provider) .histoire-state>:where(p){max-width:100%;margin:0;overflow-wrap:anywhere}
+:where(.histoire-provider) .histoire-state-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:6px}
+:where(.histoire-provider) .histoire-pane-header{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 16px}
+:where(.histoire-provider) .histoire-pane-header>:where(h2){flex:1;min-width:0;margin:0;overflow:hidden;color:var(--histoire-text);font-size:14px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}
+:where(.histoire-provider) .histoire-pane-toolbar{display:flex;gap:8px;padding:0 16px 12px}
+:where(.histoire-provider) .histoire-pane-list{min-height:0;overflow:auto;padding:0 16px 16px}
+
+/* Interactive plugin content opts back in when its canvas layer is pointer-transparent.
+   Keep the empty mount container transparent, and let plugin descendants own their input. */
+:where(.histoire-extension-view[data-histoire-interactive="true"]) > :where(:not(.histoire-extension-mount)),
+:where(.histoire-extension-view[data-histoire-interactive="true"] > .histoire-extension-mount) > * { pointer-events: auto; }

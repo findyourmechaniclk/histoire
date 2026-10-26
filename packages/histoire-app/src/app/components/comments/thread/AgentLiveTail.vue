@@ -47,13 +47,7 @@ const elapsed = computed(() => {
 </script>
 
 <template>
-  <p class="agent-live-tail" role="status">
-    <HstPulsatingDisc :size="12" /><span class="label">{{ label }}</span><time v-if="elapsed">{{ elapsed }}</time>
+  <p class="htw:flex htw:items-center htw:gap-1.5 htw:min-w-0 htw:mt-1 htw:mx-0 htw:mb-0 htw:text-agent-text htw:text-[11px]" role="status">
+    <HstPulsatingDisc :size="12" /><span class="label htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap">{{ label }}</span><time v-if="elapsed" class="htw:flex-none htw:text-muted">{{ elapsed }}</time>
   </p>
 </template>
-
-<style scoped>
-.agent-live-tail { display: flex; align-items: center; gap: 6px; min-width: 0; margin: 4px 0 0; color: var(--histoire-agent-text); font-size: 11px; }
-.label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-time { flex: none; color: var(--histoire-muted); }
-</style>

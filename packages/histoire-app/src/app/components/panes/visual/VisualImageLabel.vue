@@ -12,11 +12,5 @@ defineProps<{
 </script>
 
 <template>
-  <span class="image-label" :class="{ right }">{{ label }}<span v-if="dimensions"> · {{ dimensions.width }} × {{ dimensions.height }}</span></span>
+  <span class="htw:absolute htw:left-0 htw:bottom-full htw:mb-2 htw:max-w-full htw:text-muted htw:text-[11px] htw:font-semibold htw:whitespace-nowrap htw:overflow-hidden htw:text-ellipsis htw:pointer-events-none htw:data-[right]:left-auto htw:data-[right]:right-0" :data-right="right || undefined">{{ label }}<span v-if="dimensions"> · {{ dimensions.width }} × {{ dimensions.height }}</span></span>
 </template>
-
-<style scoped>
-/* Sits in scroll pane's top padding, above image frame, so it never covers captured pixels. */
-.image-label { position: absolute; left: 0; bottom: 100%; margin-bottom: 8px; max-width: 100%; color: var(--histoire-muted); font-size: 11px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
-.image-label.right { left: auto; right: 0; }
-</style>

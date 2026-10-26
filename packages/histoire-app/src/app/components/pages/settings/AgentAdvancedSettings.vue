@@ -6,6 +6,7 @@ import { computed, ref, watch } from 'vue'
 import { useAgentsStore } from '../../../stores/agents.js'
 import AgentArgumentsField from './AgentArgumentsField.vue'
 import AgentEnvironmentField from './AgentEnvironmentField.vue'
+import AgentLaunchField from './AgentLaunchField.vue'
 
 /** Editable launch fields shared by baseline and draft. */
 interface LaunchDraft { name: string, command: string, args: string[], cwd: string }
@@ -94,35 +95,41 @@ function remove(): void {
 </script>
 
 <template>
-  <form class="histoire-agent-form" @submit.prevent="save">
-    <label><span>Name</span><HstText v-model="draft.name" layout="inline" class="histoire-settings-field" :aria-label="`${preset.name} name`" /></label>
-    <label><span>Command</span><HstText v-model="draft.command" layout="inline" class="histoire-settings-field histoire-agent-command" :aria-label="`${preset.name} command`" placeholder="Executable name or path" spellcheck="false" /></label>
-    <div class="histoire-agent-form-row">
-      <span>Arguments</span><AgentArgumentsField v-model="draft.args" :label="preset.name" />
-    </div>
-    <label><span>Working directory</span><HstText v-model="draft.cwd" layout="inline" class="histoire-settings-field histoire-agent-command" :aria-label="`${preset.name} working directory`" placeholder="Project root" spellcheck="false" /></label>
-    <div class="histoire-agent-form-row">
-      <span>Environment</span><AgentEnvironmentField :agent-id="agentId" :label="preset.name" @error="error = $event" />
-    </div>
-    <code v-if="status?.state === 'not-installed' && ACP_INSTALL_HINTS[agentId]" class="histoire-agent-install">{{ ACP_INSTALL_HINTS[agentId] }}</code>
-    <div class="histoire-agent-form-actions">
-      <HstButton color="primary" type="submit" class="histoire-settings-action" :disabled="!dirty || agents.pending.value">
+  <form class="htw:p-[0_20px_20px_65px] htw:flex htw:flex-col htw:gap-[10px] htw:[@media(max-width:_600px)]:p-[0_14px_16px]" @submit.prevent="save">
+    <AgentLaunchField label="Name">
+      <HstText v-model="draft.name" layout="inline" class="htw:min-w-0" :aria-label="`${preset.name} name`" />
+    </AgentLaunchField>
+    <AgentLaunchField label="Command">
+      <HstText v-model="draft.command" layout="inline" class="htw:min-w-0" :aria-label="`${preset.name} command`" placeholder="Executable name or path" spellcheck="false" />
+    </AgentLaunchField>
+    <AgentLaunchField label="Arguments" multiline>
+      <AgentArgumentsField v-model="draft.args" :label="preset.name" />
+    </AgentLaunchField>
+    <AgentLaunchField label="Working directory">
+      <HstText v-model="draft.cwd" layout="inline" class="htw:min-w-0" :aria-label="`${preset.name} working directory`" placeholder="Project root" spellcheck="false" />
+    </AgentLaunchField>
+    <AgentLaunchField label="Environment" multiline>
+      <AgentEnvironmentField :agent-id="agentId" :label="preset.name" @error="error = $event" />
+    </AgentLaunchField>
+    <code v-if="status?.state === 'not-installed' && ACP_INSTALL_HINTS[agentId]" class="htw:[overflow-wrap:anywhere] htw:[font:11px_var(--histoire-font-mono,_monospace)]">{{ ACP_INSTALL_HINTS[agentId] }}</code>
+    <div class="htw:flex htw:flex-wrap htw:gap-[7px] htw:mt-[4px] htw:pt-[14px] htw:[border-top:1px_solid_var(--histoire-border,_#e4e4e7)]">
+      <HstButton color="primary" type="submit" :disabled="!dirty || agents.pending.value">
         Save
-      </HstButton><HstButton v-if="dirty" color="default" type="button" class="histoire-settings-action" @click="discard">
+      </HstButton><HstButton v-if="dirty" color="default" type="button" @click="discard">
         Discard
       </HstButton>
-      <span class="histoire-agent-form-actions-end">
-        <HstButton v-if="status?.enabled" color="default" type="button" class="histoire-settings-action" :disabled="agents.pending.value" @click="agents.restart(agentId)">
+      <span class="htw:ms-auto htw:flex htw:flex-wrap htw:gap-[7px] htw:[@media(max-width:_600px)]:ms-0">
+        <HstButton v-if="status?.enabled" color="default" type="button" :disabled="agents.pending.value" @click="agents.restart(agentId)">
           Restart
-        </HstButton><HstButton color="default" type="button" class="histoire-settings-action" :aria-expanded="logs" @click="logs = !logs">
+        </HstButton><HstButton color="default" type="button" :aria-expanded="logs" @click="logs = !logs">
           {{ logs ? 'Hide logs' : 'Logs' }}
-        </HstButton><HstButton v-if="!preset.default" color="default" type="button" class="histoire-settings-action" :disabled="agents.pending.value" @click="setDefault">
+        </HstButton><HstButton v-if="!preset.default" color="default" type="button" :disabled="agents.pending.value" @click="setDefault">
           Make default
-        </HstButton><HstButton color="default" type="button" class="histoire-settings-action histoire-agent-remove" :disabled="agents.pending.value" @click="remove">
+        </HstButton><HstButton color="default" type="button" class="htw:not-disabled:text-danger-text" :disabled="agents.pending.value" @click="remove">
           Remove
         </HstButton>
       </span>
     </div>
-    <pre v-if="logs" class="histoire-agent-logs">{{ status?.logs.length ? status.logs.join('\n') : 'No logs' }}</pre>
+    <pre v-if="logs" class="htw:max-h-[200px] htw:overflow-auto htw:m-[4px_0_0] htw:p-[12px] htw:whitespace-pre-wrap htw:[overflow-wrap:anywhere] htw:rounded-[8px] htw:[background:var(--histoire-subtle,_#f4f4f5)] htw:[font:11px/1.6_var(--histoire-font-mono,_monospace)]">{{ status?.logs.length ? status.logs.join('\n') : 'No logs' }}</pre>
   </form>
 </template>

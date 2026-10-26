@@ -61,15 +61,15 @@ function keyboard(event: KeyboardEvent): void {
 </script>
 
 <template>
-  <div ref="stage" class="visual-slider">
-    <div class="layer">
-      <img v-if="props.baselineUrl" :src="props.baselineUrl" :alt="`baseline image for ${props.label}`" :style="props.baselineStyle" draggable="false">
+  <div ref="stage" class="htw:relative htw:grid htw:w-max">
+    <div class="htw:col-start-1 htw:row-start-1">
+      <img v-if="props.baselineUrl" class="htw:block htw:max-w-none htw:select-none" :src="props.baselineUrl" :alt="`baseline image for ${props.label}`" :style="props.baselineStyle" draggable="false">
     </div>
-    <div class="layer" :style="{ clipPath: `inset(0 0 0 ${position}%)` }">
-      <img v-if="props.currentUrl" :src="props.currentUrl" :alt="`current image for ${props.label}`" :style="props.currentStyle" draggable="false">
+    <div class="htw:col-start-1 htw:row-start-1" :style="{ clipPath: `inset(0 0 0 ${position}%)` }">
+      <img v-if="props.currentUrl" class="htw:block htw:max-w-none htw:select-none" :src="props.currentUrl" :alt="`current image for ${props.label}`" :style="props.currentStyle" draggable="false">
     </div>
     <div
-      class="separator"
+      class="htw:group/separator htw:absolute htw:top-0 htw:bottom-0 htw:flex htw:flex-col htw:justify-center htw:items-center htw:w-3 htw:ml-[-6px] htw:cursor-ew-resize htw:touch-none htw:before:[content:''] htw:before:absolute htw:before:top-0 htw:before:bottom-0 htw:before:left-[50%] htw:before:w-[1px] htw:before:[background:color-mix(in_srgb,_var(--histoire-code)_45%,_transparent)] htw:focus-visible:[outline:none]"
       role="slider"
       tabindex="0"
       aria-label="Baseline and current separator"
@@ -84,19 +84,8 @@ function keyboard(event: KeyboardEvent): void {
       @lostpointercapture="dragging = false"
       @keydown="keyboard"
     >
-      <span class="grip" />
+      <!-- Opposing sticky insets keep grip centered inside the scrolling image. -->
+      <span class="htw:sticky htw:top-[calc(50%_-_8px)] htw:bottom-[calc(50%_-_8px)] htw:w-1.5 htw:h-4 htw:rounded-[3px] htw:bg-code htw:shadow-[0_0_0_2px_light-dark(var(--histoire-surface),_var(--histoire-text)),_0_1px_2px_rgb(0_0_0_/_25%)] htw:group-focus-visible/separator:[outline:2px_solid_var(--histoire-text)] htw:group-focus-visible/separator:outline-offset-2" />
     </div>
   </div>
 </template>
-
-<style scoped>
-.visual-slider { position: relative; display: grid; width: max-content; }
-.layer { grid-area: 1/1; }
-img { display: block; max-width: none; user-select: none; }
-.separator { position: absolute; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 12px; margin-left: -6px; cursor: ew-resize; touch-action: none; }
-.separator::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 1px; background: color-mix(in srgb, var(--histoire-code) 45%, transparent); }
-/* Opposing sticky insets pin grip to scroll area's vertical middle, clamped inside separator. */
-.grip { position: sticky; top: calc(50% - 8px); bottom: calc(50% - 8px); width: 6px; height: 16px; border-radius: 3px; background: var(--histoire-code); box-shadow: 0 0 0 2px light-dark(var(--histoire-surface), var(--histoire-text)), 0 1px 2px rgb(0 0 0 / 25%); }
-.separator:focus-visible { outline: none; }
-.separator:focus-visible .grip { outline: 2px solid var(--histoire-text); outline-offset: 2px; }
-</style>

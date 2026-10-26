@@ -3,12 +3,15 @@ import type { PropType } from 'vue'
 import { getControlElement, HstButton, HstText, restoreControlsFocus } from '@histoire/controls/vue'
 import { defineComponent, h, nextTick, shallowRef } from 'vue'
 import { HistoireDropdown } from '../../foundation/floating.js'
+import { mergePartClass, partClassesProp } from '../../foundation/parts.js'
 import { useHistoireResource } from '../../provider/context.js'
 
 /** Preset editing stays inside the provider-owned dropdown, beside its select. */
 export const PresetMenu = defineComponent({
   name: 'HistoirePresetMenu',
   props: {
+    /** Host utilities for documented component parts; package markers remain intact. */
+    classes: partClassesProp<'trigger'>(),
     /** Opaque runtime ID; initial state intentionally has no saved preset actions. */
     selectedId: { type: String, required: true },
     /** Current saved label, used only to seed a rename draft. */
@@ -140,7 +143,7 @@ export const PresetMenu = defineComponent({
       onApplyHide: () => { visible = false },
       onHide: () => close(),
     }, {
-      default: () => h(HstButton, { 'color': 'flat', 'ref': (value: any) => { trigger.value = getControlElement(value) as HTMLButtonElement | null }, 'type': 'button', 'class': 'histoire-preset-trigger', 'iconOnly': true, 'aria-label': 'Manage presets', 'aria-haspopup': 'menu', 'aria-expanded': shown.value, 'disabled': props.disabled, 'onClick': () => shown.value ? close(true) : open(), 'onKeydown': (event: KeyboardEvent) => {
+      default: () => h(HstButton, { 'color': 'flat', 'ref': (value: any) => { trigger.value = getControlElement(value) as HTMLButtonElement | null }, 'type': 'button', 'class': mergePartClass('histoire-preset-trigger', props.classes?.trigger), 'iconOnly': true, 'aria-label': 'Manage presets', 'aria-haspopup': 'menu', 'aria-expanded': shown.value, 'disabled': props.disabled, 'onClick': () => shown.value ? close(true) : open(), 'onKeydown': (event: KeyboardEvent) => {
         if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return
         event.preventDefault()
         event.stopPropagation()

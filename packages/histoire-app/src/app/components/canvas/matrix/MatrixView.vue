@@ -104,35 +104,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="histoire-matrix-view">
-    <div v-if="!uiHidden && matrix.available.value" class="histoire-matrix-axis-position">
+  <div class="htw:absolute htw:inset-0 htw:pointer-events-none">
+    <div v-if="!uiHidden && matrix.available.value" class="histoire-matrix-axis-position htw:absolute htw:inset-x-[var(--histoire-canvas-info-inset)_calc(var(--histoire-canvas-inspector-reserve)_+_var(--histoire-canvas-info-inset))] htw:top-[128px] htw:z-[15] htw:pointer-events-auto htw:@container/matrix-axis">
       <MatrixAxisBar @axes="emit('axes', $event)" />
     </div>
-    <div v-if="!uiHidden && (!matrix.available.value || !matrix.cells.value.length)" class="histoire-matrix-empty">
+    <div v-if="!uiHidden && (!matrix.available.value || !matrix.cells.value.length)" class="htw:absolute htw:inset-[184px_calc(var(--histoire-canvas-inspector-reserve)_+_var(--histoire-canvas-info-inset))_24px_var(--histoire-canvas-info-inset)] htw:grid htw:place-items-center htw:overflow-auto">
       <MatrixAvailabilityState :failed="discoveryFailed" @add-axis="emit('addAxis')" />
     </div>
-    <div v-else class="histoire-matrix-board" :style="{ top: `${topInset}px` }">
+    <div v-else class="histoire-matrix-board htw:absolute htw:inset-0 htw:overflow-hidden" :style="{ top: `${topInset}px` }">
       <!-- Keep world coordinates unchanged while clipping beneath fixed chrome. -->
-      <div class="histoire-matrix-board-world" :style="{ top: `${-topInset}px` }">
-        <span v-for="(position, index) in rowPosition" :key="index" class="histoire-matrix-row-label" :style="position.style">{{ matrix.rows.value }}={{ JSON.stringify(position.value) }}</span>
-        <span v-for="(position, index) in colPosition" :key="index" class="histoire-matrix-col-label" :style="position.style">{{ matrix.cols.value }}={{ JSON.stringify(position.value) }}</span>
+      <div class="htw:absolute htw:inset-0" :style="{ top: `${-topInset}px` }">
+        <span v-for="(position, index) in rowPosition" :key="index" class="htw:absolute htw:overflow-hidden htw:text-muted htw:font-mono htw:text-[11px] htw:whitespace-nowrap htw:text-ellipsis htw:[transform:translateY(-50%)] htw:pe-3" :style="position.style">{{ matrix.rows.value }}={{ JSON.stringify(position.value) }}</span>
+        <span v-for="(position, index) in colPosition" :key="index" class="htw:absolute htw:overflow-hidden htw:text-muted htw:font-mono htw:text-[11px] htw:whitespace-nowrap htw:text-ellipsis htw:text-center" :style="position.style">{{ matrix.cols.value }}={{ JSON.stringify(position.value) }}</span>
         <MatrixCell v-for="(cell, index) in matrix.cells.value" :key="cell.key" :cell="cell" :frame="frames[index]" :fit-bounds="zoom => layoutFrames(zoom)[index]" :live="live.has(cell.key)" :variant-id="baseVariant ?? ''" :preview-base="previewBase" />
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.histoire-matrix-view { position: absolute; inset: 0; pointer-events: none; }
-.histoire-matrix-view :deep(.histoire-matrix-cell), .histoire-matrix-axis-position { pointer-events: auto; }
-.histoire-matrix-axis-position { position: absolute; inset-inline: var(--histoire-canvas-info-inset) calc(var(--histoire-canvas-inspector-reserve) + var(--histoire-canvas-info-inset)); top: 128px; z-index: 15; container-type: inline-size; }
-.histoire-matrix-board { position: absolute; inset: 0; overflow: hidden; }
-.histoire-matrix-board-world { position: absolute; inset: 0; }
-.histoire-matrix-row-label, .histoire-matrix-col-label { position: absolute; overflow: hidden; color: var(--histoire-muted); font-family: var(--histoire-font-mono); font-size: 11px; white-space: nowrap; text-overflow: ellipsis; }
-.histoire-matrix-row-label { transform: translateY(-50%); padding-inline-end: 12px; }
-.histoire-matrix-col-label { text-align: center; }
-.histoire-matrix-empty { position: absolute; inset: 184px calc(var(--histoire-canvas-inspector-reserve) + var(--histoire-canvas-info-inset)) 24px var(--histoire-canvas-info-inset); display: grid; place-items: center; overflow: auto; }
-.histoire-matrix-empty :deep(.workbench-state) { max-width: 52ch; margin: 24px 0; }
-/* Guidance overlays the pannable canvas; only its actions take pointer input. */
-.histoire-matrix-empty :deep(.workbench-empty-state-actions) { pointer-events: auto; }
-</style>

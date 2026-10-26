@@ -15,36 +15,24 @@ const rows = computed(() => {
 </script>
 
 <template>
-  <section class="histoire-mcp-clients" aria-label="Connected MCP clients">
-    <h3>Clients</h3>
-    <p v-if="!store.clients.length">
+  <section class="htw:mt-0 htw:mx-0 htw:mb-5.5" aria-label="Connected MCP clients">
+    <h3 class="htw:mt-0 htw:mx-0 htw:mb-3.5 htw:text-muted htw:text-[12px] htw:font-semibold">
+      Clients
+    </h3>
+    <p v-if="!store.clients.length" class="htw:m-0 htw:text-muted htw:text-[12px]">
       No clients connected.
     </p>
     <WorkbenchVirtualList v-else :items="rows" :min-item-size="47" list-tag="ul" item-tag="li" page-mode>
       <template #default="{ item: { client, active } }">
-        <div class="histoire-mcp-client-row">
-          <span class="histoire-mcp-client-icon" :data-active="active"><BuiltinIcon icon="bot" :size="20" /></span>
-          <span class="histoire-mcp-client-details">
-            <strong>{{ client.name }}</strong>
-            <span>{{ client.transport }} · {{ active ? mcpTimeAgo(client.connectedAt, store.now) : `idle ${mcpTimeAgo(client.lastSeenAt, store.now)}` }}</span>
+        <div class="htw:flex htw:items-center htw:gap-2.5 htw:py-row-mcp htw:px-0">
+          <span class="htw:grid htw:place-items-center htw:flex-none htw:w-7.5 htw:h-7.5 htw:rounded-[9px] htw:text-muted htw:bg-chip htw:data-[active=true]:text-agent-text htw:data-[active=true]:bg-agent-soft" :data-active="active"><BuiltinIcon icon="bot" :size="20" /></span>
+          <span class="htw:grid htw:flex-1 htw:min-w-0 htw:gap-[1px]">
+            <strong class="htw:text-[13px] htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap htw:font-[650]">{{ client.name }}</strong>
+            <span class="htw:text-[11px] htw:text-muted">{{ client.transport }} · {{ active ? mcpTimeAgo(client.connectedAt, store.now) : `idle ${mcpTimeAgo(client.lastSeenAt, store.now)}` }}</span>
           </span>
-          <span class="histoire-mcp-client-dot" :data-active="active" :aria-label="active ? 'Active' : 'Idle'" />
+          <span class="htw:flex-none htw:w-[7px] htw:h-[7px] htw:rounded-full htw:bg-border htw:data-[active=true]:bg-accent" :data-active="active" :aria-label="active ? 'Active' : 'Idle'" />
         </div>
       </template>
     </WorkbenchVirtualList>
   </section>
 </template>
-
-<style scoped>
-.histoire-mcp-clients { margin: 0 0 22px; }
-h3 { margin: 0 0 14px; color: var(--histoire-muted); font-size: 12px; font-weight: 600; }
-p { margin: 0; color: var(--histoire-muted); font-size: 12px; }
-.histoire-mcp-client-row { display: flex; align-items: center; gap: 10px; padding: var(--histoire-mcp-row-padding, 8px) 0; }
-.histoire-mcp-client-icon { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 9px; color: var(--histoire-muted); background: var(--histoire-chip); }
-.histoire-mcp-client-icon[data-active="true"] { color: var(--histoire-agent-text); background: var(--histoire-agent-soft); }
-.histoire-mcp-client-details { display: grid; flex: 1; min-width: 0; gap: 1px; }
-strong { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 650; }
-.histoire-mcp-client-details > span { font-size: 11px; color: var(--histoire-muted); }
-.histoire-mcp-client-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--histoire-border); }
-.histoire-mcp-client-dot[data-active="true"] { background: var(--histoire-accent); }
-</style>

@@ -14,16 +14,9 @@ defineEmits<{
 </script>
 
 <template>
-  <HstButton type="button" class="histoire-home-search histoire-home-card" @click="$emit('search')">
+  <HstButton type="button" class="htw:overflow-hidden htw:[border:1px_solid_var(--histoire-border)] htw:rounded-[14px] htw:bg-surface htw:border-border htw:text-left htw:not-disabled:[&:hover]:border-accent htw:not-disabled:[&:hover]:bg-surface htw:focus-visible:[outline-offset:3px] htw:flex htw:items-center htw:justify-start htw:gap-[12px] htw:w-full htw:p-[14px_16px] htw:text-muted htw:hover:text-text" @click="$emit('search')">
     <BuiltinIcon icon="search" :size="16" />
-    <span>Search {{ stories }} stories and {{ guides }} docs pages</span>
-    <kbd>Ctrl K</kbd>
+    <span class="htw:flex-1">Search {{ stories }} stories and {{ guides }} docs pages</span>
+    <kbd class="htw:[border:1px_solid_var(--histoire-border)] htw:rounded-[5px] htw:p-[2px_5px] htw:font-mono htw:text-[10px]">Ctrl K</kbd>
   </HstButton>
 </template>
-
-<style scoped>
-.histoire-home-search { display: flex; align-items: center; justify-content: flex-start; gap: 12px; width: 100%; padding: 14px 16px; color: var(--histoire-muted); }
-.histoire-home-search span { flex: 1; }
-.histoire-home-search kbd { border: 1px solid var(--histoire-border); border-radius: 5px; padding: 2px 5px; font-family: var(--histoire-font-mono, monospace); font-size: 10px; }
-.histoire-home-search:hover { color: var(--histoire-text); }
-</style>

@@ -24,10 +24,10 @@ const displayedShades = computed(() => Object.entries(flattenTokenShades(props.s
 
 <template>
   <slot v-if="!displayedShades.length" name="empty" />
-  <div v-if="displayedShades.length" :data-histoire-control-appearance="dark ? 'dark' : 'light'" class="histoire-color-shades htw-grid htw-gap-4 htw-grid-cols-[repeat(auto-fill,minmax(min(200px,100%),1fr))] htw-m-4">
-    <div v-for="shade of displayedShades" :key="shade.key" class="htw-flex htw-flex-col htw-gap-2 htw-min-w-0">
+  <div v-if="displayedShades.length" :data-histoire-control-appearance="dark ? 'dark' : 'light'" class="histoire-color-shades htw:grid htw:gap-4 htw:grid-cols-[repeat(auto-fill,minmax(min(200px,100%),1fr))] htw:m-4">
+    <div v-for="shade of displayedShades" :key="shade.key" class="htw:flex htw:flex-col htw:gap-2 htw:min-w-0">
       <slot :color="shade.color">
-        <div class="htw-rounded-full htw-w-16 htw-h-16" :style="{ backgroundColor: shade.color } as CSSProperties" />
+        <div class="htw:rounded-full htw:w-16 htw:h-16" :style="{ backgroundColor: shade.color } as CSSProperties" />
       </slot>
       <HstTokenDetails :name="shade.name" :value="shade.color" kind="color" />
     </div>

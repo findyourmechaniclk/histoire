@@ -3,6 +3,7 @@ import type { SingleResizeAxis, SingleResizeSize } from './single-resize.js'
 import { useElementBounding, useEventListener } from '@vueuse/core'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { createSingleResizeController, SINGLE_RESIZE_MAX, SINGLE_RESIZE_MIN } from './single-resize.js'
+import SingleVariantResizeHandle from './SingleVariantResizeHandle.vue'
 
 const props = defineProps<{
   /** Native scrolling owner for centered and overflow geometry. */
@@ -88,9 +89,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="histoire-single-resize-handles" :style="position" :data-active="controller.active.value" :data-keyboard-input="keyboardInput">
-    <div
-      class="histoire-single-resize-handle is-width"
+  <div class="htw:group/handles htw:absolute htw:z-[4] htw:pointer-events-none" :style="position" :data-active="controller.active.value" :data-keyboard-input="keyboardInput">
+    <SingleVariantResizeHandle
+      class="htw:inset-y-[7px] htw:-end-2 htw:w-3 htw:cursor-ew-resize htw:after:inset-y-0 htw:after:start-[3px] htw:after:w-px htw:after:bg-current"
       data-test-id="single-resize-width"
       role="separator"
       tabindex="0"
@@ -104,8 +105,8 @@ onBeforeUnmount(() => {
       @lostpointercapture="controller.onPointerEnd"
       @keydown="keyDown('width', $event)"
     />
-    <div
-      class="histoire-single-resize-handle is-height"
+    <SingleVariantResizeHandle
+      class="htw:inset-x-[7px] htw:-bottom-2 htw:h-3 htw:cursor-ns-resize htw:after:inset-x-0 htw:after:top-[3px] htw:after:h-px htw:after:bg-current"
       data-test-id="single-resize-height"
       role="separator"
       tabindex="0"
@@ -119,8 +120,9 @@ onBeforeUnmount(() => {
       @lostpointercapture="controller.onPointerEnd"
       @keydown="keyDown('height', $event)"
     />
-    <div
-      class="histoire-single-resize-handle is-both"
+    <SingleVariantResizeHandle
+      corner
+      class="htw:-end-2 htw:-bottom-2 htw:size-[18px] htw:cursor-nwse-resize htw:after:end-2 htw:after:bottom-2 htw:after:box-border htw:after:size-[7px] htw:after:border-e-2 htw:after:border-b-2 htw:after:border-solid htw:after:border-current htw:after:rounded-ee-[7px]"
       data-test-id="single-resize-both"
       tabindex="-1"
       aria-hidden="true"
@@ -129,21 +131,3 @@ onBeforeUnmount(() => {
     />
   </div>
 </template>
-
-<style scoped>
-.histoire-single-resize-handles { position: absolute; z-index: 4; pointer-events: none; }
-.histoire-single-resize-handle { --resize-color: transparent; position: absolute; pointer-events: auto; touch-action: none; user-select: none; outline: none; }
-.histoire-single-resize-handle.is-both { --resize-color: color-mix(in srgb, var(--histoire-muted) 40%, transparent); }
-.histoire-single-resize-handle:focus { outline: none; }
-.histoire-single-resize-handle::after { content: ''; position: absolute; border-radius: 1px; background: transparent; }
-/* Highlight the frame edge for pointer and keyboard resizing. */
-.histoire-single-resize-handle:hover, .histoire-single-resize-handles[data-keyboard-input="true"] .histoire-single-resize-handle:focus-visible, .histoire-single-resize-handles[data-active="true"] .histoire-single-resize-handle { --resize-color: var(--histoire-accent); }
-/* Keep generous outside hit areas while edge marks follow the frame border. */
-.is-width { inset-block: 7px; inset-inline-end: -8px; width: 12px; cursor: ew-resize; }
-.is-width::after { inset-block: 0; inset-inline-start: 3px; width: 1px; background: var(--resize-color); }
-.is-height { inset-inline: 7px; bottom: -8px; height: 12px; cursor: ns-resize; }
-.is-height::after { inset-inline: 0; top: 3px; height: 1px; background: var(--resize-color); }
-.is-both { inset-inline-end: -8px; bottom: -8px; width: 18px; height: 18px; cursor: nwse-resize; }
-/* Match the frame's 7px radius and outer edges; only the hit area extends outside. */
-.is-both::after { inset-inline-end: 8px; bottom: 8px; box-sizing: border-box; width: 7px; height: 7px; border-inline-end: 2px solid var(--resize-color); border-bottom: 2px solid var(--resize-color); border-end-end-radius: 7px; }
-</style>

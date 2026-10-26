@@ -4,6 +4,8 @@ import type { ScreenshotSetupController } from './use-screenshot-setup.js'
 import { HstButton } from '@histoire/controls/vue'
 import { serializeScreenshotSetupCommand } from '@histoire/shared'
 import { computed, ref } from 'vue'
+import PopoverDivider from '../../base/popover/PopoverDivider.vue'
+import PopoverTitle from '../../base/popover/PopoverTitle.vue'
 import WorkbenchEmptyState from '../../shell/WorkbenchEmptyState.vue'
 import WorkbenchLoadingState from '../../shell/WorkbenchLoadingState.vue'
 
@@ -135,69 +137,55 @@ function checkAgain(): void {
 </script>
 
 <template>
-  <section class="screenshot-setup" aria-label="Screenshot setup">
-    <div class="popover-divider" />
-    <p class="popover-title">
+  <section class="screenshot-setup htw:pb-2" aria-label="Screenshot setup">
+    <PopoverDivider />
+    <PopoverTitle compact>
       Screenshot setup
-    </p>
+    </PopoverTitle>
     <WorkbenchLoadingState v-if="loading" :title="loadingTitle" />
     <WorkbenchEmptyState v-else-if="!setup.snapshot.value || setup.snapshot.value.state !== 'ready'" icon="camera" :title="setup.snapshot.value?.state === 'unverified' ? 'Setup not checked' : setup.snapshot.value?.state === 'checking' ? 'Setup status needs refresh' : 'Screenshot setup needed'">
       {{ detail }}
       <template #actions>
-        <HstButton color="flat" type="button" @click="setup.checked.value ? checkAgain() : check()">
+        <HstButton color="flat" tone="accent" type="button" @click="setup.checked.value ? checkAgain() : check()">
           {{ setup.checked.value ? 'Check again' : 'Check setup' }}
         </HstButton>
-        <HstButton v-if="firstRepair?.command" color="flat" type="button" @click="copyCommand">
+        <HstButton v-if="firstRepair?.command" color="flat" tone="accent" type="button" @click="copyCommand">
           Copy command
         </HstButton>
       </template>
     </WorkbenchEmptyState>
-    <div v-if="attempts.length && !loading && setup.snapshot.value?.state !== 'ready'" class="screenshot-setup-diagnostics">
-      <p v-if="selectedDriver" class="screenshot-setup-driver">
-        Selected driver: <strong>{{ selectedDriver }}</strong>
+    <div v-if="attempts.length && !loading && setup.snapshot.value?.state !== 'ready'" class="htw:m-2 htw:text-muted htw:text-[11px]">
+      <p v-if="selectedDriver" class="htw:m-[0_0_6px]">
+        Selected driver: <strong class="htw:text-text htw:font-semibold">{{ selectedDriver }}</strong>
       </p>
-      <ol class="screenshot-setup-attempts" aria-label="Failed browser attempts">
+      <ol class="htw:grid htw:gap-1.5 htw:m-0 htw:[padding-inline-start:18px]" aria-label="Failed browser attempts">
         <li v-for="(attempt, index) in attempts" :key="`${attempt.source}-${index}`">
-          <p><strong>{{ sourceLabels[attempt.source] }}</strong><span>{{ stageLabel(attempt.stage) }}</span></p>
-          <p>{{ diagnosticText(attempt) }}</p>
+          <p class="htw:m-0 htw:flex htw:flex-wrap htw:gap-x-2 htw:gap-y-1 htw:text-text">
+            <strong>{{ sourceLabels[attempt.source] }}</strong><span class="htw:text-muted">{{ stageLabel(attempt.stage) }}</span>
+          </p>
+          <p class="htw:m-0">
+            {{ diagnosticText(attempt) }}
+          </p>
         </li>
       </ol>
     </div>
-    <div v-if="!loading && setup.snapshot.value?.state === 'ready'" class="screenshot-setup-ready" role="status">
-      <span><strong>Ready</strong><span>{{ setup.snapshot.value.source ? sourceLabels[setup.snapshot.value.source] : 'Browser' }}</span></span>
+    <div v-if="!loading && setup.snapshot.value?.state === 'ready'" class="htw:flex htw:items-center htw:justify-between htw:gap-2 htw:p-2 htw:rounded-[7px] htw:bg-chip htw:text-text htw:text-[12px]" role="status">
+      <span class="htw:flex htw:items-center htw:gap-2 htw:min-w-0"><strong class="htw:font-bold">Ready</strong><span class="htw:overflow-hidden htw:text-muted htw:text-ellipsis htw:whitespace-nowrap">{{ setup.snapshot.value.source ? sourceLabels[setup.snapshot.value.source] : 'Browser' }}</span></span>
       <HstButton color="flat" type="button" @click="checkAgain">
         Check again
       </HstButton>
     </div>
-    <p v-if="setup.error.value && !setup.error.value.setup && setup.snapshot.value?.state === 'ready'" class="screenshot-setup-feedback" role="alert">
+    <p v-if="setup.error.value && !setup.error.value.setup && setup.snapshot.value?.state === 'ready'" class="htw:my-1 htw:mx-2 htw:text-muted htw:text-[11px] htw:[&[role=alert]]:text-danger" role="alert">
       {{ setup.error.value.message }}
     </p>
-    <p v-if="showRepairLabel && !loading" class="screenshot-setup-repair">
+    <p v-if="showRepairLabel && !loading" class="htw:my-1 htw:mx-2 htw:text-muted htw:text-[11px]">
       {{ firstRepair.label }}
     </p>
-    <p v-if="copied" class="screenshot-setup-feedback" role="status">
+    <p v-if="copied" class="htw:my-1 htw:mx-2 htw:text-muted htw:text-[11px] htw:[&[role=alert]]:text-danger" role="status">
       Command copied
     </p>
-    <p v-if="copyError" class="screenshot-setup-feedback" role="alert">
+    <p v-if="copyError" class="htw:my-1 htw:mx-2 htw:text-muted htw:text-[11px] htw:[&[role=alert]]:text-danger" role="alert">
       Copy unavailable
     </p>
   </section>
 </template>
-
-<style scoped>
-.screenshot-setup { padding-bottom: 8px; }
-.screenshot-setup .popover-title { margin-bottom: 6px; }
-.screenshot-setup-ready { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px; border-radius: 7px; background: var(--histoire-chip); color: var(--histoire-text); font-size: 12px; }
-.screenshot-setup-ready > span { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.screenshot-setup-ready strong { font-weight: 700; }
-.screenshot-setup-ready span span { overflow: hidden; color: var(--histoire-muted); text-overflow: ellipsis; white-space: nowrap; }
-.screenshot-setup-diagnostics { margin: 8px; color: var(--histoire-muted); font-size: 11px; }
-.screenshot-setup-driver { margin: 0 0 6px; }
-.screenshot-setup-driver strong { color: var(--histoire-text); font-weight: 600; }
-.screenshot-setup-attempts { display: grid; gap: 6px; margin: 0; padding-inline-start: 18px; }
-.screenshot-setup-attempts li > p { margin: 0; }
-.screenshot-setup-attempts li > p:first-child { display: flex; flex-wrap: wrap; gap: 4px 8px; color: var(--histoire-text); }
-.screenshot-setup-attempts li > p:first-child span { color: var(--histoire-muted); }
-.screenshot-setup-repair, .screenshot-setup-feedback { margin: 4px 8px; color: var(--histoire-muted); font-size: 11px; }
-.screenshot-setup-feedback[role="alert"] { color: var(--histoire-danger); }
-</style>

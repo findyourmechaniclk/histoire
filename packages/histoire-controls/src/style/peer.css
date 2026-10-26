@@ -1,6 +1,9 @@
-@import 'fonts.pcss';
-@import 'floating-vue/dist/style.css';
-@import 'floating.pcss';
-
-@tailwind components;
-@tailwind utilities;
+@layer histoire-document-reset, theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme) prefix(htw);
+@import 'tailwindcss/utilities.css' layer(utilities) prefix(htw);
+@import './base-theme.css';
+@import './peer-theme.css';
+@import './fonts.pcss';
+@import 'floating-vue/dist/style.css' layer(components);
+@import './floating.pcss' layer(components);
+@source '../';

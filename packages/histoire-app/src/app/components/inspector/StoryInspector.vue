@@ -8,10 +8,10 @@ import { computed, nextTick, ref, useId, watch } from 'vue'
 import { isContextMenuShortcut, useContextMenu } from '../../composables/context-menu.js'
 import { useSelection } from '../../composables/selection.js'
 import { resolveContributionIcon } from '../../extensions/icons.js'
-import ExtensionOutlet from '../extensions/ExtensionOutlet.vue'
 import WorkbenchEmptyState from '../shell/WorkbenchEmptyState.vue'
 import WorkbenchLoadingState from '../shell/WorkbenchLoadingState.vue'
 import { INSPECTOR_BUILTIN_VIEWS } from './builtins.js'
+import InspectorExtensionOutlet from './InspectorExtensionOutlet.vue'
 import InspectorHeader from './InspectorHeader.vue'
 import InspectorTabs from './InspectorTabs.vue'
 import { provideInspectorModel, useInspectorTestsState } from './model.js'
@@ -119,13 +119,13 @@ function openControlMenu(event: MouseEvent | KeyboardEvent): void {
 </script>
 
 <template>
-  <section ref="root" class="story-inspector" :data-active-tab="active || 'props'" data-test-id="story-side-panel" aria-label="Story inspector">
+  <section ref="root" class="htw:flex htw:flex-col htw:w-full htw:h-full htw:min-w-0 htw:min-h-0 htw:overflow-hidden htw:[border:1px_solid_transparent] htw:rounded-panel htw:text-text htw:bg-surface htw:[&[data-active-tab='docs']]:border-border htw:[&[data-active-tab='docs']]:bg-canvas" :data-active-tab="active || 'props'" data-test-id="story-side-panel" aria-label="Story inspector">
     <InspectorHeader :story-title="story?.title || 'Story'" :variant-title="variantTitle || variant?.title" :isolated-href="isolatedHref" @close="emit('close')" @contextmenu="openSelectionMenu" />
     <InspectorTabs :id-prefix="id" :active-tab="resolution.pending ? undefined : active" :tabs="tabs" @select="select" />
-    <div :id="`${id}-panel-${panelKey}`" class="inspector-content" data-histoire-docs-scroll role="tabpanel" :aria-labelledby="resolution.pending ? undefined : `${id}-tab-${panelKey}`" :aria-busy="resolution.pending || undefined" @contextmenu="openControlMenu" @keydown="openControlMenu">
+    <div :id="`${id}-panel-${panelKey}`" class="htw:flex-1 htw:min-h-0 htw:overflow-auto" data-histoire-docs-scroll role="tabpanel" :aria-labelledby="resolution.pending ? undefined : `${id}-tab-${panelKey}`" :aria-busy="resolution.pending || undefined" @contextmenu="openControlMenu" @keydown="openControlMenu">
       <WorkbenchLoadingState v-if="resolution.pending" title="Loading extensions" />
       <template v-else>
-        <ExtensionOutlet v-if="extensions.frame.value" kind="inspector.section" :context="extensions.frame.value" :filter="isBefore" />
+        <InspectorExtensionOutlet v-if="extensions.frame.value" kind="inspector.section" :context="extensions.frame.value" :filter="isBefore" />
         <component :is="builtin.component" v-if="builtin" @error="emit('error', $event)">
           <template v-if="!active && ($slots['matrix-props'] || $slots.matrix)" #matrix>
             <slot name="matrix-props">
@@ -133,37 +133,13 @@ function openControlMenu(event: MouseEvent | KeyboardEvent): void {
             </slot>
           </template>
         </component>
-        <ExtensionOutlet v-else-if="extensions.frame.value" kind="inspector.tab" :context="extensions.frame.value" :filter="isActiveTab" />
+        <InspectorExtensionOutlet v-else-if="extensions.frame.value" kind="inspector.tab" :context="extensions.frame.value" :filter="isActiveTab" />
         <WorkbenchLoadingState v-else-if="frameLoading" title="Loading variant" />
         <WorkbenchEmptyState v-else icon="cursor-1" title="Select a variant" />
-        <ExtensionOutlet v-if="extensions.frame.value" kind="inspector.section" :context="extensions.frame.value" :filter="isAfter" />
+        <InspectorExtensionOutlet v-if="extensions.frame.value" kind="inspector.section" :context="extensions.frame.value" :filter="isAfter" />
       </template>
     </div>
-    <ExtensionOutlet v-if="extensions.frame.value" kind="inspector.section" :context="extensions.frame.value" :filter="isFooter" />
-    <SourceDrawer @error="emit('error', $event)" @contextmenu="openSelectionMenu" />
+    <InspectorExtensionOutlet v-if="extensions.frame.value" kind="inspector.section" :context="extensions.frame.value" :filter="isFooter" footer />
+    <SourceDrawer :tone="active === 'docs' ? 'surface' : undefined" @error="emit('error', $event)" @contextmenu="openSelectionMenu" />
   </section>
 </template>
-
-<style scoped>
-.story-inspector { display: flex; flex-direction: column; width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden; border: 1px solid transparent; border-radius: var(--histoire-radius-panel, 16px); color: var(--histoire-text); background: var(--histoire-surface); }
-.story-inspector[data-active-tab="docs"] { border-color: var(--histoire-border); background: var(--histoire-canvas); }
-/* Docs canvas background only applies to the docs area: source drawer keeps the regular surface. */
-.story-inspector[data-active-tab="docs"] :deep(.inspector-source) { background: var(--histoire-surface); }
-.inspector-content { flex: 1; min-height: 0; overflow: auto; }
-.inspector-content :deep(.histoire-docs) { padding: 2px var(--histoire-inspector-gutter) 16px; color: var(--histoire-body); font-size: 12px; line-height: 1.7; }
-.inspector-content :deep(.histoire-docs :is(h1,h2,h3,h4)) { color: var(--histoire-text); font-weight: 800; }
-.inspector-content :deep(.histoire-docs table) { width: 100%; font-size: 11px; border-collapse: collapse; }
-.inspector-content :deep(.histoire-docs :is(th,td)) { padding: 9px; text-align: left; border-bottom: 1px solid var(--histoire-border); }
-.inspector-content :deep(.histoire-events) { --histoire-virtual-item-gap: 8px; position: relative; padding: 2px var(--histoire-inspector-gutter) 16px; }
-.inspector-content :deep(.histoire-events-count) { position: absolute; top: 9px; inset-inline-start: var(--histoire-inspector-gutter); color: var(--histoire-muted); font-size: 10px; }
-.inspector-content :deep(.histoire-events > button) { display: block; margin-left: auto; border: 0; border-radius: 7px; background: var(--histoire-chip); padding: 7px 10px; font-size: 11px; font-weight: 700; cursor: pointer; }
-.inspector-content :deep(.histoire-events ol) { padding: 0; list-style: none; }
-.inspector-content :deep(.histoire-event-row) { padding: 10px; border-radius: 8px; background: var(--histoire-chip); font: 11px var(--histoire-font-mono); }
-.inspector-content :deep(.histoire-event-heading) { display: flex; gap: 8px; width: 100%; text-align: left; }
-.inspector-content :deep(.histoire-events time) { margin-left: auto; color: var(--histoire-muted); font-size: 10px; }
-.inspector-content :deep(.histoire-event-argument) { margin: 8px 0 0; max-height: 120px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--histoire-muted); font: 10px/1.6 var(--histoire-font-mono); }
-.inspector-content :deep(.histoire-tests) { padding: 2px var(--histoire-inspector-gutter) 16px; font-size: 12px; }
-.inspector-content :deep(.histoire-tests .workbench-state) { flex: 1; }
-.inspector-content > :deep(.histoire-extension-view) { padding: 0 var(--histoire-inspector-gutter) var(--histoire-pane-gutter); }
-.story-inspector > :deep(.histoire-extension-view) { flex: none; padding: var(--histoire-pane-gutter) var(--histoire-inspector-gutter) 0; }
-</style>

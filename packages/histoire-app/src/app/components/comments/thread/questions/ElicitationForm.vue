@@ -6,6 +6,7 @@ import { computed, ref } from 'vue'
 import { useAgentsStore } from '../../../../stores/agents.js'
 import { foldCustomFields } from './elicitation-fields.js'
 import ElicitationField from './ElicitationField.vue'
+import QuestionActions from './QuestionActions.vue'
 
 const props = defineProps<{
   /** Pending form request. */
@@ -30,7 +31,7 @@ function submit(): void {
 </script>
 
 <template>
-  <form class="elicitation-form" novalidate @submit.prevent="submit">
+  <form class="htw:grid htw:gap-3" novalidate @submit.prevent="submit">
     <ElicitationField
       v-for="{ field, custom } in rows"
       :key="field.key"
@@ -41,17 +42,13 @@ function submit(): void {
       :error="errors[field.key] ?? (custom && errors[custom.key])"
       @update:custom-value="custom && (values[custom.key] = $event)"
     />
-    <div class="question-actions">
+    <QuestionActions>
       <HstButton color="flat" type="button" @click="agents?.replyElicitation(request.requestId, 'decline')">
         Skip
       </HstButton>
       <HstButton color="primary" type="submit">
         Submit
       </HstButton>
-    </div>
+    </QuestionActions>
   </form>
 </template>
-
-<style scoped>
-.elicitation-form { display: grid; gap: 12px; }
-</style>

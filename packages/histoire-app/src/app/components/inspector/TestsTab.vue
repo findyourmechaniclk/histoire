@@ -13,12 +13,12 @@ const { entry, cachedFailure, cachedCollection, cachedSummary } = useInspectorMo
   <WorkbenchErrorState v-if="cachedFailure" title="Tests unavailable">
     {{ cachedFailure }}
   </WorkbenchErrorState>
-  <HistoireTests v-if="!cachedFailure || cachedCollection" :summary="cachedSummary" :collection="cachedCollection" :running="entry?.running" @error="$emit('error', $event)">
+  <HistoireTests v-if="!cachedFailure || cachedCollection" :classes="{ root: 'htw:pt-[2px] htw:px-inspector-gutter htw:pb-[16px] htw:text-[12px]' }" :summary="cachedSummary" :collection="cachedCollection" :running="entry?.running" @error="$emit('error', $event)">
     <template #empty="{ collected }">
-      <WorkbenchEmptyState icon="chemistry" :title="collected ? 'No tests' : 'Tests not collected'" />
+      <WorkbenchEmptyState class="htw:flex-1" icon="chemistry" :title="collected ? 'No tests' : 'Tests not collected'" />
     </template>
     <template #loading="{ collecting }">
-      <WorkbenchLoadingState :title="collecting ? 'Collecting tests…' : 'Running tests…'" />
+      <WorkbenchLoadingState class="htw:flex-1" :title="collecting ? 'Collecting tests…' : 'Running tests…'" />
     </template>
   </HistoireTests>
 </template>

@@ -22,7 +22,7 @@ function inSpace(contribution: QualifiedContribution): boolean {
 </script>
 
 <template>
-  <div class="histoire-canvas-overlay-layer" :data-space="space" :style="transform">
+  <div class="htw:absolute htw:inset-0 htw:z-[2] htw:origin-top-left htw:pointer-events-none" :data-space="space" :style="transform">
     <ExtensionOutlet kind="canvas.overlay" :context="context" :filter="inSpace">
       <template #default="{ contribution }">
         <OverlayItem :contribution="contribution as QualifiedContribution<'canvas.overlay'>" :context="context" />
@@ -30,7 +30,3 @@ function inSpace(contribution: QualifiedContribution): boolean {
     </ExtensionOutlet>
   </div>
 </template>
-
-<style scoped>
-.histoire-canvas-overlay-layer { position: absolute; inset: 0; z-index: 2; transform-origin: 0 0; pointer-events: none; }
-</style>

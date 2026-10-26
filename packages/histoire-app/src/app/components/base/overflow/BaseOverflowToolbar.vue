@@ -97,23 +97,15 @@ function keyboard(event: KeyboardEvent): void {
 </script>
 
 <template>
-  <div ref="root" class="histoire-overflow-toolbar" role="toolbar" :aria-label="label">
-    <div class="overflow-toolbar-items">
+  <div ref="root" class="htw:relative htw:flex htw:items-center htw:gap-[3px] htw:w-max htw:max-w-full htw:min-w-0 htw:[--overflow-separator-width:7px]" role="toolbar" :aria-label="label">
+    <div class="overflow-toolbar-items htw:flex htw:items-center htw:gap-[inherit] htw:min-w-0">
       <slot />
     </div>
-    <ToolbarButton :ref="setTrigger" class="overflow-toolbar-trigger" :hidden="!overflowing" :label="overflowLabel" icon="chevron-down" aria-haspopup="menu" :aria-expanded="open" @click="open ? close(true) : show()" @keydown="triggerKey" />
-    <BasePopover class="overflow-toolbar-popover" :open="open" :anchor="trigger" :label="overflowLabel" role="menu" :scope="scope" :overlay-target="props.overlayTarget" :bounds="props.bounds" :focus-last="focusLast" persistent @update:open="close">
-      <div class="overflow-toolbar-menu" @keydown="keyboard">
-        <div v-for="item in items" :key="item.id" :ref="element => setHost(item.id, element)" class="overflow-toolbar-host" :hidden="!item.overflow.value || item.empty.value" />
+    <ToolbarButton :ref="setTrigger" class="htw:flex-none htw:[&[hidden]]:hidden" :hidden="!overflowing" :label="overflowLabel" icon="chevron-down" aria-haspopup="menu" :aria-expanded="open" @click="open ? close(true) : show()" @keydown="triggerKey" />
+    <BasePopover :open="open" :anchor="trigger" :label="overflowLabel" role="menu" :scope="scope" :overlay-target="props.overlayTarget" :bounds="props.bounds" :focus-last="focusLast" persistent @update:open="close">
+      <div @keydown="keyboard">
+        <div v-for="item in items" :key="item.id" :ref="element => setHost(item.id, element)" class="htw:[&[hidden]]:hidden" :hidden="!item.overflow.value || item.empty.value" />
       </div>
     </BasePopover>
   </div>
 </template>
-
-<style scoped>
-.histoire-overflow-toolbar { --overflow-separator-width: 7px; position: relative; display: flex; align-items: center; gap: 3px; width: max-content; max-width: 100%; min-width: 0; }
-.overflow-toolbar-items { display: flex; align-items: center; gap: inherit; min-width: 0; }
-.overflow-toolbar-trigger { flex: none; }
-.overflow-toolbar-trigger[hidden] { display: none; }
-.overflow-toolbar-host[hidden] { display: none; }
-</style>

@@ -102,34 +102,23 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', outside, true)
 
 <template>
   <Teleport :to="context.overlay.value ?? context.root.value ?? 'body'">
-    <div v-if="target && actions.length" ref="menu" class="histoire-context-menu histoire-control-popover" role="menu" :aria-label="label" :style="{ left: `${position.left}px`, top: `${position.top}px` }" @keydown="keyboard">
-      <p class="context-target">
+    <div v-if="target && actions.length" ref="menu" class="histoire-context-menu histoire-control-popover htw:fixed htw:z-60 htw:w-[264px] htw:max-w-[calc(100vw-16px)] htw:max-h-[calc(100vh-16px)] htw:p-[5px]" role="menu" :aria-label="label" :style="{ left: `${position.left}px`, top: `${position.top}px` }" @keydown="keyboard">
+      <p class="htw:mt-[7px] htw:mx-[9px] htw:mb-[9px] htw:truncate htw:text-muted htw:text-[11px] htw:font-bold">
         {{ label }}
       </p>
       <template v-for="(entry, index) in actions" :key="`${entry.kind}:${entry.action.id}`">
-        <div v-if="index && actions[index - 1].action.group !== entry.action.group" class="menu-divider" role="separator" />
+        <div v-if="index && actions[index - 1].action.group !== entry.action.group" class="htw:h-px htw:my-[5px] htw:mx-1.5 htw:bg-border" role="separator" />
         <SubMenu v-if="entry.kind === 'frame' && entry.action.children && frameTarget" :action="entry.action" :items="children(entry.action)" :target="frameTarget" @action="run({ kind: 'frame', action: $event })" />
         <MenuItem v-else :label="entry.action.label" :icon="entry.action.icon" :disabled="entry.disabled" :shortcut="entry.action.shortcut ? shortcuts?.hint(entry.action.shortcut) : undefined" :ai="entry.action.group === 'ai'" @click="run(entry)" />
       </template>
     </div>
-    <div v-if="registry?.manualCopy.value !== null && registry?.manualCopy.value !== undefined" class="histoire-copy-recovery histoire-control-popover" role="alert">
-      <div>
-        <strong>Clipboard unavailable</strong><HstButton color="flat" type="button" aria-label="Close copy recovery" @click="registry.dismissCopy()">
+    <div v-if="registry?.manualCopy.value !== null && registry?.manualCopy.value !== undefined" class="histoire-control-popover htw:fixed htw:z-70 htw:left-1/2 htw:bottom-4 htw:-translate-x-1/2 htw:w-[min(400px,calc(100vw-32px))] htw:p-3" role="alert">
+      <div class="htw:flex htw:justify-between htw:items-center htw:mb-2">
+        <strong>Clipboard unavailable</strong><HstButton class="htw:py-1 htw:px-[7px] htw:text-body" color="flat" type="button" aria-label="Close copy recovery" @click="registry.dismissCopy()">
           Close
         </HstButton>
       </div>
-      <HstTextarea :ref="value => { recovery = getControlElement(value) as HTMLTextAreaElement }" layout="inline" :model-value="registry.manualCopy.value" readonly aria-label="Select text to copy manually" />
+      <HstTextarea :ref="value => { recovery = getControlElement(value) as HTMLTextAreaElement }" class="htw:w-full" input-class="htw:h-[100px]" layout="inline" :model-value="registry.manualCopy.value" readonly aria-label="Select text to copy manually" />
     </div>
   </Teleport>
 </template>
-
-<style scoped>
-.histoire-context-menu { position: fixed; z-index: 60; width: 264px; max-width: calc(100vw - 16px); max-height: calc(100vh - 16px); padding: 5px; }
-.context-target { margin: 7px 9px 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--histoire-muted); font-size: 11px; font-weight: 700; }
-.menu-divider { height: 1px; margin: 5px 6px; background: var(--histoire-border); }
-.histoire-copy-recovery { position: fixed; z-index: 70; left: 50%; bottom: 16px; transform: translateX(-50%); width: min(400px, calc(100vw - 32px)); padding: 12px; }
-.histoire-copy-recovery > div { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.histoire-copy-recovery button { padding: 4px 7px; color: var(--histoire-body); }
-.histoire-copy-recovery .histoire-textarea { width: 100%; }
-.histoire-copy-recovery :deep(textarea) { height: 100px; }
-</style>

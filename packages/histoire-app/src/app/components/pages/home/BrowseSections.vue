@@ -2,6 +2,7 @@
 import type { HistoireSelectionInput } from '@histoire/protocol'
 import type { BrowseSection } from './catalog.js'
 import { BuiltinIcon, HstButton } from '@histoire/controls/vue'
+import HomeHeading from './HomeHeading.vue'
 
 defineProps<{
   /** Real top-level folder/group counts and destinations. */
@@ -16,33 +17,23 @@ defineEmits<{
 </script>
 
 <template>
-  <section v-if="sections.length" class="histoire-home-section">
-    <h2>Browse</h2>
-    <div class="histoire-browse-grid">
-      <HstButton v-for="section in sections" :key="section.id" color="flat" type="button" class="histoire-browse-card histoire-home-card" @click="$emit('select', section.target)">
-        <div class="histoire-browse-card-header">
-          <span class="histoire-browse-icon"><BuiltinIcon :icon="section.stories ? 'cube' : 'document'" :size="16" /></span>
-          <div><strong>{{ section.title }}</strong><span>{{ section.stories }} {{ section.stories === 1 ? 'story' : 'stories' }}<template v-if="section.variants"> · {{ section.variants }} variants</template><template v-if="section.guides"> · {{ section.guides }} guides</template></span></div>
+  <section v-if="sections.length">
+    <HomeHeading>
+      Browse
+    </HomeHeading>
+    <div class="htw:grid htw:[grid-template-columns:repeat(3,_minmax(0,_1fr))] htw:gap-[12px] htw:[@media(max-width:_1100px)]:[grid-template-columns:repeat(2,_minmax(0,_1fr))] htw:[@media(max-width:_600px)]:[grid-template-columns:minmax(0,_1fr)]">
+      <HstButton v-for="section in sections" :key="section.id" color="flat" type="button" class="htw:overflow-hidden htw:[border:1px_solid_var(--histoire-border)] htw:rounded-[14px] htw:bg-surface htw:border-border htw:text-left htw:not-disabled:[&:hover]:border-accent htw:not-disabled:[&:hover]:bg-surface htw:focus-visible:[outline-offset:3px] htw:flex htw:flex-col htw:items-start htw:justify-start htw:gap-[10px] htw:p-[16px] htw:text-text" @click="$emit('select', section.target)">
+        <div class="htw:flex htw:items-center htw:gap-[10px] htw:w-full">
+          <span class="htw:grid htw:[flex:0_0_36px] htw:place-items-center htw:h-[36px] htw:rounded-[9px] htw:bg-accent-soft htw:text-accent"><BuiltinIcon class="htw:w-[19px] htw:h-[19px]" :icon="section.stories ? 'cube' : 'document'" :size="16" /></span>
+          <div class="htw:flex-1 htw:min-w-0">
+            <strong class="htw:block htw:text-[13px]">{{ section.title }}</strong><span class="htw:block htw:mt-[2px] htw:text-muted htw:text-[11px]">{{ section.stories }} {{ section.stories === 1 ? 'story' : 'stories' }}<template v-if="section.variants"> · {{ section.variants }} variants</template><template v-if="section.guides"> · {{ section.guides }} guides</template></span>
+          </div>
           <slot name="status" :section="section" />
         </div>
-        <p v-if="!compact">
+        <p v-if="!compact" class="htw:overflow-hidden htw:w-full htw:m-[3px_0_0] htw:text-body htw:text-[12px] htw:text-ellipsis htw:whitespace-nowrap">
           {{ section.storyTitles.slice(0, 5).join(', ') }}{{ section.storyTitles.length > 5 ? '…' : '' }}
         </p>
       </HstButton>
     </div>
   </section>
 </template>
-
-<style scoped>
-.histoire-browse-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.histoire-browse-card { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 10px; padding: 16px; color: var(--histoire-text); }
-.histoire-browse-card-header { display: flex; align-items: center; gap: 10px; width: 100%; }
-.histoire-browse-card-header > div { flex: 1; min-width: 0; }
-.histoire-browse-card-header strong { display: block; font-size: 13px; }
-.histoire-browse-card-header > div > span { display: block; margin-top: 2px; color: var(--histoire-muted); font-size: 11px; }
-.histoire-browse-icon { display: grid; flex: 0 0 36px; place-items: center; height: 36px; border-radius: 9px; background: var(--histoire-accent-soft, color-mix(in srgb, var(--histoire-accent) 10%, transparent)); color: var(--histoire-accent); }
-.histoire-browse-icon > svg { width: 19px; height: 19px; }
-.histoire-browse-card p { overflow: hidden; width: 100%; margin: 3px 0 0; color: var(--histoire-body, var(--histoire-muted)); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
-@media (max-width: 1100px) { .histoire-browse-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 600px) { .histoire-browse-grid { grid-template-columns: minmax(0, 1fr); } }
-</style>

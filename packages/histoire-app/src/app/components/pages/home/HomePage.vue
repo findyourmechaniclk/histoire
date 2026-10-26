@@ -15,7 +15,6 @@ import HomeSearch from './HomeSearch.vue'
 import { usePageOwnership } from './ownership.js'
 import PluginHomeSections from './PluginHomeSections.vue'
 import UpdatesList from './UpdatesList.vue'
-import './home.css'
 
 defineProps<{
   /** Source-owned release/build information; omitted during unavailable Git metadata. */
@@ -55,31 +54,31 @@ function start(): void {
 </script>
 
 <template>
-  <main class="histoire-home-page">
-    <div class="histoire-home-content">
-      <div class="histoire-home-heading">
-        <div>
+  <main class="histoire-home-page htw:h-full htw:overflow-auto htw:bg-home">
+    <div class="htw:max-w-[1600px] htw:m-[0_auto] htw:p-[46px_56px] htw:[@media(max-width:_1000px)]:p-[32px] htw:[@media(max-width:_600px)]:p-[24px_16px]">
+      <div class="htw:flex htw:items-end htw:justify-between htw:gap-[28px] htw:mb-[26px] htw:[@media(max-width:_1000px)]:flex-wrap">
+        <div class="htw:first:max-w-[620px]">
           <HomeHeader :title="histoireConfig.theme.title" :description="description" :build-info="dev ? undefined : buildInfo" />
-          <p v-if="dev" class="histoire-home-dev-line">
-            <span />Dev server<template v-if="buildInfo?.branch">
+          <p v-if="dev" class="htw:flex htw:items-center htw:gap-[7px] htw:m-[12px_0_0] htw:text-muted htw:[font:11px_var(--histoire-font-mono,_monospace)]">
+            <span class="htw:w-[7px] htw:h-[7px] htw:rounded-full htw:bg-accent" />Dev server<template v-if="buildInfo?.branch">
               · {{ buildInfo.branch }}
             </template><template v-if="buildInfo?.commit">
               · {{ buildInfo.commit.slice(0, 7) }}
             </template>
           </p>
         </div>
-        <div class="histoire-home-actions">
-          <HstButton v-if="first" color="flat" type="button" :class="{ primary: !dev }" @click="start">
+        <div class="htw:first:max-w-[620px] htw:flex htw:shrink-0 htw:gap-[10px] htw:[@media(max-width:_600px)]:flex-wrap">
+          <HstButton v-if="first" class="htw:flex htw:items-center htw:justify-center htw:gap-[8px] htw:p-[12px_16px] htw:text-text htw:font-bold" color="flat" type="button" @click="start">
             <BuiltinIcon icon="document" :size="16" />Get started
           </HstButton>
-          <HstButton v-if="dev && projectTests?.canRun.value" color="primary" type="button" class="primary" :disabled="projectTests.running.value" @click="emit('runTests')">
+          <HstButton v-if="dev && projectTests?.canRun.value" color="primary" type="button" class="htw:flex htw:items-center htw:justify-center htw:gap-[8px] htw:p-[12px_16px] htw:text-text htw:font-bold" :disabled="projectTests.running.value" @click="emit('runTests')">
             <BuiltinIcon icon="play-filled-alt" :size="16" />Run all tests
           </HstButton>
         </div>
       </div>
       <HomeSearch :stories="snapshot.catalog.stories.filter(story => !story.docsOnly).length" :guides="guides.length" @search="emit('search')" />
-      <div class="histoire-home-columns">
-        <div class="histoire-home-primary">
+      <div class="htw:grid htw:[grid-template-columns:minmax(0,_3fr)_minmax(240px,_1fr)] htw:gap-[24px] htw:mt-[24px] htw:[@media(max-width:_1000px)]:[grid-template-columns:minmax(0,_1fr)]">
+        <div class="htw:flex htw:flex-col htw:gap-[24px] htw:min-w-0">
           <NeedsAttention v-if="dev && NeedsAttention" @select="select" />
           <BrowseSections :sections="sections" :compact="dev" @select="select">
             <template #status="{ section }">
@@ -88,32 +87,16 @@ function start(): void {
           </BrowseSections>
           <PluginHomeSections column="primary" />
         </div>
-        <aside class="histoire-home-secondary">
+        <aside class="htw:flex htw:flex-col htw:gap-[24px] htw:min-w-0">
           <slot v-if="dev" name="activity" />
           <GuidesList :guides="guides" @select="select" />
           <UpdatesList :changed="buildInfo?.changed" :stories="snapshot.catalog.stories" :dev="dev" @select="select" />
           <PluginHomeSections column="secondary" />
         </aside>
       </div>
-      <p v-if="!snapshot.catalog.stories.length" class="histoire-home-empty">
+      <p v-if="!snapshot.catalog.stories.length" class="htw:text-muted">
         No stories collected.
       </p>
     </div>
   </main>
 </template>
-
-<style scoped>
-.histoire-home-page { height: 100%; overflow: auto; background: var(--histoire-home, var(--histoire-canvas, var(--histoire-background))); }
-.histoire-home-content { max-width: 1600px; margin: 0 auto; padding: 46px 56px; }
-.histoire-home-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 28px; margin-bottom: 26px; }
-.histoire-home-heading > div:first-child { max-width: 620px; }
-.histoire-home-actions { display: flex; flex-shrink: 0; gap: 10px; }
-.histoire-home-actions button { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; color: var(--histoire-text); font-weight: 700; }
-.histoire-home-dev-line { display: flex; align-items: center; gap: 7px; margin: 12px 0 0; color: var(--histoire-muted); font: 11px var(--histoire-font-mono, monospace); }
-.histoire-home-dev-line > span { width: 7px; height: 7px; border-radius: 50%; background: var(--histoire-accent); }
-.histoire-home-columns { display: grid; grid-template-columns: minmax(0, 3fr) minmax(240px, 1fr); gap: 24px; margin-top: 24px; }
-.histoire-home-primary, .histoire-home-secondary { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
-.histoire-home-empty { color: var(--histoire-muted); }
-@media (max-width: 1000px) { .histoire-home-content { padding: 32px; } .histoire-home-heading { flex-wrap: wrap; } .histoire-home-columns { grid-template-columns: minmax(0, 1fr); } }
-@media (max-width: 600px) { .histoire-home-content { padding: 24px 16px; } .histoire-home-actions { flex-wrap: wrap; } }
-</style>

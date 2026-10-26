@@ -3,6 +3,7 @@ import { HstSelect } from '@histoire/controls/vue'
 import { requestHistoireStatePreset } from '@histoire/sdk/internal'
 import { defineComponent, h, shallowRef, watch } from 'vue'
 import { useHistoireSnapshot } from '../../composables/snapshot.js'
+import { mergePartClass, partClassesProp } from '../../foundation/parts.js'
 import { useHistoireContext, useHistoireResource } from '../../provider/context.js'
 import { PresetMenu } from './PresetMenu.js'
 
@@ -18,6 +19,8 @@ export interface HistoireStatePresetsHandle {
 export const StatePresets = defineComponent({
   name: 'HistoireStatePresets',
   props: {
+    /** Host utilities for documented component parts; package markers remain intact. */
+    classes: partClassesProp<'root' | 'trigger'>(),
     /** First-party inspector prefixes select choices with their preset context. */
     compact: { type: Boolean, default: false },
   },
@@ -100,11 +103,11 @@ export const StatePresets = defineComponent({
     // External Reset state must pass through this owner so preset selection
     // cannot survive a successful runtime reset as stale menu state.
     expose({ busy: () => pending.value, reset: () => action({ action: 'reset' }) } satisfies HistoireStatePresetsHandle)
-    return () => h('div', { class: ['histoire-state-presets', props.compact ? 'histoire-state-presets-compact' : ''] }, [
+    return () => h('div', { class: [mergePartClass('histoire-state-presets', props.classes?.root), props.compact ? 'histoire-state-presets-compact' : ''] }, [
       h(HstSelect, { 'layout': 'inline', 'aria-label': 'State preset', 'modelValue': selected.value, 'disabled': pending.value, 'options': [{ value: '', label: props.compact ? 'Preset: Initial state' : 'Initial state' }, ...items.value.map(item => ({ value: item.id, label: props.compact ? `Preset: ${item.label}` : item.label }))], 'onUpdate:modelValue': (id: string) => {
         void action(id ? { action: 'apply', id } : { action: 'reset' })
       } }),
-      h(PresetMenu, { key: generation, selectedId: selected.value, selectedLabel: items.value.find(item => item.id === selected.value)?.label, disabled: pending.value, action }),
+      h(PresetMenu, { key: generation, selectedId: selected.value, selectedLabel: items.value.find(item => item.id === selected.value)?.label, disabled: pending.value, action, classes: { trigger: props.classes?.trigger } }),
     ])
   },
 })

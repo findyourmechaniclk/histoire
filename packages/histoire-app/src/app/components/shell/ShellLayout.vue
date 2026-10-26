@@ -80,15 +80,15 @@ useHistoireResource(() => {
 </script>
 
 <template>
-  <div class="histoire-shell-layout" :data-panel-open="shell.panelOpen.value && shell.pane.value !== 'home'" :data-ui-hidden="shell.uiHidden.value" :style="{ '--histoire-panel-width': `${shell.panelWidth.value}px` }">
-    <AppRail v-if="!shell.uiHidden.value" :panel-id="panelId" :home-href="homeHref" :home-active="homeActive" :logo-href="logoHref" :logos="logos" :settings-available="settingsAvailable" :settings-active="settingsActive" :hide-theme="hideTheme" :badges="badges" @home="emit('home')" @pane="emit('pane', $event)" @settings="emit('settings')" @error="emit('error', $event)" />
-    <HstButton v-if="!shell.uiHidden.value && shell.narrow.value && shell.panelOpen.value && shell.pane.value !== 'home'" color="flat" class="histoire-shell-backdrop" type="button" aria-label="Close side panel" @click="shell.togglePanel" />
+  <div class="histoire-shell-layout htw:grid htw:grid-cols-[56px_minmax(0,1fr)] htw:w-full htw:min-w-0 htw:min-h-0 htw:h-full htw:text-text htw:bg-canvas htw:font-sans htw:text-[13px] htw:data-[panel-open=true]:grid-cols-[56px_var(--histoire-panel-width,280px)_minmax(0,1fr)] htw:data-[ui-hidden=true]:grid-cols-[minmax(0,1fr)] htw:data-[ui-hidden=true]:grid-rows-[minmax(0,1fr)] htw:[@container(max-width:640px)]:grid-cols-[minmax(0,1fr)] htw:[@container(max-width:640px)]:grid-rows-[minmax(0,1fr)_56px] htw:[@container(max-width:640px)]:data-[panel-open=true]:grid-cols-[minmax(0,1fr)] htw:[@container(max-width:640px)]:data-[ui-hidden=true]:grid-rows-[minmax(0,1fr)]" :data-panel-open="shell.panelOpen.value && shell.pane.value !== 'home'" :data-ui-hidden="shell.uiHidden.value" :style="{ '--histoire-panel-width': `${shell.panelWidth.value}px` }">
+    <AppRail v-if="!shell.uiHidden.value" class="htw:[@container(max-width:640px)]:row-start-2 htw:[@container(max-width:640px)]:z-90" :panel-id="panelId" :home-href="homeHref" :home-active="homeActive" :logo-href="logoHref" :logos="logos" :settings-available="settingsAvailable" :settings-active="settingsActive" :hide-theme="hideTheme" :badges="badges" @home="emit('home')" @pane="emit('pane', $event)" @settings="emit('settings')" @error="emit('error', $event)" />
+    <HstButton v-if="!shell.uiHidden.value && shell.narrow.value && shell.panelOpen.value && shell.pane.value !== 'home'" color="flat" class="htw:absolute htw:top-0 htw:inset-x-0 htw:bottom-14 htw:z-70 htw:p-0" type="button" aria-label="Close side panel" @click="shell.togglePanel" />
     <SidePanelHost v-if="!shell.uiHidden.value && shell.panelOpen.value && shell.pane.value !== 'home'" :id="panelId" :pane="shell.pane.value" :label="paneLabel">
       <slot :name="shell.pane.value">
         <PluginPane v-if="isPluginContributionId(shell.pane.value)" :pane="pluginPane" :context="panes.workbench?.context" />
       </slot>
     </SidePanelHost>
-    <main class="histoire-shell-main">
+    <main class="htw:flex htw:flex-col htw:relative htw:min-w-0 htw:min-h-0 htw:overflow-hidden htw:[@container(max-width:640px)]:row-start-1">
       <slot name="main">
         <slot />
       </slot>
@@ -102,17 +102,3 @@ useHistoireResource(() => {
     </main>
   </div>
 </template>
-
-<style scoped>
-.histoire-shell-layout { display: grid; grid-template-columns: 56px minmax(0, 1fr); width: 100%; min-width: 0; min-height: 0; height: 100%; color: var(--histoire-text); background: var(--histoire-canvas); font-family: var(--histoire-font-sans, Manrope, system-ui, sans-serif); font-size: 13px; }
-.histoire-shell-layout[data-panel-open="true"] { grid-template-columns: 56px var(--histoire-panel-width, 280px) minmax(0, 1fr); }
-.histoire-shell-layout[data-ui-hidden="true"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
-.histoire-shell-main { display: flex; flex-direction: column; position: relative; min-width: 0; min-height: 0; overflow: hidden; }
-.histoire-shell-backdrop { position: absolute; inset: 0 0 56px; z-index: 70; padding: 0; }
-@container (max-width: 640px) {
-  .histoire-shell-layout, .histoire-shell-layout[data-panel-open="true"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) 56px; }
-  .histoire-shell-main { grid-row: 1; }
-  .histoire-shell-layout :deep(.histoire-app-rail) { grid-row: 2; z-index: 90; }
-  .histoire-shell-layout[data-ui-hidden="true"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
-}
-</style>

@@ -3,6 +3,9 @@ import { BuiltinIcon } from '@histoire/controls/vue'
 import { useHistoireSnapshot } from '@histoire/vue'
 import { computed } from 'vue'
 import { useCanvasStore } from '../../composables/canvas-settings.js'
+import CanvasHintBar from './CanvasHintBar.vue'
+import CanvasHintItem from './CanvasHintItem.vue'
+import CanvasHintKey from './CanvasHintKey.vue'
 import CanvasMeasureHint from './CanvasMeasureHint.vue'
 import { useCanvasViewportDimensions } from './toolbar/viewport-size.js'
 
@@ -17,38 +20,30 @@ const size = computed(() => `${dimensions.value.width} × ${dimensions.value.hei
 </script>
 
 <template>
-  <div v-if="hint" class="histoire-canvas-info">
-    <div v-if="hint === 'pan'" class="histoire-canvas-hint" aria-live="polite">
-      <span class="canvas-hint-title"><BuiltinIcon icon="move" :size="14" />Panning</span>
-      <span class="canvas-hint-item"><kbd>Space</kbd> + drag</span>
-      <span class="canvas-hint-item">Middle mouse</span>
-      <span class="canvas-hint-item"><kbd>H</kbd> hand tool</span>
-      <span class="canvas-hint-item"><kbd>Shift + 1</kbd> recenter</span>
-    </div>
-    <CanvasMeasureHint v-else-if="canvas.measure?.locked" class="histoire-canvas-hint" />
-    <div v-else class="histoire-canvas-hint" aria-live="polite">
-      <span class="canvas-hint-title"><BuiltinIcon icon="ruler" :size="14" />Measuring</span>
-      <span class="canvas-hint-item">Click to lock</span>
-      <span class="canvas-hint-item">Lock, then <kbd>⇧</kbd> + hover compare</span>
-    </div>
+  <div v-if="hint" class="histoire-canvas-info htw:absolute htw:start-(--histoire-canvas-info-inset) htw:end-[calc(var(--histoire-canvas-inspector-reserve)+var(--histoire-canvas-info-inset))] htw:bottom-5 htw:flex htw:items-center htw:min-w-0 htw:@container/canvas-status htw:pointer-events-none htw:z-[4]">
+    <CanvasHintBar v-if="hint === 'pan'" aria-live="polite">
+      <CanvasHintItem title>
+        <BuiltinIcon icon="move" :size="14" />Panning
+      </CanvasHintItem>
+      <CanvasHintItem><CanvasHintKey>Space</CanvasHintKey> + drag</CanvasHintItem>
+      <CanvasHintItem>Middle mouse</CanvasHintItem>
+      <CanvasHintItem secondary>
+        <CanvasHintKey>H</CanvasHintKey> hand tool
+      </CanvasHintItem>
+      <CanvasHintItem secondary>
+        <CanvasHintKey>Shift + 1</CanvasHintKey> recenter
+      </CanvasHintItem>
+    </CanvasHintBar>
+    <CanvasMeasureHint v-else-if="canvas.measure?.locked" />
+    <CanvasHintBar v-else aria-live="polite">
+      <CanvasHintItem title>
+        <BuiltinIcon icon="ruler" :size="14" />Measuring
+      </CanvasHintItem>
+      <CanvasHintItem>Click to lock</CanvasHintItem>
+      <CanvasHintItem>Lock, then <CanvasHintKey>⇧</CanvasHintKey> + hover compare</CanvasHintItem>
+    </CanvasHintBar>
   </div>
-  <div v-else class="histoire-canvas-status">
-    <BuiltinIcon icon="laptop" :size="14" /><span>{{ size }} · {{ Math.round(canvas.effectiveZoom * 100) }}% · {{ snapshot.settings.backgroundColor }}</span>
+  <div v-else class="histoire-canvas-status htw:[line-height:normal] htw:flex htw:w-full htw:items-center htw:justify-end htw:gap-2 htw:min-w-0 htw:font-mono htw:text-[11px] htw:text-muted">
+    <BuiltinIcon class="htw:flex-none" icon="laptop" :size="14" /><span class="htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap">{{ size }} · {{ Math.round(canvas.effectiveZoom * 100) }}% · {{ snapshot.settings.backgroundColor }}</span>
   </div>
 </template>
-
-<style scoped>
-/* Keep tool hints above positioned frame chrome, including the selected frame ring. */
-.histoire-canvas-info { position: absolute; inset-inline: var(--histoire-canvas-info-inset) calc(var(--histoire-canvas-inspector-reserve) + var(--histoire-canvas-info-inset)); bottom: 20px; display: flex; align-items: center; min-width: 0; container-type: inline-size; pointer-events: none; z-index: 4; }
-.histoire-canvas-status { display: flex; inline-size: 100%; align-items: center; justify-content: flex-end; gap: 8px; min-width: 0; font: 11px var(--histoire-font-mono, "JetBrains Mono", monospace); color: var(--histoire-muted); }
-.histoire-canvas-status svg { flex: none; }
-.histoire-canvas-status span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* Shared tool hint look (pan, measure, locked measure toolbar): title chip matches the pressed toolbar button. */
-.histoire-canvas-hint { display: flex; flex: 0 1 auto; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px; width: max-content; max-inline-size: 100%; margin-inline: auto; padding: 6px; border: 1px solid var(--histoire-border); border-radius: 10px; background: var(--histoire-surface); box-shadow: var(--histoire-shadow-canvas-toolbar); color: var(--histoire-muted); font-size: 12px; white-space: nowrap; }
-/* Every hint entry shares the 24px toolbar button box so text, icons and keys line up across hints. */
-.histoire-canvas-hint :deep(:is(.canvas-hint-title, .canvas-hint-item)) { display: inline-flex; align-items: center; gap: 4px; box-sizing: border-box; height: 24px; padding: 0 7px; border: 1px solid transparent; border-radius: 6px; line-height: 16px; }
-.histoire-canvas-hint :deep(.canvas-hint-title) { background: var(--histoire-chip); color: var(--histoire-text); }
-.histoire-canvas-hint :deep(kbd) { display: inline-block; padding: 0 4px; border: 1px solid var(--histoire-border); border-radius: 4px; font-family: var(--histoire-font-mono, "JetBrains Mono", monospace); font-size: 11px; line-height: 14px; }
-/* Narrow canvas keeps the label and first two hints. */
-@container (max-width: 650px) { .histoire-canvas-hint > span:nth-child(n+4) { display: none; } }
-</style>

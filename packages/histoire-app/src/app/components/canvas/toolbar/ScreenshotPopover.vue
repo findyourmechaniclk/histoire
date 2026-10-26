@@ -8,9 +8,12 @@ import { catalogTargetLabel } from '../../../util/catalog-target.js'
 import { screenshotFileDetails, screenshotUrl } from '../../../util/screenshot-file.js'
 import { snapshotScreenshotTargets } from '../../../util/screenshot-targets.js'
 import { onUiDisconnect, onUiEvent, sendUiEvent } from '../../../util/ui-channel.js'
+import PopoverDivider from '../../base/popover/PopoverDivider.vue'
+import PopoverError from '../../base/popover/PopoverError.vue'
+
+import PopoverTitle from '../../base/popover/PopoverTitle.vue'
 import { useCaptureDiscoveryPause } from '../../panes/tests/capture.js'
 import { getSelectedCanvasFrame } from '../frame-target.js'
-
 import ScreenshotSetup from './ScreenshotSetup.vue'
 import { useCanvasPreviewSettings } from './session-settings.js'
 import ToolbarPopover from './ToolbarPopover.vue'
@@ -152,36 +155,36 @@ onBeforeUnmount(() => {
 
 <template>
   <ToolbarPopover id="screenshot" :open="open" label="Screenshot" icon="camera" :width="330" @update:open="setOpen">
-    <div class="screenshot-content">
+    <div class="htw:p-[2px_8px_8px]">
       <template v-if="setupReady">
-        <p class="popover-title">
+        <PopoverTitle>
           Screenshot
-        </p>
+        </PopoverTitle>
         <HstButtonGroup v-model="scope" title="Frames" aria-label="Capture frames" layout="horizontal" :options="[{ value: 'selected', label: 'Selected' }, { value: 'all', label: `All ${allTargets.length}` }]" />
         <HstButtonGroup v-model="scale" title="Scale" aria-label="Screenshot scale" layout="horizontal" :options="[1, 2, 3].map(value => ({ value, label: `${value}×` }))" />
         <HstButtonGroup v-model="format" title="Format" aria-label="Screenshot format" layout="horizontal" :options="[{ value: 'png', label: 'PNG' }, { value: 'webp', label: 'WebP' }]" />
-        <div class="screenshot-option">
-          <span>Save to</span><code>.histoire/screenshots/</code>
+        <div class="htw:flex htw:items-center htw:justify-between htw:gap-[14px] htw:min-h-[42px] htw:text-muted htw:text-[12px]">
+          <span>Save to</span><code class="htw:text-text htw:text-[11px]">.histoire/screenshots/</code>
         </div>
-        <HstButton v-if="!requestId" color="primary" type="button" class="screenshot-capture" :disabled="!targets.length" @click="capture">
-          <BuiltinIcon icon="camera" :size="16" />Capture {{ targets.length }} frame{{ targets.length === 1 ? '' : 's' }}
+        <HstButton v-if="!requestId" color="primary" type="button" class="htw:w-full htw:min-h-9 htw:my-2.5 htw:mx-0 htw:font-bold" :disabled="!targets.length" @click="capture">
+          <BuiltinIcon icon="camera" :size="15" />Capture {{ targets.length }} frame{{ targets.length === 1 ? '' : 's' }}
         </HstButton>
-        <HstButton v-else color="primary" type="button" class="screenshot-capture" @click="cancel">
+        <HstButton v-else color="primary" type="button" class="htw:w-full htw:min-h-9 htw:my-2.5 htw:mx-0 htw:font-bold" @click="cancel">
           Cancel capture
         </HstButton>
-        <p v-if="message" class="capture-message" role="status">
+        <p v-if="message" class="capture-message htw:my-1.5 htw:mx-0 htw:text-muted htw:text-[11px]" role="status">
           {{ message }}
         </p>
-        <p v-if="error" class="popover-error" role="alert">
+        <PopoverError v-if="error" role="alert">
           {{ error.message }}
-        </p>
+        </PopoverError>
         <template v-if="recent.length">
-          <div class="popover-divider" /><p class="popover-title">
+          <PopoverDivider /><PopoverTitle>
             Recent
-          </p>
-          <div v-for="file in recentFiles" :key="file.path" class="recent-capture">
-            <img :src="screenshotUrl(file.path)" alt="" loading="lazy"><span :title="file.metadata"><strong>{{ file.label }}</strong><small><time v-if="file.capturedAt" :datetime="file.capturedAt">{{ file.time }}</time><code>{{ file.shortName }}</code></small></span><HstButton icon-only color="flat" type="button" :aria-label="`Copy path for ${file.label}`" :title="copied === file.path ? 'Copied' : 'Copy path'" @click="copyPath(file.path)">
-              <BuiltinIcon :icon="copied === file.path ? 'checkmark' : 'copy'" :size="16" />
+          </PopoverTitle>
+          <div v-for="file in recentFiles" :key="file.path" class="recent-capture htw:flex htw:items-center htw:gap-2.5 htw:my-3 htw:mx-0">
+            <img class="htw:flex-[0_0_48px] htw:w-12 htw:h-[34px] htw:object-contain htw:border htw:border-solid htw:border-border htw:rounded-[5px] htw:bg-white" :src="screenshotUrl(file.path)" alt="" loading="lazy"><span class="htw:flex-1 htw:min-w-0" :title="file.metadata"><strong class="htw:block htw:[overflow-wrap:anywhere] htw:text-[11px] htw:font-semibold">{{ file.label }}</strong><small class="htw:flex htw:flex-wrap htw:gap-y-0.5 htw:gap-x-2 htw:mt-[3px] htw:text-muted htw:text-[10px]"><time v-if="file.capturedAt" class="htw:whitespace-nowrap htw:[font:inherit]" :datetime="file.capturedAt">{{ file.time }}</time><code class="htw:whitespace-nowrap htw:[font:inherit]">{{ file.shortName }}</code></small></span><HstButton class="htw:grid htw:place-items-center" icon-only color="flat" type="button" :aria-label="`Copy path for ${file.label}`" :title="copied === file.path ? 'Copied' : 'Copy path'" @click="copyPath(file.path)">
+              <BuiltinIcon :icon="copied === file.path ? 'checkmark' : 'copy'" :size="14" />
             </HstButton>
           </div>
         </template>
@@ -190,20 +193,3 @@ onBeforeUnmount(() => {
     </div>
   </ToolbarPopover>
 </template>
-
-<style scoped>
-.screenshot-content { padding: 2px 8px 8px; }
-.screenshot-option { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 42px; color: var(--histoire-muted); font-size: 12px; }
-.screenshot-option code { color: var(--histoire-text); font-size: 11px; }
-.screenshot-capture { width: 100%; min-height: 36px; margin: 10px 0; font-weight: 700; }
-.screenshot-capture :deep(svg) { width: 15px; height: 15px; }
-.capture-message { margin: 6px 0; color: var(--histoire-muted); font-size: 11px; }
-.recent-capture { display: flex; align-items: center; gap: 10px; margin: 12px 0; }
-.recent-capture img { flex: 0 0 48px; width: 48px; height: 34px; object-fit: contain; border: 1px solid var(--histoire-border); border-radius: 5px; background: white; }
-.recent-capture > span { flex: 1; min-width: 0; }
-.recent-capture strong { display: block; overflow-wrap: anywhere; font-size: 11px; font-weight: 600; }
-.recent-capture small { display: flex; flex-wrap: wrap; gap: 2px 8px; margin-top: 3px; color: var(--histoire-muted); font-size: 10px; }
-.recent-capture code, .recent-capture time { white-space: nowrap; font: inherit; }
-.recent-capture button { display: grid; place-items: center; }
-.recent-capture button :deep(svg) { width: 14px; height: 14px; }
-</style>

@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import type { ExtensionHost, QualifiedContribution } from '@histoire/plugin-kit'
+import type { HistoirePartClasses } from '@histoire/vue'
 import { WORKBENCH_COMPONENTS_KEY } from '@histoire/plugin-kit'
-import { useExtensionView } from '@histoire/vue/internal'
+import { mergePartClass, useExtensionView } from '@histoire/vue/internal'
 import { computed, provide, ref } from 'vue'
 import { useExtensionHost } from '../../composables/extensions.js'
 import WorkbenchErrorState from '../shell/WorkbenchErrorState.vue'
 import WorkbenchLoadingState from '../shell/WorkbenchLoadingState.vue'
 import { workbenchComponents } from './workbench-components.js'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
+  /** Host utilities for the view root and DOM mount container. */
+  classes?: HistoirePartClasses<'root' | 'mount'>
+  /** Explicit false makes the view inert; omission preserves host pointer behavior. */
+  interactive?: boolean
   /**
    * View-bearing contribution. Fixed for the component's lifetime: key the component by
    * contribution so a re-registered contribution remounts.
@@ -18,7 +23,7 @@ const props = defineProps<{
   context: unknown
   /** Extension host; defaults to the nearest workbench's host. */
   host?: ExtensionHost
-}>()
+}>(), { interactive: undefined })
 defineSlots<{
   /** Replaces the loading state shown while a DOM view mounts. */
   pending?: () => any
@@ -46,7 +51,7 @@ const errorMessage = computed(() => failure.value?.error instanceof Error ? fail
 </script>
 
 <template>
-  <div ref="root" class="histoire-extension-view" :data-histoire-contribution="id">
+  <div ref="root" :class="mergePartClass('histoire-extension-view', classes?.root)" :inert="interactive === false ? true : undefined" :style="interactive === false ? { pointerEvents: 'none' } : undefined" :data-histoire-interactive="interactive" :data-histoire-contribution="id">
     <template v-if="failure">
       <slot name="error" :error="failure.error">
         <WorkbenchErrorState :title="name ? `${name} failed` : 'Extension failed'">
@@ -60,6 +65,6 @@ const errorMessage = computed(() => failure.value?.error instanceof Error ? fail
         <WorkbenchLoadingState :title="name ? `Loading ${name}` : 'Loading extension'" />
       </slot>
     </template>
-    <div v-if="!viewComponent" v-show="!failure" ref="container" class="histoire-extension-mount" />
+    <div v-if="!viewComponent" v-show="!failure" ref="container" :class="mergePartClass('histoire-extension-mount', classes?.mount)" />
   </div>
 </template>

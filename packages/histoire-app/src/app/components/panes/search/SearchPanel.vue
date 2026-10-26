@@ -234,13 +234,13 @@ function keydown(event: KeyboardEvent) {
 
 <template>
   <!-- Keep workbench layout independent of the portable SDK search styles. -->
-  <section class="workbench-search" aria-label="Search" :aria-busy="state.loading" data-test-id="search-modal" @keydown="keydown">
-    <label class="search-input">
-      <BuiltinIcon icon="search" aria-hidden="true" :size="16" />
+  <section class="htw:flex-1 htw:py-4 htw:px-pane-gutter htw:overflow-auto htw:min-w-0 htw:min-h-0 htw:bg-surface htw:text-text" aria-label="Search" :aria-busy="state.loading" data-test-id="search-modal" @keydown="keydown">
+    <label class="htw:flex htw:items-center htw:gap-3 htw:box-border htw:w-full htw:min-w-0 htw:h-10 htw:py-0 htw:px-3 htw:mt-0 htw:mx-0 htw:mb-2 htw:border htw:border-solid htw:border-border htw:rounded-[12px] htw:bg-input htw:text-text htw:focus-within:border-accent htw:focus-within:shadow-[0_0_0_1px_var(--histoire-accent)]">
+      <BuiltinIcon class="htw:text-muted htw:w-4.5 htw:h-4.5 htw:flex-none" icon="search" aria-hidden="true" :size="16" />
       <input
         ref="input"
         v-model="query"
-        class="search-query"
+        class="htw:flex-1 htw:min-w-0 htw:h-full htw:p-0 htw:border-0 htw:[outline:0] htw:bg-transparent htw:text-inherit htw:[font-family:inherit] htw:[font-size:inherit] htw:[font-weight:inherit] htw:leading-[inherit] htw:appearance-none htw:placeholder:text-muted htw:placeholder:opacity-[1] htw:[&::-webkit-search-cancel-button]:hidden htw:[&::-webkit-search-cancel-button]:appearance-none"
         type="search"
         aria-label="Search stories, docs and props"
         :aria-controls="SEARCH_RESULTS_ID"
@@ -248,33 +248,35 @@ function keydown(event: KeyboardEvent) {
         placeholder="Search…"
         autocomplete="off"
       >
-      <kbd aria-hidden="true">esc</kbd>
+      <kbd class="htw:flex-none htw:text-muted htw:font-mono htw:text-[11px]" aria-hidden="true">esc</kbd>
     </label>
     <SearchScopes v-model="scope" />
-    <p v-if="state.error" class="notice" role="status">
+    <p v-if="state.error" class="htw:my-5 htw:mx-0 htw:text-muted htw:text-[12px]" role="status">
       Search index unavailable. Loaded props remain searchable.
     </p>
-    <WorkbenchLoadingState v-if="query.trim() && state.loading && !ordered.length && !commands.length" title="Searching…" />
-    <WorkbenchEmptyState v-if="query.trim() && !state.loading && !ordered.length && !commands.length" icon="search" title="No matches">
-      Nothing for <q class="search-empty-query">{{ query.trim() }}</q><template v-if="scope !== 'all'">
+    <WorkbenchLoadingState v-if="query.trim() && state.loading && !ordered.length && !commands.length" fill flush class="htw:my-12 htw:mx-0" title="Searching…" />
+    <WorkbenchEmptyState v-if="query.trim() && !state.loading && !ordered.length && !commands.length" fill flush class="htw:my-12 htw:mx-0" icon="search" title="No matches">
+      Nothing for <q class="htw:text-text">{{ query.trim() }}</q><template v-if="scope !== 'all'">
         in {{ scope }}
       </template>
       <template v-if="scope !== 'all'" #actions>
-        <HstButton color="flat" @click="scope = 'all'">
+        <HstButton color="flat" tone="accent" @click="scope = 'all'">
           Search everything
         </HstButton>
       </template>
     </WorkbenchEmptyState>
-    <p v-if="activeCursor" :id="SEARCH_ACTIVE_RESULT_ID" class="search-active-result" role="status" aria-live="polite" data-search-active-result>
+    <p v-if="activeCursor" :id="SEARCH_ACTIVE_RESULT_ID" class="htw:absolute htw:w-[1px] htw:h-[1px] htw:overflow-hidden htw:[clip:rect(0_0_0_0)] htw:whitespace-nowrap" role="status" aria-live="polite" data-search-active-result>
       {{ activeCursor.label }}
     </p>
-    <div :id="SEARCH_RESULTS_ID" class="search-results">
+    <div :id="SEARCH_RESULTS_ID">
       <SearchResultList :results="ordered" :query="query" :active-id="activeId" :selection="snapshot.selection" @activate="activate" @focus="focusResult" />
-      <section v-if="commands.length" class="command-results" aria-label="Commands">
-        <h3>Commands</h3>
+      <section v-if="commands.length" class="htw:mt-5.5" aria-label="Commands">
+        <h3 class="htw:py-0 htw:px-pane-row-inset htw:text-muted htw:text-[12px]">
+          Commands
+        </h3>
         <WorkbenchVirtualList ref="commandList" :items="commandRows" :min-item-size="40" page-mode list-tag="ul" item-tag="li">
           <template #default="{ item, index: position }">
-            <HstButton :id="getSearchCommandDomId(item.command.id)" color="flat" type="button" data-test-id="search-item" data-search-kind="command" :class="{ active: index === ordered.length + position }" @focus="focusCommand(item.command.id)" @click="activateCommand(item.command)">
+            <HstButton :id="getSearchCommandDomId(item.command.id)" class="htw:flex htw:gap-2.5 htw:items-center htw:w-full htw:py-2.5 htw:px-pane-row-inset htw:text-inherit htw:text-left htw:data-[active]:bg-accent-soft htw:focus-visible:[outline:2px_solid_var(--histoire-accent)] htw:focus-visible:outline-offset-[-2px]" color="flat" type="button" data-test-id="search-item" data-search-kind="command" :data-active="index === ordered.length + position || undefined" @focus="focusCommand(item.command.id)" @click="activateCommand(item.command)">
               <BuiltinIcon icon="terminal" :size="16" />{{ item.command.label }}
             </HstButton>
           </template>
@@ -284,23 +286,3 @@ function keydown(event: KeyboardEvent) {
     <CommandPrompts v-if="selectedCommand" :command="selectedCommand" :context="props.commands.context()" :execute="execute" @close="selectedCommand = null" />
   </section>
 </template>
-
-<style scoped>
-.workbench-search { flex: 1; padding: 16px var(--histoire-pane-gutter); overflow: auto; min-width: 0; min-height: 0; background: var(--histoire-surface); color: var(--histoire-text); }
-.search-input { display: flex; align-items: center; gap: 12px; box-sizing: border-box; width: 100%; min-width: 0; height: 40px; padding: 0 12px; margin: 0 0 8px; border: 1px solid var(--histoire-border); border-radius: 12px; background: var(--histoire-input); color: var(--histoire-text); }
-.search-input:focus-within { border-color: var(--histoire-accent); box-shadow: 0 0 0 1px var(--histoire-accent); }
-.search-input svg { color: var(--histoire-muted); width: 18px; height: 18px; flex: none; }
-.search-query { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; appearance: none; -webkit-appearance: none; }
-.search-query::placeholder { color: var(--histoire-muted); opacity: 1; }
-.search-query::-webkit-search-cancel-button { display: none; -webkit-appearance: none; }
-kbd { flex: none; color: var(--histoire-muted); font: 11px var(--histoire-font-mono, monospace); }
-.notice { margin: 20px 0; color: var(--histoire-muted); font-size: 12px; }
-.search-empty-query { color: var(--histoire-text); }
-.search-active-result { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.workbench-search :deep(.workbench-state) { margin-inline: 0; }
-.command-results { margin-top: 22px; }
-.command-results h3 { padding: 0 8px; color: var(--histoire-muted); font-size: 12px; }
-.command-results button { display: flex; gap: 10px; align-items: center; width: 100%; padding: 10px 8px; color: inherit; text-align: left; }
-.command-results button.active { background: var(--histoire-accent-soft); }
-.command-results button:focus-visible { outline: 2px solid var(--histoire-accent); outline-offset: -2px; }
-</style>

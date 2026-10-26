@@ -46,9 +46,5 @@ onBeforeUnmount(() => {
 
 <template>
   <!-- Covers frames so tool input never reaches story documents; canvas chrome stays above. -->
-  <div class="histoire-plugin-tool-capture" :style="{ cursor: tools.active.value?.cursor ?? 'crosshair' }" :data-histoire-tool="tools.active.value?.id" @pointerdown="gesture.pointerDown" @pointermove="gesture.pointerMove" @pointerup="gesture.pointerUp" @pointercancel="gesture.pointerCancel" />
+  <div class="htw:absolute htw:inset-0 htw:z-[2] htw:touch-none" :style="{ cursor: tools.active.value?.cursor ?? 'crosshair' }" :data-histoire-tool="tools.active.value?.id" @pointerdown="gesture.pointerDown" @pointermove="gesture.pointerMove" @pointerup="gesture.pointerUp" @pointercancel="gesture.pointerCancel" />
 </template>
-
-<style scoped>
-.histoire-plugin-tool-capture { position: absolute; inset: 0; z-index: 2; touch-action: none; }
-</style>

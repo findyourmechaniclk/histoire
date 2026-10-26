@@ -170,7 +170,7 @@ watch(() => internalValue.value, () => {
     :layout="layout"
     :aria-disabled="disabled || undefined"
     :data-histoire-control-type="$attrs['data-histoire-control-type']"
-    class="histoire-json htw-cursor-text"
+    class="histoire-json htw:cursor-text"
     :class="$attrs.class"
     :style="$attrs.style"
   >
@@ -188,7 +188,7 @@ watch(() => internalValue.value, () => {
         v-if="invalidValue"
         v-tooltip="'JSON error'"
         icon="carbon:warning-alt"
-        class="htw-text-orange-500"
+        class="htw:text-orange-500"
       />
 
       <slot name="actions" />

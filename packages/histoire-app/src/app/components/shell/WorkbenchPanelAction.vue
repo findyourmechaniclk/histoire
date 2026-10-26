@@ -38,12 +38,12 @@ function close(): void {
 </script>
 
 <template>
-  <div class="workbench-panel-action" :class="{ split: $slots.menu }">
-    <HstButton color="primary" type="button" class="workbench-panel-action-main" :disabled="disabled" @click="emit('click', $event)">
+  <div class="htw:inline-flex htw:flex-none htw:gap-px htw:[--histoire-icon-button-size:var(--histoire-control-height,34px)]">
+    <HstButton color="primary" type="button" class="htw:box-border htw:h-control htw:py-0 htw:px-2.5 htw:font-[750] htw:whitespace-nowrap" :class="{ 'htw:rounded-e-none': $slots.menu }" :disabled="disabled" @click="emit('click', $event)">
       <BuiltinIcon :icon="icon" :size="16" />{{ label }}
     </HstButton>
     <template v-if="$slots.menu">
-      <HstButton ref="chevron" color="primary" type="button" class="workbench-panel-action-options" icon-only :aria-label="resolvedMenuLabel" aria-haspopup="menu" :aria-expanded="open" :disabled="disabled" @click="open = !open">
+      <HstButton ref="chevron" color="primary" type="button" class="htw:rounded-s-none" icon-only :aria-label="resolvedMenuLabel" aria-haspopup="menu" :aria-expanded="open" :disabled="disabled" @click="open = !open">
         <BuiltinIcon icon="chevron-down" :size="16" />
       </HstButton>
       <BasePopover v-if="open" v-model:open="open" :anchor="anchor" :label="resolvedMenuLabel" role="menu" :width="menuWidth ?? 160" :overlay-target="context.overlay.value ?? context.root.value">
@@ -52,11 +52,3 @@ function close(): void {
     </template>
   </div>
 </template>
-
-<style scoped>
-/* Pane header CTA: height follows shared control height so every tab's primary action matches across density modes. */
-.workbench-panel-action { display: inline-flex; flex: none; gap: 1px; --histoire-icon-button-size: var(--histoire-control-height, 34px); }
-.workbench-panel-action-main { box-sizing: border-box; height: var(--histoire-control-height, 34px); padding-block: 0; padding-inline: 10px; font-weight: 750; white-space: nowrap; }
-.split .workbench-panel-action-main { border-start-end-radius: 0; border-end-end-radius: 0; }
-.workbench-panel-action-options { border-start-start-radius: 0; border-end-start-radius: 0; }
-</style>

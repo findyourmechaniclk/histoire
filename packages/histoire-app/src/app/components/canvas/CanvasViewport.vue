@@ -251,11 +251,11 @@ defineExpose({ canvas, registry, getFrameLayout: (id: string) => frames.value.fi
 </script>
 
 <template>
-  <div ref="viewport" class="histoire-canvas-viewport" :class="{ 'is-single': renderedArrange === 'single', 'is-panning': panning, 'is-dragging': canvas.panning, 'is-commenting': commentMode }" :style="{ '--histoire-canvas-inspector-reserve': `${inspectorWidth}px` }" role="region" aria-label="Story canvas" tabindex="-1" @wheel="viewportEvents.onWheel" @contextmenu="viewportEvents.openCanvasMenu" @keydown="viewportEvents.openCanvasMenu" @pointerdown.capture="viewportEvents.capturePointer" @pointerdown="viewportEvents.pointerDown" @pointermove="pointer.onPointerMove" @pointerup="pointer.onPointerUp" @pointercancel="pointer.onPointerCancel">
-    <div v-if="!uiHidden" ref="toolbar" class="histoire-canvas-toolbar-host">
+  <div ref="viewport" class="histoire-canvas-viewport htw:group/viewport htw:[--histoire-canvas-info-inset:36px] htw:relative htw:flex-1 htw:w-full htw:h-full htw:min-w-0 htw:min-h-0 htw:overflow-hidden htw:bg-canvas htw:text-text htw:touch-none htw:data-[single=true]:touch-auto htw:data-[panning=true]:data-[dragging=false]:cursor-grab htw:data-[dragging=true]:cursor-grabbing" :data-single="renderedArrange === 'single'" :data-panning="panning" :data-dragging="canvas.panning" :style="{ '--histoire-canvas-inspector-reserve': `${inspectorWidth}px` }" role="region" aria-label="Story canvas" tabindex="-1" @wheel="viewportEvents.onWheel" @contextmenu="viewportEvents.openCanvasMenu" @keydown="viewportEvents.openCanvasMenu" @pointerdown.capture="viewportEvents.capturePointer" @pointerdown="viewportEvents.pointerDown" @pointermove="pointer.onPointerMove" @pointerup="pointer.onPointerUp" @pointercancel="pointer.onPointerCancel">
+    <div v-if="!uiHidden" ref="toolbar" class="histoire-canvas-toolbar-host htw:absolute htw:top-4 htw:start-[calc((100%-var(--histoire-canvas-inspector-reserve))/2)] htw:flex htw:justify-center htw:w-[max(0px,calc(100%-var(--histoire-canvas-inspector-reserve)-16px))] htw:min-w-0 htw:@container/canvas-toolbar htw:-translate-x-1/2 htw:rtl:translate-x-1/2 htw:z-10">
       <slot name="toolbar" :canvas="canvas" :frames="registry" />
     </div>
-    <div v-if="story && !uiHidden" ref="header" class="histoire-canvas-header" :class="{ 'is-obscured': headerObscured }">
+    <div v-if="story && !uiHidden" ref="header" class="histoire-canvas-header htw:absolute htw:start-(--histoire-canvas-info-inset) htw:end-[calc(var(--histoire-canvas-inspector-reserve)+var(--histoire-canvas-info-inset))] htw:top-[88px] htw:z-[1] htw:@container/canvas-header htw:pointer-events-none htw:transition-opacity htw:duration-[160ms] htw:ease-out htw:motion-reduce:transition-none htw:data-[obscured=true]:opacity-0" :data-obscured="headerObscured">
       <slot name="header" :story="story">
         <CanvasHeader :story="story" :can-open-in-editor="canOpenInEditor" @open-in-editor="openInEditor" />
       </slot>
@@ -270,30 +270,14 @@ defineExpose({ canvas, registry, getFrameLayout: (id: string) => frames.value.fi
     </component>
     <CanvasMatrixPrimary :active="renderedArrange === 'matrix'" :preview-base="previewBase" :width="size.width" :height="size.height" @status="matrixDiscoveryFailed = $event === 'error'" @error="emit('error', $event)" />
     <CanvasPluginLayers v-if="!uiHidden && !commentMode" :panning="space.held.value || canvas.panning" />
-    <div v-if="commentMode" class="histoire-comment-capture" @pointerdown="viewportEvents.framePointer" />
+    <div v-if="commentMode" class="htw:absolute htw:inset-x-0 htw:top-[76px] htw:bottom-10 htw:cursor-crosshair" @pointerdown="viewportEvents.framePointer" />
     <slot v-if="!uiHidden" name="overlays" :canvas="canvas" :frames="registry" :selected-frame="selectedFrame" />
     <CollectErrorCard v-if="diagnostics.length && !uiHidden" :errors="diagnostics" />
     <CanvasStatus v-if="panning && !uiHidden" ref="panHint" hint="pan" />
     <!-- Measure hint floats over content; it never reserves footer space, so frames don't move. -->
     <CanvasStatus v-else-if="canvas.measure && !uiHidden" hint="measure" />
-    <div v-if="!story && !uiHidden" class="histoire-canvas-empty">
+    <div v-if="!story && !uiHidden" class="htw:absolute htw:inset-0 htw:grid htw:place-items-center htw:text-muted htw:pointer-events-none">
       <WorkbenchEmptyState icon="document" title="Select a story" />
     </div>
   </div>
 </template>
-
-<style scoped>
-.histoire-canvas-viewport { --histoire-canvas-inspector-reserve: 0px; --histoire-canvas-info-inset: 36px; position: relative; flex: 1; width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden; background: var(--histoire-canvas); color: var(--histoire-text); touch-action: none; }
-/* Toolbar breakpoints follow usable canvas space after the floating inspector reserve. */
-.histoire-canvas-toolbar-host { position: absolute; top: 16px; inset-inline-start: calc((100% - var(--histoire-canvas-inspector-reserve)) / 2); display: flex; justify-content: center; width: max(0px, calc(100% - var(--histoire-canvas-inspector-reserve) - 16px)); min-width: 0; container-type: inline-size; transform: translateX(-50%); z-index: 10; }
-.histoire-canvas-toolbar-host:dir(rtl) { transform: translateX(50%); }
-.histoire-canvas-header { position: absolute; inset-inline: var(--histoire-canvas-info-inset) calc(var(--histoire-canvas-inspector-reserve) + var(--histoire-canvas-info-inset)); top: 88px; z-index: 1; container-type: inline-size; pointer-events: none; transition: opacity 160ms ease-out; }
-.histoire-canvas-header.is-obscured { opacity: 0; }
-.histoire-canvas-viewport.is-single { touch-action: auto; }
-.is-panning { cursor: grab; } .is-dragging { cursor: grabbing; }
-.is-panning :deep(iframe) { pointer-events: none; }
-.histoire-frame-list :deep(.histoire-canvas-frame) { pointer-events: auto; }
-.histoire-comment-capture { position: absolute; inset: 76px 0 40px; cursor: crosshair; }
-.histoire-canvas-empty { position: absolute; inset: 0; display: grid; place-items: center; color: var(--histoire-muted); pointer-events: none; }
-@media (prefers-reduced-motion: reduce) { .histoire-canvas-header { transition: none; } }
-</style>

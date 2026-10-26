@@ -65,14 +65,14 @@ const tooltipStyle = computed<CSSProperties>(() => {
     :class="$attrs.class"
     :style="$attrs.style"
   >
-    <div class="htw-relative htw-w-full htw-flex htw-items-center">
-      <div class="htw-absolute htw-inset-0 htw-flex htw-items-center">
+    <div class="htw:relative htw:w-full htw:flex htw:items-center">
+      <div class="htw:absolute htw:inset-0 htw:flex htw:items-center">
         <div class="histoire-slider-track" />
       </div>
       <input
         ref="input"
         v-model.number="numberModel"
-        class="htw-range-input htw-appearance-none htw-border-0 htw-bg-transparent htw-cursor-pointer htw-relative htw-w-full htw-m-0 htw-text-gray-700"
+        class="htw-range-input htw:appearance-none htw:border-0 htw:bg-transparent htw:cursor-pointer htw:relative htw:w-full htw:m-0 htw:text-gray-700"
         type="range"
         v-bind="{ ...fieldAttrs(), min, max }"
         @mouseover="showTooltip = true"
@@ -81,7 +81,7 @@ const tooltipStyle = computed<CSSProperties>(() => {
       <div
         v-if="showTooltip"
         v-tooltip="{ content: String(modelValue ?? ''), shown: true, distance: 16, delay: 0 }"
-        class="htw-absolute"
+        class="htw:absolute"
         :style="tooltipStyle"
       />
     </div>

@@ -99,7 +99,10 @@ describe('workbench state components in hosts', () => {
     const contribution = host.contributions('inspector.section').find(item => item.id === 'acme:empty')!
     const wrapper = mount(ExtensionView, { attachTo: document.body, props: { host, contribution, context: {} } })
 
-    expect(wrapper.findComponent(AppEmptyState).props()).toEqual({ icon: 'search', title: 'No issues' })
+    const state = wrapper.findComponent(AppEmptyState)
+    expect(state.props('icon')).toBe('search')
+    expect(state.get('[role="status"] strong').text()).toBe('No issues')
+    expect(state.get('[role="status"] p').text()).toBe('All targets pass')
     wrapper.unmount()
   })
 })

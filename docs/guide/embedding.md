@@ -219,6 +219,8 @@ Children consume the nearest explicit session. A provider owns child mounts, ove
 
 Native docs normalize links/assets against the source base, then apply an HTML-only sanitizer. Remote scripts, event attributes, styles, and embedded frames are removed. Native content never imports host-side story modules. Raw and dynamic source are explicit modes; unavailable dynamic source does not silently become raw source.
 
+Panel part classes, source-action visibility, and passive extension views are documented in [Native panel styling](../reference/panel-styling.md).
+
 ## State, globals, and tests
 
 The story runtime owns canonical state. `state.get()` exposes a cleaned mirror; `state.patch()` merges serializable edits without replacing runtime callbacks, instances, or omitted values. `state.reset()` restores the initial runtime snapshot. Use structured `{ storyId, variantId }` targets, including IDs containing `:`; never split or concatenate them to infer identity.

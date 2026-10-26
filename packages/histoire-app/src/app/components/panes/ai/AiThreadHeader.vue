@@ -16,19 +16,13 @@ defineSlots<{
 </script>
 
 <template>
-  <header class="ai-thread-header">
-    <HstButton icon-only color="flat" type="button" aria-label="Back to threads" title="Back" @click="emit('back')">
+  <header class="htw:flex htw:flex-none htw:items-center htw:gap-1 htw:pt-0 htw:px-pane-gutter htw:pb-pane-row-inset htw:border-b htw:border-solid htw:border-border">
+    <HstButton class="htw:text-muted" icon-only color="flat" type="button" aria-label="Back to threads" title="Back" @click="emit('back')">
       <BuiltinIcon icon="chevron-left" :size="16" />
     </HstButton>
-    <h3 :title="title">
+    <h3 class="htw:flex-1 htw:min-w-0 htw:m-0 htw:overflow-hidden htw:text-[13px] htw:font-bold htw:text-ellipsis htw:whitespace-nowrap" :title="title">
       {{ title }}
     </h3>
     <slot />
   </header>
 </template>
-
-<style scoped>
-.ai-thread-header { display: flex; flex: none; align-items: center; gap: 4px; padding: 0 var(--histoire-pane-gutter) var(--histoire-pane-row-inset); border-bottom: 1px solid var(--histoire-border); }
-.ai-thread-header h3 { flex: 1; min-width: 0; margin: 0; overflow: hidden; font-size: 13px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
-.ai-thread-header :deep(button) { color: var(--histoire-muted); }
-</style>

@@ -10,6 +10,8 @@ const props = defineProps<{
   title?: string
   /** Current editable text. */
   modelValue?: string | null
+  /** Host utilities applied to the native textarea rather than its wrapper. */
+  inputClass?: string
   /** Label placement. */
   layout?: HstControlLayout
 }>()
@@ -21,7 +23,7 @@ defineExpose({ focus, select, element: input })
 
 <template>
   <HstWrapper :title="title" :layout="layout" :control-id="id()" class="histoire-textarea" :class="attrs.class" :style="attrs.style" :data-histoire-control-type="attrs['data-histoire-control-type']">
-    <textarea ref="input" v-bind="fieldAttrs()" :value="modelValue" class="histoire-control-field" @input="emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)" />
+    <textarea ref="input" v-bind="fieldAttrs()" :value="modelValue" class="histoire-control-field" :class="inputClass" @input="emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)" />
     <template v-if="$slots.actions" #actions>
       <slot name="actions" />
     </template>

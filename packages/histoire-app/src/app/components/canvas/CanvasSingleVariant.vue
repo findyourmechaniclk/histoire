@@ -57,10 +57,10 @@ onBeforeUnmount(() => canvas.setSingleViewportDraft(null))
 </script>
 
 <template>
-  <div class="histoire-single-variant-host" :style="{ left: `${area.x}px`, top: `${area.y}px`, width: `${area.width}px`, height: `${area.height}px` }">
-    <div ref="surface" class="histoire-single-variant">
-      <div v-if="frame && variant" ref="frameShell" class="histoire-single-frame-shell" :class="{ 'is-resizing': resizing }">
-        <CanvasFrame :key="JSON.stringify([previewBase, frame.storyId])" presentation="single" :frame="frame" :variant="variant" :live="true" :selected="true" :preview-base="previewBase" :width="frame.width" :height="frame.height" :stale="stale" @contextmenu="(event, target) => emit('contextmenu', event, target)" />
+  <div class="htw:absolute htw:overflow-clip htw:[overflow-clip-margin:13px]" :style="{ left: `${area.x}px`, top: `${area.y}px`, width: `${area.width}px`, height: `${area.height}px` }">
+    <div ref="surface" class="histoire-single-variant htw:absolute htw:inset-0 htw:overflow-auto htw:touch-auto">
+      <div v-if="frame && variant" ref="frameShell" class="histoire-single-frame-shell htw:relative htw:w-fit htw:mx-auto">
+        <CanvasFrame :key="JSON.stringify([previewBase, frame.storyId])" presentation="single" :dragging="resizing" :frame="frame" :variant="variant" :live="true" :selected="true" :preview-base="previewBase" :width="frame.width" :height="frame.height" :stale="stale" @contextmenu="(event, target) => emit('contextmenu', event, target)" />
       </div>
       <WorkbenchEmptyState v-else icon="document" title="Select a variant" />
     </div>
@@ -68,11 +68,3 @@ onBeforeUnmount(() => canvas.setSingleViewportDraft(null))
     <SingleVariantResizeHandles v-if="resizable && frame && variant" :surface="surface" :frame="frameShell" :size="frame" :zoom="canvas.effectiveZoom" @update:active="resizing = $event" @start="startResize" @resize="resize" @commit="commit" />
   </div>
 </template>
-
-<style scoped>
-/* Let centered grips cross fitting edges while clipping chrome scrolled out of view. */
-.histoire-single-variant-host { position: absolute; overflow: clip; overflow-clip-margin: 13px; }
-.histoire-single-variant { position: absolute; inset: 0; overflow: auto; touch-action: auto; }
-.histoire-single-frame-shell { position: relative; width: fit-content; margin-inline: auto; }
-.histoire-single-frame-shell.is-resizing :deep(iframe) { pointer-events: none; }
-</style>

@@ -14,23 +14,17 @@ const buildLine = computed(() => [props.buildInfo?.version && `v${props.buildInf
 </script>
 
 <template>
-  <header class="histoire-home-header">
-    <h1>{{ title }}</h1>
-    <p v-if="description" class="histoire-home-description">
+  <header>
+    <h1 class="htw:m-0 htw:text-[clamp(28px,_4vw,_36px)] htw:font-extrabold htw:[letter-spacing:-.02em]">
+      {{ title }}
+    </h1>
+    <p v-if="description" class="htw:m-[12px_0_8px] htw:text-body htw:text-[15px]">
       {{ description }}
     </p>
-    <p v-if="buildInfo" class="histoire-home-version">
+    <p v-if="buildInfo" class="htw:text-muted htw:font-mono htw:text-[11px] htw:m-[12px_0_0]">
       <template v-if="buildLine">
         {{ buildLine }} ·
-      </template><time :datetime="buildInfo.builtAt">{{ new Date(buildInfo.builtAt).toLocaleDateString() }}</time>
+      </template><time class="htw:text-muted htw:font-mono htw:text-[11px] htw:inline" :datetime="buildInfo.builtAt">{{ new Date(buildInfo.builtAt).toLocaleDateString() }}</time>
     </p>
   </header>
 </template>
-
-<style scoped>
-.histoire-home-header h1 { margin: 0; font-size: clamp(28px, 4vw, 36px); font-weight: 800; letter-spacing: -.02em; }
-.histoire-home-version, .histoire-home-header time { color: var(--histoire-muted); font-family: var(--histoire-font-mono, monospace); font-size: 11px; }
-.histoire-home-version { margin: 12px 0 0; }
-.histoire-home-description { margin: 12px 0 8px; color: var(--histoire-body, var(--histoire-text)); font-size: 15px; }
-.histoire-home-header time { display: inline; }
-</style>

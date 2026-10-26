@@ -4,6 +4,9 @@ import { HstNumber, HstSelect, HstText } from '@histoire/controls/vue'
 import { computed, useId } from 'vue'
 import { fieldTitle, isCompact } from './elicitation-fields.js'
 import ElicitationOptions from './ElicitationOptions.vue'
+import QuestionInput from './QuestionInput.vue'
+import QuestionOption from './QuestionOption.vue'
+import QuestionOptionLabel from './QuestionOptionLabel.vue'
 
 const props = defineProps<{
   /** Projected agent form field. */
@@ -38,7 +41,7 @@ const controlAttrs = computed(() => ({ 'id': id, 'aria-describedby': describedBy
 </script>
 
 <template>
-  <div class="elicitation-field">
+  <div>
     <ElicitationOptions
       v-if="(field.type === 'choice' || field.type === 'multi-choice') && !isCompact(field)"
       :field="field"
@@ -49,22 +52,22 @@ const controlAttrs = computed(() => ({ 'id': id, 'aria-describedby': describedBy
       @update:model-value="emit('update:modelValue', $event)"
       @update:custom-value="emit('update:customValue', $event)"
     />
-    <label v-else-if="field.type === 'boolean'" class="question-option">
-      <input v-bind="controlAttrs" type="checkbox" :checked="modelValue === true" @change="emit('update:modelValue', ($event.target as HTMLInputElement).checked)">
-      <span class="question-option-label">{{ fieldTitle(field) }}<span v-if="field.required" class="question-required" aria-hidden="true">*</span></span>
-    </label>
+    <QuestionOption v-else-if="field.type === 'boolean'">
+      <QuestionInput v-bind="controlAttrs" type="checkbox" :checked="modelValue === true" @change="emit('update:modelValue', ($event.target as HTMLInputElement).checked)" />
+      <QuestionOptionLabel>{{ fieldTitle(field) }}<span v-if="field.required" class="htw:ml-0.5 htw:text-muted" aria-hidden="true">*</span></QuestionOptionLabel>
+    </QuestionOption>
     <template v-else>
-      <label :for="id" class="question-field-label">
-        {{ fieldTitle(field) }}<span v-if="field.required" class="question-required" aria-hidden="true">*</span>
+      <label :for="id" class="htw:block htw:mt-0 htw:mx-0 htw:mb-1.5 htw:p-0 htw:[font-family:inherit] htw:text-[12px] htw:font-medium htw:text-text">
+        {{ fieldTitle(field) }}<span v-if="field.required" class="htw:ml-0.5 htw:text-muted" aria-hidden="true">*</span>
       </label>
       <HstSelect v-if="field.type === 'choice'" v-bind="controlAttrs" :options="selectOptions" :model-value="modelValue" @update:model-value="emit('update:modelValue', $event)" />
       <HstNumber v-else-if="field.type === 'number'" v-bind="controlAttrs" :model-value="number" @update:model-value="emit('update:modelValue', $event)" />
       <HstText v-else v-bind="controlAttrs" :type="inputTypes[(field.type === 'text' && field.format) || ''] ?? 'text'" :model-value="text" @update:model-value="emit('update:modelValue', $event)" />
     </template>
-    <p v-if="field.description" :id="`${id}-hint`" class="field-hint">
+    <p v-if="field.description" :id="`${id}-hint`" class="htw:mt-0.5 htw:mx-0 htw:mb-0 htw:text-muted htw:text-[11px]">
       {{ field.description }}
     </p>
-    <p v-if="error" :id="`${id}-error`" class="field-error" role="alert">
+    <p v-if="error" :id="`${id}-error`" class="htw:mt-0.5 htw:mx-0 htw:mb-0 htw:text-danger-text htw:text-[11px]" role="alert">
       {{ error }}
     </p>
   </div>

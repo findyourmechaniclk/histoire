@@ -2,6 +2,7 @@ import type { QualifiedContribution, WorkbenchComponents } from '@histoire/plugi
 import type { Component, PropType } from 'vue'
 import { WORKBENCH_COMPONENTS_KEY } from '@histoire/plugin-kit'
 import { defineComponent, h, inject } from 'vue'
+import { mergePartClass, partClassesProp } from '../../foundation/parts.js'
 import { useHistoireContext } from '../../provider/context.js'
 import { useExtensionView } from './view-lifecycle.js'
 import { histoireWorkbenchComponents } from './workbench-components.js'
@@ -17,6 +18,10 @@ import { histoireWorkbenchComponents } from './workbench-components.js'
 export const HistoireExtensionView = defineComponent({
   name: 'HistoireExtensionView',
   props: {
+    /** Host utilities for documented component parts; package markers remain intact. */
+    classes: partClassesProp<'root' | 'mount'>(),
+    /** Explicit false makes the view inert; omission preserves host pointer behavior. */
+    interactive: { type: Boolean, default: undefined },
     /** Fixed for the component lifetime; key the component by contribution object. */
     contribution: { type: Object as PropType<QualifiedContribution>, required: true },
     /** Surface context snapshot. */
@@ -39,13 +44,13 @@ export const HistoireExtensionView = defineComponent({
 
     return () => {
       const error = view.failure.value?.error
-      return h('div', { 'class': 'histoire-extension-view', 'data-histoire-contribution': id }, [
+      return h('div', { 'class': mergePartClass('histoire-extension-view', props.classes?.root), 'inert': props.interactive === false ? true : undefined, 'style': props.interactive === false ? { pointerEvents: 'none' } : undefined, 'data-histoire-interactive': props.interactive, 'data-histoire-contribution': id }, [
         view.failure.value
           ? h(ErrorState, { title: name ? `${name} failed` : 'Extension failed' }, () => error instanceof Error ? error.message : String(error ?? ''))
           : view.component
             ? h(view.component, { context: view.current.value, onVnodeMounted: view.onComponentMounted })
             : view.pending.value ? h(LoadingState, { title: name ? `Loading ${name}` : 'Loading extension' }) : null,
-        view.component ? null : h('div', { ref: view.container, class: 'histoire-extension-mount', hidden: !!view.failure.value }),
+        view.component ? null : h('div', { ref: view.container, class: mergePartClass('histoire-extension-mount', props.classes?.mount), hidden: !!view.failure.value }),
       ])
     }
   },

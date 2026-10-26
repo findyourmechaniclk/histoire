@@ -93,11 +93,12 @@ useHistoireResource(() => {
 </script>
 
 <template>
-  <nav class="histoire-app-rail" aria-label="Workbench" :style="{ '--histoire-rail-action-count': items.length + (hideTheme ? 2 : 3) }">
-    <a class="histoire-rail-logo" :href="logoHref ?? homeHref" :target="logoHref ? '_blank' : undefined" :rel="logoHref ? 'noopener noreferrer' : undefined" aria-label="Histoire home" @click="activateLogo">
-      <img :src="logo" alt="" width="28" height="28">
+  <!-- Mobile rail layout follows the nearest workbench container. -->
+  <nav class="htw:flex htw:flex-col htw:items-center htw:gap-2 htw:py-2.5 htw:px-2 htw:min-h-0 htw:border-e htw:border-border htw:bg-surface htw:[@container(max-width:640px)]:flex-row htw:[@container(max-width:640px)]:justify-between htw:[@container(max-width:640px)]:gap-0.5 htw:[@container(max-width:640px)]:py-2 htw:[@container(max-width:640px)]:px-1 htw:[@container(max-width:640px)]:border-e-0 htw:[@container(max-width:640px)]:border-t htw:[@container(max-width:640px)]:[--histoire-rail-button-size:min(40px,calc((100cqw_-_8px)/var(--histoire-rail-action-count)_-_2px))]" aria-label="Workbench" :style="{ '--histoire-rail-action-count': items.length + (hideTheme ? 2 : 3) }">
+    <a class="htw:grid htw:place-items-center htw:size-10 htw:flex-[0_0_40px] htw:mb-0.5 htw:rounded-[10px] htw:focus-visible:outline-2 htw:focus-visible:outline-accent htw:focus-visible:outline-offset-2 htw:[@container(max-width:640px)]:hidden" :href="logoHref ?? homeHref" :target="logoHref ? '_blank' : undefined" :rel="logoHref ? 'noopener noreferrer' : undefined" aria-label="Histoire home" @click="activateLogo">
+      <img class="htw:object-contain" :src="logo" alt="" width="28" height="28">
     </a>
-    <div class="histoire-rail-destinations">
+    <div class="htw:flex htw:flex-col htw:gap-1 htw:[@container(max-width:640px)]:contents">
       <RailButton
         v-for="item in items" :key="item.id"
         :label="item.label" :icon="item.icon"
@@ -111,26 +112,10 @@ useHistoireResource(() => {
         @click="activate(item.id)"
       />
     </div>
-    <div class="histoire-rail-tools">
+    <div class="htw:flex htw:flex-col htw:gap-1 htw:mt-auto htw:[@container(max-width:640px)]:contents">
       <RailButton v-if="!hideTheme" label="Toggle dark mode" :icon="dark ? 'light' : 'asleep'" test-id="dark-toggle" @click="toggleTheme" />
       <RailButton :label="shell.panelOpen.value ? 'Collapse side panel' : 'Expand side panel'" :icon="shell.panelOpen.value ? 'side-panel-close' : 'side-panel-open'" :expanded="shell.panelOpen.value" :controls="panelId" @click="shell.togglePanel" />
       <RailButton label="Settings" icon="settings" :active="settingsActive" :disabled="!settingsAvailable" @click="emit('settings')" />
     </div>
   </nav>
 </template>
-
-<style scoped>
-.histoire-app-rail { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 8px; min-height: 0; border-inline-end: 1px solid var(--histoire-border); background: var(--histoire-surface); }
-.histoire-rail-logo { display: grid; place-items: center; width: 40px; height: 40px; flex: 0 0 40px; margin-bottom: 2px; border-radius: 10px; }
-.histoire-rail-logo:focus-visible { outline: 2px solid var(--histoire-accent); outline-offset: 2px; }
-.histoire-rail-logo img { object-fit: contain; }
-.histoire-rail-destinations, .histoire-rail-tools { display: flex; flex-direction: column; gap: 4px; }
-.histoire-rail-tools { margin-top: auto; }
-@container (max-width: 640px) {
-  /* Fit every action within narrow shells while retaining square hit areas. */
-  .histoire-app-rail { --histoire-rail-button-size: min(40px, calc((100cqw - 8px) / var(--histoire-rail-action-count) - 2px)); flex-direction: row; justify-content: space-between; gap: 2px; padding: 8px 4px; border-inline-end: 0; border-block-start: 1px solid var(--histoire-border); }
-  .histoire-rail-logo { display: none; }
-  /* Place every square action in the same responsive row. */
-  .histoire-rail-destinations, .histoire-rail-tools { display: contents; }
-}
-</style>

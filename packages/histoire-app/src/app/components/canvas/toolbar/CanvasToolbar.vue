@@ -102,13 +102,13 @@ onBeforeUnmount(() => disposers.forEach(dispose => dispose()))
 </script>
 
 <template>
-  <BaseOverflowToolbar ref="toolbar" class="histoire-canvas-toolbar" label="Canvas tools" overflow-label="More canvas tools" :overlay-target="overlayTarget" :bounds="bounds" @update:open="value => { if (!value) setOpen(null) }" @contextmenu="openSelectedFrameMenu" @keydown="openSelectedFrameMenu" @wheel.stop @pointerdown.stop>
+  <BaseOverflowToolbar ref="toolbar" class="histoire-canvas-toolbar htw:h-[42px] htw:p-1.5 htw:border htw:border-solid htw:border-border htw:rounded-[12px] htw:bg-surface htw:shadow-canvas-toolbar htw:pointer-events-auto" label="Canvas tools" overflow-label="More canvas tools" :overlay-target="overlayTarget" :bounds="bounds" @update:open="value => { if (!value) setOpen(null) }" @contextmenu="openSelectedFrameMenu" @keydown="openSelectedFrameMenu" @wheel.stop @pointerdown.stop>
     <BaseOverflowToolbarItem v-if="(matchCount || pluginItems?.search.length) && view.showsGroup('search')" id="search">
       <SearchMatchStepper v-if="matchCount" :count="matchCount" :position="matchPosition ?? 0" @previous="emit('previousMatch')" @next="emit('nextMatch')" />
       <PluginToolbarItem v-for="item in pluginItems?.search" :key="plugin.keyOf(item)" :item="item" :workbench="plugin.workbench!" :revision="plugin.revision.value" :open="open" @update:open="setOpen" @error="emit('error', $event)" />
     </BaseOverflowToolbarItem>
     <BaseOverflowToolbarItem v-if="view.showsGroup('tools')" id="tools" :separator-before="Boolean(matchCount)">
-      <ToolSwitch :class="{ 'histoire-tool-switch--leading': !matchCount }">
+      <ToolSwitch :leading="!matchCount">
         <slot name="tool" />
       </ToolSwitch>
       <PluginToolbarItem v-for="item in pluginItems?.tools" :key="plugin.keyOf(item)" :item="item" :workbench="plugin.workbench!" :revision="plugin.revision.value" :open="open" @update:open="setOpen" @error="emit('error', $event)" />
@@ -153,9 +153,3 @@ onBeforeUnmount(() => disposers.forEach(dispose => dispose()))
     </BaseOverflowToolbarItem>
   </BaseOverflowToolbar>
 </template>
-
-<style scoped>
-.histoire-canvas-toolbar { height: 42px; padding: 6px; border: 1px solid var(--histoire-border); border-radius: 12px; background: var(--histoire-surface); box-shadow: var(--histoire-shadow-canvas-toolbar); pointer-events: auto; }
-/* ToolSwitch retains its group inset while consuming duplicate toolbar inset only when leading inline. */
-.histoire-canvas-toolbar :deep(.overflow-toolbar-item[data-toolbar-presentation="inline"] .histoire-tool-switch--leading) { margin-inline-start: -3px; }
-</style>

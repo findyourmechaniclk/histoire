@@ -3,6 +3,7 @@ import type { UiAgentElicitationUrl } from '@histoire/shared'
 import { BuiltinIcon, HstButton, HstPulsatingDisc } from '@histoire/controls/vue'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useAgentsStore } from '../../../../stores/agents.js'
+import QuestionActions from './QuestionActions.vue'
 
 const props = defineProps<{
   /** Pending link request. */
@@ -39,22 +40,22 @@ async function copy(): Promise<void> {
 </script>
 
 <template>
-  <p class="question-link">
-    <span class="question-host">{{ request.host }}</span>
+  <p class="htw:flex htw:items-center htw:justify-between htw:gap-1.5 htw:min-w-0 htw:m-0">
+    <span class="htw:[font:11px_var(--histoire-font-mono,_monospace)] htw:text-muted htw:wrap-anywhere">{{ request.host }}</span>
     <HstButton icon-only color="flat" type="button" :aria-label="copied ? 'Copied' : 'Copy link'" :title="copied ? 'Copied' : 'Copy link'" @click="copy">
       <BuiltinIcon :icon="copied ? 'checkmark' : 'copy'" :size="14" />
     </HstButton>
   </p>
-  <p v-if="waiting" class="question-status" role="status">
+  <p v-if="waiting" class="htw:flex htw:items-center htw:gap-1.5 htw:m-0 htw:text-agent-text" role="status">
     <HstPulsatingDisc :size="10" />Waiting for completion
   </p>
   <!-- While waiting, the header dismiss button cancels. -->
-  <div v-else class="question-actions">
+  <QuestionActions v-else>
     <HstButton color="flat" type="button" @click="agents?.replyElicitation(request.requestId, 'decline')">
       Decline
     </HstButton>
     <HstButton color="primary" type="button" @click="open">
       Open link
     </HstButton>
-  </div>
+  </QuestionActions>
 </template>

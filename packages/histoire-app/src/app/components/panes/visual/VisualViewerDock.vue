@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { VisualSizing, VisualView } from './viewer-types.js'
-import { BuiltinIcon, HstButton } from '@histoire/controls/vue'
+import { BuiltinIcon } from '@histoire/controls/vue'
 import { useWorkbenchVisual } from '../../../stores/visual.js'
+import VisualViewerDockButton from './VisualViewerDockButton.vue'
+import VisualViewerSurface from './VisualViewerSurface.vue'
 
 defineProps<{
   /** Current image layout. */
@@ -42,40 +44,32 @@ function changeOpacity(event: Event): void {
 </script>
 
 <template>
-  <div class="viewer-dock viewer-float">
-    <div class="modes" role="group" aria-label="Image comparison mode">
-      <HstButton v-for="mode in modes" :key="mode.value" color="flat" :icon-only="view !== mode.value" :aria-label="mode.label" :aria-pressed="view === mode.value" :disabled="unavailable(mode.value)" @click="emit('update:view', mode.value)">
+  <VisualViewerSurface class="htw:flex htw:items-center htw:justify-center htw:flex-wrap htw:gap-1 htw:p-1 htw:min-w-0 htw:max-w-full htw:[grid-column:2] htw:@max-[640px]/viewer:gap-y-1.5">
+    <div class="htw:flex htw:items-center htw:gap-0.5" role="group" aria-label="Image comparison mode">
+      <VisualViewerDockButton v-for="mode in modes" :key="mode.value" color="flat" :icon-only="view !== mode.value" :aria-label="mode.label" :aria-pressed="view === mode.value" :disabled="unavailable(mode.value)" @click="emit('update:view', mode.value)">
         <BuiltinIcon :icon="mode.icon" :size="16" />
         <span v-if="view === mode.value">{{ mode.label }}</span>
-      </HstButton>
+      </VisualViewerDockButton>
     </div>
-    <span class="divider" aria-hidden="true" />
-    <div class="zoom">
-      <HstButton color="flat" icon-only aria-label="Zoom out visual images" @click="emit('zoom', 1 / 1.25)">
+    <span class="htw:w-[1px] htw:h-5 htw:my-0 htw:mx-1 htw:bg-border htw:@max-[640px]/viewer:hidden" aria-hidden="true" />
+    <div class="htw:flex htw:items-center htw:gap-0.5">
+      <VisualViewerDockButton color="flat" icon-only aria-label="Zoom out visual images" @click="emit('zoom', 1 / 1.25)">
         <BuiltinIcon icon="subtract" :size="16" />
-      </HstButton>
-      <code>{{ Math.round(zoom * 100) }}%</code>
-      <HstButton color="flat" icon-only aria-label="Zoom in visual images" @click="emit('zoom', 1.25)">
+      </VisualViewerDockButton>
+      <code class="htw:min-w-11 htw:text-center htw:text-[12px]">{{ Math.round(zoom * 100) }}%</code>
+      <VisualViewerDockButton color="flat" icon-only aria-label="Zoom in visual images" @click="emit('zoom', 1.25)">
         <BuiltinIcon icon="add" :size="16" />
-      </HstButton>
+      </VisualViewerDockButton>
     </div>
-    <span class="divider" aria-hidden="true" />
-    <div class="sizing">
-      <HstButton color="flat" aria-label="Reset visual images to natural size" @click="emit('zoom')">
+    <span class="htw:w-[1px] htw:h-5 htw:my-0 htw:mx-1 htw:bg-border htw:@max-[640px]/viewer:hidden" aria-hidden="true" />
+    <div class="htw:flex htw:items-center htw:gap-0.5">
+      <VisualViewerDockButton color="flat" aria-label="Reset visual images to natural size" @click="emit('zoom')">
         Reset
-      </HstButton>
-      <HstButton color="flat" :aria-pressed="sizing === 'fit'" @click="emit('fit')">
+      </VisualViewerDockButton>
+      <VisualViewerDockButton color="flat" :aria-pressed="sizing === 'fit'" @click="emit('fit')">
         Fit
-      </HstButton>
+      </VisualViewerDockButton>
     </div>
-    <label v-if="view === 'overlay'" class="opacity">Opacity <input :value="opacity" type="range" min="0" max="100" aria-label="Overlay opacity" @input="changeOpacity"></label>
-  </div>
+    <label v-if="view === 'overlay'" class="htw:flex htw:items-center htw:gap-1.5 htw:py-0 htw:px-1.5 htw:text-[11px] htw:text-muted">Opacity <input class="htw:w-22 htw:accent-accent" :value="opacity" type="range" min="0" max="100" aria-label="Overlay opacity" @input="changeOpacity"></label>
+  </VisualViewerSurface>
 </template>
-
-<style scoped>
-.viewer-dock { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; padding: 4px; min-width: 0; max-width: 100%; }
-.modes, .zoom, .sizing { display: flex; align-items: center; gap: 2px; }.viewer-dock :deep(button) { min-height: 30px; padding: 4px 9px; font-size: 12px; white-space: nowrap; }.viewer-dock :deep(.histoire-icon-button) { --histoire-icon-button-size: 30px; }
-.divider { width: 1px; height: 20px; margin: 0 4px; background: var(--histoire-border); }.zoom code { min-width: 44px; text-align: center; font-size: 12px; }
-.opacity { display: flex; align-items: center; gap: 6px; padding: 0 6px; font-size: 11px; color: var(--histoire-muted); }.opacity input { width: 88px; accent-color: var(--histoire-accent); }
-@container (max-width: 640px) { .viewer-dock { row-gap: 6px; }.divider { display: none; } }
-</style>

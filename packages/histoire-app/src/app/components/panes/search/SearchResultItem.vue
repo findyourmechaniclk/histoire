@@ -55,23 +55,11 @@ function onKeydown(event: KeyboardEvent): void {
 </script>
 
 <template>
-  <HstButton :id="getSearchResultDomId(result.id)" color="flat" type="button" class="search-result" :class="{ active }" data-test-id="search-item" :data-search-kind="result.kind" :aria-current="selected ? 'true' : undefined" @focus="emit('focus')" @click="emit('activate', $event.metaKey || $event.ctrlKey)" @contextmenu="openMenu" @keydown="onKeydown">
-    <BuiltinIcon :icon="result.kind === 'docs' ? 'document' : result.kind === 'prop' ? 'settings-adjust' : 'cube'" class="result-icon" :style="{ color: result.iconColor }" :size="16" />
-    <span class="result-copy">
-      <strong><template v-for="(piece, index) in pieces" :key="index"><mark v-if="piece.matched">{{ piece.text }}</mark><template v-else>{{ piece.text }}</template></template></strong>
-      <small v-if="detail">{{ detail }}</small>
+  <HstButton :id="getSearchResultDomId(result.id)" color="flat" type="button" class="htw:flex htw:items-start htw:gap-2.5 htw:w-full htw:py-row-list htw:px-pane-row-inset htw:text-left htw:text-text htw:hover:bg-chip htw:data-[active]:bg-accent-soft htw:focus-visible:[outline:2px_solid_var(--histoire-accent)] htw:focus-visible:outline-offset-[-2px]" :data-active="active || undefined" data-test-id="search-item" :data-search-kind="result.kind" :aria-current="selected ? 'true' : undefined" @focus="emit('focus')" @click="emit('activate', $event.metaKey || $event.ctrlKey)" @contextmenu="openMenu" @keydown="onKeydown">
+    <BuiltinIcon :icon="result.kind === 'docs' ? 'document' : result.kind === 'prop' ? 'settings-adjust' : 'cube'" class="htw:w-4.5 htw:h-4.5 htw:flex-none htw:text-accent htw:mt-[1px]" :style="{ color: result.iconColor }" :size="16" />
+    <span class="htw:flex-1 htw:min-w-0 htw:grid htw:gap-[3px]">
+      <strong class="htw:text-[13px] htw:font-semibold"><template v-for="(piece, index) in pieces" :key="index"><mark v-if="piece.matched" class="htw:text-inherit htw:bg-transparent htw:font-bold">{{ piece.text }}</mark><template v-else>{{ piece.text }}</template></template></strong>
+      <small v-if="detail" class="htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap htw:text-muted htw:text-[12px]">{{ detail }}</small>
     </span>
   </HstButton>
 </template>
-
-<style scoped>
-.search-result { display: flex; align-items: flex-start; gap: 10px; width: 100%; padding: var(--histoire-list-row-padding, 10px) var(--histoire-pane-row-inset); text-align: left; color: var(--histoire-text); }
-.search-result:hover { background: var(--histoire-chip); }
-.search-result.active { background: var(--histoire-accent-soft); }
-.search-result:focus-visible { outline: 2px solid var(--histoire-accent); outline-offset: -2px; }
-.result-icon { width: 18px; height: 18px; flex: none; color: var(--histoire-accent); margin-top: 1px; }
-.result-copy { flex: 1; min-width: 0; display: grid; gap: 3px; }
-.result-copy strong { font-size: 13px; font-weight: 600; }
-.result-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--histoire-muted); font-size: 12px; }
-mark { color: inherit; background: transparent; font-weight: 700; }
-</style>

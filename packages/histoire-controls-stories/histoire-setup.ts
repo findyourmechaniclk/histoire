@@ -1,1 +1,1 @@
-import '@histoire/controls/src/style/main.css'
+import '@histoire/controls/dist/style-standalone.css'

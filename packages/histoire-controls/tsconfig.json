@@ -49,6 +49,8 @@
     "node_modules",
     "generated/**/*",
     "dist/**/*",
-    "src/**/*.spec.ts"
+    "src/**/*.spec.ts",
+    // Story fixtures are built by Histoire, not published as library declarations.
+    "src/**/*.story.vue"
   ]
 }

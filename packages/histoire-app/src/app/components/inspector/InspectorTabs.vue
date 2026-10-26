@@ -109,41 +109,24 @@ function choose(value: InspectorTab): void {
 </script>
 
 <template>
-  <div class="inspector-tabs histoire-button-group-options">
-    <div ref="list" class="inspector-tab-list" role="tablist" aria-label="Inspector" @keydown="navigate">
-      <HstButton v-for="tab in tabs" :id="`${idPrefix}-tab-${getInspectorTabKey(tab.value)}`" :key="tab.value" color="flat" type="button" role="tab" :hidden="overflowed.has(tab.value)" :aria-selected="activeTab === tab.value" :aria-controls="`${idPrefix}-panel-${getInspectorTabKey(tab.value)}`" :tabindex="activeTab === tab.value || (activeTab === undefined && !tab.value) ? 0 : -1" :data-test-id="tab.value === 'tests' ? 'story-tests-tab' : undefined" @click="select(tab.value)">
-        <!-- The space keeps label and badge separate words in the accessible name; flex layout ignores it. -->
-        <BuiltinIcon v-if="tab.icon" :icon="tab.icon" :size="16" />
-        <span class="inspector-tab-label" :class="{ 'inspector-tab-label-hidden': compact && activeTab === tab.value }">{{ tab.label }}</span>{{ ' ' }}<component :is="tab.badge" v-if="tab.badge" />
-        <span v-else-if="tab.badgeText !== undefined" class="inspector-tab-badge">{{ tab.badgeText }}</span>
+  <div class="histoire-button-group-options htw:mt-0 htw:mx-inspector-gutter htw:mb-pane-gutter">
+    <div ref="list" class="htw:relative htw:flex htw:flex-1 htw:gap-[3px] htw:min-w-0" role="tablist" aria-label="Inspector" @keydown="navigate">
+      <HstButton v-for="tab in tabs" :id="`${idPrefix}-tab-${getInspectorTabKey(tab.value)}`" :key="tab.value" class="htw:flex htw:items-center htw:justify-center htw:gap-[5px] htw:min-w-0 htw:min-h-[32px] htw:overflow-hidden htw:text-muted htw:font-bold htw:flex-auto htw:hover:text-text htw:[[hidden]]:hidden" color="flat" type="button" role="tab" :hidden="overflowed.has(tab.value)" :aria-selected="activeTab === tab.value" :aria-controls="`${idPrefix}-panel-${getInspectorTabKey(tab.value)}`" :tabindex="activeTab === tab.value || (activeTab === undefined && !tab.value) ? 0 : -1" :data-test-id="tab.value === 'tests' ? 'story-tests-tab' : undefined" @click="select(tab.value)">
+        <!-- Direct-child variants leave measurement clones at natural width. The space keeps label and badge separate words in the accessible name; flex layout ignores it. -->
+        <BuiltinIcon v-if="tab.icon" :icon="tab.icon" class="htw:flex-none" :size="16" />
+        <span class="htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap htw:[[role=tablist]>[role=tab]>&]:data-[compact=true]:absolute htw:[[role=tablist]>[role=tab]>&]:data-[compact=true]:w-px htw:[[role=tablist]>[role=tab]>&]:data-[compact=true]:h-px htw:[[role=tablist]>[role=tab]>&]:data-[compact=true]:[clip-path:inset(50%)]" :data-compact="compact && activeTab === tab.value">{{ tab.label }}</span>{{ ' ' }}<component :is="tab.badge" v-if="tab.badge" />
+        <span v-else-if="tab.badgeText !== undefined" class="htw:text-muted htw:text-[13px] htw:tabular-nums">{{ tab.badgeText }}</span>
       </HstButton>
     </div>
-    <HstButton ref="more" class="inspector-tabs-more" color="flat" type="button" icon-only aria-label="More tabs" aria-haspopup="menu" :aria-expanded="open" :hidden="!menu.length" @click="open = !open" @keydown="triggerKey">
-      <BuiltinIcon icon="chevron-down" :size="16" />
+    <HstButton ref="more" class="htw:hover:text-text htw:[[hidden]]:hidden htw:[--histoire-icon-button-size:32px] htw:flex-none htw:text-muted" color="flat" type="button" icon-only aria-label="More tabs" aria-haspopup="menu" :aria-expanded="open" :hidden="!menu.length" @click="open = !open" @keydown="triggerKey">
+      <BuiltinIcon icon="chevron-down" class="htw:flex-none" :size="16" />
     </HstButton>
     <BasePopover v-if="open" v-model:open="open" :anchor="trigger" label="More tabs" role="menu" :width="200" :focus-last="focusLast" :overlay-target="context.overlay.value ?? context.root.value">
       <div @keydown="menuKey">
         <MenuItem v-for="tab in menu" :key="tab.value" :label="tab.label" :icon="tab.icon" @click="choose(tab.value)">
-          <span v-if="tab.badgeText !== undefined" class="inspector-tab-badge">{{ tab.badgeText }}</span>
+          <span v-if="tab.badgeText !== undefined" class="htw:text-muted htw:text-[13px] htw:tabular-nums">{{ tab.badgeText }}</span>
         </MenuItem>
       </div>
     </BasePopover>
   </div>
 </template>
-
-<style scoped>
-.inspector-tabs { margin: 0 var(--histoire-inspector-gutter) var(--histoire-pane-gutter); }
-.inspector-tab-list { position: relative; display: flex; flex: 1; gap: 3px; min-width: 0; }
-.inspector-tab-list button { display: flex; align-items: center; justify-content: center; gap: 5px; min-width: 0; min-height: 32px; overflow: hidden; color: var(--histoire-muted); font-weight: 700; }
-/* Content-based basis instead of the button group's equal widths: a row that barely fits shrinks every tab a little instead of clipping the widest one (a plugin tab with icon and badge). */
-.inspector-tabs .inspector-tab-list .histoire-button { flex: 1 1 auto; }
-.inspector-tab-list button :deep(svg) { flex: none; }
-/* Narrower than the built-in labels: labels truncate (ellipsis), icons and badges stay. */
-.inspector-tab-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* Compact active plugin tab: label stays in the accessible name only. Direct children only: width measurement clones (inside a host element) keep the natural label. */
-.inspector-tab-list > [role="tab"] > .inspector-tab-label-hidden { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); }
-.inspector-tab-list button:hover, .inspector-tabs-more:hover { color: var(--histoire-text); }
-.inspector-tab-list button[hidden], .inspector-tabs-more[hidden] { display: none; }
-.inspector-tabs .inspector-tabs-more { --histoire-icon-button-size: 32px; flex: none; color: var(--histoire-muted); }
-.inspector-tab-badge { color: var(--histoire-muted); font-size: 13px; font-variant-numeric: tabular-nums; }
-</style>

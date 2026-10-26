@@ -3,6 +3,7 @@ import { BuiltinIcon, HstButton, HstPulsatingDisc } from '@histoire/controls/vue
 import { computed, ref, useId, watch } from 'vue'
 import { useWorkbenchVisual } from '../../../stores/visual.js'
 import { visualStatus } from './status.js'
+import VisualViewerSurface from './VisualViewerSurface.vue'
 
 defineProps<{
   /** Dialog's accessible title ID. */
@@ -36,63 +37,49 @@ watch(result, () => {
 </script>
 
 <template>
-  <header class="viewer-header">
-    <div class="title-pill viewer-float">
-      <span class="status-dot" :data-tone="tone" aria-hidden="true" />
-      <div class="identity">
-        <h2 :id="titleId">
+  <header class="htw:relative htw:z-[3] htw:flex htw:items-start htw:flex-wrap htw:gap-2.5 htw:p-3.5 htw:@max-[640px]/viewer:p-2.5 htw:@max-[640px]/viewer:gap-2">
+    <VisualViewerSurface class="htw:flex htw:items-center htw:flex-wrap htw:gap-2.5 htw:py-2 htw:pr-3 htw:pl-3.5 htw:min-w-0 htw:max-w-full htw:@max-[640px]/viewer:w-full">
+      <span class="htw:flex-none htw:w-2 htw:h-2 htw:rounded-full htw:bg-muted htw:data-[tone=accent]:bg-accent htw:data-[tone=warn]:bg-warn htw:data-[tone=danger]:bg-danger" :data-tone="tone" aria-hidden="true" />
+      <div class="htw:flex-1 htw:min-w-0">
+        <h2 :id="titleId" class="htw:m-0 htw:text-[14px] htw:font-bold htw:wrap-anywhere">
           {{ title }}
         </h2>
-        <small>{{ result?.spec.id }} · {{ result?.baselineSource }}<code v-if="result?.baselineCommit"> {{ result.baselineCommit.slice(0, 8) }}</code></small>
-        <small v-if="result" class="status" role="status">
+        <small class="htw:block htw:text-[11px] htw:text-muted htw:wrap-anywhere">{{ result?.spec.id }} · {{ result?.baselineSource }}<code v-if="result?.baselineCommit" class="htw:ml-1"> {{ result.baselineCommit.slice(0, 8) }}</code></small>
+        <small v-if="result" class="htw:flex htw:text-[11px] htw:text-muted htw:wrap-anywhere htw:items-center htw:flex-wrap htw:gap-[3px] htw:mt-0.5" role="status">
           <HstPulsatingDisc v-if="model.approvalPending(result)" :size="10" />
           <span>{{ model.approvalPending(result) ? 'Saving baseline' : visualStatus(result).label }}</span>
           <span v-if="result.staleReason"> · {{ result.staleReason }}</span>
           <span v-else-if="result.restored"> · Restored<span v-if="result.capturedAt"> · {{ new Date(result.capturedAt).toLocaleString() }}</span></span>
         </small>
       </div>
-      <span v-if="result?.diffPixels !== undefined || result?.currentDimensions" class="divider" aria-hidden="true" />
-      <code v-if="result?.diffPixels !== undefined" class="ratio" :data-tone="tone" :title="`${result.diffPixels} pixels`">{{ ((result.diffPixelRatio ?? 0) * 100).toFixed(3) }}%</code>
-      <code v-if="result?.currentDimensions" class="dimensions">{{ result.currentDimensions.width }} × {{ result.currentDimensions.height }}</code>
-    </div>
-    <div v-if="!captureFailed && warnings.length" class="warnings">
-      <HstButton class="warning-chip viewer-float" :aria-expanded="warningsOpen" :aria-controls="warningId" @click="warningsOpen = !warningsOpen">
+      <span v-if="result?.diffPixels !== undefined || result?.currentDimensions" class="htw:w-[1px] htw:h-6 htw:bg-border" aria-hidden="true" />
+      <code v-if="result?.diffPixels !== undefined" class="htw:text-[11px] htw:whitespace-nowrap htw:data-[tone=warn]:text-warn htw:data-[tone=danger]:text-danger-text" :data-tone="tone" :title="`${result.diffPixels} pixels`">{{ ((result.diffPixelRatio ?? 0) * 100).toFixed(3) }}%</code>
+      <code v-if="result?.currentDimensions" class="htw:text-[11px] htw:whitespace-nowrap htw:text-muted">{{ result.currentDimensions.width }} × {{ result.currentDimensions.height }}</code>
+    </VisualViewerSurface>
+    <div v-if="!captureFailed && warnings.length" class="htw:self-center htw:@max-[640px]/viewer:mr-auto">
+      <VisualViewerSurface :as="HstButton" class="htw:text-warn htw:text-[12px] htw:whitespace-nowrap" :aria-expanded="warningsOpen" :aria-controls="warningId" @click="warningsOpen = !warningsOpen">
         <BuiltinIcon icon="warning-alt" :size="14" />
         {{ warnings.length }} {{ warnings.length === 1 ? 'warning' : 'warnings' }}
-      </HstButton>
-      <div v-if="warningsOpen" :id="warningId" class="warning-panel viewer-float" role="region" aria-label="Capture warnings">
-        <p v-for="(warning, warningIndex) in warnings" :key="warningIndex">
+      </VisualViewerSurface>
+      <VisualViewerSurface v-if="warningsOpen" :id="warningId" class="htw:absolute htw:top-[calc(100%_-_8px)] htw:left-3.5 htw:w-[min(480px,_calc(100%_-_28px))] htw:max-h-60 htw:overflow-auto htw:p-3 htw:text-[12px] htw:whitespace-pre-wrap htw:wrap-anywhere htw:@max-[640px]/viewer:left-2.5 htw:@max-[640px]/viewer:w-[calc(100%_-_20px)]" role="region" aria-label="Capture warnings">
+        <p v-for="(warning, warningIndex) in warnings" :key="warningIndex" class="htw:m-0 htw:not-first:mt-2">
           {{ warning }}
         </p>
-      </div>
+      </VisualViewerSurface>
     </div>
-    <nav class="navigation" aria-label="Visual results">
-      <div class="pager viewer-float">
+    <nav class="htw:flex htw:items-center htw:gap-2.5 htw:ml-auto" aria-label="Visual results">
+      <VisualViewerSurface class="htw:flex htw:items-center htw:gap-0.5 htw:p-0.5">
         <HstButton color="flat" icon-only aria-label="Previous visual result" :disabled="index <= 0" @click="emit('move', -1)">
           <BuiltinIcon icon="chevron-left" :size="18" />
         </HstButton>
-        <code><span>{{ index + 1 }}</span> / {{ model.results.value.length }}</code>
+        <code class="htw:py-0 htw:px-1.5 htw:text-[12px] htw:text-muted htw:whitespace-nowrap"><span class="htw:text-text">{{ index + 1 }}</span> / {{ model.results.value.length }}</code>
         <HstButton color="flat" icon-only aria-label="Next visual result" :disabled="index >= model.results.value.length - 1" @click="emit('move', 1)">
           <BuiltinIcon icon="chevron-right" :size="18" />
         </HstButton>
-      </div>
-      <HstButton class="close-button viewer-float" icon-only aria-label="Close visual review" @click="emit('close')">
+      </VisualViewerSurface>
+      <VisualViewerSurface :as="HstButton" class="htw:[--histoire-icon-button-size:38px]" icon-only aria-label="Close visual review" @click="emit('close')">
         <BuiltinIcon icon="close" :size="18" />
-      </HstButton>
+      </VisualViewerSurface>
     </nav>
   </header>
 </template>
-
-<style scoped>
-.viewer-header { position: relative; z-index: 3; display: flex; align-items: flex-start; flex-wrap: wrap; gap: 10px; padding: 14px; }
-.title-pill { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 8px 12px 8px 14px; min-width: 0; max-width: 100%; }
-.identity { flex: 1; min-width: 0; }.identity code { margin-left: 4px; }h2 { margin: 0; font-size: 14px; font-weight: 700; overflow-wrap: anywhere; }small { display: block; font-size: 11px; color: var(--histoire-muted); overflow-wrap: anywhere; }
-.status { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; margin-top: 2px; }
-.status-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--histoire-muted); }
-.status-dot[data-tone=accent] { background: var(--histoire-accent); }.status-dot[data-tone=warn] { background: var(--histoire-warn); }.status-dot[data-tone=danger] { background: var(--histoire-danger); }
-.divider { width: 1px; height: 24px; background: var(--histoire-border); }.ratio, .dimensions { font-size: 11px; white-space: nowrap; }.dimensions { color: var(--histoire-muted); }.ratio[data-tone=warn] { color: var(--histoire-warn); }.ratio[data-tone=danger] { color: var(--histoire-danger-text); }
-.warnings { align-self: center; }.warning-chip { color: var(--histoire-warn); font-size: 12px; white-space: nowrap; }
-.warning-panel { position: absolute; top: calc(100% - 8px); left: 14px; width: min(480px, calc(100% - 28px)); max-height: 240px; overflow: auto; padding: 12px; font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }.warning-panel p { margin: 0; }.warning-panel p + p { margin-top: 8px; }
-.navigation { display: flex; align-items: center; gap: 10px; margin-left: auto; }.pager { display: flex; align-items: center; gap: 2px; padding: 2px; }.pager code { padding: 0 6px; font-size: 12px; color: var(--histoire-muted); white-space: nowrap; }.pager code span { color: var(--histoire-text); }.close-button { --histoire-icon-button-size: 38px; }
-@container (max-width: 640px) { .viewer-header { padding: 10px; gap: 8px; }.title-pill { width: 100%; }.warnings { margin-right: auto; }.warning-panel { left: 10px; width: calc(100% - 20px); } }
-</style>

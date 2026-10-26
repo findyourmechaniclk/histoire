@@ -35,17 +35,17 @@ const colSizePx = computed(() => `${props.colSize}px`)
     :col-size="colSize"
     :dark="dark"
     layout="grid"
-    class="histoire-token-grid htw-m-4"
+    class="histoire-token-grid htw:m-4"
   >
     <template #default="{ token }">
-      <div class="htw-flex htw-flex-col htw-gap-2 htw-min-w-0">
+      <div class="htw:flex htw:flex-col htw:gap-2 htw:min-w-0">
         <slot :token="token" />
         <HstTokenDetails :name="token.name" :value="token.value" :max-characters="colSize / 8" />
       </div>
     </template>
   </HstTokenVirtualRows>
-  <div v-else :data-histoire-control-appearance="dark ? 'dark' : 'light'" class="histoire-token-grid htw-bind-col-size htw-grid htw-gap-4 htw-m-4" :style="{ '--histoire-col-size': colSizePx }">
-    <div v-for="token of processedTokens" :key="token.key" class="htw-flex htw-flex-col htw-gap-2 htw-min-w-0">
+  <div v-else :data-histoire-control-appearance="dark ? 'dark' : 'light'" class="histoire-token-grid htw-bind-col-size htw:grid htw:gap-4 htw:m-4" :style="{ '--histoire-col-size': colSizePx }">
+    <div v-for="token of processedTokens" :key="token.key" class="htw:flex htw:flex-col htw:gap-2 htw:min-w-0">
       <slot :token="token" />
       <HstTokenDetails :name="token.name" :value="token.value" :max-characters="colSize / 8" />
     </div>

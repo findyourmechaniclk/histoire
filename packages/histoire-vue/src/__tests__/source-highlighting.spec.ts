@@ -39,4 +39,34 @@ describe('real source highlighting', () => {
       await session.dispose()
     }
   })
+
+  it('lets hosts hide and restore source actions while retaining content', async () => {
+    const fixture = sourceFixture()
+    const dispatch = fixture.request.getMockImplementation()!
+    // Substitute only the remote transport; panel lifecycle and highlighting stay real.
+    fixture.request.mockImplementation(async (command, payload) => command === 'source.get'
+      ? { ...payload, epoch: 'epoch-1', revision: 'revision-1', origin: 'file', language: 'html', body: '<p>Source</p>' }
+      : dispatch(command, payload))
+    const session = createHistoireSessionWithAdapters({ url: 'https://book.example/' }, fixture.adapters)
+    await session.connect()
+    await session.selection.select({ storyId: 'a:b', variantId: 'c' })
+    const showActions = ref<boolean | undefined>()
+    const wrapper = mount(HistoireProvider, { props: { session }, slots: { default: () => h(HistoireSource, { showActions: showActions.value }) } })
+    try {
+      await expect.poll(() => wrapper.find('pre code').exists()).toBe(true)
+      expect(wrapper.findAll('button').map(button => button.text())).toEqual(['Raw', 'Dynamic', 'Copy'])
+      showActions.value = false
+      await expect.poll(() => wrapper.findAll('button').length).toBe(0)
+      expect(wrapper.find('[role="group"]').exists()).toBe(false)
+      expect(wrapper.get('pre code').element.textContent).toBe('<p>Source</p>')
+      showActions.value = true
+      await expect.poll(() => wrapper.findAll('button').length).toBe(3)
+      await wrapper.findAll('button')[1].trigger('click')
+      await expect.poll(() => wrapper.find('[role="alert"]').text()).toBe('Wait for the variant to finish loading before viewing its source.')
+    }
+    finally {
+      wrapper.unmount()
+      await session.dispose()
+    }
+  })
 })

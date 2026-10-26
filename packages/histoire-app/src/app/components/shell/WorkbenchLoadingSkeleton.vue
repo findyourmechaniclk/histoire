@@ -8,20 +8,10 @@ withDefaults(defineProps<{
 </script>
 
 <template>
-  <div class="workbench-loading-skeleton" role="status" :aria-label="label" aria-busy="true">
-    <div v-for="row in rows" :key="row" class="skeleton-row" aria-hidden="true">
-      <div class="skeleton-label" />
-      <div class="skeleton-field" />
+  <div class="workbench-loading-skeleton htw:grid htw:gap-6 htw:pt-0.5 htw:px-control-wrapper-padding htw:pb-4" role="status" :aria-label="label" aria-busy="true">
+    <div v-for="row in rows" :key="row" class="htw:grid htw:gap-3" aria-hidden="true">
+      <div class="htw:w-[30%] htw:h-3 htw:rounded-[4px] htw:bg-chip htw:animate-skeleton-pulse htw:motion-reduce:animate-none" />
+      <div class="htw:w-full htw:h-control htw:rounded-[7px] htw:bg-chip htw:animate-skeleton-pulse htw:motion-reduce:animate-none" />
     </div>
   </div>
 </template>
-
-<style scoped>
-.workbench-loading-skeleton { display: grid; gap: 24px; padding: 2px var(--histoire-control-wrapper-padding, 8px) 16px; }
-.skeleton-row { display: grid; gap: 12px; }
-.skeleton-label, .skeleton-field { background: var(--histoire-chip); animation: skeleton-pulse 1.4s ease-in-out infinite; }
-.skeleton-label { width: 30%; height: 12px; border-radius: 4px; }
-.skeleton-field { width: 100%; height: var(--histoire-control-height, 34px); border-radius: 7px; }
-@keyframes skeleton-pulse { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .skeleton-label, .skeleton-field { animation: none; } }
-</style>

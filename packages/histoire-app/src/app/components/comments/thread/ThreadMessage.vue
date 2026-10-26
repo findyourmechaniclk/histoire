@@ -41,46 +41,30 @@ const phases = computed(() => groupActivityPhases(props.steps ?? []))
 </script>
 
 <template>
-  <article class="thread-message" :class="{ 'agent-message': author === 'agent' }">
-    <span class="avatar">
+  <article class="htw:flex htw:gap-2.5 htw:mt-0 htw:mx-0 htw:mb-4.5 htw:group/message htw:last:mb-0" :data-author="author">
+    <span class="htw:grid htw:place-items-center htw:flex-none htw:w-7 htw:h-7 htw:rounded-full htw:bg-chip htw:text-muted htw:group-data-[author=agent]/message:bg-agent-soft htw:group-data-[author=agent]/message:text-agent-text">
       <AgentLogo v-if="author === 'agent'" :icon="icon" :size="16" />
       <BuiltinIcon v-else icon="user-avatar" :size="16" />
     </span>
-    <div>
-      <header><strong>{{ name }}</strong><time v-if="at" :datetime="at" :title="at">{{ commentAge(at) }}</time></header>
+    <div class="htw:min-w-0 htw:flex-1">
+      <header class="htw:flex htw:flex-wrap htw:items-baseline htw:gap-1.75 htw:mb-1">
+        <strong class="htw:text-[12px]">{{ name }}</strong><time v-if="at" :datetime="at" :title="at" class="htw:text-muted htw:text-[11px]">{{ commentAge(at) }}</time>
+      </header>
       <AgentPlan v-if="plan?.length" :entries="plan" :live="streaming" />
-      <div v-if="phases.length" class="phases">
+      <div v-if="phases.length" class="htw:grid htw:[grid-template-columns:minmax(0,_1fr)] htw:gap-0.25 htw:mb-1.5">
         <AgentActivityPhase v-for="phase in phases" :key="phase.id" :phase="phase" />
       </div>
       <AgentPlanDecision v-for="(decision, index) in decisions" :key="index" :decision="decision" />
-      <p v-if="failed" class="failed" role="alert">
+      <p v-if="failed" class="failed htw:m-0 htw:text-[12px] htw:leading-[1.6] htw:whitespace-pre-wrap htw:wrap-anywhere htw:flex htw:items-center htw:gap-1.5 htw:text-danger-text" role="alert">
         <BuiltinIcon icon="error-filled" :size="14" />{{ body }}
       </p>
       <AgentMarkdown v-else-if="author === 'agent' && body" :text="body" :streaming="streaming" />
-      <p v-else-if="body" class="plain">
+      <p v-else-if="body" class="plain htw:m-0 htw:text-[12px] htw:leading-[1.6] htw:text-body htw:whitespace-pre-wrap htw:wrap-anywhere">
         {{ body }}
       </p>
-      <AttachmentStrip v-if="attachments?.length" class="attachments" :attachments="attachments" linked />
-      <code v-for="change in changes" :key="change.file" class="file-change"><BuiltinIcon icon="code" :size="16" />{{ change.file }} <span class="added">+{{ change.added }}</span><span class="removed">-{{ change.removed }}</span></code>
+      <AttachmentStrip v-if="attachments?.length" class="attachments htw:mt-1.5" :attachments="attachments" linked />
+      <code v-for="change in changes" :key="change.file" class="htw:flex htw:items-center htw:flex-wrap htw:gap-1.25 htw:w-fit htw:mt-1.5 htw:py-1.25 htw:px-1.75 htw:rounded-[6px] htw:bg-chip htw:text-[10px] htw:wrap-anywhere"><BuiltinIcon icon="code" :size="16" />{{ change.file }} <span class="added htw:text-accent-link">+{{ change.added }}</span><span class="removed htw:text-danger-text">-{{ change.removed }}</span></code>
       <slot />
     </div>
   </article>
 </template>
-
-<style scoped>
-.attachments { margin-top: 6px; }
-.thread-message { display: flex; gap: 10px; margin: 0 0 18px; }
-.thread-message:last-child { margin-bottom: 0; }
-.thread-message > div { min-width: 0; flex: 1; }
-.avatar { display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--histoire-chip); color: var(--histoire-muted); }
-.agent-message .avatar { background: var(--histoire-agent-soft); color: var(--histoire-agent-text); }
-header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; margin-bottom: 4px; }
-strong { font-size: 12px; }
-time { color: var(--histoire-muted); font-size: 11px; }
-.phases { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1px; margin-bottom: 6px; }
-p { margin: 0; font-size: 12px; line-height: 1.6; color: var(--histoire-body); white-space: pre-wrap; overflow-wrap: anywhere; }
-.failed { display: flex; align-items: center; gap: 6px; color: var(--histoire-danger-text); }
-.file-change { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; width: fit-content; margin-top: 6px; padding: 5px 7px; border-radius: 6px; background: var(--histoire-chip); font-size: 10px; overflow-wrap: anywhere; }
-.added { color: var(--histoire-accent-link); }
-.removed { color: var(--histoire-danger-text); }
-</style>

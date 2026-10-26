@@ -47,21 +47,13 @@ function number(value: number): void {
 </script>
 
 <template>
-  <div class="histoire-matrix-base-prop" :data-edited="edited">
-    <span class="histoire-matrix-prop-label"><code>{{ prop.name }}<small v-if="edited"> · edited</small></code><span>{{ prop.type }}</span></span>
+  <div class="histoire-matrix-base-prop htw:flex htw:flex-col htw:gap-2 htw:mb-4" :data-edited="edited">
+    <span class="htw:flex htw:items-center htw:justify-between htw:gap-2 htw:text-muted htw:font-mono htw:text-[13px]"><code class="htw:text-text htw:text-[13px]">{{ prop.name }}<small v-if="edited" class="htw:text-accent-link htw:text-[13px]"> · edited</small></code><span>{{ prop.type }}</span></span>
     <HstSelect v-if="values?.length" layout="inline" :aria-label="prop.name" :model-value="selected" :options="values.map(option => ({ value: option, label: formatMatrixValue(option) }))" @update:model-value="emit('update', $event)" />
     <HstSwitch v-else-if="prop.type === 'boolean' || typeof value === 'boolean'" layout="inline" :aria-label="prop.name" :model-value="Boolean(value)" @update:model-value="emit('update', $event)" />
     <HstNumber v-else-if="prop.type === 'number' || typeof value === 'number'" layout="inline" :aria-label="prop.name" :model-value="value as number" @update:model-value="number" />
     <HstText v-else-if="prop.type === 'string' || typeof value === 'string' || value === undefined" layout="inline" :aria-label="prop.name" type="text" :model-value="String(value ?? '')" @update:model-value="emit('update', $event)" />
     <HstTextarea v-else layout="inline" :aria-label="prop.name" :model-value="text" rows="3" @update:model-value="structured" />
-    <span v-if="error" class="histoire-matrix-input-error" role="alert">{{ error }}</span>
+    <span v-if="error" class="htw:text-danger htw:text-[13px]" role="alert">{{ error }}</span>
   </div>
 </template>
-
-<style scoped>
-.histoire-matrix-base-prop { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-.histoire-matrix-prop-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--histoire-muted); font-family: var(--histoire-font-mono); font-size: 13px; }
-.histoire-matrix-prop-label code { color: var(--histoire-text); font-size: 13px; }
-.histoire-matrix-prop-label small { color: var(--histoire-accent-link); font-size: 13px; }
-.histoire-matrix-input-error { color: var(--histoire-danger); font-size: 13px; }
-</style>

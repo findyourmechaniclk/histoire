@@ -35,14 +35,14 @@ function update(index: number, value: string): void {
 </script>
 
 <template>
-  <div ref="list" class="histoire-agent-args">
-    <div v-for="(arg, index) in args" :key="index" class="histoire-agent-arg">
-      <HstText :model-value="arg" layout="inline" class="histoire-settings-field histoire-agent-command" :aria-label="`${props.label} argument ${index + 1}`" spellcheck="false" autocomplete="off" @update:model-value="update(index, $event)" />
-      <HstButton icon-only color="default" type="button" class="histoire-settings-action" :aria-label="`Remove argument ${index + 1}`" @click="remove(index)">
+  <div ref="list" class="htw:min-w-0 htw:flex htw:flex-col htw:gap-[6px]">
+    <div v-for="(arg, index) in args" :key="index" class="histoire-agent-arg htw:grid htw:[grid-template-columns:minmax(0,_1fr)_auto] htw:gap-[6px]">
+      <HstText :model-value="arg" layout="inline" class="htw:min-w-0" :aria-label="`${props.label} argument ${index + 1}`" spellcheck="false" autocomplete="off" @update:model-value="update(index, $event)" />
+      <HstButton icon-only color="default" type="button" :aria-label="`Remove argument ${index + 1}`" @click="remove(index)">
         <BuiltinIcon icon="close" :size="14" />
       </HstButton>
     </div>
-    <HstButton color="flat" type="button" class="histoire-settings-action histoire-agent-inline-add" :disabled="args.length >= 64" @click="add">
+    <HstButton color="flat" type="button" class="htw:self-start htw:inline-flex htw:items-center htw:gap-[6px]" :disabled="args.length >= 64" @click="add">
       <BuiltinIcon icon="add" :size="14" />Add argument
     </HstButton>
   </div>

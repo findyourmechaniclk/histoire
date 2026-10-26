@@ -16,8 +16,8 @@ const { targets } = useFrameOverlayTargets({ workbench: props.workbench, canvas:
 </script>
 
 <template>
-  <div class="histoire-canvas-frame-overlays">
-    <div v-for="target in targets" :key="target.key" class="histoire-canvas-frame-overlay" :data-frame-key="target.context.frame.key" :style="{ left: `${target.box.left}px`, top: `${target.box.top}px`, width: `${target.box.width}px`, height: `${target.box.height}px` }">
+  <div class="htw:absolute htw:inset-0 htw:z-[2] htw:overflow-hidden htw:pointer-events-none">
+    <div v-for="target in targets" :key="target.key" class="htw:absolute htw:pointer-events-none" :data-frame-key="target.context.frame.key" :style="{ left: `${target.box.left}px`, top: `${target.box.top}px`, width: `${target.box.width}px`, height: `${target.box.height}px` }">
       <ExtensionOutlet kind="canvas.frame-overlay" :context="target.context">
         <template #default="{ contribution }">
           <OverlayItem :contribution="contribution as QualifiedContribution<'canvas.frame-overlay'>" :context="target.context" />
@@ -26,8 +26,3 @@ const { targets } = useFrameOverlayTargets({ workbench: props.workbench, canvas:
     </div>
   </div>
 </template>
-
-<style scoped>
-.histoire-canvas-frame-overlays { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
-.histoire-canvas-frame-overlay { position: absolute; pointer-events: none; }
-</style>

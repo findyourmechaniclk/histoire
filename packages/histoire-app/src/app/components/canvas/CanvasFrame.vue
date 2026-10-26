@@ -38,6 +38,8 @@ const props = defineProps<{
   highlighted?: boolean
   /** Active-query nonmatches dim without disabling native frame interaction. */
   dimmed?: boolean
+  /** Suspend native frame input while its resize grip owns the pointer. */
+  dragging?: boolean
 }>()
 const emit = defineEmits<{ select: [variantId: string], contextmenu: [event: MouseEvent | KeyboardEvent, frame: CanvasFrameLayout] }>()
 const canvas = useCanvasStore()
@@ -133,78 +135,28 @@ function openMenu(event: MouseEvent | KeyboardEvent) {
 </script>
 
 <template>
-  <section class="histoire-canvas-frame" :class="{ 'is-single': single, 'is-selected': selected, 'is-stale': stale, 'is-highlighted': highlighted, 'is-dimmed': dimmed }" :style="position" :data-frame-id="frame.id" @contextmenu="openMenu">
-    <button v-if="!single" type="button" class="histoire-frame-label" data-canvas-overlay-occluder :aria-pressed="selected" :disabled="!canSelect" @click="select" @keydown="onKeyDown">
-      <span class="histoire-frame-title" :title="variant.title">{{ variant.title }}</span><BuiltinIcon v-if="status === 'error'" icon="error-filled" :size="16" class="is-error" /><HstPulsatingDisc v-else-if="test?.running || (showSnapshot && status === 'loading')" :size="14" /><BuiltinIcon v-else-if="testIcon" :icon="testIcon" :size="16" :class="{ 'is-error': test?.failed || test?.error }" />
+  <!-- Unscaled frame chrome owns selection; group state never restarts its runtime. -->
+  <section class="histoire-canvas-frame htw:group/frame htw:absolute htw:min-w-0 htw:pointer-events-auto htw:data-[single=true]:relative htw:data-[single=true]:overflow-hidden htw:data-[single=true]:rounded-[7px] htw:data-[dimmed=true]:data-[selected=false]:opacity-35" :class="{ 'is-selected': selected }" :data-single="single" :data-selected="selected" :data-highlighted="highlighted ?? false" :data-dimmed="dimmed ?? false" :data-stale="stale ?? false" :style="position" :data-frame-id="frame.id" @contextmenu="openMenu">
+    <button v-if="!single" type="button" class="histoire-frame-label htw:box-border htw:w-full htw:min-w-0 htw:h-(--histoire-frame-label-height) htw:flex htw:items-center htw:justify-between htw:gap-2 htw:m-0 htw:pt-0 htw:px-0 htw:pb-2 htw:border-0 htw:bg-transparent htw:text-muted htw:[font-family:inherit] htw:text-[13px] htw:leading-5 htw:text-left htw:cursor-pointer htw:group-data-[selected=false]/frame:group-data-[highlighted=false]/frame:enabled:hover:text-text htw:focus-visible:outline-2 htw:focus-visible:outline-solid htw:focus-visible:outline-accent htw:focus-visible:outline-offset-2 htw:disabled:opacity-45 htw:disabled:cursor-default htw:group-data-[selected=true]/frame:text-accent htw:group-data-[selected=true]/frame:font-bold htw:group-data-[highlighted=true]/frame:text-accent" data-canvas-overlay-occluder :aria-pressed="selected" :disabled="!canSelect" @click="select" @keydown="onKeyDown">
+      <span class="histoire-frame-title htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap" :title="variant.title">{{ variant.title }}</span><BuiltinIcon v-if="status === 'error'" icon="error-filled" :size="16" class="htw:flex-none htw:text-danger" /><HstPulsatingDisc v-else-if="test?.running || (showSnapshot && status === 'loading')" :size="14" class="htw:flex-none htw:mx-px htw:text-muted" /><BuiltinIcon v-else-if="testIcon" :icon="testIcon" :size="16" class="htw:flex-none" :class="test?.failed || test?.error ? 'htw:text-danger' : 'htw:text-accent'" />
     </button>
-    <div class="histoire-frame-body" data-test-id="responsive-preview-bg" :style="{ height: `${height * scale}px`, ...getBackgroundStyle(background) }" @click="selectFromBody">
-      <div class="histoire-frame-content" :style="previewStyle" :aria-busy="status !== 'ready'" :inert="status !== 'ready' || stale ? true : undefined">
-        <CanvasReplicaPreview v-if="live" ref="replica" :frame-id="frame.id" :story-id="frame.storyId" :variant-id="frame.variantId" :preview-base="previewBase" :viewport="single ? { width, height } : undefined" @status="updateStatus" @snapshot="snapshotShown = $event" />
+    <div class="htw:relative htw:w-full htw:overflow-hidden htw:border htw:border-solid htw:border-border htw:rounded-[7px] htw:bg-white htw:group-data-[single=true]/frame:border-0 htw:group-data-[selected=true]/frame:border-accent htw:group-data-[highlighted=true]/frame:border-accent htw:group-data-[selected=true]/frame:after:content-[''] htw:after:hidden htw:group-data-[selected=true]/frame:after:block htw:after:absolute htw:after:inset-0 htw:after:rounded-[inherit] htw:after:pointer-events-none htw:after:z-[3] htw:after:shadow-[inset_0_0_0_1px_var(--histoire-accent)] htw:group-data-[single=true]/frame:after:shadow-[inset_0_0_0_1px_var(--histoire-border)]" data-test-id="responsive-preview-bg" :style="{ height: `${height * scale}px`, ...getBackgroundStyle(background) }" @click="selectFromBody">
+      <div class="histoire-frame-content htw:origin-top-left htw:group-data-[dimmed=true]/frame:group-data-[selected=true]/frame:opacity-35 htw:group-data-[stale=true]/frame:opacity-40 htw:group-data-[stale=true]/frame:pointer-events-none" :style="previewStyle" :aria-busy="status !== 'ready'" :inert="status !== 'ready' || stale ? true : undefined">
+        <CanvasReplicaPreview v-if="live" ref="replica" :interactive="!dragging" :frame-id="frame.id" :story-id="frame.storyId" :variant-id="frame.variantId" :preview-base="previewBase" :viewport="single ? { width, height } : undefined" @status="updateStatus" @snapshot="snapshotShown = $event" />
       </div>
-      <div v-if="!live" class="histoire-frame-placeholder">
+      <div v-if="!live" class="htw:absolute htw:inset-0 htw:flex htw:flex-col htw:items-center htw:justify-center htw:gap-3 htw:p-4 htw:text-[12px] htw:text-center htw:text-muted htw:bg-input">
         {{ variant.title }}
       </div>
-      <div v-else-if="status === 'loading' && !showSnapshot" class="histoire-frame-placeholder" role="status" aria-label="Loading variant">
+      <div v-else-if="status === 'loading' && !showSnapshot" class="htw:absolute htw:inset-0 htw:flex htw:flex-col htw:items-center htw:justify-center htw:gap-3 htw:p-4 htw:text-[12px] htw:text-center htw:text-muted htw:bg-input" role="status" aria-label="Loading variant">
         <CanvasLoadingIndicator />
       </div>
-      <div v-else-if="status === 'error'" class="histoire-frame-error" role="alert">
-        <span>{{ error instanceof Error ? error.message : 'Variant unavailable' }}</span><HstButton color="default" @click.stop="replica?.retry()">
+      <div v-else-if="status === 'error'" class="htw:absolute htw:inset-0 htw:flex htw:flex-col htw:items-center htw:justify-center htw:gap-3 htw:p-4 htw:text-[12px] htw:text-center htw:z-[2] htw:text-danger htw:bg-danger-soft" role="alert">
+        <span>{{ error instanceof Error ? error.message : 'Variant unavailable' }}</span><HstButton class="htw:py-1 htw:px-2.5 htw:text-inherit" color="default" @click.stop="replica?.retry()">
           Retry
         </HstButton>
       </div>
       <!-- Ready replicas keep direct pointer input; paused cards still activate canonical selection. -->
-      <div v-if="!selected && (!live || status !== 'ready') && canSelect" class="histoire-frame-select" aria-hidden="true" />
+      <div v-if="!selected && (!live || status !== 'ready') && canSelect" class="histoire-frame-select htw:absolute htw:inset-0 htw:cursor-pointer" aria-hidden="true" />
     </div>
   </section>
 </template>
-
-<style scoped>
-.histoire-canvas-frame { position: absolute; min-width: 0; }
-.histoire-canvas-frame.is-single { position: relative; overflow: hidden; border-radius: 7px; }
-.is-single .histoire-frame-body { border: 0; }
-/* Draw inside the rounded viewport without changing its physical dimensions. */
-.histoire-canvas-frame.is-single .histoire-frame-body::after { box-shadow: inset 0 0 0 1px var(--histoire-border); }
-.is-dimmed:not(.is-selected) { opacity: .35; }
-.is-dimmed.is-selected .histoire-frame-content { opacity: .35; }
-/* Frame labels keep selection semantics without shared button pressed surfaces. */
-.histoire-frame-label {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  height: var(--histoire-frame-label-height);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin: 0;
-  padding: 0 0 8px;
-  border: 0;
-  background: transparent;
-  color: var(--histoire-muted);
-  font: inherit;
-  font-size: 13px;
-  line-height: 20px;
-  text-align: left;
-  cursor: pointer;
-}
-.histoire-frame-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.histoire-canvas-frame:not(.is-selected):not(.is-highlighted) .histoire-frame-label:enabled:hover { color: var(--histoire-text); }
-.histoire-frame-label:focus-visible { outline: 2px solid var(--histoire-accent); outline-offset: 2px; }
-.histoire-frame-label:disabled { opacity: .45; cursor: default; }
-.is-selected .histoire-frame-label { color: var(--histoire-accent); font-weight: 700; }
-/* Direct children only: the disc draws with its own inner SVGs. */
-.histoire-frame-label > :is(svg, .histoire-pulsating-disc) { flex: none; color: var(--histoire-accent); }
-/* Same 16px slot as status icons, matching tests panel row glyphs. */
-.histoire-frame-label .histoire-pulsating-disc { margin-inline: 1px; color: var(--histoire-muted); } .histoire-frame-label svg.is-error { color: var(--histoire-danger); }
-.histoire-frame-body { position: relative; width: 100%; overflow: hidden; border: 1px solid var(--histoire-border); border-radius: 7px; background: white; }
-/* Unscaled chrome owns selection so every runtime state keeps a two-pixel ring. */
-.is-selected .histoire-frame-body { border-color: var(--histoire-accent); }
-.is-selected .histoire-frame-body::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--histoire-accent); pointer-events: none; z-index: 3; }
-.is-highlighted .histoire-frame-label { color: var(--histoire-accent); } .is-highlighted .histoire-frame-body { border-color: var(--histoire-accent); }
-.histoire-frame-content { transform-origin: top left; }
-.histoire-frame-select { position: absolute; inset: 0; cursor: pointer; }
-.histoire-frame-placeholder, .histoire-frame-error { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; color: var(--histoire-muted); background: var(--histoire-input); font-size: 12px; text-align: center; }
-.histoire-frame-error { z-index: 2; color: var(--histoire-danger); background: var(--histoire-danger-soft); }
-.histoire-frame-error button { padding: 4px 10px; color: inherit; }
-.is-stale .histoire-frame-content { opacity: .4; pointer-events: none; }
-</style>

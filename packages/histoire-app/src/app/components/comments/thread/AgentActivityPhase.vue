@@ -4,6 +4,7 @@ import type { ActivityPhase } from './activity-phases.js'
 import { BuiltinIcon, HstPulsatingDisc } from '@histoire/controls/vue'
 import { computed, ref } from 'vue'
 import { isStepRunning } from './activity-phases.js'
+import AgentDisclosure from './AgentDisclosure.vue'
 
 const props = defineProps<{
   /** Grouped consecutive steps. */
@@ -21,43 +22,25 @@ const expandable = computed(() => props.phase.steps.some(step => step.kind !== '
 </script>
 
 <template>
-  <div class="activity-phase" :data-status="phase.status">
-    <button type="button" class="phase-row" :aria-expanded="expandable ? open : undefined" :disabled="!expandable" @click="toggled = !open">
-      <BuiltinIcon v-if="expandable" class="chevron" :class="{ open }" icon="chevron-right" :size="12" />
+  <div class="htw:min-w-0 htw:text-[11px] htw:text-muted" :data-status="phase.status">
+    <AgentDisclosure class="phase-row" :aria-expanded="expandable ? open : undefined" :disabled="!expandable" @click="toggled = !open">
+      <BuiltinIcon v-if="expandable" class="htw:[transition:transform_120ms_ease-out] htw:data-[open=true]:rotate-90 htw:motion-reduce:transition-none" :data-open="open" icon="chevron-right" :size="12" />
       <BuiltinIcon :icon="phaseIcons[phase.kind]" :size="14" />
-      <strong>{{ phase.title }}</strong>
-      <span v-if="phase.summary" class="summary">{{ phase.summary }}</span>
-      <span v-if="phase.added || phase.removed" class="counts"><span class="added">+{{ phase.added }}</span> <span class="removed">-{{ phase.removed }}</span></span>
-      <span v-if="phase.status === 'failed'" class="failed">failed</span>
+      <strong class="htw:text-body htw:font-semibold">{{ phase.title }}</strong>
+      <span v-if="phase.summary" class="summary htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap">{{ phase.summary }}</span>
+      <span v-if="phase.added || phase.removed" class="counts htw:flex-none"><span class="added htw:text-accent-link">+{{ phase.added }}</span> <span class="removed htw:text-danger-text">-{{ phase.removed }}</span></span>
+      <span v-if="phase.status === 'failed'" class="failed htw:text-danger-text">failed</span>
       <HstPulsatingDisc v-if="phase.status === 'running'" :size="10" />
-    </button>
-    <ul v-if="open && expandable" class="phase-steps">
-      <li v-for="step in phase.steps" :key="step.id" :data-status="step.status">
+    </AgentDisclosure>
+    <ul v-if="open && expandable" class="phase-steps htw:grid htw:[grid-template-columns:minmax(0,_1fr)] htw:gap-0.5 htw:mt-0.5 htw:mx-0 htw:mb-1 htw:pt-0 htw:pr-0 htw:pb-0 htw:pl-4.5 htw:list-none">
+      <li v-for="step in phase.steps" :key="step.id" :data-status="step.status" class="htw:flex htw:items-center htw:gap-1.5 htw:min-w-0">
         <BuiltinIcon :icon="stepIcons[step.kind]" :size="12" />
-        <span class="step-title">{{ step.title }}</span>
-        <code v-if="step.target && !step.title.includes(step.target)">{{ step.target }}</code>
-        <span v-if="step.added || step.removed" class="counts"><span class="added">+{{ step.added ?? 0 }}</span> <span class="removed">-{{ step.removed ?? 0 }}</span></span>
-        <BuiltinIcon v-if="step.status === 'failed'" class="failed" icon="error-filled" :size="12" />
+        <span class="htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap">{{ step.title }}</span>
+        <code v-if="step.target && !step.title.includes(step.target)" class="htw:flex-[0_1_auto] htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap htw:text-[10px]">{{ step.target }}</code>
+        <span v-if="step.added || step.removed" class="counts htw:flex-none"><span class="added htw:text-accent-link">+{{ step.added ?? 0 }}</span> <span class="removed htw:text-danger-text">-{{ step.removed ?? 0 }}</span></span>
+        <BuiltinIcon v-if="step.status === 'failed'" class="failed htw:text-danger-text" icon="error-filled" :size="12" />
         <HstPulsatingDisc v-else-if="isStepRunning(step)" :size="8" />
       </li>
     </ul>
   </div>
 </template>
-
-<style scoped>
-.activity-phase { min-width: 0; font-size: 11px; color: var(--histoire-muted); }
-.phase-row { display: flex; align-items: center; gap: 6px; width: 100%; min-width: 0; padding: 3px 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-.phase-row:disabled { cursor: default; }
-.phase-row strong { color: var(--histoire-body); font-weight: 600; }
-.summary { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.chevron { transition: transform 120ms ease-out; }
-.chevron.open { transform: rotate(90deg); }
-.counts { flex: none; }
-.added { color: var(--histoire-accent-link); }
-.removed, .failed { color: var(--histoire-danger-text); }
-.phase-steps { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; margin: 2px 0 4px; padding: 0 0 0 18px; list-style: none; }
-.phase-steps li { display: flex; align-items: center; gap: 6px; min-width: 0; }
-.step-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.phase-steps code { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
-@media (prefers-reduced-motion: reduce) { .chevron { transition: none; } }
-</style>

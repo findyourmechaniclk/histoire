@@ -48,18 +48,20 @@ function onKeydown(event: KeyboardEvent, thread: UiAiThread): void {
 </script>
 
 <template>
-  <WorkbenchPaneList class="ai-thread-list">
+  <WorkbenchPaneList>
     <section v-for="group in groups" :key="group.title" :aria-label="group.title">
-      <h3>{{ group.title }}</h3>
-      <ul>
+      <h3 class="htw:m-0 htw:pt-3 htw:px-pane-row-inset htw:pb-1.5 htw:text-muted htw:text-[11px] htw:font-bold">
+        {{ group.title }}
+      </h3>
+      <ul class="htw:m-0 htw:p-0 htw:list-none">
         <li v-for="thread in group.threads" :key="thread.id">
-          <button type="button" class="ai-thread-row" :data-archived="thread.status === 'resolved' || undefined" :aria-current="model.activeId.value === thread.id ? 'true' : undefined" @click="select(thread)" @contextmenu="emit('contextmenu', $event, thread)" @keydown="onKeydown($event, thread)">
-            <span v-if="numbers.has(thread.id)" class="ai-thread-pin" :data-muted="thread.status === 'draft' || thread.status === 'resolved' || undefined" data-pin>{{ numbers.get(thread.id) }}</span>
+          <button type="button" class="htw:flex htw:items-center htw:gap-2 htw:w-full htw:py-row-list htw:px-pane-row-inset htw:border-0 htw:rounded-control htw:bg-transparent htw:text-text htw:[font-family:inherit] htw:text-[13px] htw:[font-weight:inherit] htw:leading-[inherit] htw:text-left htw:cursor-pointer htw:hover:bg-chip htw:focus-visible:bg-chip htw:aria-[current=true]:bg-agent-soft htw:data-[archived]:text-muted" :data-archived="thread.status === 'resolved' || undefined" :aria-current="model.activeId.value === thread.id ? 'true' : undefined" @click="select(thread)" @contextmenu="emit('contextmenu', $event, thread)" @keydown="onKeydown($event, thread)">
+            <span v-if="numbers.has(thread.id)" class="htw:grid htw:place-items-center htw:flex-none htw:w-4.5 htw:h-[19px] htw:rounded-[50%_50%_50%_3px] htw:bg-agent htw:text-white htw:text-[9px] htw:font-bold htw:data-[muted]:bg-muted" :data-muted="thread.status === 'draft' || thread.status === 'resolved' || undefined" data-pin>{{ numbers.get(thread.id) }}</span>
             <AgentLogo v-else :icon="icon(thread.agentId)" :size="16" />
-            <span class="ai-thread-title">{{ thread.title }}</span>
-            <span v-if="needsInput.has(thread.id)" class="ai-thread-input" role="img" aria-label="Needs your input" title="Needs your input"><BuiltinIcon icon="help" :size="14" /></span>
+            <span class="htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap">{{ thread.title }}</span>
+            <span v-if="needsInput.has(thread.id)" class="htw:flex htw:flex-none htw:text-agent-text" role="img" aria-label="Needs your input" title="Needs your input"><BuiltinIcon icon="help" :size="14" /></span>
             <HstPulsatingDisc v-else-if="isThreadBusy(thread)" :size="10" />
-            <time v-else :datetime="thread.updatedAt">{{ commentAge(thread.updatedAt) }}</time>
+            <time v-else class="htw:flex-none htw:text-muted htw:text-[11px]" :datetime="thread.updatedAt">{{ commentAge(thread.updatedAt) }}</time>
           </button>
         </li>
       </ul>
@@ -67,25 +69,10 @@ function onKeydown(event: KeyboardEvent, thread: UiAiThread): void {
     <WorkbenchEmptyState v-if="!groups.length && model.showArchived.value" icon="archive" title="No archived threads" />
     <WorkbenchEmptyState v-else-if="!groups.length" icon="bot" title="No threads">
       <template #actions>
-        <HstButton color="flat" type="button" :disabled="!model.available.value" @click="model.compose()">
+        <HstButton color="flat" tone="accent" type="button" :disabled="!model.available.value" @click="model.compose()">
           New thread
         </HstButton>
       </template>
     </WorkbenchEmptyState>
   </WorkbenchPaneList>
 </template>
-
-<style scoped>
-ul { margin: 0; padding: 0; list-style: none; }
-h3 { margin: 0; padding: 12px var(--histoire-pane-row-inset) 6px; color: var(--histoire-muted); font-size: 11px; font-weight: 700; }
-.ai-thread-row { display: flex; align-items: center; gap: 8px; width: 100%; padding: var(--histoire-list-row-padding) var(--histoire-pane-row-inset); border: 0; border-radius: var(--histoire-radius-control, 6px); background: none; color: var(--histoire-text); font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
-.ai-thread-row:hover, .ai-thread-row:focus-visible { background: var(--histoire-chip); }
-.ai-thread-row[aria-current] { background: var(--histoire-agent-soft); }
-.ai-thread-row[data-archived] { color: var(--histoire-muted); }
-/* Matches the canvas pin: speech bubble with its tail at the bottom-left. */
-.ai-thread-pin { display: grid; place-items: center; flex: none; width: 18px; height: 19px; border-radius: 50% 50% 50% 3px; background: var(--histoire-agent); color: #fff; font-size: 9px; font-weight: 700; }
-.ai-thread-pin[data-muted] { background: var(--histoire-muted); }
-.ai-thread-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ai-thread-input { display: flex; flex: none; color: var(--histoire-agent-text); }
-time { flex: none; color: var(--histoire-muted); font-size: 11px; }
-</style>

@@ -31,14 +31,14 @@ function message(error: unknown): string {
 </script>
 
 <template>
-  <div class="histoire-canvas-plugin-view">
+  <div class="htw:absolute htw:inset-0 htw:grid htw:place-items-center">
     <!-- Content root: presses inside belong to the view (see `views/view-input.ts`). -->
-    <ExtensionView v-if="view && context && workbench" :key="contributionKey(view)" class="histoire-canvas-plugin-view-body" data-histoire-canvas-view :contribution="view" :context="context" :host="workbench.host">
+    <ExtensionView v-if="view && context && workbench" :key="contributionKey(view)" class="htw:absolute htw:inset-0 htw:grid htw:place-items-center" :classes="{ mount: 'htw:absolute htw:inset-0' }" data-histoire-canvas-view :contribution="view" :context="context" :host="workbench.host">
       <template #error="{ error }">
         <WorkbenchErrorState :title="`${view.label} failed`">
           {{ message(error) }}
           <template #actions>
-            <HstButton color="flat" type="button" @pointerdown.stop @click="workbench.context.navigation.openCanvasView('builtin:grid')">
+            <HstButton color="flat" tone="danger" type="button" @pointerdown.stop @click="workbench.context.navigation.openCanvasView('builtin:grid')">
               <BuiltinIcon icon="grid" :size="16" />
               Switch to Grid
             </HstButton>
@@ -49,7 +49,7 @@ function message(error: unknown): string {
     <WorkbenchLoadingState v-else-if="presence === 'pending'" title="Loading view" />
     <WorkbenchEmptyState v-else icon="view" title="View unavailable">
       <template v-if="workbench" #actions>
-        <HstButton color="flat" type="button" @pointerdown.stop @click="workbench.context.navigation.openCanvasView('builtin:grid')">
+        <HstButton color="flat" tone="accent" type="button" @pointerdown.stop @click="workbench.context.navigation.openCanvasView('builtin:grid')">
           <BuiltinIcon icon="grid" :size="16" />
           Switch to Grid
         </HstButton>
@@ -57,10 +57,3 @@ function message(error: unknown): string {
     </WorkbenchEmptyState>
   </div>
 </template>
-
-<style scoped>
-/* The view covers the canvas body in viewport pixels; it places content through canvas transforms. */
-.histoire-canvas-plugin-view { position: absolute; inset: 0; display: grid; place-items: center; }
-.histoire-canvas-plugin-view-body { position: absolute; inset: 0; display: grid; place-items: center; }
-.histoire-canvas-plugin-view-body :deep(.histoire-extension-mount) { position: absolute; inset: 0; }
-</style>

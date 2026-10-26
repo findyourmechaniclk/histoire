@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { BuiltinIcon } from '@histoire/controls/vue'
-import './workbench-state.css'
+import WorkbenchStateLayout from './WorkbenchStateLayout.vue'
 
 defineProps<{
   /** Offline Carbon glyph name shown in accent badge. */
   icon: string
   /** Short headline describing why area is empty. */
   title: string
+  /** Grow to fill available flex-panel space. */
+  fill?: boolean
+  /** Leave outer spacing to the parent layout. */
+  flush?: boolean
 }>()
 defineSlots<{
   /** Optional muted detail line under title. */
@@ -17,21 +21,17 @@ defineSlots<{
 </script>
 
 <template>
-  <div class="workbench-state workbench-empty-state" role="status">
-    <span class="workbench-state-visual workbench-empty-state-icon">
-      <BuiltinIcon :icon="icon" :size="22" />
-    </span>
-    <strong>{{ title }}</strong>
-    <p v-if="$slots.default">
+  <WorkbenchStateLayout :title="title" :fill="fill" :flush="flush" role="status">
+    <template #visual>
+      <span class="htw:grid htw:place-items-center htw:flex-none htw:size-12 htw:mb-2 htw:text-accent htw:rounded-full htw:bg-accent-soft">
+        <BuiltinIcon :icon="icon" :size="22" />
+      </span>
+    </template>
+    <template v-if="$slots.default" #default>
       <slot />
-    </p>
-    <div v-if="$slots.actions" class="workbench-state-actions workbench-empty-state-actions">
+    </template>
+    <template v-if="$slots.actions" #actions>
       <slot name="actions" />
-    </div>
-  </div>
+    </template>
+  </WorkbenchStateLayout>
 </template>
-
-<style scoped>
-.workbench-empty-state-icon { border-radius: 50%; background: var(--histoire-accent-soft); }
-.workbench-state-actions :deep(.histoire-button[data-color="flat"]) { color: var(--histoire-accent); }
-</style>

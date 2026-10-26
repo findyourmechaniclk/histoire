@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { HistoireCatalogStory, HistoireSelectionInput } from '@histoire/protocol'
-import { BuiltinIcon, HstButton } from '@histoire/controls/vue'
+import { BuiltinIcon } from '@histoire/controls/vue'
+import HomeCard from './HomeCard.vue'
+import HomeHeading from './HomeHeading.vue'
+import HomeRow from './HomeRow.vue'
 
 defineProps<{
   /** Documentation-only stories in real tree order. */
@@ -13,20 +16,16 @@ defineEmits<{
 </script>
 
 <template>
-  <section v-if="guides.length" class="histoire-guides">
-    <h2>Guides</h2>
-    <div class="histoire-home-card">
-      <HstButton v-for="guide in guides" :key="guide.id" color="flat" type="button" class="histoire-home-row" @click="$emit('select', { storyId: guide.id, variantId: null })">
-        <BuiltinIcon icon="document" :size="16" />
-        <span>{{ guide.title }}</span>
-        <BuiltinIcon icon="chevron-right" :size="16" />
-      </HstButton>
-    </div>
+  <section v-if="guides.length">
+    <HomeHeading>
+      Guides
+    </HomeHeading>
+    <HomeCard>
+      <HomeRow v-for="guide in guides" :key="guide.id" color="flat" type="button" class="htw:font-bold" @click="$emit('select', { storyId: guide.id, variantId: null })">
+        <BuiltinIcon class="htw:flex-none htw:first:text-accent htw:last:text-muted" icon="document" :size="16" />
+        <span class="htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap">{{ guide.title }}</span>
+        <BuiltinIcon class="htw:flex-none htw:first:text-accent htw:last:text-muted" icon="chevron-right" :size="16" />
+      </HomeRow>
+    </HomeCard>
   </section>
 </template>
-
-<style scoped>
-.histoire-home-row { font-weight: 700; }
-.histoire-home-row > svg:first-child { color: var(--histoire-accent); }
-.histoire-home-row > svg:last-child { color: var(--histoire-muted); }
-</style>

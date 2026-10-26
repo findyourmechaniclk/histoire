@@ -378,3 +378,5 @@ function initState2 () {
   </Story>
 </template>
 ```
+
+`HstButton` supports `color="flat" tone="accent"` for accent-text actions, or `tone="danger"` for danger-text actions. `HstButtonGroup` and `HstWrapper` accept `block` for full-width layouts. See [Native panel styling](../../reference/panel-styling.md) for root class/style forwarding and sizing hooks.

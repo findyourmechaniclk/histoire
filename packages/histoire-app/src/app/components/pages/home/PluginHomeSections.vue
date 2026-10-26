@@ -3,6 +3,7 @@ import type { HomeSectionContribution, QualifiedContribution } from '@histoire/p
 import { useOptionalExtensionHost } from '../../../composables/shell-extensions.js'
 import ExtensionOutlet from '../../extensions/ExtensionOutlet.vue'
 import ExtensionView from '../../extensions/ExtensionView.vue'
+import HomeHeading from './HomeHeading.vue'
 
 const props = defineProps<{
   /** Home column receiving the sections. */
@@ -33,7 +34,9 @@ function titleOf(section: QualifiedContribution): string {
   <ExtensionOutlet v-if="extensions" kind="home.section" :host="extensions.host" :context="extensions.context" :filter="inColumn">
     <template #default="{ contribution, context }">
       <section>
-        <h2>{{ titleOf(contribution) }}</h2>
+        <HomeHeading>
+          {{ titleOf(contribution) }}
+        </HomeHeading>
         <ExtensionView :contribution="contribution" :context="context" :host="extensions.host" />
       </section>
     </template>

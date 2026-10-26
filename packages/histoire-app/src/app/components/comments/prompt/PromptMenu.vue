@@ -44,13 +44,8 @@ const context = useHistoireContext()
 <template>
   <BasePopover open :anchor="anchor" :label="label" role="menu" :width="220" :overlay-target="context.overlay.value ?? context.root.value" @update:open="emit('close')">
     <MenuItem v-for="item in items" :key="item.id" :label="item.label" :icon="item.icon" :ai="ai" :role="radio ? 'menuitemradio' : 'menuitem'" :aria-checked="radio ? Boolean(item.checked) : undefined" @click="emit('pick', item.id)">
-      <AgentLogo v-if="item.logo" class="prompt-menu-logo" :icon="item.logo.icon" :size="16" />
-      <BuiltinIcon v-if="item.checked" class="prompt-menu-check" icon="checkmark" :size="16" />
+      <AgentLogo v-if="item.logo" class="htw:[order:-1] htw:text-agent" :icon="item.logo.icon" :size="16" />
+      <BuiltinIcon v-if="item.checked" class="htw:ml-auto" icon="checkmark" :size="16" />
     </MenuItem>
   </BasePopover>
 </template>
-
-<style scoped>
-.prompt-menu-logo { order: -1; color: var(--histoire-agent); }
-.prompt-menu-check { margin-left: auto; }
-</style>

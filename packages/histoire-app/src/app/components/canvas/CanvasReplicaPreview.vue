@@ -13,6 +13,8 @@ import { useCanvasContentSizing } from './useCanvasContentSizing.js'
 const props = defineProps<{
   /** Stable canvas frame identifier. */
   frameId: string
+  /** Suppress document input during direct frame resizing. */
+  interactive?: boolean
   /** Exact collected target. */
   storyId: string
   variantId: string
@@ -76,16 +78,9 @@ defineExpose({ retry: frame.start, getSource: frame.getSource })
 </script>
 
 <template>
-  <div class="histoire-canvas-replica-root">
-    <div ref="container" class="histoire-canvas-replica" :aria-busy="!ready" :inert="!ready ? true : undefined" />
+  <div class="htw:relative htw:w-full htw:h-full">
+    <div ref="container" class="histoire-canvas-replica htw:data-[interactive=false]:[&_iframe]:pointer-events-none htw:group-data-[panning=true]/viewport:[&_iframe]:pointer-events-none htw:w-full htw:h-full htw:[color-scheme:normal]" :data-interactive="interactive ?? true" :aria-busy="!ready" :inert="!ready ? true : undefined" />
     <!-- Script-less copy of the last rendering; same origin only so fonts and assets load. -->
-    <iframe v-if="frameSnapshot.document.value && !ready" class="histoire-canvas-snapshot" :srcdoc="frameSnapshot.document.value" sandbox="allow-same-origin" tabindex="-1" aria-hidden="true" />
+    <iframe v-if="frameSnapshot.document.value && !ready" class="htw:absolute htw:inset-0 htw:w-full htw:h-full htw:border-0 htw:[color-scheme:normal] htw:pointer-events-none" :srcdoc="frameSnapshot.document.value" sandbox="allow-same-origin" tabindex="-1" aria-hidden="true" />
   </div>
 </template>
-
-<style scoped>
-/* Keep a dark host from painting light story iframes opaque. */
-.histoire-canvas-replica-root { position: relative; width: 100%; height: 100%; }
-.histoire-canvas-replica { width: 100%; height: 100%; color-scheme: normal; }
-.histoire-canvas-snapshot { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; color-scheme: normal; pointer-events: none; }
-</style>

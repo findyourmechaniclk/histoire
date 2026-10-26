@@ -125,122 +125,80 @@ function changeFormat(event: KeyboardEvent): void {
 </script>
 
 <template>
-  <dialog ref="dialog" class="histoire-embed-dialog" :aria-labelledby="`${id}-title`" @cancel.prevent="controller.close()" @close="target && controller.close()" @keydown.stop @pointerdown.stop @wheel.stop>
-    <header class="embed-header">
-      <div class="embed-heading">
-        <h2 :id="`${id}-title`">
+  <dialog ref="dialog" class="htw:box-border htw:flex htw:flex-col htw:w-[min(640px,_calc(100vw_-_32px))] htw:max-h-[calc(100vh_-_48px)] htw:m-auto htw:p-0 htw:overflow-hidden htw:[border:1px_solid_var(--histoire-border)] htw:rounded-panel htw:text-text htw:bg-surface htw:shadow-panel htw:text-[13px] htw:[&:not([open])]:hidden htw:backdrop:[background:rgb(0_0_0_/_.45)]" :aria-labelledby="`${id}-title`" @cancel.prevent="controller.close()" @close="target && controller.close()" @keydown.stop @pointerdown.stop @wheel.stop>
+    <header class="htw:flex htw:items-center htw:gap-[12px] htw:p-[14px_14px_14px_20px] htw:[border-bottom:1px_solid_var(--histoire-border)]">
+      <div class="htw:flex-1 htw:min-w-0">
+        <h2 :id="`${id}-title`" class="htw:m-0 htw:text-[15px] htw:font-bold htw:leading-[1.3]">
           {{ title }}
         </h2>
-        <span :title="subtitle">{{ subtitle }}</span>
+        <span class="htw:block htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap htw:text-muted htw:text-[12px]" :title="subtitle">{{ subtitle }}</span>
       </div>
       <HstButton color="flat" icon-only aria-label="Close" @click="controller.close()">
         <BuiltinIcon icon="close" :size="18" />
       </HstButton>
     </header>
-    <div class="embed-body">
-      <WorkbenchEmptyState v-if="!story" class="embed-state" icon="warning-alt" title="Target unavailable">
+    <div class="htw:flex htw:flex-col htw:gap-[16px] htw:min-h-0 htw:p-[20px] htw:overflow-auto">
+      <WorkbenchEmptyState v-if="!story" flush class="htw:m-[4px_0]" icon="warning-alt" title="Target unavailable">
         Story or variant no longer exists
       </WorkbenchEmptyState>
       <template v-else-if="!enabled">
-        <WorkbenchEmptyState class="embed-state" icon="code" title="Embedding is disabled">
-          Add <code>embed</code> to your Histoire config
+        <WorkbenchEmptyState flush class="htw:m-[4px_0]" icon="code" title="Embedding is disabled">
+          Add <code class="htw:text-text htw:font-mono">embed</code> to your Histoire config
         </WorkbenchEmptyState>
-        <div class="embed-code-block">
-          <div class="embed-code-label">
+        <div class="htw:flex htw:flex-col htw:gap-[8px]">
+          <div class="htw:text-muted htw:[font:11px_var(--histoire-font-mono,_monospace)]">
             histoire.config.ts
           </div>
-          <textarea ref="code" class="embed-code" :value="setup" :rows="setup.split('\n').length" readonly aria-label="Config code" spellcheck="false" />
+          <textarea ref="code" class="htw:box-border htw:block htw:w-full htw:p-[12px_14px] htw:resize-none htw:[border:1px_solid_var(--histoire-border)] htw:rounded-[10px] htw:[outline:0] htw:[color:#e6e7ea] htw:bg-code htw:[font:12px/1.6_var(--histoire-font-mono,_monospace)] htw:whitespace-pre htw:focus-visible:[box-shadow:0_0_0_2px_var(--histoire-accent)]" :value="setup" :rows="setup.split('\n').length" readonly aria-label="Config code" spellcheck="false" />
         </div>
       </template>
       <template v-else>
-        <div class="embed-options">
-          <fieldset class="embed-field">
-            <legend>Panels</legend>
-            <div class="embed-panels">
-              <label v-for="panel in HISTOIRE_EMBED_PANELS" :key="panel" :title="panelReason(panel)"><input v-model="panels" type="checkbox" :value="panel" :disabled="!!panelReason(panel)"><span>{{ panel[0].toUpperCase() + panel.slice(1) }}</span><small v-if="panelReason(panel)">{{ panelReason(panel) }}</small></label>
+        <div class="htw:grid htw:[grid-template-columns:auto_1fr] htw:gap-[12px_20px] htw:items-center">
+          <fieldset class="htw:contents htw:m-0 htw:p-0 htw:border-0">
+            <legend class="htw:[float:none] htw:p-0 htw:text-muted htw:text-[12px] htw:font-semibold">
+              Panels
+            </legend>
+            <div class="htw:flex htw:flex-wrap htw:gap-[6px]">
+              <label v-for="panel in HISTOIRE_EMBED_PANELS" :key="panel" class="htw:inline-flex htw:items-center htw:gap-[6px] htw:p-[5px_10px] htw:[border:1px_solid_var(--histoire-border)] htw:rounded-[999px] htw:cursor-pointer htw:[&:has(:checked)]:border-accent htw:[&:has(:checked)]:bg-accent-soft htw:[&:has(:disabled)]:text-muted htw:[&:has(:disabled)]:cursor-not-allowed" :title="panelReason(panel)"><input v-model="panels" class="htw:m-0 htw:accent-accent" type="checkbox" :value="panel" :disabled="!!panelReason(panel)"><span>{{ panel[0].toUpperCase() + panel.slice(1) }}</span><small v-if="panelReason(panel)" class="htw:text-[11px]">{{ panelReason(panel) }}</small></label>
             </div>
           </fieldset>
-          <div class="embed-field">
-            <label :for="`${id}-height`">Height</label>
-            <div class="embed-height">
-              <span class="embed-input" :data-invalid="!validHeight || undefined"><input :id="`${id}-height`" v-model.number="height" type="number" min="0" step="any" inputmode="decimal"><span aria-hidden="true">px</span></span>
-              <span v-if="!validHeight" class="embed-error" role="alert">Use a positive height</span>
+          <div class="htw:contents">
+            <label class="htw:[float:none] htw:p-0 htw:text-muted htw:text-[12px] htw:font-semibold" :for="`${id}-height`">Height</label>
+            <div class="htw:flex htw:flex-wrap htw:items-center htw:gap-[10px]">
+              <span class="htw:inline-flex htw:items-center htw:gap-[6px] htw:p-[0_10px_0_0] htw:[border:1px_solid_var(--histoire-border)] htw:rounded-control htw:text-muted htw:bg-input htw:[&:focus-within]:border-accent htw:[&[data-invalid]]:border-danger" :data-invalid="!validHeight || undefined"><input :id="`${id}-height`" v-model.number="height" class="htw:w-[88px] htw:p-[6px_0_6px_10px] htw:border-0 htw:[outline:0] htw:text-text htw:bg-transparent htw:tabular-nums" type="number" min="0" step="any" inputmode="decimal"><span aria-hidden="true">px</span></span>
+              <span v-if="!validHeight" class="htw:m-0 htw:text-danger-text htw:text-[12px]" role="alert">Use a positive height</span>
             </div>
           </div>
         </div>
-        <div class="embed-code-block">
-          <div class="embed-formats histoire-button-group-options" role="tablist" aria-label="Code format" @keydown="changeFormat">
-            <HstButton v-for="item in formats" :id="`${id}-${item.value}`" :key="item.value" color="flat" role="tab" :tabindex="format === item.value ? 0 : -1" :aria-selected="format === item.value" :aria-controls="`${id}-code`" @click="format = item.value">
+        <div class="htw:flex htw:flex-col htw:gap-[8px]">
+          <div class="histoire-button-group-options htw:self-start" role="tablist" aria-label="Code format" @keydown="changeFormat">
+            <HstButton v-for="item in formats" :id="`${id}-${item.value}`" :key="item.value" class="htw:flex-none htw:px-[12px]" color="flat" role="tab" :tabindex="format === item.value ? 0 : -1" :aria-selected="format === item.value" :aria-controls="`${id}-code`" @click="format = item.value">
               {{ item.label }}
             </HstButton>
           </div>
           <div :id="`${id}-code`" role="tabpanel" :aria-labelledby="`${id}-${format}`">
-            <textarea ref="code" class="embed-code embed-code-snippet" :value="snippet" readonly aria-label="Embed code" spellcheck="false" />
+            <textarea ref="code" class="htw:box-border htw:block htw:w-full htw:p-[12px_14px] htw:resize-y htw:[border:1px_solid_var(--histoire-border)] htw:rounded-[10px] htw:[outline:0] htw:[color:#e6e7ea] htw:bg-code htw:[font:12px/1.6_var(--histoire-font-mono,_monospace)] htw:whitespace-pre-wrap htw:focus-visible:[box-shadow:0_0_0_2px_var(--histoire-accent)] htw:min-h-[180px] htw:max-h-[40vh] htw:break-all" :value="snippet" readonly aria-label="Embed code" spellcheck="false" />
           </div>
         </div>
-        <p class="embed-policy">
-          <BuiltinIcon icon="information" :size="14" />
-          <span>Allowed parent origins: book origin<span v-for="origin in allowedOrigins" :key="origin">, <code>{{ origin }}</code></span>. <a href="https://histoire.dev/guide/embedding.html#origins-and-deployment-headers" target="_blank" rel="noopener noreferrer">Static hosting headers</a></span>
+        <p class="htw:flex htw:items-start htw:gap-[8px] htw:m-0 htw:text-muted htw:text-[12px]">
+          <BuiltinIcon class="htw:flex-none htw:mt-[2px]" icon="information" :size="14" />
+          <span>Allowed parent origins: book origin<span v-for="origin in allowedOrigins" :key="origin">, <code class="htw:font-mono">{{ origin }}</code></span>. <a class="htw:text-accent-link" href="https://histoire.dev/guide/embedding.html#origins-and-deployment-headers" target="_blank" rel="noopener noreferrer">Static hosting headers</a></span>
         </p>
       </template>
-      <p v-if="copyError" class="embed-error" role="alert">
+      <p v-if="copyError" class="htw:m-0 htw:text-danger-text htw:text-[12px]" role="alert">
         {{ copyError }}
       </p>
     </div>
-    <footer v-if="story" class="embed-footer">
-      <HstButton v-if="enabled" color="flat" :disabled="!url" @click="openEmbed">
+    <footer v-if="story" class="htw:flex htw:justify-between htw:items-center htw:gap-[8px] htw:p-[12px_16px] htw:[border-top:1px_solid_var(--histoire-border)]">
+      <HstButton v-if="enabled" class="htw:[&[data-color='flat']]:text-muted! htw:[&[data-color='flat']]:no-underline htw:[&[data-color='flat']]:[&:not(:disabled)]:[&:hover]:text-text!" color="flat" :disabled="!url" @click="openEmbed">
         <BuiltinIcon icon="launch" :size="14" />Open embed
       </HstButton>
-      <HstButton v-else as="a" color="flat" href="https://histoire.dev/guide/embedding.html" target="_blank" rel="noopener noreferrer">
+      <HstButton v-else class="htw:[&[data-color='flat']]:text-muted! htw:[&[data-color='flat']]:no-underline htw:[&[data-color='flat']]:[&:not(:disabled)]:[&:hover]:text-text!" as="a" color="flat" href="https://histoire.dev/guide/embedding.html" target="_blank" rel="noopener noreferrer">
         <BuiltinIcon icon="launch" :size="14" />Embedding guide
       </HstButton>
-      <HstButton color="primary" :disabled="!copyText || copying" @click="copy">
+      <HstButton class="htw:[&[data-color='primary']]:min-w-[96px]" color="primary" :disabled="!copyText || copying" @click="copy">
         <HstPulsatingDisc v-if="copying" :size="12" /><BuiltinIcon v-else :icon="copied ? 'checkmark' : 'copy'" :size="14" />{{ copied ? 'Copied' : 'Copy' }}
       </HstButton>
     </footer>
   </dialog>
 </template>
-
-<style scoped>
-.histoire-embed-dialog { box-sizing: border-box; display: flex; flex-direction: column; width: min(640px, calc(100vw - 32px)); max-height: calc(100vh - 48px); margin: auto; padding: 0; overflow: hidden; border: 1px solid var(--histoire-border); border-radius: var(--histoire-radius-panel, 16px); color: var(--histoire-text); background: var(--histoire-surface); box-shadow: var(--histoire-shadow-panel); font-size: 13px; }
-.histoire-embed-dialog:not([open]) { display: none; }
-.histoire-embed-dialog::backdrop { background: rgb(0 0 0 / .45); }
-.embed-header { display: flex; align-items: center; gap: 12px; padding: 14px 14px 14px 20px; border-bottom: 1px solid var(--histoire-border); }
-.embed-heading { flex: 1; min-width: 0; }
-.embed-heading h2 { margin: 0; font-size: 15px; font-weight: 700; line-height: 1.3; }
-.embed-heading span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--histoire-muted); font-size: 12px; }
-.embed-body { display: flex; flex-direction: column; gap: 16px; min-height: 0; padding: 20px; overflow: auto; }
-.embed-state { margin: 4px 0; }
-.embed-state code { color: var(--histoire-text); font-family: var(--histoire-font-mono, monospace); }
-.embed-options { display: grid; grid-template-columns: auto 1fr; gap: 12px 20px; align-items: center; }
-.embed-field { display: contents; }
-fieldset.embed-field { margin: 0; padding: 0; border: 0; }
-.embed-field > :is(legend, label) { float: none; padding: 0; color: var(--histoire-muted); font-size: 12px; font-weight: 600; }
-.embed-panels { display: flex; flex-wrap: wrap; gap: 6px; }
-.embed-panels label { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border: 1px solid var(--histoire-border); border-radius: 999px; cursor: pointer; }
-.embed-panels label:has(:checked) { border-color: var(--histoire-accent); background: var(--histoire-accent-soft); }
-.embed-panels label:has(:disabled) { color: var(--histoire-muted); cursor: not-allowed; }
-.embed-panels input { margin: 0; accent-color: var(--histoire-accent); }
-.embed-panels small { font-size: 11px; }
-.embed-height { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.embed-input { display: inline-flex; align-items: center; gap: 6px; padding: 0 10px 0 0; border: 1px solid var(--histoire-border); border-radius: var(--histoire-radius-control, 7px); color: var(--histoire-muted); background: var(--histoire-input); }
-.embed-input:focus-within { border-color: var(--histoire-accent); }
-.embed-input[data-invalid] { border-color: var(--histoire-danger); }
-.embed-input input { width: 88px; padding: 6px 0 6px 10px; border: 0; outline: 0; color: var(--histoire-text); background: transparent; font-variant-numeric: tabular-nums; }
-.embed-error { margin: 0; color: var(--histoire-danger-text); font-size: 12px; }
-.embed-code-block { display: flex; flex-direction: column; gap: 8px; }
-.embed-formats { align-self: flex-start; }
-.embed-formats .histoire-button { flex: none; padding-inline: 12px; }
-.embed-code-label { color: var(--histoire-muted); font: 11px var(--histoire-font-mono, monospace); }
-.embed-code { box-sizing: border-box; display: block; width: 100%; padding: 12px 14px; resize: none; border: 1px solid var(--histoire-border); border-radius: 10px; outline: 0; color: #e6e7ea; background: var(--histoire-code); font: 12px/1.6 var(--histoire-font-mono, monospace); white-space: pre; }
-.embed-code:focus-visible { box-shadow: 0 0 0 2px var(--histoire-accent); }
-.embed-code-snippet { min-height: 180px; max-height: 40vh; resize: vertical; white-space: pre-wrap; word-break: break-all; }
-.embed-policy { display: flex; align-items: flex-start; gap: 8px; margin: 0; color: var(--histoire-muted); font-size: 12px; }
-.embed-policy svg { flex: none; margin-top: 2px; }
-.embed-policy code { font-family: var(--histoire-font-mono, monospace); }
-.embed-policy a { color: var(--histoire-accent-link); }
-.embed-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--histoire-border); }
-.embed-footer .histoire-button[data-color="flat"] { color: var(--histoire-muted); text-decoration: none; }
-.embed-footer .histoire-button[data-color="flat"]:not(:disabled):hover { color: var(--histoire-text); }
-.embed-footer .histoire-button[data-color="primary"] { min-width: 96px; }
-</style>

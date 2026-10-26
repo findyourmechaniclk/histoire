@@ -2,6 +2,7 @@
 import { BuiltinIcon, HstButton, HstPulsatingDisc } from '@histoire/controls/vue'
 import { computed } from 'vue'
 import { useWorkbenchVisual } from '../../../stores/visual.js'
+import VisualViewerSurface from './VisualViewerSurface.vue'
 
 defineProps<{
   /** Capture failure owns its Run again action in the board. */
@@ -21,15 +22,15 @@ const approvable = computed(() => !!result.value && !result.value.staleReason &&
 </script>
 
 <template>
-  <div class="viewer-actions">
-    <p v-if="model.issue.value" class="issue viewer-float" role="alert">
+  <div class="htw:relative htw:flex htw:flex-col htw:items-end htw:gap-2 htw:min-w-0 htw:[grid-column:3] htw:justify-self-end htw:@max-[640px]/viewer:items-center htw:@max-[640px]/viewer:ml-0 htw:@max-[1200px]/viewer:@min-[640px]/viewer:ml-auto">
+    <VisualViewerSurface v-if="model.issue.value" as="p" class="htw:[--viewer-float-background:var(--histoire-danger-soft)] htw:w-max htw:max-w-[min(400px,_100%)] htw:max-h-25 htw:overflow-auto htw:m-0 htw:py-2 htw:px-3 htw:text-danger-text htw:text-[12px] htw:whitespace-pre-line htw:wrap-anywhere" role="alert">
       {{ model.issue.value }}
-    </p>
-    <div class="buttons">
-      <HstButton v-if="!captureFailed" class="viewer-float" :disabled="!!model.requestId.value || pending" @click="emit('rerun')">
+    </VisualViewerSurface>
+    <div class="htw:flex htw:flex-wrap htw:justify-end htw:gap-2 htw:@max-[640px]/viewer:justify-center">
+      <VisualViewerSurface v-if="!captureFailed" :as="HstButton" class="htw:min-h-9 htw:rounded-[12px] htw:py-[7px] htw:px-3 htw:text-[12px] htw:font-semibold htw:whitespace-nowrap" :disabled="!!model.requestId.value || pending" @click="emit('rerun')">
         <BuiltinIcon icon="renew" :size="14" />Run again
-      </HstButton>
-      <HstButton v-if="approvable" color="primary" :disabled="model.approving.value" @click="emit('approve')">
+      </VisualViewerSurface>
+      <HstButton v-if="approvable" class="htw:min-h-9 htw:rounded-[10px] htw:py-[7px] htw:px-3 htw:text-[12px] htw:font-semibold htw:whitespace-nowrap" color="primary" :disabled="model.approving.value" @click="emit('approve')">
         <HstPulsatingDisc v-if="pending" :size="12" />
         <BuiltinIcon v-else icon="checkmark" :size="14" />
         {{ pending ? 'Saving baseline' : result?.status === 'missing' ? 'Create baseline' : 'Approve baseline' }}
@@ -37,9 +38,3 @@ const approvable = computed(() => !!result.value && !result.value.staleReason &&
     </div>
   </div>
 </template>
-
-<style scoped>
-.viewer-actions { position: relative; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; min-width: 0; }.buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }.buttons :deep(button) { min-height: 36px; border-radius: 10px; padding: 7px 12px; font-size: 12px; font-weight: 600; white-space: nowrap; }
-.issue { --viewer-float-background: var(--histoire-danger-soft); width: max-content; max-width: min(400px, 100%); max-height: 100px; overflow: auto; margin: 0; padding: 8px 12px; color: var(--histoire-danger-text); font-size: 12px; white-space: pre-line; overflow-wrap: anywhere; }
-@container (max-width: 640px) { .viewer-actions { align-items: center; }.buttons { justify-content: center; } }
-</style>

@@ -16,6 +16,7 @@ export { HistoireTests } from './components/tests/HistoireTests.js'
 export { HistoireToolbar } from './components/toolbar/HistoireToolbar.js'
 export { HistoireStoryTree } from './components/tree/HistoireStoryTree.js'
 export { HistoireDropdown, HistoireTooltip } from './foundation/floating.js'
+export { mergePartClass } from './foundation/parts.js'
 export { HistoireVirtualList } from './foundation/VirtualList.js'
 export type { HistoireVirtualItem, HistoireVirtualListHandle, HistoireVirtualSlot } from './foundation/VirtualList.js'
 // First-party panel foundation. External loaders/extensions are unsupported.

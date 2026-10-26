@@ -144,39 +144,29 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport :to="context.overlay.value ?? context.root.value ?? 'body'">
-    <div v-for="pin in pins" :key="pin.thread.id" class="canvas-comment-pin" :style="{ left: `${pin.point.x}px`, top: `${pin.point.y}px` }">
+    <div v-for="pin in pins" :key="pin.thread.id" class="canvas-comment-pin htw:fixed htw:[z-index:28] htw:[transform:translateY(-100%)] htw:pointer-events-auto" :style="{ left: `${pin.point.x}px`, top: `${pin.point.y}px` }">
       <CommentPin :number="pin.number" :active="model.activeId.value === pin.thread.id" :draft="pin.thread.status === 'draft'" :resolved="pin.thread.status === 'resolved'" @select="model.toggle(pin.thread.id)" />
     </div>
-    <div v-if="draftAnchor" class="canvas-comment-pin" :style="{ left: `${draftAnchor.x}px`, top: `${draftAnchor.y}px` }">
+    <div v-if="draftAnchor" class="canvas-comment-pin htw:fixed htw:[z-index:28] htw:[transform:translateY(-100%)] htw:pointer-events-auto" :style="{ left: `${draftAnchor.x}px`, top: `${draftAnchor.y}px` }">
       <CommentPin active temporary />
     </div>
-    <div v-if="anchor && cardStyle" class="canvas-comment-overlay" :style="cardStyle">
-      <div class="canvas-comment-card">
-        <CommentComposer v-if="model.draft.value" :draft="model.draft.value" :title="title(model.draft.value)" :agents="agents" :capturing="Boolean(capture.requestId.value) || model.pending.value" @send="model.sendDraft" @attach="capture.capture" @close="model.dismiss" @setup-agent="emit('setupAgent')" @remove-screenshot="capture.remove" />
-        <CommentThread v-else-if="selected" :thread="selected" :title="title(selected)" :agents="agents" :disabled="!model.available.value" @reply="model.reply" @resolve="model.archive(selected!.id, $event)" @remove="model.remove(selected!.id)" @close="model.dismiss" />
+    <div v-if="anchor && cardStyle" class="canvas-comment-overlay htw:fixed htw:[z-index:32] htw:pointer-events-auto" :style="cardStyle">
+      <!-- Scroll wrapper owns elevation so clipping cannot cut off the shadow. -->
+      <div class="htw:[max-height:calc(100vh_-_24px)] htw:overflow-auto htw:rounded-panel htw:shadow-panel">
+        <CommentComposer v-if="model.draft.value" flat :draft="model.draft.value" :title="title(model.draft.value)" :agents="agents" :capturing="Boolean(capture.requestId.value) || model.pending.value" @send="model.sendDraft" @attach="capture.capture" @close="model.dismiss" @setup-agent="emit('setupAgent')" @remove-screenshot="capture.remove" />
+        <CommentThread v-else-if="selected" flat :thread="selected" :title="title(selected)" :agents="agents" :disabled="!model.available.value" @reply="model.reply" @resolve="model.archive(selected!.id, $event)" @remove="model.remove(selected!.id)" @close="model.dismiss" />
       </div>
-      <Transition name="comment-error" appear>
-        <p v-if="model.error.value" class="comment-error" role="alert">
+      <Transition
+        enter-active-class="htw:[transition:opacity_180ms_ease-out,transform_180ms_cubic-bezier(0.16,1,0.3,1)] htw:motion-reduce:transition-none"
+        leave-active-class="htw:[transition:opacity_140ms_ease-in,transform_140ms_ease-in] htw:pointer-events-none htw:motion-reduce:transition-none"
+        enter-from-class="htw:opacity-0 htw:-translate-y-1.5 htw:motion-reduce:transform-none"
+        leave-to-class="htw:opacity-0 htw:-translate-y-1.5 htw:motion-reduce:transform-none"
+        appear
+      >
+        <p v-if="model.error.value" class="htw:max-w-85 htw:mt-2 htw:mx-0 htw:mb-0 htw:py-2.25 htw:px-3 htw:rounded-control htw:bg-danger-soft htw:text-danger-text htw:text-[12px]" role="alert">
           {{ model.error.value }}
         </p>
       </Transition>
     </div>
   </Teleport>
 </template>
-
-<style scoped>
-/* Bubble tail (bottom-left corner) points at the anchor, matching the comments pane badge. */
-.canvas-comment-pin { position: fixed; z-index: 28; transform: translateY(-100%); pointer-events: auto; }
-.canvas-comment-overlay { position: fixed; z-index: 32; pointer-events: auto; }
-/* The scroll container owns the shadow so its overflow cannot clip it. */
-.canvas-comment-card { max-height: calc(100vh - 24px); overflow: auto; border-radius: var(--histoire-radius-panel); box-shadow: var(--histoire-shadow-panel); }
-.canvas-comment-card :deep(.comment-card), .canvas-comment-card :deep(.comment-thread) { box-shadow: none; }
-.comment-error { max-width: 340px; margin: 8px 0 0; padding: 9px 12px; border-radius: var(--histoire-radius-control); background: var(--histoire-danger-soft); color: var(--histoire-danger-text); font-size: 12px; }
-.comment-error-enter-active { transition: opacity 180ms ease-out, transform 180ms cubic-bezier(0.16, 1, 0.3, 1); }
-.comment-error-leave-active { transition: opacity 140ms ease-in, transform 140ms ease-in; pointer-events: none; }
-.comment-error-enter-from, .comment-error-leave-to { opacity: 0; transform: translateY(-6px); }
-@media (prefers-reduced-motion: reduce) {
-  .comment-error-enter-active, .comment-error-leave-active { transition: none; }
-  .comment-error-enter-from, .comment-error-leave-to { transform: none; }
-}
-</style>

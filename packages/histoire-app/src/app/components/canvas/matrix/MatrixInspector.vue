@@ -59,92 +59,66 @@ async function copyVariant(): Promise<void> {
 </script>
 
 <template>
-  <div class="histoire-matrix-inspector">
-    <div class="histoire-matrix-preset">
-      <label :for="presetId" class="histoire-matrix-preset-label">
+  <div class="htw:px-inspector-gutter htw:pt-0 htw:pb-4">
+    <div class="htw:flex htw:items-center htw:gap-2 htw:min-w-0 htw:m-[2px_0_20px]">
+      <label :for="presetId" class="htw:inline-flex htw:items-center htw:gap-2 htw:flex-none htw:text-muted htw:text-[12px] htw:whitespace-nowrap">
         <BuiltinIcon icon="bookmark" :size="16" />
         <span>Base preset</span>
       </label>
       <HstSelect
         :id="presetId"
+        class="htw:flex-1 htw:min-w-0"
         title="Base preset"
         layout="inline"
         :model-value="variant?.id ?? story?.variants[0]?.id"
         :options="(story?.variants ?? []).map(item => ({ value: item.id, label: item.title }))"
         @update:model-value="preset"
       />
-      <HstButton icon-only color="flat" type="button" aria-label="Reset matrix base props" title="Reset matrix base props" @click="reset">
+      <HstButton class="htw:text-muted" icon-only color="flat" type="button" aria-label="Reset matrix base props" title="Reset matrix base props" @click="reset">
         <BuiltinIcon icon="reset" :size="16" />
       </HstButton>
     </div>
-    <div class="histoire-matrix-selected">
+    <div class="htw:flex htw:flex-col htw:gap-2.5 htw:min-w-0 htw:p-3 htw:border htw:border-solid htw:border-border htw:rounded-panel htw:bg-transparent htw:text-[11px] htw:text-muted">
       <span>Selected cell</span>
-      <dl v-if="matrix.selectedCell.value" class="histoire-matrix-selected-values">
-        <div>
-          <dt><code>{{ matrix.rowAxis.value!.name }}</code></dt>
-          <dd>{{ formatMatrixValue(matrix.selectedCell.value.row) }}</dd>
+      <dl v-if="matrix.selectedCell.value" class="htw:flex htw:flex-col htw:gap-2 htw:m-0 htw:text-text">
+        <div class="htw:grid htw:grid-cols-2 htw:gap-3">
+          <dt class="htw:min-w-0 htw:m-0 htw:[overflow-wrap:anywhere]">
+            <code class="htw:font-mono">{{ matrix.rowAxis.value!.name }}</code>
+          </dt>
+          <dd class="htw:min-w-0 htw:m-0 htw:[overflow-wrap:anywhere] htw:text-right">
+            {{ formatMatrixValue(matrix.selectedCell.value.row) }}
+          </dd>
         </div>
-        <div>
-          <dt><code>{{ matrix.colAxis.value!.name }}</code></dt>
-          <dd>{{ formatMatrixValue(matrix.selectedCell.value.col) }}</dd>
+        <div class="htw:grid htw:grid-cols-2 htw:gap-3">
+          <dt class="htw:min-w-0 htw:m-0 htw:[overflow-wrap:anywhere]">
+            <code class="htw:font-mono">{{ matrix.colAxis.value!.name }}</code>
+          </dt>
+          <dd class="htw:min-w-0 htw:m-0 htw:[overflow-wrap:anywhere] htw:text-right">
+            {{ formatMatrixValue(matrix.selectedCell.value.col) }}
+          </dd>
         </div>
       </dl>
-      <WorkbenchEmptyState v-else icon="grid" title="No cell selected" />
-      <HstButton color="flat" type="button" :disabled="!matrix.canCopy.value || copying" @click="copyVariant">
+      <WorkbenchEmptyState v-else flush class="htw:my-2 htw:mx-0" icon="grid" title="No cell selected" />
+      <HstButton class="htw:w-full htw:whitespace-nowrap" color="flat" type="button" :disabled="!matrix.canCopy.value || copying" @click="copyVariant">
         {{ copied ? 'Copied' : copying ? 'Copying…' : 'Save as variant' }}
       </HstButton>
     </div>
     <MatrixVisualActions scope="selected" />
     <section aria-label="Matrix axes">
-      <h3>Axes</h3>
+      <h3 class="htw:mt-[22px] htw:mb-[14px] htw:mx-0 htw:text-muted htw:text-[10px] htw:font-extrabold htw:uppercase">
+        Axes
+      </h3>
       <MatrixAxisEntry v-for="dimension in dimensions" :key="dimension.id" :name="dimension.axis!.name" :dimension="dimension.id" />
       <MatrixCustomAxes />
     </section>
     <section aria-label="Matrix base props">
-      <div class="histoire-matrix-base-title">
-        <h3>Base props</h3><span>all {{ matrix.cells.value.length }} cells</span>
+      <div class="htw:flex htw:items-baseline htw:justify-between">
+        <h3 class="htw:mt-[22px] htw:mb-[14px] htw:mx-0 htw:text-muted htw:text-[10px] htw:font-extrabold htw:uppercase">
+          Base props
+        </h3><span class="htw:text-muted htw:text-[10px]">all {{ matrix.cells.value.length }} cells</span>
       </div>
       <MatrixBaseProp v-for="prop in fields" :key="prop.name" :prop="prop" :value="Object.hasOwn(matrix.base.value, prop.name) ? matrix.base.value[prop.name] : prop.value" :values="matrix.axes.value.find(axis => axis.name === prop.name)?.values" :edited="Object.hasOwn(matrix.base.value, prop.name) && !Object.is(matrix.base.value[prop.name], prop.value)" @update="matrix.setBase(prop.name, $event)" />
     </section>
-    <output v-if="copied" class="histoire-matrix-copy-status" aria-live="polite">Variant snippet copied</output>
+    <output v-if="copied" class="htw:block htw:mt-2 htw:text-accent-link htw:text-[11px]" aria-live="polite">Variant snippet copied</output>
   </div>
 </template>
-
-<style scoped>
-.histoire-matrix-inspector { padding: 0 var(--histoire-inspector-gutter) 16px; }
-.histoire-matrix-preset {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-  margin: 2px 0 20px;
-}
-.histoire-matrix-preset-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  flex: none;
-  color: var(--histoire-muted);
-  font-size: 12px;
-  white-space: nowrap;
-}
-.histoire-matrix-preset > .histoire-select {
-  flex: 1;
-  min-width: 0;
-}
-.histoire-matrix-preset > button {
-  color: var(--histoire-muted);
-}
-.histoire-matrix-selected { display: flex; flex-direction: column; gap: 10px; min-width: 0; padding: 12px; border: 1px solid var(--histoire-border); border-radius: var(--histoire-radius-panel); background: transparent; font-size: 11px; color: var(--histoire-muted); }
-.histoire-matrix-selected-values { display: flex; flex-direction: column; gap: 8px; margin: 0; color: var(--histoire-text); }
-.histoire-matrix-selected-values > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
-.histoire-matrix-selected-values :is(dt,dd) { min-width: 0; margin: 0; overflow-wrap: anywhere; }
-.histoire-matrix-selected-values code { font-family: var(--histoire-font-mono); }
-.histoire-matrix-selected-values dd { text-align: right; }
-.histoire-matrix-selected > .workbench-empty-state { margin: 8px 0; }
-.histoire-matrix-selected > button { width: 100%; white-space: nowrap; }
-.histoire-matrix-inspector h3 { margin: 22px 0 14px; color: var(--histoire-muted); font-size: 10px; font-weight: 800; text-transform: uppercase; }
-.histoire-matrix-base-title { display: flex; align-items: baseline; justify-content: space-between; }
-.histoire-matrix-base-title span { color: var(--histoire-muted); font-size: 10px; }
-.histoire-matrix-copy-status { display: block; margin-top: 8px; color: var(--histoire-accent-link); font-size: 11px; }
-</style>

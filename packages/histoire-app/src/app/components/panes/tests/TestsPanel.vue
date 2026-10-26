@@ -10,15 +10,9 @@ const visual = useWorkbenchVisual()
 </script>
 
 <template>
-  <div class="tests-modes">
-    <HstButtonGroup v-if="visual" v-model="visual.mode.value" class="mode-switch" layout="inline" aria-label="Test type" :options="[{ value: 'functional', label: 'Functional' }, { value: 'visual', label: 'Visual' }]" />
-    <VisualTestsPanel v-if="visual?.mode.value === 'visual'" />
-    <FunctionalTestsPanel v-else @select="emit('select', $event)" @error="emit('error', $event)" />
+  <div class="htw:flex htw:flex-col htw:h-full htw:min-h-0">
+    <HstButtonGroup v-if="visual" v-model="visual.mode.value" class="htw:flex htw:mt-3 htw:mx-pane-gutter htw:mb-0" layout="inline" aria-label="Test type" :options="[{ value: 'functional', label: 'Functional' }, { value: 'visual', label: 'Visual' }]" />
+    <VisualTestsPanel v-if="visual?.mode.value === 'visual'" class="htw:flex-1 htw:min-h-0" />
+    <FunctionalTestsPanel v-else class="htw:flex-1 htw:min-h-0" @select="emit('select', $event)" @error="emit('error', $event)" />
   </div>
 </template>
-
-<style scoped>
-.tests-modes { display: flex; flex-direction: column; height: 100%; min-height: 0; }
-/* Beats inline wrapper display and zero margin from controls stylesheet. */
-.tests-modes > .mode-switch { display: flex; margin: 12px var(--histoire-pane-gutter) 0; }.tests-modes > section { flex: 1; min-height: 0; }
-</style>

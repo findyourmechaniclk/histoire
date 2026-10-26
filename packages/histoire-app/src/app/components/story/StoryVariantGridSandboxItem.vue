@@ -65,36 +65,36 @@ function onReady() {
 <template>
   <div
     ref="el"
-    class="histoire-story-variant-grid-item htw-cursor-default htw-flex htw-flex-col htw-gap-y-1 htw-group"
+    class="htw:cursor-default htw:flex htw:flex-col htw:gap-y-1 htw:group/variant"
     :data-histoire-variant-id="variant.id"
     :aria-busy="ready === false"
     :inert="ready === false ? true : undefined"
   >
-    <div class="htw-flex-none htw-flex htw-items-center">
+    <div class="htw:flex-none htw:flex htw:items-center">
       <HstButton
         v-tooltip="variant.title"
         color="flat"
         type="button"
         :disabled="ready === false"
-        class="htw-rounded htw-w-max htw-px-2 htw-py-0.5 htw-min-w-16 htw-cursor-pointer htw-flex htw-items-center htw-gap-1 htw-flex-shrink htw-bg-transparent"
+        class="htw:rounded htw:w-max htw:px-2 htw:py-0.5 htw:min-w-16 htw:cursor-pointer htw:flex htw:items-center htw:gap-1 htw:shrink htw:bg-transparent"
         :class="{
-          'hover:htw-bg-gray-200 htw-text-gray-500 dark:hover:htw-bg-gray-800': !selected,
-          'htw-bg-primary-200 hover:htw-bg-primary-300 htw-text-primary-800 dark:htw-bg-primary-700 dark:hover:htw-bg-primary-800 dark:htw-text-primary-200': selected,
+          'htw:hover:bg-gray-200 htw:text-gray-500 htw:dark:hover:bg-gray-800': !selected,
+          'htw:bg-primary-200 htw:hover:bg-primary-300 htw:text-primary-800 htw:dark:bg-primary-700 htw:dark:hover:bg-primary-800 htw:dark:text-primary-200': selected,
         }"
         @click="emit('select')"
       >
         <BuiltinIcon
           :icon="variant.icon ?? 'carbon:cube'"
-          class="htw-w-4 htw-h-4 htw-opacity-50"
+          :style="{ color: !selected ? variant.iconColor : undefined }"
+          class="htw:w-4 htw:h-4 htw:opacity-50"
           :class="{
-            'htw-text-gray-500': !selected && !variant.iconColor,
-            'bind-icon-color': !selected && variant.iconColor,
+            'htw:text-gray-500': !selected && !variant.iconColor,
           }"
         />
-        <span class="htw-truncate htw-flex-1">{{ variant.title }}</span>
+        <span class="htw:truncate htw:flex-1">{{ variant.title }}</span>
       </HstButton>
 
-      <div class="htw-flex-none htw-ml-auto htw-hidden group-hover:htw-flex htw-items-center">
+      <div class="htw:flex-none htw:ml-auto htw:hidden htw:group-hover/variant:flex htw:items-center">
         <HstCopyIcon
           :content="() => getSourceCode(story, variant)"
         />
@@ -106,27 +106,28 @@ function onReady() {
     </div>
 
     <div
-      class="htw-border htw-bg-white dark:htw-bg-gray-700 htw-rounded htw-flex-1 htw-p-4 htw-relative"
+      class="htw:border htw:bg-white htw:dark:bg-gray-700 htw:rounded htw:flex-1 htw:p-4 htw:relative"
       :class="{
-        'htw-border-gray-100 dark:htw-border-gray-800': !selected,
-        'htw-border-primary-200 dark:htw-border-primary-900': selected,
+        'htw:border-gray-100 htw:dark:border-gray-800': !selected,
+        'htw:border-primary-200 htw:dark:border-primary-900': selected,
       }"
       data-test-id="sandbox-render"
       @click.stop="emit('select')"
       @keyup="emit('select')"
     >
       <div
-        class="htw-absolute htw-inset-0 htw-rounded bind-preview-bg"
+        class="htw:absolute htw:inset-0 htw:rounded"
+        :style="{ backgroundColor: settings.backgroundColor }"
         data-test-id="responsive-preview-bg"
       />
 
       <CheckerboardPattern
         v-if="settings.checkerboard"
-        class="htw-absolute htw-inset-0 htw-w-full htw-h-full htw-text-gray-500/20"
+        class="htw:absolute htw:inset-0 htw:w-full htw:h-full htw:text-gray-500/20"
       />
 
       <div
-        class="htw-relative htw-h-full"
+        class="htw:relative htw:h-full"
         data-histoire-runtime-content
         :data-histoire-variant-id="variant.id"
         :style="{
@@ -148,13 +149,3 @@ function onReady() {
     </div>
   </div>
 </template>
-
-<style scoped>
-.bind-icon-color {
-  color: v-bind('variant.iconColor');
-}
-
-.bind-preview-bg {
-  background-color: v-bind('settings.backgroundColor');
-}
-</style>

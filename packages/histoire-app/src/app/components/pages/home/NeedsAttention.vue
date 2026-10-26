@@ -4,6 +4,8 @@ import { BuiltinIcon, HstButton } from '@histoire/controls/vue'
 import { useHistoireSnapshot } from '@histoire/vue'
 import { computed } from 'vue'
 import { useWorkbenchTestsModel } from '../../panes/tests/model.js'
+import HomeCard from './HomeCard.vue'
+import HomeHeading from './HomeHeading.vue'
 
 defineEmits<{
   /** Activate exact collected story/variant related to issue. */
@@ -24,26 +26,22 @@ const issues = computed(() => {
 </script>
 
 <template>
-  <section v-if="issues.length" class="histoire-needs-attention">
-    <h2>Needs attention <span>{{ issues.length }}</span><small>DEV</small></h2>
-    <div class="histoire-home-card">
-      <div v-for="issue in issues" :key="issue.id" class="histoire-attention-row">
-        <BuiltinIcon :icon="issue.warning ? 'warning-alt-filled' : 'error-filled'" :class="issue.warning ? 'warning' : 'danger'" :size="16" />
-        <div><strong>{{ issue.title }}</strong><p>{{ issue.message }}</p></div>
-        <HstButton v-if="issue.target" color="flat" type="button" @click="$emit('select', issue.target)">
+  <section v-if="issues.length">
+    <HomeHeading>
+      Needs attention <span class="htw:text-muted htw:text-[10px]">{{ issues.length }}</span><small class="htw:text-muted htw:text-[10px] htw:p-[2px_5px] htw:rounded-[5px] htw:bg-chip">DEV</small>
+    </HomeHeading>
+    <HomeCard>
+      <div v-for="issue in issues" :key="issue.id" class="htw:flex htw:items-center htw:gap-[12px] htw:p-[14px_16px] htw:[&+&]:[border-top:1px_solid_var(--histoire-border)]">
+        <BuiltinIcon :icon="issue.warning ? 'warning-alt-filled' : 'error-filled'" :class="issue.warning ? 'htw:text-warn' : 'htw:text-danger'" :size="16" />
+        <div class="htw:flex-1 htw:min-w-0">
+          <strong>{{ issue.title }}</strong><p class="htw:overflow-hidden htw:m-[3px_0_0] htw:text-muted htw:[font:11px_var(--histoire-font-mono,_monospace)] htw:text-ellipsis htw:whitespace-nowrap">
+            {{ issue.message }}
+          </p>
+        </div>
+        <HstButton v-if="issue.target" class="htw:flex htw:items-center htw:gap-[6px] htw:p-[6px_9px] htw:text-text" color="flat" type="button" @click="$emit('select', issue.target)">
           <BuiltinIcon icon="launch" :size="16" />View
         </HstButton>
       </div>
-    </div>
+    </HomeCard>
   </section>
 </template>
-
-<style scoped>
-.histoire-attention-row { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
-.histoire-attention-row + .histoire-attention-row { border-top: 1px solid var(--histoire-border); }
-.histoire-attention-row > div { flex: 1; min-width: 0; }
-.histoire-attention-row p { overflow: hidden; margin: 3px 0 0; color: var(--histoire-muted); font: 11px var(--histoire-font-mono, monospace); text-overflow: ellipsis; white-space: nowrap; }
-.histoire-attention-row button { display: flex; align-items: center; gap: 6px; padding: 6px 9px; color: var(--histoire-text); }
-.danger { color: var(--histoire-danger); }
-.warning { color: var(--histoire-warn); }
-</style>

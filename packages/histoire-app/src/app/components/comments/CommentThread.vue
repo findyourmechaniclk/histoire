@@ -17,6 +17,8 @@ import { useStickToBottom } from './thread/stick-to-bottom.js'
 import ThreadMessage from './thread/ThreadMessage.vue'
 
 const props = defineProps<{
+  /** Scroll wrapper owns elevation in canvas overlays. */
+  flat?: boolean
   /** Persisted pinned thread with server-owned statuses. */
   thread: UiAiThread
   /** Collected story and variant display label. */
@@ -67,18 +69,18 @@ function submit() {
 </script>
 
 <template>
-  <section class="comment-thread" aria-label="Comment conversation" @keydown.escape.stop.prevent="emit('close')">
+  <section class="htw:w-90 htw:[max-width:calc(100vw_-_24px)] htw:rounded-panel htw:bg-surface htw:text-text htw:overflow-hidden" :class="flat ? 'htw:shadow-none' : 'htw:shadow-panel'" aria-label="Comment conversation" @keydown.escape.stop.prevent="emit('close')">
     <CommentContext :title="title" :thread="thread" minimizable @minimize="emit('close')">
       <template #actions>
-        <HstButton icon-only color="flat" type="button" :disabled="disabled" :aria-label="thread.status === 'resolved' ? 'Reopen comment' : 'Resolve comment'" :title="thread.status === 'resolved' ? 'Reopen' : 'Resolve'" @click="emit('resolve', thread.status !== 'resolved')">
+        <HstButton icon-only color="flat" type="button" :disabled="disabled" :aria-label="thread.status === 'resolved' ? 'Reopen comment' : 'Resolve comment'" :title="thread.status === 'resolved' ? 'Reopen' : 'Resolve'" class="htw:text-muted" @click="emit('resolve', thread.status !== 'resolved')">
           <BuiltinIcon :icon="thread.status === 'resolved' ? 'renew' : 'checkmark'" :size="16" />
         </HstButton>
-        <HstButton icon-only color="flat" type="button" :disabled="disabled || busy" aria-label="Delete comment" title="Delete" @click="emit('remove')">
+        <HstButton icon-only color="flat" type="button" :disabled="disabled || busy" aria-label="Delete comment" title="Delete" class="htw:text-muted" @click="emit('remove')">
           <BuiltinIcon icon="trash-can" :size="16" />
         </HstButton>
       </template>
     </CommentContext>
-    <div ref="scroller" class="thread-messages">
+    <div ref="scroller" class="htw:[max-height:min(50vh,_400px)] htw:overflow-auto htw:py-4 htw:px-3.5">
       <div ref="log">
         <ThreadMessage author="user" name="You" :at="thread.createdAt" :body="thread.body" :attachments="thread.attachments" />
         <ThreadMessage
@@ -103,15 +105,9 @@ function submit() {
         <AgentPendingInput v-if="busy" :thread-id="thread.id" />
       </div>
     </div>
-    <form class="thread-reply" @submit.prevent="submit">
+    <form class="htw:p-2.5 htw:border-t htw:border-border" @submit.prevent="submit">
       <!-- Keyed by thread so a late upload of the previous thread cannot land in this draft. -->
       <AgentPrompt :key="thread.id" ref="prompt" :model-value="draft.body" :attachments="draft.attachments" :options="options ?? thread.options" compact label="Reply to comment" :placeholder="busy ? 'Agent is working…' : keptPlanning ? PLAN_FOLLOW_UP_PLACEHOLDER : 'Reply…'" :agents="thread.agentId ? agents : usable" :agent-id="thread.agentId ?? agentId" :agent-locked="Boolean(thread.agentId)" :busy="busy" :disabled="disabled" @update:model-value="edit({ body: $event })" @update:attachments="edit({ attachments: $event })" @update:options="chooseOptions" @choose="choose" @send="submit" />
     </form>
   </section>
 </template>
-
-<style scoped>
-.comment-thread { width: 360px; max-width: calc(100vw - 24px); border-radius: var(--histoire-radius-panel); background: var(--histoire-surface); color: var(--histoire-text); box-shadow: var(--histoire-shadow-panel); overflow: hidden; }
-.thread-messages { max-height: min(50vh, 400px); overflow: auto; padding: 16px 14px; }
-.thread-reply { padding: 10px; border-top: 1px solid var(--histoire-border); }
-</style>

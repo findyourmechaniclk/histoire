@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { HstButton, HstSwitch } from '@histoire/controls/vue'
+import { HstSwitch } from '@histoire/controls/vue'
 import { computed } from 'vue'
 import { useCanvasFrames, useCanvasStore } from '../../../composables/canvas-settings.js'
 import { useUiSettingsStore } from '../../../stores/settings.js'
 import { useShortcutRegistry } from '../../../util/shortcuts.js'
+import PopoverDivider from '../../base/popover/PopoverDivider.vue'
+import PopoverMeta from '../../base/popover/PopoverMeta.vue'
+import PopoverRow from '../../base/popover/PopoverRow.vue'
 import ToolbarPopover from './ToolbarPopover.vue'
 
 defineProps<{ open: string | null }>()
@@ -32,26 +35,24 @@ function selection() {
 <template>
   <ToolbarPopover id="zoom" :open="open" label="Zoom level" :width="240" @update:open="emit('update:open', $event)">
     <template #trigger>
-      <span class="zoom-label">{{ label }}</span>
+      <span class="htw:text-text htw:font-mono htw:text-[11px] htw:min-w-[29px]">{{ label }}</span>
     </template>
-    <HstButton color="flat" class="popover-row" :aria-pressed="canvas.zoom === 'fit'" @click="zoom('fit')">
-      Fit to canvas<span class="popover-meta">{{ shortcuts?.hint('canvas.fit') || '⇧1' }}</span>
-    </HstButton>
-    <HstButton v-if="canvas.arrangement !== 'single'" color="flat" class="popover-row" :disabled="!selectedFrame" :aria-pressed="canvas.zoom === 'selection'" @click="selection">
-      Zoom to selection<span class="popover-meta">{{ shortcuts?.hint('canvas.selection') || '⇧2' }}</span>
-    </HstButton>
-    <HstButton v-for="value in [.25, .5, 1, 2]" :key="value" color="flat" class="popover-row" :aria-pressed="canvas.zoom === value" @click="zoom(value)">
-      {{ value * 100 }}%<span v-if="value === 1" class="popover-meta">{{ shortcuts?.hint('canvas.actual') || '⇧0' }}</span>
-    </HstButton>
+    <PopoverRow :aria-pressed="canvas.zoom === 'fit'" @click="zoom('fit')">
+      Fit to canvas<PopoverMeta>{{ shortcuts?.hint('canvas.fit') || '⇧1' }}</PopoverMeta>
+    </PopoverRow>
+    <PopoverRow v-if="canvas.arrangement !== 'single'" :disabled="!selectedFrame" :aria-pressed="canvas.zoom === 'selection'" @click="selection">
+      Zoom to selection<PopoverMeta>{{ shortcuts?.hint('canvas.selection') || '⇧2' }}</PopoverMeta>
+    </PopoverRow>
+    <PopoverRow v-for="value in [.25, .5, 1, 2]" :key="value" :aria-pressed="canvas.zoom === value" @click="zoom(value)">
+      {{ value * 100 }}%<PopoverMeta v-if="value === 1">
+        {{ shortcuts?.hint('canvas.actual') || '⇧0' }}
+      </PopoverMeta>
+    </PopoverRow>
     <template v-if="settings">
-      <div class="popover-divider" />
-      <label class="popover-row zoom-sync">Sync zoom across stories<HstSwitch class="zoom-sync-switch" layout="inline" :model-value="settings.state.syncZoom" @update:model-value="settings.update({ syncZoom: $event })" /></label>
+      <PopoverDivider />
+      <PopoverRow class="htw:cursor-default" as="label">
+        Sync zoom across stories<HstSwitch class="htw:ms-auto" layout="inline" :model-value="settings.state.syncZoom" @update:model-value="settings.update({ syncZoom: $event })" />
+      </PopoverRow>
     </template>
   </ToolbarPopover>
 </template>
-
-<style scoped>
-.zoom-label { color: var(--histoire-text); font-family: var(--histoire-font-mono); font-size: 11px; min-width: 29px; }
-.zoom-sync { cursor: default !important; }
-.zoom-sync .zoom-sync-switch { margin-inline-start: auto; }
-</style>

@@ -189,18 +189,18 @@ onMounted(() => {
 <template>
   <div
     ref="el"
-    class="htw-overflow-y-auto htw-flex htw-h-full"
+    class="htw:overflow-y-auto htw:flex htw:h-full"
     @scroll="onScroll"
   >
-    <div class="htw-flex htw-w-0 htw-flex-1 htw-mx-4">
+    <div class="htw:flex htw:w-0 htw:flex-1 htw:mx-4">
       <div
-        class="htw-relative htw-my-auto htw-flex-none htw-w-full"
+        class="htw:relative htw:my-auto htw:flex-none htw:w-full"
         :style="{ height: `${canvasHeight}px` }"
       >
         <div
           v-for="row of visibleRows"
           :key="row.index"
-          class="htw-absolute htw-grid htw-gap-4"
+          class="htw:absolute htw:grid htw:gap-4"
           :data-histoire-grid-row="row.index"
           :style="{
             top: `${padding + row.top}px`,

@@ -59,41 +59,27 @@ function remove(): void {
 </script>
 
 <template>
-  <div class="histoire-matrix-axis" :data-open="open || undefined">
-    <div class="histoire-matrix-axis-title">
-      <code>{{ name }}</code>
-      <span v-if="dimension" class="histoire-matrix-axis-meta" data-accent>{{ dimension === 'rows' ? 'rows' : 'columns' }} · {{ selected.length }} of {{ values.length }}</span>
-      <span v-else class="histoire-matrix-axis-meta" :title="summary">{{ summary }}</span>
-      <span class="histoire-matrix-axis-actions">
-        <HstButton v-if="custom || numeric" icon-only color="flat" type="button" :aria-label="`Edit ${name} values`" title="Edit values" :aria-pressed="open" @click="toggle">
+  <div class="histoire-matrix-axis htw:grid htw:gap-2 htw:min-w-0 htw:mb-4" :data-open="open || undefined">
+    <div class="htw:flex htw:items-center htw:gap-2 htw:min-w-0 htw:min-h-6 htw:font-mono htw:text-[11px]">
+      <code class="htw:flex-none htw:text-text htw:text-[12px]">{{ name }}</code>
+      <span v-if="dimension" class="htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:text-muted htw:text-right htw:text-ellipsis htw:whitespace-nowrap htw:data-[accent]:text-accent-link" data-accent>{{ dimension === 'rows' ? 'rows' : 'columns' }} · {{ selected.length }} of {{ values.length }}</span>
+      <span v-else class="htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:text-muted htw:text-right htw:text-ellipsis htw:whitespace-nowrap htw:data-[accent]:text-accent-link" :title="summary">{{ summary }}</span>
+      <span class="htw:flex htw:flex-none htw:gap-0.5 htw:me-[-4px] htw:empty:hidden">
+        <HstButton v-if="custom || numeric" class="htw:[--histoire-icon-button-size:24px] htw:text-muted htw:hover:text-text htw:aria-pressed:text-text" icon-only color="flat" type="button" :aria-label="`Edit ${name} values`" title="Edit values" :aria-pressed="open" @click="toggle">
           <BuiltinIcon icon="edit" :size="14" />
         </HstButton>
-        <HstButton v-if="custom" icon-only color="flat" type="button" :aria-label="`Remove ${name} axis`" title="Remove custom axis" @click="remove">
+        <HstButton v-if="custom" class="htw:[--histoire-icon-button-size:24px] htw:text-muted htw:hover:text-text htw:aria-pressed:text-text" icon-only color="flat" type="button" :aria-label="`Remove ${name} axis`" title="Remove custom axis" @click="remove">
           <BuiltinIcon icon="trash-can" :size="14" />
         </HstButton>
       </span>
     </div>
-    <div v-if="dimension && axis" class="histoire-matrix-value-filter histoire-button-group-options" role="group" :aria-label="`${name} values`">
-      <HstButton v-for="value in axis.values" :key="matrixValueKey(value)" :title="formatMatrixValue(value)" color="flat" type="button" :aria-pressed="selected.some(item => equalMatrixValue(item, value))" @click="toggleValue(value)">
+    <div v-if="dimension && axis" class="histoire-button-group-options" role="group" :aria-label="`${name} values`">
+      <HstButton v-for="value in axis.values" :key="matrixValueKey(value)" class="htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:text-ellipsis" :title="formatMatrixValue(value)" color="flat" type="button" :aria-pressed="selected.some(item => equalMatrixValue(item, value))" @click="toggleValue(value)">
         {{ formatMatrixValue(value) }}
       </HstButton>
     </div>
-    <span v-if="error" role="alert">{{ error }}</span>
+    <span v-if="error" class="htw:text-danger htw:text-[12px]" role="alert">{{ error }}</span>
     <MatrixCustomValues v-if="open && custom" :name="name" @close="close" />
     <MatrixNumericValues v-else-if="open" :key="name" :name="name" @close="close" />
   </div>
 </template>
-
-<style scoped>
-.histoire-matrix-axis { display: grid; gap: 8px; min-width: 0; margin-bottom: 16px; }
-.histoire-matrix-axis-title { display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 24px; font-family: var(--histoire-font-mono); font-size: 11px; }
-.histoire-matrix-axis-title code { flex: none; color: var(--histoire-text); font-size: 12px; }
-.histoire-matrix-axis-meta { flex: 1; min-width: 0; overflow: hidden; color: var(--histoire-muted); text-align: right; text-overflow: ellipsis; white-space: nowrap; }
-.histoire-matrix-axis-meta[data-accent] { color: var(--histoire-accent-link); }
-.histoire-matrix-axis-actions { display: flex; flex: none; gap: 2px; margin-inline-end: -4px; }
-.histoire-matrix-axis-actions button { --histoire-icon-button-size: 24px; color: var(--histoire-muted); }
-.histoire-matrix-axis-actions button:hover, .histoire-matrix-axis-actions button[aria-pressed="true"] { color: var(--histoire-text); }
-.histoire-matrix-axis-actions:empty { display: none; }
-.histoire-matrix-value-filter button { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-[role="alert"] { color: var(--histoire-danger); font-size: 12px; }
-</style>

@@ -9,6 +9,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch 
 import { isContextMenuShortcut, useContextMenu } from '../../../composables/context-menu.js'
 import { histoireConfig } from '../../../util/config.js'
 import WorkbenchVirtualList from '../../lists/WorkbenchVirtualList.vue'
+import WorkbenchEmptyState from '../../shell/WorkbenchEmptyState.vue'
 import WorkbenchErrorState from '../../shell/WorkbenchErrorState.vue'
 import WorkbenchPaneHeader from '../../shell/WorkbenchPaneHeader.vue'
 
@@ -240,25 +241,26 @@ function icon(row: StoryTreeRow): string {
 </script>
 
 <template>
-  <section class="stories-panel" aria-label="Stories">
+  <section class="htw:flex htw:flex-col htw:min-h-0 htw:h-full htw:text-text" aria-label="Stories">
     <WorkbenchPaneHeader :title="title">
-      <span class="stories-count">{{ snapshot.catalog.stories.length }} stories</span>
+      <span class="stories-count htw:font-mono htw:text-[11px] htw:text-muted htw:whitespace-nowrap">{{ snapshot.catalog.stories.length }} stories</span>
     </WorkbenchPaneHeader>
     <WorkbenchErrorState v-if="snapshot.status === 'failed' || (snapshot.source && !snapshot.capabilities.catalog.available)" title="Catalog unavailable" />
-    <div ref="tree" class="stories-tree" role="tree" aria-label="Story tree" :tabindex="treeTabStop ? 0 : -1" @focus="onTreeFocus" @keydown="onTreeKeydown" @scroll.capture="scheduleTreeTabStop">
+    <div ref="tree" class="stories-tree htw:flex-1 htw:min-h-0 htw:overflow-hidden htw:list-none htw:m-0 htw:pt-0 htw:px-pane-gutter htw:pb-pane-gutter" role="tree" aria-label="Story tree" :tabindex="treeTabStop ? 0 : -1" @focus="onTreeFocus" @keydown="onTreeKeydown" @scroll.capture="scheduleTreeTabStop">
       <WorkbenchVirtualList ref="virtualList" :items="rows" :item-size="32">
         <template #default="{ item: row }">
-          <h3 v-if="row.kind === 'group'" class="stories-group">
+          <h3 v-if="row.kind === 'group'" class="stories-group htw:h-[var(--histoire-virtual-row-height,_31px)] htw:flex htw:items-end htw:pt-0 htw:px-pane-row-inset htw:pb-row-story htw:m-0 htw:text-[11px] htw:text-muted htw:font-bold">
             {{ row.title }}
           </h3>
+          <!-- Keep start padding inline so each row retains its tree-depth indentation. -->
           <HstButton
             v-else
             color="flat"
             type="button"
             role="treeitem"
-            class="stories-row"
-            :class="{ 'stories-current': row.kind === 'story' && selection?.storyId === row.story?.id }"
-            :style="{ paddingInlineStart: `${8 + row.depth * 16}px` }"
+            class="stories-row htw:group/story htw:flex htw:items-center htw:gap-[7px] htw:w-full htw:h-[var(--histoire-virtual-row-height,_31px)] htw:py-row-story htw:pe-pane-row-inset htw:text-inherit htw:leading-4.5 htw:text-start htw:hover:bg-chip htw:data-[current]:bg-chip htw:data-[current]:font-bold htw:aria-[selected=true]:bg-chip htw:aria-[selected=true]:text-text htw:aria-[selected=true]:font-bold htw:focus-visible:[outline:2px_solid_var(--histoire-accent)] htw:focus-visible:outline-offset-[-2px]"
+            :data-current="row.kind === 'story' && selection?.storyId === row.story?.id || undefined"
+            :style="{ paddingInlineStart: `calc(var(--histoire-pane-row-inset) + ${row.depth * 16}px)` }"
             :data-tree-key="row.key"
             :data-test-id="row.kind === 'story' ? 'story-list-item' : row.kind === 'folder' ? 'story-list-folder' : 'story-list-variant'"
             :aria-level="row.depth + 1"
@@ -272,39 +274,17 @@ function icon(row: StoryTreeRow): string {
             @dblclick="fit(row)"
             @contextmenu="openMenu($event, row)"
           >
-            <BuiltinIcon v-if="row.expanded !== undefined" :icon="row.expanded ? 'chevron-down' : 'chevron-right'" class="stories-chevron" :size="16" />
-            <span v-else class="stories-chevron" />
-            <BuiltinIcon :icon="icon(row)" class="stories-icon" :style="{ color: row.kind === 'story' ? row.story?.iconColor : undefined }" :size="16" />
-            <span class="stories-label">{{ row.title }}</span>
-            <span v-if="row.kind === 'story' && !row.story?.docsOnly" class="stories-variants">{{ row.story?.variants.length }}</span>
-            <BuiltinIcon v-if="hasDiagnostic(row)" icon="warning-alt-filled" class="stories-warning" :size="16" />
-            <BuiltinIcon v-if="testsFailing(row)" icon="error-filled" class="stories-failing" :size="16" />
+            <BuiltinIcon v-if="row.expanded !== undefined" :icon="row.expanded ? 'chevron-down' : 'chevron-right'" class="htw:flex-none htw:w-[11px] htw:h-[11px] htw:text-muted" :size="16" />
+            <span v-else class="htw:flex-none htw:w-[11px] htw:h-[11px] htw:text-muted" />
+            <BuiltinIcon :icon="icon(row)" class="htw:flex-none htw:w-4 htw:h-4 htw:text-muted htw:group-aria-[selected=true]/story:text-accent" :style="{ color: row.kind === 'story' ? row.story?.iconColor : undefined }" :size="16" />
+            <span class="stories-label htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap">{{ row.title }}</span>
+            <span v-if="row.kind === 'story' && !row.story?.docsOnly" class="htw:font-mono htw:text-[11px] htw:text-muted htw:whitespace-nowrap">{{ row.story?.variants.length }}</span>
+            <BuiltinIcon v-if="hasDiagnostic(row)" icon="warning-alt-filled" class="htw:flex-none htw:w-3 htw:h-3 htw:text-warn" :size="16" />
+            <BuiltinIcon v-if="testsFailing(row)" icon="error-filled" class="htw:flex-none htw:w-3 htw:h-3 htw:text-danger" :size="16" />
           </HstButton>
         </template>
       </WorkbenchVirtualList>
     </div>
-    <p v-if="!items.length && snapshot.capabilities.catalog.available" class="stories-empty" role="status">
-      No stories
-    </p>
+    <WorkbenchEmptyState v-if="!items.length && snapshot.capabilities.catalog.available" icon="catalog" title="No stories" />
   </section>
 </template>
-
-<style scoped>
-.stories-panel { display: flex; flex-direction: column; min-height: 0; height: 100%; color: var(--histoire-text); }
-.stories-count, .stories-variants { font-family: var(--histoire-font-mono); font-size: 11px; color: var(--histoire-muted); white-space: nowrap; }
-.stories-tree { flex: 1; min-height: 0; overflow: hidden; list-style: none; margin: 0; padding: 0 var(--histoire-pane-gutter) var(--histoire-pane-gutter); }
-.stories-group { height: var(--histoire-virtual-row-height, 31px); display: flex; align-items: flex-end; padding: 0 var(--histoire-pane-row-inset) var(--histoire-story-row-padding, 6px); margin: 0; font-size: 11px; color: var(--histoire-muted); font-weight: 700; }
-.stories-row { display: flex; align-items: center; gap: 7px; width: 100%; height: var(--histoire-virtual-row-height, 31px); padding: var(--histoire-story-row-padding, 6px) var(--histoire-pane-row-inset); color: inherit; line-height: 18px; text-align: start; }
-.stories-row:hover, .stories-current { background: var(--histoire-chip); }
-.stories-current { font-weight: 700; }
-.stories-row[aria-selected="true"] { background: var(--histoire-accent-soft); color: var(--histoire-accent-text); font-weight: 700; }
-.stories-row:focus-visible { outline: 2px solid var(--histoire-accent); outline-offset: -2px; }
-.stories-chevron { flex: none; width: 11px; height: 11px; color: var(--histoire-muted); }
-.stories-icon { flex: none; width: 16px; height: 16px; color: var(--histoire-muted); }
-.stories-row[aria-selected="true"] .stories-icon { color: var(--histoire-accent); }
-.stories-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.stories-failing, .stories-warning { flex: none; width: 12px; height: 12px; }
-.stories-failing { color: var(--histoire-danger); }
-.stories-warning { color: var(--histoire-warn); }
-.stories-empty { margin: 12px 8px; color: var(--histoire-muted); }
-</style>

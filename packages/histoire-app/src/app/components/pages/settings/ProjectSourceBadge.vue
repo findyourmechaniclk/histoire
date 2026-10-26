@@ -25,22 +25,8 @@ const location = computed(() => {
 </script>
 
 <template>
-  <span class="histoire-settings-source" :title="location">
+  <span class="htw:inline-flex htw:items-center htw:gap-[6px] htw:p-[5px_8px] htw:text-muted htw:text-[12px] htw:[font-weight:500] htw:leading-[1.4] htw:whitespace-nowrap" :title="location">
     <BuiltinIcon :icon="source.icon" :size="14" />
     <span>{{ source.label }}</span>
   </span>
 </template>
-
-<style scoped>
-.histoire-settings-source {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 8px;
-  color: var(--histoire-muted, #71717a);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-</style>

@@ -6,6 +6,10 @@ import { useCanvasFrames, useCanvasStore } from '../../../composables/canvas-set
 import { usePresetConfigStore } from '../../../stores/presets-config.js'
 import { getBackgroundPreset, getBackgroundPresetStyle, withCheckerboardPresets } from '../../../util/background.js'
 import { histoireConfig } from '../../../util/config.js'
+import { useToolbarPresentation } from '../../base/overflow/presentation.js'
+import PopoverDivider from '../../base/popover/PopoverDivider.vue'
+import PopoverError from '../../base/popover/PopoverError.vue'
+import PopoverTitle from '../../base/popover/PopoverTitle.vue'
 import { useCanvasPreviewSettings } from './session-settings.js'
 import { backgroundPatch } from './settings.js'
 import ToolbarPopover from './ToolbarPopover.vue'
@@ -40,43 +44,34 @@ function apply(color: string, custom = false) {
     update(patch)
   }
 }
+
+const presentation = useToolbarPresentation()
 </script>
 
 <template>
   <ToolbarPopover id="background" :open="open" label="Background" icon="color-palette" icon-only :width="280" data-test-id="toolbar-background" @update:open="emit('update:open', $event)">
     <template #trigger>
-      <span class="toolbar-menu-only background-trigger-swatch" :style="getBackgroundPresetStyle({ color: activePreset, label: '' })" />
+      <span :data-presentation="presentation" class="htw:data-[presentation=menu]:inline-flex htw:hidden htw:w-[14px] htw:h-[14px] htw:border htw:border-solid htw:border-border htw:rounded-[3px]" :style="getBackgroundPresetStyle({ color: activePreset, label: '' })" />
     </template>
     <div data-test-id="background-popper">
-      <p class="popover-title">
+      <PopoverTitle>
         Background
-      </p>
-      <div class="background-swatches">
-        <HstButton v-for="(option, index) in presets" :key="index" color="flat" type="button" class="background-swatch" :style="getBackgroundPresetStyle(option)" :aria-label="option.label" :title="option.label" :aria-pressed="activePreset === option.color" @click="apply(option.color)">
+      </PopoverTitle>
+      <div class="htw:grid htw:grid-cols-6 htw:gap-1.5 htw:p-[0_8px_7px]">
+        <HstButton v-for="(option, index) in presets" :key="index" color="flat" type="button" class="htw:min-w-0 htw:h-[42px] htw:p-0 htw:border htw:border-solid htw:border-border htw:rounded-[9px] htw:cursor-pointer htw:[font-family:inherit] htw:text-text htw:aria-pressed:outline-2 htw:aria-pressed:outline-solid htw:aria-pressed:outline-accent htw:aria-pressed:outline-offset-2" :style="getBackgroundPresetStyle(option)" :aria-label="option.label" :title="option.label" :aria-pressed="activePreset === option.color" @click="apply(option.color)">
           Aa
         </HstButton>
       </div>
-      <form class="background-custom" @submit.prevent="apply(customHex, true)">
-        <span class="custom-swatch" :style="{ backgroundColor: /^#[\da-f]{3,8}$/i.test(customHex) ? customHex : undefined }" /><label :for="customId">Custom</label><HstText :id="customId" v-model="customHex" layout="inline" aria-label="Custom hex color" maxlength="9" @change="apply(customHex, true)" /><HstButton color="flat" class="visually-hidden" type="submit">
+      <form class="htw:flex htw:items-center htw:gap-2 htw:py-[7px] htw:px-2" @submit.prevent="apply(customHex, true)">
+        <span class="htw:w-5 htw:h-5 htw:rounded-[5px] htw:border htw:border-solid htw:border-border" :style="{ backgroundColor: /^#[\da-f]{3,8}$/i.test(customHex) ? customHex : undefined }" /><label :for="customId">Custom</label><HstText :id="customId" v-model="customHex" class="htw:w-[100px] htw:ml-auto" layout="inline" aria-label="Custom hex color" maxlength="9" @change="apply(customHex, true)" /><HstButton color="flat" class="htw:absolute htw:w-px htw:h-px htw:overflow-hidden htw:[clip-path:inset(50%)]" type="submit">
           Apply custom background
         </HstButton>
       </form>
-      <p v-if="error" class="popover-error" role="alert">
+      <PopoverError v-if="error" role="alert">
         {{ error }}
-      </p>
-      <div class="popover-divider" />
+      </PopoverError>
+      <PopoverDivider />
       <HstButtonGroup v-model="scope" title="Apply to" layout="horizontal" aria-label="Apply background to" :options="[{ value: 'all', label: 'All frames' }, { value: 'selected', label: 'Selected', disabled: !canvas.selectedFrame }]" />
     </div>
   </ToolbarPopover>
 </template>
-
-<style scoped>
-.background-swatches { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; padding: 0 8px 7px; }
-.background-trigger-swatch { display: none; width: 14px; height: 14px; border: 1px solid var(--histoire-border); border-radius: 3px; }
-.background-swatch { min-width: 0; height: 42px; padding: 0; border: 1px solid var(--histoire-border); border-radius: 9px; cursor: pointer; font: inherit; color: var(--histoire-text); }
-.background-swatch[aria-pressed="true"] { outline: 2px solid var(--histoire-accent); outline-offset: 2px; }
-.background-custom { display: flex; align-items: center; gap: 8px; padding: 7px 8px; }
-.custom-swatch { width: 20px; height: 20px; border-radius: 5px; border: 1px solid var(--histoire-border); }
-.background-custom .histoire-text { width: 100px; margin-left: auto; }
-.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-</style>

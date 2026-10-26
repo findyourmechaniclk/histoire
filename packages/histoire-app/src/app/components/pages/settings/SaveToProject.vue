@@ -42,27 +42,27 @@ function save(): void {
 </script>
 
 <template>
-  <div v-if="project?.available" class="histoire-settings-project">
+  <div v-if="project?.available" class="htw:flex htw:flex-wrap htw:items-center htw:gap-[8px] htw:p-[10px_20px] htw:text-[12px]">
     <ProjectSourceBadge :path="path" :local="local" />
-    <HstButton color="default" class="histoire-settings-action" type="button" :disabled="!local || !editable || project.pending.value" @click="confirm = !confirm">
+    <HstButton color="default" type="button" :disabled="!local || !editable || project.pending.value" @click="confirm = !confirm">
       Save to project
     </HstButton>
-    <HstButton color="default" class="histoire-settings-action" type="button" :disabled="!local" @click="emit('reset')">
+    <HstButton color="default" type="button" :disabled="!local" @click="emit('reset')">
       Reset to project
     </HstButton>
     <template v-if="!editable && status">
-      <span class="histoire-settings-muted">{{ status.reason }}</span>
-      <HstButton color="default" class="histoire-settings-action" type="button" @click="copy">
+      <span class="htw:text-muted htw:text-[12px]">{{ status.reason }}</span>
+      <HstButton color="default" type="button" @click="copy">
         {{ copied ? 'Copied' : 'Copy snippet' }}
       </HstButton>
-      <pre class="histoire-settings-diff">{{ snippet }}</pre>
+      <pre class="htw:[flex:1_0_100%] htw:overflow-auto htw:whitespace-pre-wrap htw:max-h-[200px] htw:font-mono htw:text-[11px]">{{ snippet }}</pre>
     </template>
     <template v-if="confirm">
-      <pre class="histoire-settings-diff" aria-label="Project settings diff">{{ diff }}</pre>
-      <HstButton color="default" class="histoire-settings-action" type="button" :disabled="project.pending.value" @click="save">
+      <pre class="htw:[flex:1_0_100%] htw:overflow-auto htw:whitespace-pre-wrap htw:max-h-[200px] htw:font-mono htw:text-[11px]" aria-label="Project settings diff">{{ diff }}</pre>
+      <HstButton color="default" type="button" :disabled="project.pending.value" @click="save">
         Confirm save
       </HstButton>
-      <HstButton color="default" class="histoire-settings-action" type="button" @click="confirm = false">
+      <HstButton color="default" type="button" @click="confirm = false">
         Cancel
       </HstButton>
     </template>

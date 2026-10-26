@@ -5,6 +5,11 @@ import { useCanvasStore } from '../../../composables/canvas-settings.js'
 import { usePresetConfigStore } from '../../../stores/presets-config.js'
 import { histoireConfig } from '../../../util/config.js'
 
+import PopoverDivider from '../../base/popover/PopoverDivider.vue'
+import PopoverError from '../../base/popover/PopoverError.vue'
+import PopoverMeta from '../../base/popover/PopoverMeta.vue'
+import PopoverRow from '../../base/popover/PopoverRow.vue'
+import PopoverTitle from '../../base/popover/PopoverTitle.vue'
 import { useCanvasPreviewSettings } from './session-settings.js'
 import { parseViewportSize } from './settings.js'
 import ToolbarPopover from './ToolbarPopover.vue'
@@ -65,41 +70,36 @@ function autoFit(): void {
 <template>
   <ToolbarPopover id="viewport" :open="open" label="Viewport" icon="laptop" :width="280" @update:open="emit('update:open', $event)">
     <template #trigger>
-      <span class="viewport-size">{{ canvas.autoFitContent ? 'Auto fit' : dimensions.width }}</span><BuiltinIcon icon="chevron-down" :size="12" />
+      <span class="htw:text-text htw:font-mono htw:text-[11px]">{{ canvas.autoFitContent ? 'Auto fit' : dimensions.width }}</span><BuiltinIcon icon="chevron-down" :size="16" />
     </template>
-    <p class="popover-title">
+    <PopoverTitle>
       Viewport
-    </p>
-    <HstButton color="flat" class="popover-row" :aria-pressed="!canvas.autoFitContent && canvas.arrangement === 'single' && canvas.singleViewport.mode === 'responsive'" @click="responsive">
-      <BuiltinIcon icon="arrows-horizontal" :size="16" />{{ canvas.arrangement === 'single' ? 'Fill viewport' : 'Responsive' }}<span class="popover-meta">fill</span>
-    </HstButton>
-    <HstButton color="flat" class="popover-row" :aria-pressed="canvas.autoFitContent" @click="autoFit">
+    </PopoverTitle>
+    <PopoverRow :aria-pressed="!canvas.autoFitContent && canvas.arrangement === 'single' && canvas.singleViewport.mode === 'responsive'" @click="responsive">
+      <BuiltinIcon icon="arrows-horizontal" :size="16" />{{ canvas.arrangement === 'single' ? 'Fill viewport' : 'Responsive' }}<PopoverMeta>fill</PopoverMeta>
+    </PopoverRow>
+    <PopoverRow :aria-pressed="canvas.autoFitContent" @click="autoFit">
       <BuiltinIcon icon="ruler" :size="16" />Auto fit content
-    </HstButton>
-    <HstButton v-for="(option, index) in presets" :key="index" color="flat" class="popover-row" :aria-pressed="!canvas.autoFitContent && (canvas.arrangement !== 'single' || canvas.singleViewport.mode === 'fixed') && snapshot.settings.responsiveWidth === option.width && snapshot.settings.responsiveHeight === (option.height ?? null)" @click="preset(option.width, option.height)">
-      <BuiltinIcon :icon="option.width < 500 ? 'mobile' : option.width < 900 ? 'tablet' : 'screen'" :size="16" /><span>{{ option.label }}</span><span class="popover-meta">{{ option.width }}<template v-if="option.height"> × {{ option.height }}</template></span>
-    </HstButton>
-    <div class="popover-divider" />
-    <form class="viewport-custom" @submit.prevent="custom">
-      <span>Custom</span><HstText v-model="customWidth" layout="inline" aria-label="Custom width" inputmode="numeric" @change="custom" /><span>×</span><HstText v-model="customHeight" layout="inline" aria-label="Custom height" placeholder="Auto" inputmode="numeric" @change="custom" />
-      <HstButton color="flat" type="submit" class="visually-hidden">
+    </PopoverRow>
+    <PopoverRow v-for="(option, index) in presets" :key="index" :aria-pressed="!canvas.autoFitContent && (canvas.arrangement !== 'single' || canvas.singleViewport.mode === 'fixed') && snapshot.settings.responsiveWidth === option.width && snapshot.settings.responsiveHeight === (option.height ?? null)" @click="preset(option.width, option.height)">
+      <BuiltinIcon :icon="option.width < 500 ? 'mobile' : option.width < 900 ? 'tablet' : 'screen'" :size="16" /><span>{{ option.label }}</span><PopoverMeta>
+        {{ option.width }}<template v-if="option.height">
+          × {{ option.height }}
+        </template>
+      </PopoverMeta>
+    </PopoverRow>
+    <PopoverDivider />
+    <form class="viewport-custom htw:flex htw:items-center htw:gap-1.5 htw:py-1.5 htw:px-2 htw:text-muted htw:text-[11px]" @submit.prevent="custom">
+      <span class="htw:mr-auto">Custom</span><HstText v-model="customWidth" class="htw:flex-1 htw:min-w-0" layout="inline" aria-label="Custom width" inputmode="numeric" @change="custom" /><span>×</span><HstText v-model="customHeight" class="htw:flex-1 htw:min-w-0" layout="inline" aria-label="Custom height" placeholder="Auto" inputmode="numeric" @change="custom" />
+      <HstButton color="flat" type="submit" class="htw:absolute htw:w-px htw:h-px htw:overflow-hidden htw:[clip-path:inset(50%)]">
         Apply custom viewport
       </HstButton>
     </form>
-    <p v-if="error" class="popover-error" role="alert">
+    <PopoverError v-if="error" role="alert">
       {{ error }}
-    </p>
-    <HstButton color="flat" class="popover-row viewport-edit" @click="emit('update:open', null); emit('editPresets')">
+    </PopoverError>
+    <PopoverRow tone="accent" class="htw:font-bold" @click="emit('update:open', null); emit('editPresets')">
       <BuiltinIcon icon="settings" :size="16" />Edit presets…
-    </HstButton>
+    </PopoverRow>
   </ToolbarPopover>
 </template>
-
-<style scoped>
-.viewport-size { color: var(--histoire-text); font-family: var(--histoire-font-mono); font-size: 11px; }
-.viewport-custom { display: flex; align-items: center; gap: 6px; padding: 6px 8px; color: var(--histoire-muted); font-size: 11px; }
-.viewport-custom > span:first-child { margin-right: auto; }
-.viewport-custom .histoire-text { flex: 1; min-width: 0; }
-.viewport-edit { color: var(--histoire-accent) !important; font-weight: 700 !important; }
-.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-</style>

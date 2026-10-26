@@ -13,17 +13,17 @@ const cancelling = computed(() => operation.value && store.cancelling.includes(o
 </script>
 
 <template>
-  <section v-if="operation" class="histoire-mcp-current" aria-label="Current MCP operation" aria-live="polite">
-    <div class="histoire-mcp-operation-heading">
+  <section v-if="operation" class="htw:mb-4 htw:p-3 htw:rounded-[12px] htw:bg-agent-soft" aria-label="Current MCP operation" aria-live="polite">
+    <div class="htw:flex htw:items-center htw:gap-[7px] htw:text-agent-text">
       <BuiltinIcon icon="time" :size="16" />
-      <code>{{ operation.tool }}</code>
-      <span :title="mcpTargetLabel(operation.target, snapshot.catalog)">{{ mcpTargetLabel(operation.target, snapshot.catalog) }}</span>
-      <HstButton v-if="isMcpOperationCancellable(operation)" icon-only color="flat" type="button" :disabled="cancelling" :aria-label="cancelling ? 'Cancelling operation' : 'Cancel operation'" @click="store.cancel(operation.id)">
+      <code class="htw:text-[11px] htw:wrap-anywhere">{{ operation.tool }}</code>
+      <span class="htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap htw:text-[11px] htw:text-muted" :title="mcpTargetLabel(operation.target, snapshot.catalog)">{{ mcpTargetLabel(operation.target, snapshot.catalog) }}</span>
+      <HstButton v-if="isMcpOperationCancellable(operation)" class="htw:[--histoire-icon-button-size:26px] htw:text-danger-text htw:hover:bg-danger-soft htw:disabled:opacity-[.5] htw:disabled:[cursor:wait]" icon-only color="flat" type="button" :disabled="cancelling" :aria-label="cancelling ? 'Cancelling operation' : 'Cancel operation'" @click="store.cancel(operation.id)">
         <BuiltinIcon icon="stop-filled" :size="14" />
       </HstButton>
     </div>
-    <progress v-if="progress" :value="progress.done" :max="progress.total" aria-label="Operation progress" />
-    <div class="histoire-mcp-operation-detail">
+    <progress v-if="progress" class="htw:appearance-none htw:block htw:w-full htw:h-1 htw:my-2.5 htw:mx-0 htw:border-0 htw:rounded-full htw:bg-surface htw:overflow-hidden htw:[&::-webkit-progress-bar]:bg-surface htw:[&::-webkit-progress-bar]:rounded-full htw:[&::-webkit-progress-value]:bg-agent htw:[&::-webkit-progress-value]:rounded-full htw:[&::-moz-progress-bar]:bg-agent htw:[&::-moz-progress-bar]:rounded-full" :value="progress.done" :max="progress.total" aria-label="Operation progress" />
+    <div class="htw:mt-2 htw:text-muted htw:text-[11px]">
       <span v-if="cancelling">Cancelling · </span>
       <span v-else-if="progress">{{ progress.done }} of {{ progress.total }} · </span>
       <span v-else>{{ operation.state === 'queued' ? 'Queued' : 'Running' }} · </span>
@@ -31,18 +31,3 @@ const cancelling = computed(() => operation.value && store.cancelling.includes(o
     </div>
   </section>
 </template>
-
-<style scoped>
-.histoire-mcp-current { margin-bottom: 16px; padding: 12px; border-radius: 12px; background: var(--histoire-agent-soft); }
-.histoire-mcp-operation-heading { display: flex; align-items: center; gap: 7px; color: var(--histoire-agent-text); }
-code { font-size: 11px; overflow-wrap: anywhere; }
-.histoire-mcp-operation-heading > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: var(--histoire-muted); }
-button { --histoire-icon-button-size: 26px; color: var(--histoire-danger-text); }
-button:hover { background: var(--histoire-danger-soft); }
-button:disabled { opacity: .5; cursor: wait; }
-progress { appearance: none; display: block; width: 100%; height: 4px; margin: 10px 0; border: 0; border-radius: 999px; background: var(--histoire-surface); overflow: hidden; }
-progress::-webkit-progress-bar { background: var(--histoire-surface); border-radius: 999px; }
-progress::-webkit-progress-value { background: var(--histoire-agent); border-radius: 999px; }
-progress::-moz-progress-bar { background: var(--histoire-agent); border-radius: 999px; }
-.histoire-mcp-operation-detail { margin-top: 8px; color: var(--histoire-muted); font-size: 11px; }
-</style>

@@ -13,6 +13,9 @@ export default antfu({
     '**/.histoire-visual/',
     // Offline Carbon subset is generated from Iconify's package data.
     'packages/histoire-shared/src/icons/carbon-icons.json',
+    // Generated capture receipts and archived source snapshots are evidence.
+    // Keep the reusable capture scripts and authored comments fixture linted.
+    'plans/tailwind-only/evidence/**/*.json',
   ],
 }, {
   rules: {

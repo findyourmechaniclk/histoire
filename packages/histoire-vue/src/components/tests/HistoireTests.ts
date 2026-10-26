@@ -4,6 +4,7 @@ import type { HistoireVirtualSlot } from '../../foundation/VirtualList.js'
 import type { HistoireTestsState } from '../../tests/controller.js'
 import { defineComponent, h, watch } from 'vue'
 import { useHistoireSnapshot } from '../../composables/snapshot.js'
+import { mergePartClass, partClassesProp, renderPartState } from '../../foundation/parts.js'
 import { HistoireVirtualList } from '../../foundation/VirtualList.js'
 import { useHistoireContext, useHistoireResource } from '../../provider/context.js'
 import { createHistoireTestsModel, useProvidedHistoireTestsModel } from '../../tests/model.js'
@@ -24,6 +25,8 @@ const STATUS_LABELS: Record<HistoireTestsState['status'], string> = {
 export const HistoireTests = defineComponent({
   name: 'HistoireTests',
   props: {
+    /** Host utilities for documented component parts; package markers remain intact. */
+    classes: partClassesProp<'root' | 'state'>(),
     /** Host may display an attributable cached result without replaying its run. */
     summary: { type: Object as PropType<HistoireTestRunSummary>, default: undefined },
     /** Host may display collected definitions without replaying collection in preview. */
@@ -86,7 +89,7 @@ export const HistoireTests = defineComponent({
         : summary
           ? renderTestCounts(summary)
           : collection ? `${definitions.length} ${definitions.length === 1 ? 'test' : 'tests'}` : STATUS_LABELS[state.value.status]
-      return h('section', { 'class': 'histoire-tests', 'aria-label': 'Histoire tests', 'aria-busy': busy || undefined }, [
+      return h('section', { 'class': mergePartClass('histoire-tests', props.classes?.root), 'aria-label': 'Histoire tests', 'aria-busy': busy || undefined }, [
         h('header', { class: 'histoire-tests-header' }, [
           h(HistoireTestsRunActions, {
             busy,
@@ -104,7 +107,7 @@ export const HistoireTests = defineComponent({
           ? h(HistoireVirtualList, { class: 'histoire-tests-list', items: rows, minItemSize: 36, listTag: 'ul', itemTag: 'li' }, {
               default: ({ index }: HistoireVirtualSlot) => renderTestRow(rows[index]),
             })
-          : busy ? slots.loading?.({ collecting: state.value.status === 'collecting' }) : slots.empty?.({ collected: !!collection }) ?? h('p', { class: 'histoire-tests-empty' }, collection ? 'No tests' : 'Tests not collected'),
+          : renderPartState(busy ? slots.loading?.({ collecting: state.value.status === 'collecting' }) : slots.empty?.({ collected: !!collection }) ?? h('p', { class: 'histoire-tests-empty' }, collection ? 'No tests' : 'Tests not collected'), props.classes?.state),
       ])
     }
   },

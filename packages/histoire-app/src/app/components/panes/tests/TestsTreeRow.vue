@@ -34,26 +34,12 @@ function onKeydown(event: KeyboardEvent): void {
 </script>
 
 <template>
-  <HstButton color="flat" type="button" class="test-row" :class="{ failed: row.failed, warning: row.notCollected, passed: !row.failed && row.summary?.passed }" :aria-current="selected ? 'true' : undefined" :aria-label="`${row.storyTitle} / ${row.variantTitle ?? status}, ${status}`" :disabled="!row.selectable" :title="row.error ? String(row.error) : undefined" @click="emit('select', row)" @contextmenu="openMenu" @keydown="onKeydown">
-    <HstPulsatingDisc v-if="running" />
-    <BuiltinIcon v-else :icon="icon" :size="16" />
-    <span class="test-row-title">{{ row.variantTitle ?? row.storyTitle }}</span>
-    <span v-if="row.notCollected" class="test-row-detail">not collected</span>
-    <span v-else-if="row.stale" class="test-row-detail">outdated</span>
-    <span v-else-if="row.duration !== null" class="test-row-detail">{{ Math.round(row.duration) }}ms</span>
+  <HstButton color="flat" type="button" class="test-row htw:flex htw:items-center htw:gap-2 htw:w-full htw:h-[var(--histoire-virtual-row-height,_39px)] htw:py-row-test htw:pr-2.5 htw:pl-10.5 htw:text-text htw:leading-4.5 htw:text-left htw:hover:bg-accent-soft htw:aria-[current=true]:bg-accent-soft htw:focus-visible:[outline:2px_solid_var(--histoire-accent)] htw:focus-visible:outline-offset-[-2px] htw:disabled:opacity-[1] htw:disabled:[cursor:default]" :aria-current="selected ? 'true' : undefined" :aria-label="`${row.storyTitle} / ${row.variantTitle ?? status}, ${status}`" :disabled="!row.selectable" :title="row.error ? String(row.error) : undefined" @click="emit('select', row)" @contextmenu="openMenu" @keydown="onKeydown">
+    <HstPulsatingDisc v-if="running" class="htw:text-muted" />
+    <BuiltinIcon v-else :class="!row.failed && row.summary?.passed ? 'htw:text-accent' : row.notCollected ? 'htw:text-warn' : row.failed ? 'htw:text-danger' : undefined" :icon="icon" :size="16" />
+    <span class="htw:flex-1 htw:overflow-hidden htw:whitespace-nowrap htw:text-ellipsis">{{ row.variantTitle ?? row.storyTitle }}</span>
+    <span v-if="row.notCollected" class="htw:text-muted htw:font-mono htw:text-[11px] htw:whitespace-nowrap">not collected</span>
+    <span v-else-if="row.stale" class="htw:text-muted htw:font-mono htw:text-[11px] htw:whitespace-nowrap">outdated</span>
+    <span v-else-if="row.duration !== null" class="htw:text-muted htw:font-mono htw:text-[11px] htw:whitespace-nowrap">{{ Math.round(row.duration) }}ms</span>
   </HstButton>
 </template>
-
-<style scoped>
-.test-row { display: flex; align-items: center; gap: 8px; width: 100%; height: var(--histoire-virtual-row-height, 39px); padding: var(--histoire-test-row-padding, 9px) 10px var(--histoire-test-row-padding, 9px) 42px; color: var(--histoire-text); line-height: 18px; text-align: left; }
-.test-row:hover, .test-row[aria-current='true'] { background: var(--histoire-accent-soft); }
-.test-row:focus-visible { outline: 2px solid var(--histoire-accent); outline-offset: -2px; }
-.test-row:disabled { opacity: 1; cursor: default; }
-.test-row-title { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.test-row-detail { color: var(--histoire-muted); font-family: var(--histoire-font-mono); font-size: 11px; white-space: nowrap; }
-.failed :deep(svg) { color: var(--histoire-danger); }
-.warning :deep(svg) { color: var(--histoire-warn); }
-.passed :deep(svg) { color: var(--histoire-accent); }
-/* Running indicator stays neutral whatever the previous result tint. */
-.test-row :deep(:is(.histoire-pulsating-disc, .histoire-pulsating-disc svg)) { color: var(--histoire-muted); }
-</style>

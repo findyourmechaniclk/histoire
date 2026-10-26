@@ -1,0 +1,101 @@
+/* Public tokens remain runtime values, including opacity-bearing host colors. */
+@theme inline {
+  --color-surface: rgb(var(--histoire-surface-rgb) / var(--histoire-surface-alpha, 1));
+  --color-canvas: rgb(var(--histoire-canvas-rgb) / var(--histoire-canvas-alpha, 1));
+  --color-home: rgb(var(--histoire-home-rgb) / var(--histoire-home-alpha, 1));
+  --color-border: rgb(var(--histoire-border-rgb) / var(--histoire-border-alpha, 1));
+  --color-chip: rgb(var(--histoire-chip-rgb) / var(--histoire-chip-alpha, 1));
+  --color-input: rgb(var(--histoire-input-rgb) / var(--histoire-input-alpha, 1));
+  --color-text: rgb(var(--histoire-text-rgb) / var(--histoire-text-alpha, 1));
+  --color-body: rgb(var(--histoire-body-rgb) / var(--histoire-body-alpha, 1));
+  --color-muted: rgb(var(--histoire-muted-rgb) / var(--histoire-muted-alpha, 1));
+  --color-accent: rgb(var(--histoire-accent-rgb) / var(--histoire-accent-alpha, 1));
+  --color-accent-soft: rgb(var(--histoire-accent-soft-rgb) / var(--histoire-accent-soft-alpha, 1));
+  --color-accent-text: rgb(var(--histoire-accent-text-rgb) / var(--histoire-accent-text-alpha, 1));
+  --color-accent-link: rgb(var(--histoire-accent-link-rgb) / var(--histoire-accent-link-alpha, 1));
+  --color-danger: rgb(var(--histoire-danger-rgb) / var(--histoire-danger-alpha, 1));
+  --color-danger-text: rgb(var(--histoire-danger-text-rgb) / var(--histoire-danger-text-alpha, 1));
+  --color-danger-soft: rgb(var(--histoire-danger-soft-rgb) / var(--histoire-danger-soft-alpha, 1));
+  --color-warn: rgb(var(--histoire-warn-rgb) / var(--histoire-warn-alpha, 1));
+  --color-agent: rgb(var(--histoire-agent-rgb) / var(--histoire-agent-alpha, 1));
+  --color-agent-text: rgb(var(--histoire-agent-text-rgb) / var(--histoire-agent-text-alpha, 1));
+  --color-agent-soft: rgb(var(--histoire-agent-soft-rgb) / var(--histoire-agent-soft-alpha, 1));
+  --color-measure: rgb(var(--histoire-measure-rgb) / var(--histoire-measure-alpha, 1));
+  --color-measure-gap: rgb(var(--histoire-measure-gap-rgb) / var(--histoire-measure-gap-alpha, 1));
+  --color-measure-padding: rgb(var(--histoire-measure-padding-rgb) / var(--histoire-measure-padding-alpha, 1));
+  --color-measure-margin: rgb(var(--histoire-measure-margin-rgb) / var(--histoire-measure-margin-alpha, 1));
+  --color-code: rgb(var(--histoire-code-rgb) / var(--histoire-code-alpha, 1));
+  --font-sans: var(--histoire-font-sans, "Manrope", system-ui, sans-serif);
+  --font-mono: var(--histoire-font-mono, "JetBrains Mono", ui-monospace, monospace);
+  --radius-control: var(--histoire-radius-control);
+  --radius-button: var(--histoire-radius-button);
+  --radius-panel: var(--histoire-radius-panel);
+  --shadow-toolbar: var(--histoire-shadow-toolbar);
+  --shadow-canvas-toolbar: var(--histoire-shadow-canvas-toolbar);
+  --shadow-popover: var(--histoire-shadow-popover);
+  --shadow-panel: var(--histoire-shadow-panel);
+  --ease-histoire: var(--histoire-ease);
+  --spacing-pane-gutter: var(--histoire-pane-gutter);
+  --spacing-pane-row-inset: var(--histoire-pane-row-inset);
+  --spacing-pane-header: var(--histoire-pane-header-height);
+  --spacing-inspector-gutter: var(--histoire-inspector-gutter);
+  --spacing-control: var(--histoire-control-height);
+  --spacing-control-padding: var(--histoire-control-padding);
+  --spacing-control-wrapper-padding: var(--histoire-control-wrapper-padding);
+  --spacing-control-gap: var(--histoire-control-gap);
+  --spacing-control-margin: var(--histoire-control-margin);
+  --spacing-test-heading: var(--histoire-test-heading-padding);
+  --spacing-row-settings: var(--histoire-settings-row-padding);
+  --spacing-row-viewport: var(--histoire-viewport-row-padding);
+  --spacing-row-list: var(--histoire-list-row-padding);
+  --spacing-row-comment: var(--histoire-comment-row-padding);
+  --spacing-row-mcp: var(--histoire-mcp-row-padding);
+  --spacing-row-story: var(--histoire-story-row-padding);
+  --spacing-row-test: var(--histoire-test-row-padding);
+  --animate-skeleton-pulse: skeleton-pulse 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: .45; }
+  50% { opacity: 1; }
+}
+
+/* Keep the existing markdown contract while typography supplies structural defaults. */
+@utility prose {
+  --tw-prose-invert-quote-borders: rgb(var(--_histoire-color-gray-800) / var(--_histoire-color-gray-800-alpha, 1));
+  --tw-prose-invert-hr: rgb(var(--_histoire-color-gray-800) / var(--_histoire-color-gray-800-alpha, 1));
+  --tw-prose-invert-bullets: rgb(var(--_histoire-color-gray-500) / var(--_histoire-color-gray-500-alpha, 1));
+  & :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    color: rgb(var(--_histoire-color-primary-500) / var(--_histoire-color-primary-500-alpha, 1));
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+  & :where(h1, h2, h3, h4, th):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    margin-bottom: .75rem;
+    &:not(:first-child) { margin-top: 1.25rem; }
+  }
+  & :where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    margin-left: 0;
+    margin-right: 0;
+    background-color: rgb(var(--_histoire-color-gray-100) / var(--_histoire-color-gray-100-alpha, 1));
+    padding: .25rem .375rem;
+    & p:first-child { margin-top: 0; }
+    & p:last-child { margin-bottom: 0; }
+    @variant dark {
+      background-color: rgb(var(--_histoire-color-gray-750) / var(--_histoire-color-gray-750-alpha, 1));
+    }
+  }
+  & :where(li):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    margin-top: .1rem;
+    margin-bottom: .1rem;
+  }
+  & :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+    background-color: rgb(var(--_histoire-color-gray-500) / calc(var(--_histoire-color-gray-500-alpha, 1) * .2));
+    font-weight: normal;
+    padding: .05rem .5rem;
+    border-radius: .25rem;
+    font-size: .8rem;
+    &::before, &::after { display: none; }
+  }
+  & :where(h1, h2, h3, h4):not(:hover) .header-anchor[aria-hidden="true"] { visibility: hidden; }
+  & hr { margin: 1rem 0; }
+}

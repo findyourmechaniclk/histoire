@@ -83,14 +83,14 @@ onUnmounted(() => {
 
 <template>
   <HstWrapper
-    class="histoire-number htw-cursor-ew-resize"
+    class="histoire-number htw:cursor-ew-resize"
     :title="title"
     :layout="layout"
     :control-id="id()"
     :data-histoire-control-type="attrs['data-histoire-control-type']"
     :class="[
       $attrs.class,
-      { 'htw-select-none': isDragging },
+      { 'htw:select-none': isDragging },
     ]"
     :style="$attrs.style"
     @click="focusAndSelect"
@@ -102,7 +102,7 @@ onUnmounted(() => {
       v-model.number="numberModel"
       type="number"
       :class="{
-        'htw-select-none': isDragging,
+        'htw:select-none': isDragging,
       }"
       class="histoire-control-field"
     >

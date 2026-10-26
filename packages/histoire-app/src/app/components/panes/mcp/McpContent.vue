@@ -10,10 +10,10 @@ const store = useMcpStore()
 </script>
 
 <template>
-  <section class="histoire-mcp-panel" aria-label="MCP activity">
-    <header>
-      <span class="histoire-mcp-status" :data-status="store.status">
-        <span aria-hidden="true" />
+  <section class="htw:flex-1 htw:box-border htw:pt-1 htw:px-pane-gutter htw:pb-4 htw:overflow-auto htw:min-h-0 htw:text-text" aria-label="MCP activity">
+    <header class="htw:flex htw:mt-0 htw:mx-0 htw:mb-4.5">
+      <span class="htw:flex htw:items-center htw:gap-[5px] htw:py-1 htw:px-2 htw:rounded-full htw:text-muted htw:bg-chip htw:text-[11px] htw:font-bold htw:data-[status=enabled]:text-accent-link htw:data-[status=enabled]:bg-accent-soft" :data-status="store.status">
+        <span class="htw:w-1.5 htw:h-1.5 htw:[background:currentColor] htw:rounded-full" aria-hidden="true" />
         {{ store.status === 'enabled' ? 'Running' : store.status === 'disabled' ? 'Disabled' : 'Unavailable' }}
       </span>
     </header>
@@ -27,28 +27,18 @@ const store = useMcpStore()
         {{ store.error }}
       </template>
     </WorkbenchErrorState>
-    <p v-else class="histoire-mcp-empty" role="status">
+    <p v-else class="htw:my-6 htw:mx-0 htw:text-muted htw:text-[12px]" role="status">
       MCP disabled in project config.
     </p>
-    <p v-if="store.error && store.status !== 'unavailable'" class="histoire-mcp-error" role="alert">
+    <p v-if="store.error && store.status !== 'unavailable'" class="htw:my-3 htw:mx-0 htw:text-danger-text htw:text-[12px]" role="alert">
       {{ store.error }}
     </p>
-    <p v-if="store.omitted?.reads" class="histoire-mcp-empty" role="status">
+    <p v-if="store.omitted?.reads" class="htw:my-6 htw:mx-0 htw:text-muted htw:text-[12px]" role="status">
       {{ store.omitted.reads }} reads running without activity rows.
     </p>
-    <p v-if="store.omitted?.configuration" class="histoire-mcp-empty" role="status">
+    <p v-if="store.omitted?.configuration" class="htw:my-6 htw:mx-0 htw:text-muted htw:text-[12px]" role="status">
       Stdio config exceeds activity channel limit.
     </p>
     <McpHistory />
   </section>
 </template>
-
-<style scoped>
-.histoire-mcp-panel { flex: 1; box-sizing: border-box; padding: 4px var(--histoire-pane-gutter) 16px; overflow: auto; min-height: 0; color: var(--histoire-text); }
-header { display: flex; margin: 0 0 18px; }
-.histoire-mcp-status { display: flex; align-items: center; gap: 5px; padding: 4px 8px; border-radius: 999px; color: var(--histoire-muted); background: var(--histoire-chip); font-size: 11px; font-weight: 700; }
-.histoire-mcp-status[data-status="enabled"] { color: var(--histoire-accent-link); background: var(--histoire-accent-soft); }
-.histoire-mcp-status > span { width: 6px; height: 6px; background: currentColor; border-radius: 50%; }
-.histoire-mcp-empty { margin: 24px 0; color: var(--histoire-muted); font-size: 12px; }
-.histoire-mcp-error { margin: 12px 0; color: var(--histoire-danger-text); font-size: 12px; }
-</style>

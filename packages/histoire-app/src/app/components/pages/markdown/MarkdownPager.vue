@@ -15,23 +15,16 @@ defineEmits<{
 </script>
 
 <template>
-  <nav v-if="previous || next" class="histoire-markdown-pager" aria-label="Documentation pages">
-    <HstButton v-if="previous" color="flat" type="button" @click="$emit('select', { storyId: previous.id, variantId: null })">
-      <BuiltinIcon icon="chevron-left" :size="16" /><div><small>Previous</small><strong>{{ previous.title }}</strong></div>
+  <nav v-if="previous || next" class="htw:flex htw:gap-[12px] htw:mt-[28px]" aria-label="Documentation pages">
+    <HstButton v-if="previous" class="htw:flex htw:flex-1 htw:items-center htw:gap-[12px] htw:min-w-0 htw:p-[18px_16px] htw:text-text htw:text-left htw:hover:border-accent" color="flat" type="button" @click="$emit('select', { storyId: previous.id, variantId: null })">
+      <BuiltinIcon icon="chevron-left" :size="16" /><div class="htw:flex-1 htw:min-w-0">
+        <small class="htw:block htw:mb-[6px] htw:text-muted htw:text-[11px]">Previous</small><strong class="htw:block">{{ previous.title }}</strong>
+      </div>
     </HstButton>
-    <HstButton v-if="next" color="flat" type="button" class="next" @click="$emit('select', { storyId: next.id, variantId: null })">
-      <div><small>Next</small><strong>{{ next.title }}</strong></div><BuiltinIcon icon="chevron-right" :size="16" />
+    <HstButton v-if="next" color="flat" type="button" class="htw:flex htw:flex-1 htw:items-center htw:gap-[12px] htw:min-w-0 htw:p-[18px_16px] htw:text-text htw:text-right htw:last:ml-auto htw:hover:border-accent" @click="$emit('select', { storyId: next.id, variantId: null })">
+      <div class="htw:flex-1 htw:min-w-0">
+        <small class="htw:block htw:mb-[6px] htw:text-muted htw:text-[11px]">Next</small><strong class="htw:block">{{ next.title }}</strong>
+      </div><BuiltinIcon icon="chevron-right" :size="16" />
     </HstButton>
   </nav>
 </template>
-
-<style scoped>
-.histoire-markdown-pager { display: flex; gap: 12px; margin-top: 28px; }
-button { display: flex; flex: 1; align-items: center; gap: 12px; min-width: 0; padding: 18px 16px; color: var(--histoire-text); text-align: left; }
-button > div { flex: 1; min-width: 0; }
-button.next { text-align: right; }
-button.next:last-child { margin-left: auto; }
-small { display: block; margin-bottom: 6px; color: var(--histoire-muted); font-size: 11px; }
-strong { display: block; }
-button:hover { border-color: var(--histoire-accent); }
-</style>

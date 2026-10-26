@@ -139,14 +139,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="histoire-matrix-primary" :style="{ width: `${width}px`, height: `${height}px` }" aria-hidden="true" inert>
-    <div v-if="selected" ref="container" class="histoire-matrix-primary-host" />
+  <div class="htw:absolute htw:invisible htw:pointer-events-none htw:overflow-hidden" :style="{ width: `${width}px`, height: `${height}px` }" aria-hidden="true" inert>
+    <div v-if="selected" ref="container" class="htw:w-full htw:h-full" />
     <!-- One ordinary passive runtime discovers the first variant without changing chooser selection. -->
     <CanvasReplicaPreview v-else-if="sourceKey && target" :key="sourceKey" :frame-id="`matrix-discovery:${sourceKey}`" :story-id="target.storyId" :variant-id="target.variantId" :preview-base="previewBase" :viewport="{ width, height }" @status="passiveStatus" />
   </div>
 </template>
-
-<style scoped>
-.histoire-matrix-primary { position: absolute; visibility: hidden; pointer-events: none; overflow: hidden; }
-.histoire-matrix-primary-host { width: 100%; height: 100%; }
-</style>

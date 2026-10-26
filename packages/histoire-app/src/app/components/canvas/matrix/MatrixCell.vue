@@ -80,32 +80,20 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="histoire-matrix-cell" :style="{ ...position, ...getBackgroundStyle(background) }" :data-frame-id="frame.id" :data-selected="matrix.selectedCell.value?.key === cell.key" @contextmenu="openMenu">
-    <div class="histoire-matrix-cell-content" :style="style">
+  <section class="histoire-matrix-cell htw:absolute htw:overflow-hidden htw:border htw:border-solid htw:border-border htw:rounded-[7px] htw:bg-white htw:pointer-events-auto htw:data-[selected=true]:outline-2 htw:data-[selected=true]:outline-solid htw:data-[selected=true]:outline-accent htw:data-[selected=true]:-outline-offset-1" :style="{ ...position, ...getBackgroundStyle(background) }" :data-frame-id="frame.id" :data-selected="matrix.selectedCell.value?.key === cell.key" @contextmenu="openMenu">
+    <div class="histoire-matrix-cell-content htw:origin-top-left" :style="style">
       <CanvasReplicaPreview v-if="live" :key="variantId" ref="preview" :frame-id="frame.id" :story-id="frame.storyId" :variant-id="variantId" :preview-base="previewBase" :props-override="cell.props" @status="updateStatus" />
     </div>
-    <button class="histoire-matrix-cell-select" type="button" :aria-label="`Select matrix cell ${formatMatrixValue(cell.row)} · ${formatMatrixValue(cell.col)}`" :aria-pressed="matrix.selectedCell.value?.key === cell.key" @click="matrix.selectCell(cell.key)" @keydown="onKeyDown" />
-    <span v-if="!live" class="histoire-matrix-cell-placeholder">Not rendered</span>
-    <div v-else-if="status === 'loading'" class="histoire-matrix-cell-loading" role="status" aria-label="Loading variant">
+    <button class="histoire-matrix-cell-select htw:absolute htw:inset-0 htw:w-full htw:m-0 htw:p-0 htw:border-0 htw:rounded-[inherit] htw:bg-transparent htw:cursor-pointer htw:[appearance:none] htw:focus-visible:outline-2 htw:focus-visible:outline-solid htw:focus-visible:outline-accent htw:focus-visible:-outline-offset-[3px]" type="button" :aria-label="`Select matrix cell ${formatMatrixValue(cell.row)} · ${formatMatrixValue(cell.col)}`" :aria-pressed="matrix.selectedCell.value?.key === cell.key" @click="matrix.selectCell(cell.key)" @keydown="onKeyDown" />
+    <span v-if="!live" class="htw:absolute htw:inset-0 htw:grid htw:[place-content:center] htw:gap-2 htw:p-3 htw:text-muted htw:bg-input htw:text-[11px] htw:text-center htw:pointer-events-none">Not rendered</span>
+    <div v-else-if="status === 'loading'" class="histoire-matrix-cell-loading htw:absolute htw:inset-0 htw:grid htw:[place-content:center] htw:gap-2 htw:p-3 htw:text-muted htw:bg-input htw:text-[11px] htw:text-center htw:pointer-events-none" role="status" aria-label="Loading variant">
       <CanvasLoadingIndicator />
     </div>
-    <div v-else-if="status === 'error'" class="histoire-matrix-cell-error" role="alert">
+    <div v-else-if="status === 'error'" class="htw:absolute htw:inset-0 htw:grid htw:[place-content:center] htw:gap-2 htw:p-3 htw:text-muted htw:bg-input htw:text-[11px] htw:text-center htw:pointer-events-none htw:text-danger htw:bg-danger-soft" role="alert">
       <span>{{ error instanceof Error ? error.message : 'Variant unavailable' }}</span>
-      <HstButton color="default" type="button" @click="preview?.retry()">
+      <HstButton class="htw:py-[3px] htw:px-2 htw:text-inherit htw:pointer-events-auto" color="default" type="button" @click="preview?.retry()">
         Retry
       </HstButton>
     </div>
   </section>
 </template>
-
-<style scoped>
-.histoire-matrix-cell { position: absolute; overflow: hidden; border: 1px solid var(--histoire-border); border-radius: 7px; background: white; }
-.histoire-matrix-cell[data-selected="true"] { outline: 2px solid var(--histoire-accent); outline-offset: -1px; }
-.histoire-matrix-cell-content { transform-origin: top left; }
-/* Full-frame hit target stays transparent instead of inheriting control hover/pressed fills. */
-.histoire-matrix-cell-select { position: absolute; inset: 0; width: 100%; margin: 0; padding: 0; border: 0; border-radius: inherit; background: transparent; cursor: pointer; appearance: none; }
-.histoire-matrix-cell-select:focus-visible { outline: 2px solid var(--histoire-accent); outline-offset: -3px; }
-.histoire-matrix-cell-placeholder, .histoire-matrix-cell-loading, .histoire-matrix-cell-error { position: absolute; inset: 0; display: grid; place-content: center; gap: 8px; padding: 12px; color: var(--histoire-muted); background: var(--histoire-input); font-size: 11px; text-align: center; pointer-events: none; }
-.histoire-matrix-cell-error { color: var(--histoire-danger); background: var(--histoire-danger-soft); }
-.histoire-matrix-cell-error button { padding: 3px 8px; color: inherit; pointer-events: auto; }
-</style>

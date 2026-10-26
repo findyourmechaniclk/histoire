@@ -51,16 +51,16 @@ function switchAgent(id: string): void {
 </script>
 
 <template>
-  <div class="session-settings">
-    <div class="session-agent">
-      <AgentLogo :icon="agent?.icon" :size="16" />
-      <strong>{{ agent?.name ?? agentId }}</strong>
-      <HstButton v-if="!locked" :ref="(el: any) => menu.trigger.value = el" color="flat" type="button" class="session-switch" aria-label="Switch agent" aria-haspopup="menu" :aria-expanded="menu.open.value" :disabled="disabled" @click="menu.toggle">
+  <div class="htw:flex htw:flex-col htw:gap-3 htw:p-3">
+    <div class="htw:flex htw:items-center htw:gap-2 htw:min-w-0">
+      <AgentLogo :icon="agent?.icon" :size="16" class="htw:flex-none htw:text-agent" />
+      <strong class="htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:text-[13px] htw:text-ellipsis htw:whitespace-nowrap">{{ agent?.name ?? agentId }}</strong>
+      <HstButton v-if="!locked" :ref="(el: any) => menu.trigger.value = el" color="flat" type="button" class="htw:inline-flex htw:items-center htw:gap-1 htw:py-1 htw:px-1.5 htw:text-muted htw:text-[12px]" aria-label="Switch agent" aria-haspopup="menu" :aria-expanded="menu.open.value" :disabled="disabled" @click="menu.toggle">
         Switch agent<BuiltinIcon icon="chevron-right" :size="12" />
       </HstButton>
       <PromptMenu v-if="menu.open.value" :anchor="menu.anchor.value" label="Agents" :items="agentItems" radio ai @pick="switchAgent" @close="menu.close" />
     </div>
-    <p v-if="loading && !config" class="session-note" role="status">
+    <p v-if="loading && !config" class="htw:m-0 htw:text-muted htw:text-[12px]" role="status">
       Loading models…
     </p>
     <SessionRadioList v-if="selector('model')" label="Model" :selector="selector('model')!" :current="sessionValue(selector('model'), options?.model)" :disabled="disabled" @pick="pick('model', $event)" />
@@ -68,12 +68,3 @@ function switchAgent(id: string): void {
     <SessionRadioList v-if="selector('mode')" label="Mode" :selector="selector('mode')!" :current="sessionValue(selector('mode'), options?.mode)" :disabled="disabled" @pick="pick('mode', $event)" />
   </div>
 </template>
-
-<style scoped>
-.session-settings { display: flex; flex-direction: column; gap: 12px; padding: 12px; }
-.session-agent { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.session-agent > :first-child { flex: none; color: var(--histoire-agent); }
-.session-agent strong { flex: 1; min-width: 0; overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
-.session-switch { display: inline-flex; align-items: center; gap: 4px; padding: 4px 6px; color: var(--histoire-muted); font-size: 12px; }
-.session-note { margin: 0; color: var(--histoire-muted); font-size: 12px; }
-</style>

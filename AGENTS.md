@@ -40,3 +40,10 @@
   - Exception: thin indeterminate progress bars for long-running operations (e.g. `.histoire-tests-progress[data-running]` in `packages/histoire-vue/src/styles/tests.css`). Don't pair one with a disc in adjacent status text.
   - Inline usage: `<HstPulsatingDisc v-if="running" :size="12" />`; render functions: `h(HstPulsatingDisc, { size: 12 })`.
   - Full panel loading still goes through `WorkbenchLoadingState`, which wraps it.
+
+## Styling
+
+- `packages/histoire-app` uses Tailwind v4 utilities only, with the `htw:` prefix. No Vue `<style>` blocks, `@apply`, or component `.css` files.
+- Use theme utilities for public `--histoire-*` tokens. Extend `app/style/theme.css` when adding a token.
+- Customize package components through props, variants and class hooks; never reach into their internals with descendant selectors or `:deep()`.
+- Remaining CSS/PCSS files must be documented in `plans/tailwind-only/exceptions.md` and listed in `packages/histoire/src/node/__tests__/app-styling-guard.spec.ts`. Imperative document styles need a documented runtime exception.

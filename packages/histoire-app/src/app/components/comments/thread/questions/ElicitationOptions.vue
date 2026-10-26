@@ -4,6 +4,9 @@ import type { ElicitationChoiceField } from './elicitation-fields.js'
 import { HstText } from '@histoire/controls/vue'
 import { computed, nextTick, ref, useId } from 'vue'
 import { fieldTitle, parseOptionLabel } from './elicitation-fields.js'
+import QuestionInput from './QuestionInput.vue'
+import QuestionOption from './QuestionOption.vue'
+import QuestionOptionLabel from './QuestionOptionLabel.vue'
 
 const props = defineProps<{
   /** Single or multiple choice field. */
@@ -69,26 +72,26 @@ async function pickOther(): Promise<void> {
 </script>
 
 <template>
-  <fieldset class="question-options" :aria-describedby="describedBy">
-    <legend class="question-field-label">
-      {{ fieldTitle(field) }}<span v-if="field.required" class="question-required" aria-hidden="true">*</span>
+  <fieldset class="htw:grid htw:gap-0.5 htw:min-w-0 htw:m-0 htw:p-0 htw:border-0" :aria-describedby="describedBy">
+    <legend class="htw:block htw:mt-0 htw:mx-0 htw:mb-1.5 htw:p-0 htw:[font-family:inherit] htw:text-[12px] htw:font-medium htw:text-text">
+      {{ fieldTitle(field) }}<span v-if="field.required" class="htw:ml-0.5 htw:text-muted" aria-hidden="true">*</span>
     </legend>
-    <label v-for="option in options" :key="option.value" class="question-option">
-      <input :type="multiple ? 'checkbox' : 'radio'" :name="name" :value="option.value" :checked="isChecked(option.value)" @change="pick(option.value)">
-      <span class="question-option-text">
-        <span class="question-option-label">{{ option.text }}<span v-if="option.recommended" class="question-badge">Recommended</span></span>
-        <span v-if="option.description" class="question-option-description">{{ option.description }}</span>
+    <QuestionOption v-for="option in options" :key="option.value">
+      <QuestionInput :type="multiple ? 'checkbox' : 'radio'" :name="name" :value="option.value" :checked="isChecked(option.value)" @change="pick(option.value)" />
+      <span class="htw:grid htw:flex-1 htw:gap-0.5 htw:min-w-0">
+        <QuestionOptionLabel>{{ option.text }}<span v-if="option.recommended" class="htw:py-0 htw:px-1.5 htw:border htw:border-border htw:rounded-full htw:bg-chip htw:text-[10px] htw:font-medium htw:leading-[16px] htw:text-muted">Recommended</span></QuestionOptionLabel>
+        <span v-if="option.description" class="htw:text-muted htw:leading-[1.45] htw:wrap-anywhere">{{ option.description }}</span>
       </span>
-    </label>
+    </QuestionOption>
     <template v-if="custom">
-      <label class="question-option">
-        <input :type="multiple ? 'checkbox' : 'radio'" :name="name" :checked="other" @change="pickOther">
-        <span class="question-option-text"><span class="question-option-label">Other…</span></span>
-      </label>
+      <QuestionOption>
+        <QuestionInput :type="multiple ? 'checkbox' : 'radio'" :name="name" :checked="other" @change="pickOther" />
+        <span class="htw:grid htw:flex-1 htw:gap-0.5 htw:min-w-0"><QuestionOptionLabel>Other…</QuestionOptionLabel></span>
+      </QuestionOption>
       <HstText
         v-if="other"
         ref="otherInput"
-        class="question-other"
+        class="htw:m-[2px_0_0_20px]"
         aria-label="Your answer"
         :model-value="typeof customValue === 'string' ? customValue : ''"
         @update:model-value="emit('update:customValue', $event)"

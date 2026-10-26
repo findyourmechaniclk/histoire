@@ -1,3 +1,4 @@
+/* Provider qualification scopes defaults without outranking consumer classes. */
 @import '@histoire/controls/vue/style.css';
 @import './tests.css';
 @import './virtual-list.css';
@@ -48,7 +49,7 @@
 .histoire-provider *, .histoire-provider *::before, .histoire-provider *::after {
   box-sizing: border-box;
 }
-.histoire-provider > .histoire-provider-content, .histoire-provider .histoire-primary, .histoire-provider .histoire-primary-frame {
+:where(.histoire-provider) > .histoire-provider-content, :where(.histoire-provider) .histoire-primary, :where(.histoire-provider) .histoire-primary-frame {
   flex: 1;
   display: flex;
   position: relative;
@@ -56,14 +57,14 @@
   min-height: 0;
   height: 100%;
 }
-.histoire-provider .histoire-primary-frame > iframe {
+:where(.histoire-provider) .histoire-primary-frame > :where(iframe) {
   flex: 1;
   min-width: 0;
   width: 100%;
   height: 100%;
   border: 0;
 }
-.histoire-provider .histoire-primary-status {
+:where(.histoire-provider) .histoire-primary-status {
   position: absolute;
   inset: 0;
   display: grid;
@@ -71,17 +72,17 @@
   padding: 16px;
   color: var(--histoire-muted);
 }
-.histoire-provider > .histoire-provider-overlays {
+:where(.histoire-provider) > .histoire-provider-overlays {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 100;
 }
-.histoire-provider > .histoire-provider-overlays > * {
+:where(.histoire-provider) > .histoire-provider-overlays > * {
   pointer-events: auto;
 }
 /* Shared controls use zero line-height for icon wrappers. Native overlay
    triggers inherit provider typography so ordinary host buttons keep height. */
-.histoire-provider .v-popper {
+:where(.histoire-provider) .v-popper {
   line-height: inherit;
 }

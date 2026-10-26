@@ -7,6 +7,8 @@ import { catalogTargetLabel } from '../../../util/catalog-target.js'
 import { screenshotUrl } from '../../../util/screenshot-file.js'
 import { onUiEvent, sendUiEvent } from '../../../util/ui-channel.js'
 import BasePopover from '../../base/popover/BasePopover.vue'
+import PopoverDivider from '../../base/popover/PopoverDivider.vue'
+import PopoverTitle from '../../base/popover/PopoverTitle.vue'
 import MenuItem from '../../menu/MenuItem.vue'
 
 /** One action row. */
@@ -51,22 +53,15 @@ sendUiEvent('histoire:ui:screenshot-list', { requestId })
   <BasePopover open :anchor="anchor" label="Add to message" role="menu" :width="264" align="start" side="top" :overlay-target="context.overlay.value ?? context.root.value" @update:open="emit('close')">
     <MenuItem v-for="action in actions" :key="action.id" :label="action.label" :icon="action.icon" :shortcut="action.shortcut" @click="emit('action', action.id)" />
     <template v-if="recent.length">
-      <div class="popover-divider" role="separator" />
-      <p class="popover-title">
+      <PopoverDivider role="separator" />
+      <PopoverTitle>
         Recent screenshots
-      </p>
-      <div class="attach-recent">
-        <button v-for="file in recent" :key="file.path" type="button" role="menuitem" tabindex="-1" :aria-label="`Attach screenshot of ${catalogTargetLabel(file, snapshot.catalog)}`" :title="catalogTargetLabel(file, snapshot.catalog)" @click="emit('screenshot', file.path)">
-          <img :src="screenshotUrl(file.path)" alt="">
+      </PopoverTitle>
+      <div class="htw:grid htw:[grid-template-columns:repeat(3,_1fr)] htw:gap-1.5 htw:pt-0 htw:px-2 htw:pb-2">
+        <button v-for="file in recent" :key="file.path" type="button" role="menuitem" tabindex="-1" :aria-label="`Attach screenshot of ${catalogTargetLabel(file, snapshot.catalog)}`" :title="catalogTargetLabel(file, snapshot.catalog)" class="htw:[aspect-ratio:4_/_3] htw:p-0 htw:overflow-hidden htw:border htw:border-border htw:rounded-control htw:bg-chip htw:cursor-pointer htw:hover:border-agent htw:hover:outline-none htw:focus-visible:border-agent htw:focus-visible:outline-none" @click="emit('screenshot', file.path)">
+          <img :src="screenshotUrl(file.path)" alt="" class="htw:block htw:w-full htw:h-full htw:object-cover">
         </button>
       </div>
     </template>
   </BasePopover>
 </template>
-
-<style scoped>
-.attach-recent { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 0 8px 8px; }
-.attach-recent button { aspect-ratio: 4 / 3; padding: 0; overflow: hidden; border: 1px solid var(--histoire-border); border-radius: var(--histoire-radius-control); background: var(--histoire-chip); cursor: pointer; }
-.attach-recent button:hover, .attach-recent button:focus-visible { border-color: var(--histoire-agent); outline: none; }
-.attach-recent img { display: block; width: 100%; height: 100%; object-fit: cover; }
-</style>

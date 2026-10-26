@@ -15,20 +15,10 @@ const shell = useShell()
 </script>
 
 <template>
-  <aside :id="id" class="histoire-side-panel-host" :aria-label="`${label ?? (pane === 'ai' ? 'AI' : pane)} panel`">
-    <div class="histoire-side-panel-content">
+  <aside :id="id" class="htw:flex htw:flex-col htw:relative htw:min-w-0 htw:min-h-0 htw:z-1 htw:bg-surface htw:[@container(max-width:640px)]:absolute htw:[@container(max-width:640px)]:top-0 htw:[@container(max-width:640px)]:bottom-14 htw:[@container(max-width:640px)]:start-0 htw:[@container(max-width:640px)]:w-[var(--histoire-panel-width,280px)] htw:[@container(max-width:640px)]:max-w-[calc(100%-48px)] htw:[@container(max-width:640px)]:z-80 htw:[@container(max-width:640px)]:shadow-panel" :aria-label="`${label ?? (pane === 'ai' ? 'AI' : pane)} panel`">
+    <div class="htw:flex htw:flex-col htw:flex-1 htw:min-w-0 htw:min-h-0 htw:overflow-hidden htw:border-e htw:border-border htw:[@container(max-width:640px)]:border-e-0">
       <slot />
     </div>
     <PanelResizeHandle :controls="id" label="Resize side panel" edge="end" :model-value="shell.panelWidth.value" :min="shell.panelWidthBounds.value.min" :max="shell.panelWidthBounds.value.max" @update:model-value="shell.setPanelWidth" />
   </aside>
 </template>
-
-<style scoped>
-/* Clip content separately so the centered resize handle remains reachable. */
-.histoire-side-panel-host { display: flex; flex-direction: column; position: relative; min-width: 0; min-height: 0; z-index: 1; background: var(--histoire-surface); }
-.histoire-side-panel-content { display: flex; flex-direction: column; flex: 1; min-width: 0; min-height: 0; overflow: hidden; border-inline-end: 1px solid var(--histoire-border); }
-@container (max-width: 640px) {
-  .histoire-side-panel-host { position: absolute; inset-block: 0 56px; inset-inline-start: 0; width: var(--histoire-panel-width, 280px); max-width: calc(100% - 48px); z-index: 80; box-shadow: var(--histoire-shadow-panel); }
-  .histoire-side-panel-content { border-inline-end: 0; }
-}
-</style>

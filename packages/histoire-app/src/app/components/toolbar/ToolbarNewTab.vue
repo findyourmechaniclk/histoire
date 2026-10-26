@@ -20,11 +20,11 @@ const sandboxUrl = computed(() => {
     :href="sandboxUrl"
     target="_blank"
     aria-label="Open variant in new tab"
-    class="histoire-toolbar-new-tab histoire-icon-button hover:htw-text-primary-500 htw-opacity-50 hover:htw-opacity-100 dark:hover:htw-text-primary-400 htw-text-gray-900 dark:htw-text-gray-100"
+    class="histoire-icon-button htw:hover:text-primary-500 htw:opacity-50 htw:hover:opacity-100 htw:dark:hover:text-primary-400 htw:text-gray-900 htw:dark:text-gray-100"
   >
     <BuiltinIcon
       icon="carbon:launch"
-      class="htw-w-4 htw-h-4"
+      class="htw:w-4 htw:h-4"
     />
   </a>
 </template>

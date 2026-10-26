@@ -160,73 +160,56 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section ref="root" class="visual-viewer" role="dialog" aria-modal="false" :aria-labelledby="`${id}-title`" tabindex="-1" @keydown="keyboard">
+  <section ref="root" class="htw:absolute htw:inset-3 htw:z-[100] htw:flex htw:flex-col htw:min-w-0 htw:min-h-0 htw:bg-canvas htw:[background-image:radial-gradient(color-mix(in_srgb,_var(--histoire-muted)_18%,_transparent)_1px,_transparent_1px)] htw:[background-size:18px_18px] htw:text-text htw:border htw:border-solid htw:border-border htw:rounded-[16px] htw:shadow-panel htw:overflow-hidden htw:@container/viewer" role="dialog" aria-modal="false" :aria-labelledby="`${id}-title`" tabindex="-1" @keydown="keyboard">
     <VisualViewerHeader :title-id="`${id}-title`" :title="result?.case.kind === 'matrix' ? `${storyTitle} › ${result.case.label}` : result?.case.label ?? 'Visual results'" :index="index" :capture-failed="captureFailed" @move="move" @close="close" />
-    <div ref="board" class="image-board" :data-view="view">
-      <figure v-if="result?.images.current && (view === 'slider' || view === 'overlay')">
-        <div class="image-scroll" tabindex="0" aria-label="Pan compared images" @pointerdown="startPan" @pointermove="movePan" @pointerup="pan = undefined" @lostpointercapture="pan = undefined">
-          <div class="image-frame">
+    <div ref="board" class="htw:flex htw:flex-1 htw:min-h-0 htw:gap-4 htw:py-0 htw:px-6 htw:overflow-hidden htw:@max-[640px]/viewer:p-0 htw:@max-[640px]/viewer:gap-1" :data-view="view">
+      <figure v-if="result?.images.current && (view === 'slider' || view === 'overlay')" class="htw:flex htw:flex-1 htw:m-0 htw:min-w-0 htw:min-h-0">
+        <div class="image-scroll htw:flex htw:flex-1 htw:overflow-auto htw:min-w-0 htw:min-h-0 htw:pt-9 htw:px-6 htw:pb-6 htw:cursor-grab htw:touch-none htw:active:[cursor:grabbing] htw:@max-[640px]/viewer:pt-8 htw:@max-[640px]/viewer:px-3 htw:@max-[640px]/viewer:pb-3" tabindex="0" aria-label="Pan compared images" @pointerdown="startPan" @pointermove="movePan" @pointerup="pan = undefined" @lostpointercapture="pan = undefined">
+          <!-- Auto margins collapse during manual zoom, keeping image edges reachable. -->
+          <div class="htw:relative htw:flex-none htw:m-auto">
             <template v-if="view === 'slider'">
               <VisualImageLabel label="Baseline" />
               <VisualImageLabel label="Current" right />
-              <VisualSlider class="image-stage" :baseline-url="imageUrl('baseline')" :current-url="imageUrl('current')" :baseline-style="imageStyle('baseline')" :current-style="imageStyle('current')" :label="result.case.label" />
+              <VisualSlider class="htw:relative htw:flex-none htw:w-max htw:h-max htw:rounded-[6px] htw:overflow-clip htw:shadow-[0_24px_64px_rgb(0_0_0_/_35%)]" :baseline-url="imageUrl('baseline')" :current-url="imageUrl('current')" :baseline-style="imageStyle('baseline')" :current-style="imageStyle('current')" :label="result.case.label" />
             </template>
             <template v-else>
               <VisualImageLabel label="Overlay" />
-              <div class="image-stage overlay-stage">
-                <img :src="imageUrl('baseline')" :alt="`baseline image for ${result.case.label}`" :style="imageStyle('baseline')" draggable="false">
-                <img :src="imageUrl('current')" :alt="`current image for ${result.case.label}`" :style="[imageStyle('current'), { opacity: opacity / 100 }]" draggable="false">
+              <div class="htw:relative htw:flex-none htw:w-max htw:h-max htw:rounded-[6px] htw:overflow-clip htw:shadow-[0_24px_64px_rgb(0_0_0_/_35%)] htw:grid">
+                <img class="htw:block htw:max-w-none htw:select-none htw:col-start-1 htw:row-start-1" :src="imageUrl('baseline')" :alt="`baseline image for ${result.case.label}`" :style="imageStyle('baseline')" draggable="false">
+                <img class="htw:block htw:max-w-none htw:select-none htw:col-start-1 htw:row-start-1" :src="imageUrl('current')" :alt="`current image for ${result.case.label}`" :style="[imageStyle('current'), { opacity: opacity / 100 }]" draggable="false">
               </div>
             </template>
           </div>
         </div>
       </figure>
       <template v-else-if="result?.images.current">
-        <figure v-for="kind in images" :key="kind" :data-kind="kind">
-          <div class="image-scroll" tabindex="0" :aria-label="`Pan ${kind} image`" @scroll="synchronize" @pointerdown="startPan" @pointermove="movePan" @pointerup="pan = undefined" @lostpointercapture="pan = undefined">
-            <div v-if="imageUrl(kind)" class="image-frame">
+        <figure v-for="kind in images" :key="kind" class="htw:flex htw:flex-1 htw:m-0 htw:min-w-0 htw:min-h-0" :data-kind="kind">
+          <div class="image-scroll htw:flex htw:flex-1 htw:overflow-auto htw:min-w-0 htw:min-h-0 htw:pt-9 htw:px-6 htw:pb-6 htw:cursor-grab htw:touch-none htw:active:[cursor:grabbing] htw:@max-[640px]/viewer:pt-8 htw:@max-[640px]/viewer:px-3 htw:@max-[640px]/viewer:pb-3" tabindex="0" :aria-label="`Pan ${kind} image`" @scroll="synchronize" @pointerdown="startPan" @pointermove="movePan" @pointerup="pan = undefined" @lostpointercapture="pan = undefined">
+            <div v-if="imageUrl(kind)" class="htw:relative htw:flex-none htw:m-auto">
               <VisualImageLabel :label="kind === 'baseline' ? 'Baseline' : kind === 'current' ? 'Current' : 'Diff'" :dimensions="kind === 'baseline' ? result.baselineDimensions : undefined" />
-              <div class="image-stage">
-                <img :src="imageUrl(kind)" :alt="`${kind} image for ${result.case.label}`" :style="imageStyle(kind)" draggable="false">
+              <div class="htw:relative htw:flex-none htw:w-max htw:h-max htw:rounded-[6px] htw:overflow-clip htw:shadow-[0_24px_64px_rgb(0_0_0_/_35%)]">
+                <img class="htw:block htw:max-w-none htw:select-none" :src="imageUrl(kind)" :alt="`${kind} image for ${result.case.label}`" :style="imageStyle(kind)" draggable="false">
               </div>
             </div>
-            <WorkbenchEmptyState v-else icon="camera" title="No baseline" />
+            <WorkbenchEmptyState v-else fill icon="camera" title="No baseline" />
           </div>
         </figure>
       </template>
-      <WorkbenchErrorState v-else-if="captureFailed" title="Screenshot failed">
+      <WorkbenchErrorState v-else-if="captureFailed" fill title="Screenshot failed">
         <template v-if="result?.error" #default>
           {{ result.error }}
         </template>
         <template #actions>
-          <HstButton color="flat" :disabled="!!model.requestId.value || (result && model.approvalPending(result))" @click="rerun">
+          <HstButton color="flat" tone="danger" :disabled="!!model.requestId.value || (result && model.approvalPending(result))" @click="rerun">
             Run again
           </HstButton>
         </template>
       </WorkbenchErrorState>
-      <WorkbenchEmptyState v-else icon="camera" title="No captured image" />
+      <WorkbenchEmptyState v-else fill icon="camera" title="No captured image" />
     </div>
-    <div class="bottom-controls">
+    <div class="htw:relative htw:z-[2] htw:grid htw:[grid-template-columns:minmax(0,_1fr)_auto_minmax(0,_1fr)] htw:items-end htw:gap-3 htw:pt-2 htw:px-3.5 htw:pb-3.5 htw:@max-[1200px]/viewer:flex htw:@max-[1200px]/viewer:flex-wrap htw:@max-[1200px]/viewer:items-center htw:@max-[1200px]/viewer:justify-center htw:@max-[640px]/viewer:flex-col htw:@max-[640px]/viewer:gap-2 htw:@max-[640px]/viewer:pt-2 htw:@max-[640px]/viewer:px-2.5 htw:@max-[640px]/viewer:pb-2.5">
       <VisualViewerDock v-model:view="view" v-model:opacity="opacity" :zoom="zoom" :sizing="sizing" @zoom="setZoom" @fit="fit" />
       <VisualViewerActions :capture-failed="captureFailed" @approve="approve" @rerun="rerun" />
     </div>
   </section>
 </template>
-
-<style scoped>
-.visual-viewer { position: absolute; inset: 12px; z-index: 100; display: flex; flex-direction: column; min-width: 0; min-height: 0; background-color: var(--histoire-canvas); background-image: radial-gradient(color-mix(in srgb, var(--histoire-muted) 18%, transparent) 1px, transparent 1px); background-size: 18px 18px; color: var(--histoire-text); border: 1px solid var(--histoire-border); border-radius: 16px; box-shadow: var(--histoire-shadow-panel); overflow: hidden; container-type: inline-size; }
-.visual-viewer :deep(.viewer-float) { background: var(--viewer-float-background, rgb(var(--histoire-surface-rgb) / 88%)); border: 1px solid var(--histoire-border); border-radius: 12px; box-shadow: var(--histoire-shadow-popover); backdrop-filter: blur(10px); }
-.image-board { display: flex; flex: 1; min-height: 0; gap: 16px; padding: 0 24px; overflow: hidden; }
-figure { display: flex; flex: 1; margin: 0; min-width: 0; min-height: 0; }
-.image-scroll { display: flex; flex: 1; overflow: auto; min-width: 0; min-height: 0; padding: 36px 24px 24px; cursor: grab; touch-action: none; }.image-scroll:active { cursor: grabbing; }
-/* Auto margins center fitted images, but collapse to zero for reachable overflow during manual zoom. */
-.image-frame { position: relative; flex: none; margin: auto; }
-/* Clip rounds images without creating a scroll owner that would break the slider's sticky grip. */
-.image-stage { position: relative; flex: none; width: max-content; height: max-content; border-radius: 6px; overflow: clip; box-shadow: 0 24px 64px rgb(0 0 0 / 35%); }
-img { display: block; max-width: none; user-select: none; }.overlay-stage { display: grid; }.overlay-stage img { grid-area: 1/1; }
-.image-board > :deep(.workbench-state), .image-scroll > :deep(.workbench-state) { flex: 1; min-width: 0; overflow: auto; }
-/* Controls occupy transparent flow rows so their actual wrapped height stays outside Fit's measured pane. */
-.bottom-controls { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: end; gap: 12px; padding: 8px 14px 14px; }.bottom-controls :deep(.viewer-dock) { grid-column: 2; }.bottom-controls :deep(.viewer-actions) { grid-column: 3; justify-self: end; }
-@container (max-width: 1200px) { .bottom-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; }.bottom-controls :deep(.viewer-actions) { margin-left: auto; } }
-@container (max-width: 640px) { .image-board { padding: 0; gap: 4px; }.image-scroll { padding: 32px 12px 12px; }.bottom-controls { flex-direction: column; gap: 8px; padding: 8px 10px 10px; }.bottom-controls :deep(.viewer-actions) { margin-left: 0; } }
-</style>

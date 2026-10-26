@@ -95,7 +95,7 @@
   color-scheme: dark;
 }
 
-:is(.histoire-app, .histoire-workbench, .histoire-root) {
+:where(.histoire-app, .histoire-workbench, .histoire-root) {
   :is(code, pre, kbd) {
     font-family: var(--histoire-font-mono, "JetBrains Mono", ui-monospace, monospace);
   }

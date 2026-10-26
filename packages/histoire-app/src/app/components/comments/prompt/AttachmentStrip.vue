@@ -31,7 +31,7 @@ const viewing = shallowRef<{ src: string, name: string, href?: string }>()
 </script>
 
 <template>
-  <div class="attachment-strip">
+  <div class="htw:flex htw:flex-wrap htw:items-center htw:gap-1.5">
     <slot />
     <AttachmentTile v-if="screenshot" name="Screenshot" :src="screenshotUrl(screenshot)" :removable="removable" @open="viewing = { src: screenshotUrl(screenshot), name: 'Screenshot' }" @remove="emit('removeScreenshot')" />
     <AttachmentTile
@@ -45,12 +45,7 @@ const viewing = shallowRef<{ src: string, name: string, href?: string }>()
       @open="viewing = { src: attachmentUrl(file.path), name: file.name, href: attachmentUrl(file.path) }"
       @remove="emit('remove', file.path)"
     />
-    <span v-for="index in uploading" :key="`uploading-${index}`" class="attachment-uploading" role="status" aria-label="Uploading" title="Uploading"><HstPulsatingDisc :size="12" /></span>
+    <span v-for="index in uploading" :key="`uploading-${index}`" class="htw:grid htw:place-items-center htw:w-12 htw:h-12 htw:[border:1px_dashed_var(--histoire-border)] htw:rounded-control htw:text-muted" role="status" aria-label="Uploading" title="Uploading"><HstPulsatingDisc :size="12" /></span>
     <AttachmentViewer v-if="viewing" :src="viewing.src" :name="viewing.name" :href="viewing.href" @close="viewing = undefined" />
   </div>
 </template>
-
-<style scoped>
-.attachment-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.attachment-uploading { display: grid; place-items: center; width: 48px; height: 48px; border: 1px dashed var(--histoire-border); border-radius: var(--histoire-radius-control); color: var(--histoire-muted); }
-</style>

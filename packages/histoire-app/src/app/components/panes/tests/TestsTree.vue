@@ -97,33 +97,21 @@ function onGroupKeydown(event: KeyboardEvent, item: Extract<TestTreeEntry, { kin
 </script>
 
 <template>
-  <div class="tests-tree" aria-label="Project tests">
+  <div class="htw:flex-1 htw:min-h-0 htw:overflow-hidden htw:pt-0 htw:px-pane-gutter htw:pb-4" aria-label="Project tests">
     <WorkbenchEmptyState v-if="!visible.length" :icon="empty.icon" :title="empty.title" />
     <WorkbenchVirtualList v-else :items="visible" :item-size="40" list-tag="ul" item-tag="li">
       <template #default="{ item }">
-        <HstButton v-if="item.kind === 'heading'" color="flat" type="button" class="test-story-heading" :aria-expanded="!closed.has(item.id)" @click="toggle(item.id)" @contextmenu="openGroupMenu($event, item)" @keydown="onGroupKeydown($event, item)">
+        <HstButton v-if="item.kind === 'heading'" color="flat" type="button" class="test-story-heading htw:flex htw:items-center htw:gap-2 htw:w-full htw:h-[var(--histoire-virtual-row-height,_39px)] htw:py-test-heading htw:px-pane-row-inset htw:text-text htw:leading-4.5 htw:text-left htw:hover:bg-chip htw:focus-visible:[outline:2px_solid_var(--histoire-accent)] htw:focus-visible:outline-offset-[-2px]" :aria-expanded="!closed.has(item.id)" @click="toggle(item.id)" @contextmenu="openGroupMenu($event, item)" @keydown="onGroupKeydown($event, item)">
           <BuiltinIcon :icon="closed.has(item.id) ? 'chevron-right' : 'chevron-down'" :size="16" />
-          <span class="test-story-status" :data-status="item.status" role="img" :aria-label="GROUP_STATUS[item.status].label" :title="GROUP_STATUS[item.status].label">
+          <span class="htw:text-[11px] htw:font-mono htw:text-muted htw:inline-flex htw:flex-none htw:items-center htw:justify-center htw:w-4 htw:h-4 htw:data-[status=failed]:text-danger htw:data-[status=passed]:text-accent" :data-status="item.status" role="img" :aria-label="GROUP_STATUS[item.status].label" :title="GROUP_STATUS[item.status].label">
             <BuiltinIcon v-if="GROUP_STATUS[item.status].icon" :icon="GROUP_STATUS[item.status].icon!" :size="16" />
             <HstPulsatingDisc v-else :size="14" />
           </span>
-          <strong>{{ item.title }}</strong>
-          <span>{{ item.count }} / {{ item.total }}</span>
+          <strong class="htw:flex-1 htw:overflow-hidden htw:whitespace-nowrap htw:text-ellipsis htw:font-[750]">{{ item.title }}</strong>
+          <span class="htw:text-[11px] htw:font-mono htw:text-muted">{{ item.count }} / {{ item.total }}</span>
         </HstButton>
         <TestsTreeRow v-else :row="item.row" :selected="selected?.storyId === item.row.target.storyId && selected?.variantId === item.row.target.variantId" @select="emit('select', $event)" />
       </template>
     </WorkbenchVirtualList>
   </div>
 </template>
-
-<style scoped>
-.tests-tree { flex: 1; min-height: 0; overflow: hidden; padding: 0 var(--histoire-pane-gutter) 16px; }
-.test-story-heading { display: flex; align-items: center; gap: 8px; width: 100%; height: var(--histoire-virtual-row-height, 39px); padding: var(--histoire-test-heading-padding, 10px) 8px; color: var(--histoire-text); line-height: 18px; text-align: left; }
-.test-story-heading strong { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 750; }
-.test-story-heading span { font-size: 11px; font-family: var(--histoire-font-mono); color: var(--histoire-muted); }
-.test-story-heading:hover { background: var(--histoire-chip); }
-.test-story-heading:focus-visible { outline: 2px solid var(--histoire-accent); outline-offset: -2px; }
-.test-story-status { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 16px; height: 16px; color: var(--histoire-muted); }
-.test-story-status[data-status="failed"] { color: var(--histoire-danger); }
-.test-story-status[data-status="passed"] { color: var(--histoire-accent); }
-</style>

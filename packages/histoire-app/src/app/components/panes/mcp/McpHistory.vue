@@ -13,41 +13,27 @@ const rows = computed(() => store.history.map(operation => ({ key: operation.id,
 </script>
 
 <template>
-  <section class="histoire-mcp-history" aria-label="MCP operation history">
-    <header>
-      <h3>History</h3>
-      <HstSwitch v-model="store.follow" title="Follow" aria-label="Follow MCP operations" class="history-follow" />
+  <section class="htw:m-0" aria-label="MCP operation history">
+    <header class="htw:flex htw:items-center htw:justify-between htw:gap-3 htw:mb-4.5">
+      <h3 class="htw:m-0 htw:text-muted htw:text-[12px] htw:font-semibold">
+        History
+      </h3>
+      <HstSwitch v-model="store.follow" title="Follow" aria-label="Follow MCP operations" class="htw:p-0 htw:m-0" />
     </header>
-    <p v-if="!store.history.length">
+    <p v-if="!store.history.length" class="htw:m-0 htw:text-[12px] htw:text-muted">
       No tool calls yet.
     </p>
     <WorkbenchVirtualList v-else :items="rows" :min-item-size="45" list-tag="ul" item-tag="li" page-mode>
       <template #default="{ item: { operation } }">
-        <div class="histoire-mcp-history-row" :data-state="operation.state">
-          <span class="histoire-mcp-history-status" :aria-label="operation.state"><BuiltinIcon :icon="mcpOperationIcon(operation)" :size="16" /></span>
-          <span class="histoire-mcp-history-detail">
-            <code :title="operation.tool">{{ operation.tool }}</code>
-            <span>{{ mcpTargetLabel(operation.target, snapshot.catalog) || store.clientName(operation.clientId) }}{{ operation.state === 'failed' ? ' · failed' : operation.state === 'cancelled' ? ' · cancelled' : '' }}</span>
+        <div class="htw:group/history htw:flex htw:items-center htw:gap-2 htw:min-w-0 htw:py-row-mcp htw:px-0" :data-state="operation.state">
+          <span class="htw:flex htw:flex-none htw:text-accent-link htw:group-data-[state=failed]/history:text-danger-text htw:group-data-[state=cancelled]/history:text-muted" :aria-label="operation.state"><BuiltinIcon :icon="mcpOperationIcon(operation)" :size="16" /></span>
+          <span class="htw:grid htw:flex-1 htw:min-w-0 htw:gap-[1px]">
+            <code class="htw:text-[11px] htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap" :title="operation.tool">{{ operation.tool }}</code>
+            <span class="htw:text-muted htw:text-[11px] htw:wrap-anywhere">{{ mcpTargetLabel(operation.target, snapshot.catalog) || store.clientName(operation.clientId) }}{{ operation.state === 'failed' ? ' · failed' : operation.state === 'cancelled' ? ' · cancelled' : '' }}</span>
           </span>
-          <time :datetime="operation.endedAt ?? operation.startedAt" :title="operation.endedAt ?? operation.startedAt">{{ mcpTimeAgo(operation.endedAt ?? operation.startedAt, store.now) }}</time>
+          <time class="htw:flex-none htw:text-muted htw:font-mono htw:text-[10px]" :datetime="operation.endedAt ?? operation.startedAt" :title="operation.endedAt ?? operation.startedAt">{{ mcpTimeAgo(operation.endedAt ?? operation.startedAt, store.now) }}</time>
         </div>
       </template>
     </WorkbenchVirtualList>
   </section>
 </template>
-
-<style scoped>
-.histoire-mcp-history { margin: 0; }
-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
-.history-follow { padding: 0; margin: 0; }
-h3 { margin: 0; color: var(--histoire-muted); font-size: 12px; font-weight: 600; }
-p { margin: 0; font-size: 12px; color: var(--histoire-muted); }
-.histoire-mcp-history-row { display: flex; align-items: center; gap: 8px; min-width: 0; padding: var(--histoire-mcp-row-padding, 8px) 0; }
-.histoire-mcp-history-status { display: flex; flex: none; color: var(--histoire-accent-link); }
-.histoire-mcp-history-row[data-state="failed"] .histoire-mcp-history-status { color: var(--histoire-danger-text); }
-.histoire-mcp-history-row[data-state="cancelled"] .histoire-mcp-history-status { color: var(--histoire-muted); }
-.histoire-mcp-history-detail { display: grid; flex: 1; min-width: 0; gap: 1px; }
-code { font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.histoire-mcp-history-detail > span { color: var(--histoire-muted); font-size: 11px; overflow-wrap: anywhere; }
-time { flex: none; color: var(--histoire-muted); font-family: var(--histoire-font-mono); font-size: 10px; }
-</style>

@@ -71,27 +71,27 @@ const sections: { value: AiSection, label: string }[] = [
 </script>
 
 <template>
-  <section class="ai-panel" aria-label="AI">
+  <section class="htw:flex htw:flex-col htw:h-full htw:min-h-0 htw:text-text" aria-label="AI">
     <WorkbenchPaneToolbar>
-      <HstButtonGroup :model-value="shell.aiSection.value" layout="inline" aria-label="AI section" :options="sections" @update:model-value="shell.setAiSection" />
+      <HstButtonGroup block class="htw:flex-1 htw:min-w-0" :model-value="shell.aiSection.value" layout="inline" aria-label="AI section" :options="sections" @update:model-value="shell.setAiSection" />
     </WorkbenchPaneToolbar>
     <McpContent v-if="shell.aiSection.value === 'mcp'" />
     <template v-else-if="threads">
-      <p v-if="!threads.connected.value" class="ai-notice" role="status">
+      <p v-if="!threads.connected.value" class="htw:mt-0 htw:mx-pane-gutter htw:mb-3 htw:text-muted htw:text-[12px]" role="status">
         AI threads disconnected
       </p>
-      <p v-if="threads.error.value" class="ai-notice" role="alert">
+      <p v-if="threads.error.value" class="htw:mt-0 htw:mx-pane-gutter htw:mb-3 htw:text-muted htw:text-[12px]" role="alert">
         {{ threads.error.value }}
       </p>
       <AiThreadView v-if="paneThread" :thread="paneThread" :model="threads" :agents="agents" :capture="capture" @select="emit('select', $event)" />
       <AiThreadComposer v-else-if="threads.composing.value" :model="threads" :agents="agents" :capture="capture" @setup-agent="emit('setupAgent')" />
       <template v-else>
         <WorkbenchPaneToolbar>
-          <HstButton icon-only color="flat" type="button" class="ai-action" aria-label="Show archived threads only" title="Archived threads" :aria-pressed="threads.showArchived.value" @click="threads.showArchived.value = !threads.showArchived.value">
+          <HstButton icon-only color="flat" type="button" class="htw:text-muted" aria-label="Show archived threads only" title="Archived threads" :aria-pressed="threads.showArchived.value" @click="threads.showArchived.value = !threads.showArchived.value">
             <BuiltinIcon icon="archive" :size="16" />
           </HstButton>
-          <span class="ai-spacer" />
-          <HstButton icon-only color="flat" type="button" class="ai-action" aria-label="New thread" title="New thread" :disabled="!threads.available.value" @click="threads.compose()">
+          <span class="htw:flex-1" />
+          <HstButton icon-only color="flat" type="button" class="htw:text-muted" aria-label="New thread" title="New thread" :disabled="!threads.available.value" @click="threads.compose()">
             <BuiltinIcon icon="add" :size="16" />
           </HstButton>
         </WorkbenchPaneToolbar>
@@ -100,10 +100,3 @@ const sections: { value: AiSection, label: string }[] = [
     </template>
   </section>
 </template>
-
-<style scoped>
-.ai-panel { display: flex; flex-direction: column; height: 100%; min-height: 0; color: var(--histoire-text); }
-.ai-action { color: var(--histoire-muted); }
-.ai-spacer { flex: 1; }
-.ai-notice { margin: 0 var(--histoire-pane-gutter) 12px; color: var(--histoire-muted); font-size: 12px; }
-</style>

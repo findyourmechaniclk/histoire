@@ -18,18 +18,11 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <span class="context-chip" :title="title ?? label">
-    <BuiltinIcon :icon="icon ?? 'catalog'" :size="12" />
-    <span class="context-label">{{ label }}</span>
-    <HstButton v-if="removable" icon-only color="flat" type="button" class="context-remove" :aria-label="`Remove ${label}`" :title="`Remove ${label}`" @click="emit('remove')">
-      <BuiltinIcon icon="close" :size="12" />
+  <span class="htw:inline-flex htw:items-center htw:gap-1.5 htw:max-w-full htw:h-6 htw:pt-0 htw:pr-0.5 htw:pb-0 htw:pl-2 htw:rounded-full htw:bg-chip htw:text-body htw:text-[12px]" :title="title ?? label">
+    <BuiltinIcon :icon="icon ?? 'catalog'" :size="12" class="htw:flex-none htw:text-muted" />
+    <span class="htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap">{{ label }}</span>
+    <HstButton v-if="removable" icon-only color="flat" type="button" class="htw:[--histoire-icon-button-size:20px] htw:flex-none htw:rounded-full htw:text-muted" :aria-label="`Remove ${label}`" :title="`Remove ${label}`" @click="emit('remove')">
+      <BuiltinIcon icon="close" :size="12" class="htw:flex-none htw:text-muted" />
     </HstButton>
   </span>
 </template>
-
-<style scoped>
-.context-chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; height: 24px; padding: 0 2px 0 8px; border-radius: 999px; background: var(--histoire-chip); color: var(--histoire-body); font-size: 12px; }
-.context-chip > :first-child { flex: none; color: var(--histoire-muted); }
-.context-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.context-remove { --histoire-icon-button-size: 20px; flex: none; border-radius: 999px; color: var(--histoire-muted); }
-</style>

@@ -10,6 +10,6 @@ const filters = [{ value: 'failing', label: 'Failing' }, { value: 'all', label: 
 
 <template>
   <WorkbenchPaneToolbar>
-    <HstButtonGroup layout="inline" aria-label="Filter tests" :model-value="modelValue" :options="filters" @update:model-value="emit('update:modelValue', $event)" />
+    <HstButtonGroup block class="htw:flex-1 htw:min-w-0" layout="inline" aria-label="Filter tests" :model-value="modelValue" :options="filters" @update:model-value="emit('update:modelValue', $event)" />
   </WorkbenchPaneToolbar>
 </template>

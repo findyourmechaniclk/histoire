@@ -6,6 +6,8 @@ defineOptions({ name: 'HstButton' })
 defineProps<{
   /** Existing semantic button appearance. */
   color?: 'default' | 'primary' | 'flat'
+  /** Semantic text with flat background; used with color="flat". */
+  tone?: 'default' | 'accent' | 'danger'
   /** Link adapters retain native anchor semantics with same shared appearance. */
   as?: 'button' | 'a'
   /** Square action containing only an icon or compact status indicator. */
@@ -21,7 +23,7 @@ defineExpose({ focus, element: button })
 </script>
 
 <template>
-  <component :is="as ?? 'button'" ref="button" :type="as === 'a' ? undefined : 'button'" class="histoire-button" :class="{ 'histoire-icon-button': iconOnly }" :data-color="color ?? 'default'" :data-histoire-control-appearance="dark ? 'dark' : 'light'">
+  <component :is="as ?? 'button'" ref="button" :type="as === 'a' ? undefined : 'button'" class="histoire-button" :class="{ 'histoire-icon-button': iconOnly }" :data-color="color ?? 'default'" :data-tone="tone" :data-histoire-control-appearance="dark ? 'dark' : 'light'">
     <slot />
   </component>
 </template>

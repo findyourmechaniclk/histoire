@@ -16,12 +16,7 @@ defineProps<{
 <template>
   <template v-if="pane && context">
     <WorkbenchPaneHeader :title="pane.label" />
-    <ExtensionView :key="contributionKey(pane)" class="histoire-plugin-pane-body" :contribution="pane" :context="context" />
+    <ExtensionView :key="contributionKey(pane)" class="htw:flex htw:flex-1 htw:flex-col htw:min-h-0 htw:overflow-auto" :contribution="pane" :context="context" />
   </template>
   <WorkbenchLoadingState v-else title="Loading pane" />
 </template>
-
-<style scoped>
-/* Column like built-in panes: a plugin view rendering `WorkbenchPaneToolbar` + `WorkbenchPaneList` as its roots keeps the toolbar fixed while the list scrolls. */
-.histoire-plugin-pane-body { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow: auto; }
-</style>

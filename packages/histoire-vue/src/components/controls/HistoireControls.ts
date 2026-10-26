@@ -5,6 +5,7 @@ import { BuiltinIcon, HstButton, restoreControlsFocus } from '@histoire/controls
 import { configureHistoireMountControls, postHistoireMountEvent, subscribeHistoireMountEvents } from '@histoire/sdk/internal'
 import { defineComponent, h, onMounted, shallowRef, watch } from 'vue'
 import { useHistoireSnapshot } from '../../composables/snapshot.js'
+import { mergePartClass, partClassesProp, renderPartState } from '../../foundation/parts.js'
 import { HistoireControlsOverlayHost } from '../../overlays/OverlayHost.js'
 import { useHistoireContext, useHistoireResource } from '../../provider/context.js'
 import { GenericControls } from './GenericControls.js'
@@ -13,6 +14,8 @@ import { StatePresets } from './StatePresets.js'
 export const HistoireControls = defineComponent({
   name: 'HistoireControls',
   props: {
+    /** Host utilities for documented component parts; package markers remain intact. */
+    classes: partClassesProp<'root' | 'fieldset' | 'legend' | 'reset' | 'presets' | 'presetTrigger' | 'state'>(),
     /** First-party compact inspector keeps preset management behind disclosure. */
     compactPresets: { type: Boolean, default: false },
   },
@@ -136,12 +139,12 @@ export const HistoireControls = defineComponent({
       removed = true
       return unmount()
     })
-    return () => h('section', { 'class': 'histoire-controls', 'aria-label': 'Controls', 'aria-busy': snapshot.value.runtime.status === 'ready' && hasControls.value === undefined }, [
+    return () => h('section', { 'class': mergePartClass('histoire-controls', props.classes?.root), 'aria-label': 'Controls', 'aria-busy': snapshot.value.runtime.status === 'ready' && hasControls.value === undefined }, [
       snapshot.value.runtime.status !== 'ready' || !snapshot.value.selection?.variantId
-        ? (slots.unavailable?.() ?? h('div', { role: 'status' }, 'Variant unavailable'))
+        ? renderPartState(slots.unavailable?.() ?? h('div', { role: 'status' }, 'Variant unavailable'), props.classes?.state)
         : h('div', { class: 'histoire-controls-presets' }, [
-            h(StatePresets, { ref: presets, compact: props.compactPresets }),
-            h(HstButton, { 'color': 'flat', 'type': 'button', 'class': 'histoire-controls-reset', 'iconOnly': true, 'aria-label': 'Reset state', 'title': 'Reset state', 'disabled': !presets.value || presets.value.busy(), 'onClick': () => {
+            h(StatePresets, { ref: presets, compact: props.compactPresets, classes: { root: props.classes?.presets, trigger: props.classes?.presetTrigger } }),
+            h(HstButton, { 'color': 'flat', 'type': 'button', 'class': mergePartClass('histoire-controls-reset', props.classes?.reset), 'iconOnly': true, 'aria-label': 'Reset state', 'title': 'Reset state', 'disabled': !presets.value || presets.value.busy(), 'onClick': () => {
               void presets.value?.reset()
             } }, { default: () => h(BuiltinIcon, { 'icon': 'carbon:reset', 'width': 16, 'height': 16, 'aria-hidden': 'true' }) }),
           ]),
@@ -164,8 +167,8 @@ export const HistoireControls = defineComponent({
       // controls. Wait for this document's controls.height publication.
       snapshot.value.runtime.status === 'ready' && snapshot.value.selection?.variantId
         ? hasControls.value === undefined
-          ? (slots.loading?.() ?? h('div', { role: 'status' }, 'Loading controls'))
-          : h(GenericControls, { showState: hasControls.value === false })
+          ? renderPartState(slots.loading?.() ?? h('div', { role: 'status' }, 'Loading controls'), props.classes?.state)
+          : h(GenericControls, { showState: hasControls.value === false, classes: props.classes })
         : null,
       overlay.value ? h(HistoireControlsOverlayHost, { key: overlay.value.id, request: overlay.value, onResult: result }) : null,
     ])

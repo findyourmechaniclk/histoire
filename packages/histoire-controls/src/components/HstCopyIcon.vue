@@ -89,8 +89,8 @@ async function action(): Promise<void> {
         delay: 0,
       }"
       icon="carbon:copy-file"
-      class="htw-w-4 htw-h-4 htw-opacity-50 hover:htw-opacity-100 htw-cursor-pointer"
+      class="htw:w-4 htw:h-4 htw:opacity-50 htw:hover:opacity-100 htw:cursor-pointer"
     />
-    <BuiltinIcon v-else icon="carbon:copy-file" class="htw-w-4 htw-h-4 htw-opacity-50 hover:htw-opacity-100 htw-cursor-pointer" />
+    <BuiltinIcon v-else icon="carbon:copy-file" class="htw:w-4 htw:h-4 htw:opacity-50 htw:hover:opacity-100 htw:cursor-pointer" />
   </HstButton>
 </template>

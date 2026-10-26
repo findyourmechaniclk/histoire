@@ -9,8 +9,14 @@ import { useSelection } from '../../composables/selection.js'
 import { useShell } from '../../composables/shell.js'
 import { usePageOwnership } from '../pages/home/ownership.js'
 import WorkbenchLoadingState from '../shell/WorkbenchLoadingState.vue'
+import SourceAction from './SourceAction.vue'
 
 import { findChangedSourceLine } from './state.js'
+
+defineProps<{
+  /** Docs canvas keeps its source footer on the standard surface. */
+  tone?: 'surface'
+}>()
 
 const emit = defineEmits<{ error: [error: unknown], contextmenu: [event: MouseEvent | KeyboardEvent] }>()
 
@@ -130,63 +136,46 @@ function status(value: { status: 'idle' | 'loading' | 'ready' | 'error' }) {
 </script>
 
 <template>
-  <section ref="root" class="inspector-source" :class="{ 'is-expanded': expanded }" aria-label="Source">
-    <div class="inspector-source-header" @contextmenu="emit('contextmenu', $event)" @keydown="onHeaderKeydown">
-      <HstButton color="flat" type="button" class="inspector-source-toggle" :aria-expanded="expanded" :aria-controls="drawerId" @click="toggleSource">
-        <BuiltinIcon icon="code" :size="16" />
-        <strong>Source</strong>
+  <section ref="root" class="inspector-source htw:flex-none htw:min-h-0 htw:data-[expanded=true]:flex htw:data-[expanded=true]:flex-col htw:data-[expanded=true]:basis-[42%] htw:data-[tone=surface]:bg-surface htw:[border-top:1px_solid_var(--histoire-border)]" :data-expanded="expanded" :data-tone="tone" aria-label="Source">
+    <div class="htw:flex htw:items-center htw:gap-[7px] htw:min-h-[46px] htw:py-0 htw:px-inspector-gutter" @contextmenu="emit('contextmenu', $event)" @keydown="onHeaderKeydown">
+      <HstButton color="flat" type="button" class="htw:flex htw:items-center htw:gap-[9px] htw:p-0" :aria-expanded="expanded" :aria-controls="drawerId" @click="toggleSource">
+        <BuiltinIcon class="htw:text-muted" icon="code" :size="16" />
+        <strong class="htw:text-[12px] htw:font-extrabold">Source</strong>
       </HstButton>
-      <HstButtonGroup v-if="expanded" v-model="mode" layout="inline" class="inspector-source-modes" aria-label="Source mode" :options="[{ value: 'dynamic', label: 'Variant' }, { value: 'raw', label: 'Story file' }]" />
-      <span v-else class="inspector-source-file" :title="story?.relativePath">{{ fileLabel }}</span>
-      <HstButton v-if="expanded" icon-only color="flat" type="button" class="inspector-source-action" :disabled="!content" :aria-label="copied ? 'Source copied' : 'Copy source'" :title="copied ? 'Copied' : 'Copy source'" @click="copy">
+      <HstButtonGroup v-if="expanded" v-model="mode" layout="inline" class="htw:flex htw:flex-1 htw:min-w-0" aria-label="Source mode" :options="[{ value: 'dynamic', label: 'Variant' }, { value: 'raw', label: 'Story file' }]" />
+      <span v-else class="htw:flex-1 htw:overflow-hidden htw:text-right htw:text-ellipsis htw:whitespace-nowrap htw:text-muted htw:[font:10px_var(--histoire-font-mono)]" :title="story?.relativePath">{{ fileLabel }}</span>
+      <SourceAction v-if="expanded" :disabled="!content" :aria-label="copied ? 'Source copied' : 'Copy source'" :title="copied ? 'Copied' : 'Copy source'" @click="copy">
         <BuiltinIcon :icon="copied ? 'checkmark' : 'copy'" :size="16" />
-      </HstButton>
-      <HstButton v-if="expanded && canEdit" icon-only color="flat" type="button" class="inspector-source-action" aria-label="Open source in editor" title="Open source in editor" @click="editor">
+      </SourceAction>
+      <SourceAction v-if="expanded && canEdit" aria-label="Open source in editor" title="Open source in editor" @click="editor">
         <BuiltinIcon icon="launch" :size="16" />
-      </HstButton>
-      <HstButton icon-only color="flat" type="button" class="inspector-source-action" :aria-label="expanded ? 'Collapse source' : 'Expand source'" :aria-expanded="expanded" @click="toggleSource">
+      </SourceAction>
+      <SourceAction :aria-label="expanded ? 'Collapse source' : 'Expand source'" :aria-expanded="expanded" @click="toggleSource">
         <BuiltinIcon :icon="expanded ? 'chevron-down' : 'chevron-up'" :size="12" />
-      </HstButton>
+      </SourceAction>
     </div>
-    <div v-if="expanded" :id="drawerId" class="inspector-source-body">
-      <p v-if="!available" class="inspector-source-empty">
+    <div v-if="expanded" :id="drawerId" class="htw:relative htw:flex-1 htw:min-h-0 htw:mt-0 htw:mx-inspector-gutter htw:mb-4 htw:overflow-auto htw:rounded-[10px] htw:bg-code htw:[color:#e6e7ea]">
+      <p v-if="!available" class="htw:p-[16px] htw:[color:#b4b8c0] htw:text-[12px]">
         {{ mode === 'dynamic' ? 'No variant source available.' : 'No story file source available.' }}
       </p>
       <template v-else>
-        <HistoireSource v-if="dynamicReady" ref="panel" :mode="mode" appearance="dark" data-test-id="story-source-code" @content="receive" @error="report" @status="status" />
-        <div v-if="loading || waitingForPreview" class="inspector-source-loading">
+        <HistoireSource
+          v-if="dynamicReady" ref="panel" :show-actions="false" :classes="{
+            root: 'htw:h-full',
+            pre: 'htw:min-w-max htw:font-mono htw:text-[11px] htw:leading-[1.7] htw:p-[14px] htw:bg-transparent! htw:[&_.line]:inline-block htw:[&_.line]:min-w-full htw:[&_.line[data-source-changed]]:bg-accent/15',
+            alert: 'htw:text-danger htw:text-[12px]',
+          }" :mode="mode" appearance="dark" data-test-id="story-source-code" @content="receive" @error="report" @status="status"
+        />
+        <div v-if="loading || waitingForPreview" class="htw:absolute htw:inset-0 htw:overflow-auto htw:bg-code htw:[--histoire-text:#e6e7ea] htw:[--histoire-muted:#b4b8c0]">
           <WorkbenchLoadingState title="Loading source…" />
         </div>
-        <p v-if="content?.body === ''" class="inspector-source-empty">
+        <p v-if="content?.body === ''" class="htw:p-[16px] htw:[color:#b4b8c0] htw:text-[12px]">
           Source is empty.
         </p>
-        <HstButton v-if="failure" color="flat" type="button" class="inspector-source-retry" @click="retry">
+        <HstButton v-if="failure" color="flat" type="button" class="inspector-source-retry htw:mt-0 htw:mx-inspector-gutter htw:mb-4 htw:text-text htw:p-[7px_10px]" @click="retry">
           Retry source
         </HstButton>
       </template>
     </div>
   </section>
 </template>
-
-<style scoped>
-.inspector-source { flex: none; min-height: 0; border-top: 1px solid var(--histoire-border); }
-.inspector-source.is-expanded { display: flex; flex-direction: column; flex-basis: 42%; }
-.inspector-source-header { display: flex; align-items: center; gap: 7px; min-height: 46px; padding: 0 var(--histoire-inspector-gutter); }
-.inspector-source-toggle { display: flex; align-items: center; gap: 9px; padding: 0; }
-.inspector-source-toggle svg { color: var(--histoire-muted); }
-.inspector-source-toggle strong { font-size: 12px; font-weight: 800; }
-.inspector-source-file { flex: 1; overflow: hidden; text-align: right; text-overflow: ellipsis; white-space: nowrap; color: var(--histoire-muted); font: 10px var(--histoire-font-mono); }
-.inspector-source-modes { display: flex; flex: 1; min-width: 0; }
-.inspector-source-action { --histoire-icon-button-size: 26px; color: var(--histoire-muted); }
-.inspector-source-body { position: relative; flex: 1; min-height: 0; margin: 0 var(--histoire-inspector-gutter) 16px; overflow: auto; border-radius: 10px; background: var(--histoire-code); color: #e6e7ea; }
-.inspector-source-body :deep(.histoire-content-actions) { display: none; }
-.inspector-source-body :deep(.histoire-source) { height: 100%; }
-/* Native source stays mounted underneath; pending reads occupy visible drawer. */
-.inspector-source-loading { position: absolute; inset: 0; overflow: auto; background: var(--histoire-code); --histoire-text: #e6e7ea; --histoire-muted: #b4b8c0; }
-.inspector-source-body :deep(pre) { min-width: max-content; font: 11px/1.7 var(--histoire-font-mono); padding: 14px; background: transparent !important; }
-.inspector-source-body :deep(.line) { display: inline-block; min-width: 100%; }
-.inspector-source-body :deep(.line[data-source-changed]) { background: color-mix(in srgb, var(--histoire-accent) 15%, transparent); box-shadow: inset 2px 0 var(--histoire-accent); }
-.inspector-source-body :deep([role="alert"]) { color: #f87171; font-size: 12px; }
-.inspector-source-empty { padding: 16px; color: #b4b8c0; font-size: 12px; }
-.inspector-source-retry { margin: 0 var(--histoire-inspector-gutter) 16px; color: var(--histoire-text); padding: 7px 10px; }
-</style>

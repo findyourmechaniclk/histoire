@@ -46,20 +46,20 @@ watch(defaultValue, (value) => {
 </script>
 
 <template>
-  <div class="histoire-prompt-text">
-    <label class="htw-flex htw-flex-col htw-gap-2 htw-p-2">
-      <span class="htw-px-2">
+  <div>
+    <label class="htw:flex htw:flex-col htw:gap-2 htw:p-2">
+      <span class="htw:px-2">
         <span>{{ prompt.label }}</span>
         <span
           v-if="prompt.required"
-          class="htw-opacity-70"
+          class="htw:opacity-70"
         >*</span>
       </span>
       <HstText
         :ref="value => { input = getControlElement(value) as HTMLInputElement }"
         v-model="model"
         layout="inline"
-        class="htw-w-full"
+        class="htw:w-full"
         :required="prompt.required"
       />
     </label>
