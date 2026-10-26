@@ -32,7 +32,7 @@ grep -rl '<style' packages/histoire-app/src --include=*.vue
 
 ## Browser matrix
 
-Use the user's dev server at `http://127.0.0.1:6006/` (serves `histoire-app/dist/bundled`, restarts on dist changes; wait for `ss -ltn | grep :6006` before reloading). Compare against slice 01 screenshots in `evidence/baseline/`.
+Current task override: no user dev server. Use locked static-book builds and `evidence/serve-capture.mjs` on owned ports (4610/4611), then stop owned server PIDs. Ports 6006/6106 are reserved. Compare against `evidence/baseline/`; see `baseline.md` for static-only coverage boundaries.
 
 Screens:
 
@@ -61,3 +61,5 @@ Differences must be explained in the slice status (intentional rounding, sub-pix
 - All marker classes in [inventory.md](inventory.md#marker-classes) still present; Cypress and embed integration specs pass.
 - `dist/bundled/app.css` size recorded before/after (no target; regressions over 10% explained).
 - AGENTS.md documents the Tailwind-only rule.
+
+Packed consumer tests invoke dependency installation internally. Under the no-install rule, do not rerun them; record published CSS paths separately and leave isolated installed-consumer verification to the orchestrator.

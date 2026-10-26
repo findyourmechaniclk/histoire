@@ -1,0 +1,4071 @@
+{
+  "browser": "147.0.7727.15",
+  "node": "v24.16.0",
+  "fixedTime": "2026-10-25T12:00:00Z",
+  "results": [
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "home",
+      "mode": "light",
+      "path": "/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "home-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "home",
+      "mode": "dark",
+      "path": "/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "home-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "home",
+      "mode": "compact",
+      "path": "/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "home-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "home",
+      "mode": "narrow",
+      "path": "/",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "home-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-grid",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-grid-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-grid",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-grid-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-grid",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-grid-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-grid",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-grid-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-list",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=list",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-list-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=list"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-list",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=list",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-list-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=list"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-list",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=list",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-list-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=list"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-list",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=list",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-list-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=list"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-single",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-single-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-single",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-single-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-single",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-single-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-single",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-single-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-matrix",
+      "mode": "light",
+      "path": "/story/src-components-workbenchmatrix-story-vue?variantId=default&arrange=matrix&rows=enabled&cols=emphasized",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-matrix-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-workbenchmatrix-story-vue?variantId=default&arrange=matrix&rows=enabled&cols=emphasized"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-matrix",
+      "mode": "dark",
+      "path": "/story/src-components-workbenchmatrix-story-vue?variantId=default&arrange=matrix&rows=enabled&cols=emphasized",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-matrix-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-workbenchmatrix-story-vue?variantId=default&arrange=matrix&rows=enabled&cols=emphasized"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-matrix",
+      "mode": "compact",
+      "path": "/story/src-components-workbenchmatrix-story-vue?variantId=default&arrange=matrix&rows=enabled&cols=emphasized",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-matrix-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-workbenchmatrix-story-vue?variantId=default&arrange=matrix&rows=enabled&cols=emphasized"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-matrix",
+      "mode": "narrow",
+      "path": "/story/src-components-workbenchmatrix-story-vue?variantId=default&arrange=matrix&rows=enabled&cols=emphasized",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "canvas-matrix-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-workbenchmatrix-story-vue?variantId=default&arrange=matrix&rows=enabled&cols=emphasized"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-measure",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path",
+          "family": "\"JetBrains Mono\", ui-monospace, monospace",
+          "size": "11px",
+          "weight": "400",
+          "lineHeight": "normal"
+        }
+      ],
+      "file": "canvas-measure-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-measure",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path",
+          "family": "\"JetBrains Mono\", ui-monospace, monospace",
+          "size": "11px",
+          "weight": "400",
+          "lineHeight": "normal"
+        }
+      ],
+      "file": "canvas-measure-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-measure",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path",
+          "family": "\"JetBrains Mono\", ui-monospace, monospace",
+          "size": "11px",
+          "weight": "400",
+          "lineHeight": "normal"
+        }
+      ],
+      "file": "canvas-measure-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "canvas-measure",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path",
+          "family": "\"JetBrains Mono\", ui-monospace, monospace",
+          "size": "11px",
+          "weight": "400",
+          "lineHeight": "normal"
+        }
+      ],
+      "file": "canvas-measure-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "toolbar-overflow",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "toolbar-overflow-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "toolbar-overflow",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "toolbar-overflow-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "toolbar-overflow",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "toolbar-overflow-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "toolbar-overflow",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "toolbar-overflow-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "toolbar-viewport",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "toolbar-viewport-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "toolbar-viewport",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "toolbar-viewport-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "toolbar-viewport",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "toolbar-viewport-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "toolbar-viewport",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "toolbar-viewport-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "inspector-props",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "inspector-props-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "inspector-props",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "inspector-props-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "inspector-props",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "inspector-props-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "inspector-props",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "inspector-props-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "inspector-docs",
+      "mode": "light",
+      "path": "/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid&tab=docs",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "inspector-docs-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid&tab=docs"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "inspector-docs",
+      "mode": "dark",
+      "path": "/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid&tab=docs",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "inspector-docs-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid&tab=docs"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "inspector-docs",
+      "mode": "compact",
+      "path": "/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid&tab=docs",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "inspector-docs-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid&tab=docs"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "inspector-docs",
+      "mode": "narrow",
+      "path": "/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid&tab=docs",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "inspector-docs-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid&tab=docs"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "inspector-events",
+      "mode": "light",
+      "path": "/story/src-components-eventbutton-story-vue?variantId=_default&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "inspector-events-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-eventbutton-story-vue?variantId=_default&arrange=grid&tab=events"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "inspector-events",
+      "mode": "dark",
+      "path": "/story/src-components-eventbutton-story-vue?variantId=_default&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "inspector-events-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-eventbutton-story-vue?variantId=_default&arrange=grid&tab=events"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "inspector-events",
+      "mode": "compact",
+      "path": "/story/src-components-eventbutton-story-vue?variantId=_default&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "inspector-events-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-eventbutton-story-vue?variantId=_default&arrange=grid&tab=events"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "inspector-events",
+      "mode": "narrow",
+      "path": "/story/src-components-eventbutton-story-vue?variantId=_default&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "inspector-events-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-eventbutton-story-vue?variantId=_default&arrange=grid&tab=events"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "source-changed",
+      "mode": "light",
+      "path": "/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "source-changed-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "source-changed",
+      "mode": "dark",
+      "path": "/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "source-changed-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "source-changed",
+      "mode": "compact",
+      "path": "/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "source-changed-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "source-changed",
+      "mode": "narrow",
+      "path": "/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "source-changed-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-demo-story-vue?variantId=src-components-demo-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "stories",
+      "mode": "light",
+      "path": "/story/src-components-controls-story-vue?variantId=src-components-controls-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "stories-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-controls-story-vue?variantId=src-components-controls-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "stories",
+      "mode": "dark",
+      "path": "/story/src-components-controls-story-vue?variantId=src-components-controls-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "stories-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-controls-story-vue?variantId=src-components-controls-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "stories",
+      "mode": "compact",
+      "path": "/story/src-components-controls-story-vue?variantId=src-components-controls-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "stories-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-controls-story-vue?variantId=src-components-controls-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "stories",
+      "mode": "narrow",
+      "path": "/story/src-components-controls-story-vue?variantId=src-components-controls-story-vue-0&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "stories-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-controls-story-vue?variantId=src-components-controls-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "search-results",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "search-results-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "search-results",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "search-results-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "search-results",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "search-results-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "search-results",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "search-results-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "search-empty",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "search-empty-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "search-empty",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "search-empty-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "search-empty",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "search-empty-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "search-empty",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "search-empty-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "settings-general",
+      "mode": "light",
+      "path": "/settings/general",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "settings-general-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/settings/general"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "settings-general",
+      "mode": "dark",
+      "path": "/settings/general",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "settings-general-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/settings/general"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "settings-general",
+      "mode": "compact",
+      "path": "/settings/general",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "settings-general-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/settings/general"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "settings-general",
+      "mode": "narrow",
+      "path": "/settings/general",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "settings-general-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/settings/general"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "settings-appearance",
+      "mode": "light",
+      "path": "/settings/appearance",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "settings-appearance-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/settings/appearance"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "settings-appearance",
+      "mode": "dark",
+      "path": "/settings/appearance",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "settings-appearance-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/settings/appearance"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "settings-appearance",
+      "mode": "compact",
+      "path": "/settings/appearance",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "settings-appearance-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/settings/appearance"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "settings-appearance",
+      "mode": "narrow",
+      "path": "/settings/appearance",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "settings-appearance-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/settings/appearance"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "settings-plugin",
+      "mode": "light",
+      "path": "/settings/reference:settings",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "settings-plugin-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/settings/reference:settings"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "settings-plugin",
+      "mode": "dark",
+      "path": "/settings/reference:settings",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "settings-plugin-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/settings/reference:settings"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "settings-plugin",
+      "mode": "compact",
+      "path": "/settings/reference:settings",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "settings-plugin-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/settings/reference:settings"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "settings-plugin",
+      "mode": "narrow",
+      "path": "/settings/reference:settings",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "settings-plugin-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/settings/reference:settings"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "markdown",
+      "mode": "light",
+      "path": "/story/src-longfile1-story-js",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "markdown-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-longfile1-story-js"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "markdown",
+      "mode": "dark",
+      "path": "/story/src-longfile1-story-js",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "markdown-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-longfile1-story-js"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "markdown",
+      "mode": "compact",
+      "path": "/story/src-longfile1-story-js",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "markdown-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-longfile1-story-js"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "markdown",
+      "mode": "narrow",
+      "path": "/story/src-longfile1-story-js",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "markdown-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-longfile1-story-js"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "embed-dialog",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "embed-dialog-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "embed-dialog",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "embed-dialog-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "embed-dialog",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "embed-dialog-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "embed-dialog",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "embed-dialog-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-pane",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-pane-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-pane",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-pane-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-pane",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-pane-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-pane",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-pane-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=single"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-inspector",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid&tab=reference:audit",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-inspector-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid&tab=reference:audit"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-inspector",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid&tab=reference:audit",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-inspector-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid&tab=reference:audit"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-inspector",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid&tab=reference:audit",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-inspector-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid&tab=reference:audit"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-inspector",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid&tab=reference:audit",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-inspector-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid&tab=reference:audit"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-overlay",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-overlay-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-overlay",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-overlay-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-overlay",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-overlay-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-overlay",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-overlay-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=grid"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-view",
+      "mode": "light",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=reference:compare",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-view-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=reference:compare"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-view",
+      "mode": "dark",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=reference:compare",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-view-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=reference:compare"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-view",
+      "mode": "compact",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=reference:compare",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-view-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=reference:compare"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "plugin-view",
+      "mode": "narrow",
+      "path": "/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=reference:compare",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "plugin-view-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/src-components-basebutton-story-vue?variantId=src-components-basebutton-story-vue-0&arrange=reference:compare"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "coexistence-v3",
+      "mode": "light",
+      "path": "/story/tailwind?variantId=box-shadow&arrange=single",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "coexistence-v3-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/tailwind?variantId=box-shadow&arrange=single"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "coexistence-v3",
+      "mode": "dark",
+      "path": "/story/tailwind?variantId=box-shadow&arrange=single",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "coexistence-v3-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/tailwind?variantId=box-shadow&arrange=single"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "coexistence-v3",
+      "mode": "compact",
+      "path": "/story/tailwind?variantId=box-shadow&arrange=single",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "coexistence-v3-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/tailwind?variantId=box-shadow&arrange=single"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4610",
+      "base": "/",
+      "screen": "coexistence-v3",
+      "mode": "narrow",
+      "path": "/story/tailwind?variantId=box-shadow&arrange=single",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "coexistence-v3-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4610/story/tailwind?variantId=box-shadow&arrange=single"
+    },
+    {
+      "suite": "nuxt-ui",
+      "origin": "http://127.0.0.1:4611",
+      "base": "/_stories/",
+      "screen": "coexistence-v4",
+      "mode": "light",
+      "path": "/story/nuxt-ui-rstore?variantId=main&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "coexistence-v4-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4611/_stories/story/nuxt-ui-rstore?variantId=main&arrange=grid"
+    },
+    {
+      "suite": "nuxt-ui",
+      "origin": "http://127.0.0.1:4611",
+      "base": "/_stories/",
+      "screen": "coexistence-v4",
+      "mode": "dark",
+      "path": "/story/nuxt-ui-rstore?variantId=main&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "coexistence-v4-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4611/_stories/story/nuxt-ui-rstore?variantId=main&arrange=grid"
+    },
+    {
+      "suite": "nuxt-ui",
+      "origin": "http://127.0.0.1:4611",
+      "base": "/_stories/",
+      "screen": "coexistence-v4",
+      "mode": "compact",
+      "path": "/story/nuxt-ui-rstore?variantId=main&arrange=grid",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "coexistence-v4-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4611/_stories/story/nuxt-ui-rstore?variantId=main&arrange=grid"
+    },
+    {
+      "suite": "nuxt-ui",
+      "origin": "http://127.0.0.1:4612",
+      "base": "/_stories/",
+      "screen": "coexistence-v4",
+      "mode": "narrow",
+      "path": "/story/nuxt-ui-rstore?variantId=main&arrange=grid",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "400",
+          "lineHeight": "19.5px"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "24px",
+          "weight": "800",
+          "lineHeight": "28.8px"
+        },
+        {
+          "selector": ".histoire-frame-label",
+          "family": "Manrope, system-ui, sans-serif",
+          "size": "13px",
+          "weight": "700",
+          "lineHeight": "20px"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "coexistence-v4-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4612/_stories/story/nuxt-ui-rstore?variantId=main&arrange=grid"
+    }
+  ]
+}

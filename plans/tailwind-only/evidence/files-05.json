@@ -1,0 +1,210 @@
+[
+  {
+    "path": "packages/histoire-app/src/app/components/shell/AppRail.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/InspectorFrame.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/PanelResizeHandle.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/PluginPane.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/RailButton.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/ShellLayout.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/SidePanelHost.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/WorkbenchEmptyState.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/WorkbenchErrorState.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/WorkbenchLoadingSkeleton.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/WorkbenchLoadingState.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/WorkbenchPaneHeader.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/WorkbenchPaneList.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/WorkbenchPaneToolbar.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/WorkbenchPanelAction.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/WorkbenchStateLayout.vue",
+    "status": "created"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/workbench-pane.css",
+    "status": "deleted"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/shell/workbench-state.css",
+    "status": "deleted"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/base/overflow/BaseOverflowToolbar.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/base/overflow/BaseOverflowToolbarItem.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/base/overflow/presentation.ts",
+    "status": "created"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/base/popover/BasePopover.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/base/popover/PopoverDivider.vue",
+    "status": "created"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/base/popover/PopoverError.vue",
+    "status": "created"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/base/popover/PopoverMeta.vue",
+    "status": "created"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/base/popover/PopoverRow.vue",
+    "status": "created"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/base/popover/PopoverTitle.vue",
+    "status": "created"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/menu/ContextMenu.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/menu/MenuItem.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/menu/SubMenu.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/misc/HatchedPattern.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/story/StoryVariantGridSandboxItem.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/agents/AgentLogo.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/agents/PermissionPrompt.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/agents/agents.css",
+    "status": "deleted"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/canvas/matrix/MatrixAvailabilityState.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/canvas/toolbar/BackgroundPicker.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/canvas/toolbar/ScreenshotPopover.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/canvas/toolbar/ScreenshotSetup.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/canvas/toolbar/ViewportMenu.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/canvas/toolbar/ZoomMenu.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/canvas/views/PluginCanvasView.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/comments/prompt/AttachMenuPanel.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/embed/EmbedMenu.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/panes/ai/AiPanel.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/panes/ai/AiThreadList.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/panes/search/SearchPanel.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/panes/tests/FunctionalTestsPanel.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/panes/tests/TestsFilter.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/panes/visual/VisualTestsPanel.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-app/src/app/components/panes/visual/VisualViewer.vue",
+    "status": "changed"
+  },
+  {
+    "path": "packages/histoire-vue/src/__tests__/workbench-state-components.spec.ts",
+    "status": "changed"
+  }
+]

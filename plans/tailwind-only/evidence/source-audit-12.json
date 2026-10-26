@@ -1,0 +1,2596 @@
+{
+  "base": "acfebdf952eeb3e0e5d5cb3bf1acaa85dfecbb5a",
+  "sourceFilesReviewed": 282,
+  "filesOver300": [],
+  "files": [
+    {
+      "file": "packages/histoire-app/postcss-scope-wrapper.cjs",
+      "lines": 34,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/postcss.config.cjs",
+      "lines": 7,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/agents/AgentLogo.vue",
+      "lines": 31,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/agents/PermissionPrompt.vue",
+      "lines": 74,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/base/BaseKeyboardShortcut.vue",
+      "lines": 16,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/base/overflow/BaseOverflowToolbar.vue",
+      "lines": 111,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/base/overflow/BaseOverflowToolbarItem.vue",
+      "lines": 36,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/base/popover/BasePopover.vue",
+      "lines": 142,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/AgentCursor.vue",
+      "lines": 66,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasFrame.vue",
+      "lines": 162,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasHeader.vue",
+      "lines": 35,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasLoadingIndicator.vue",
+      "lines": 9,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasMatrixPrimary.vue",
+      "lines": 147,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasMeasureHint.vue",
+      "lines": 57,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasReplicaPreview.vue",
+      "lines": 86,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasSingleVariant.vue",
+      "lines": 70,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasStatus.vue",
+      "lines": 49,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasViewport.vue",
+      "lines": 283,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CollectErrorCard.vue",
+      "lines": 22,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/FrameGrid.vue",
+      "lines": 14,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/FrameList.vue",
+      "lines": 14,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/MeasureBoxModel.vue",
+      "lines": 47,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/MeasureGuides.vue",
+      "lines": 30,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/MeasureOverlay.vue",
+      "lines": 252,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/SingleVariantResizeHandles.vue",
+      "lines": 133,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixAvailabilityState.vue",
+      "lines": 49,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixAxisBar.vue",
+      "lines": 32,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixAxisEntry.vue",
+      "lines": 85,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixBaseProp.vue",
+      "lines": 59,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixCell.vue",
+      "lines": 99,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixCustomAxes.vue",
+      "lines": 71,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixCustomValues.vue",
+      "lines": 52,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixInspector.vue",
+      "lines": 124,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixNumericValues.vue",
+      "lines": 95,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixView.vue",
+      "lines": 123,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixVisualActions.vue",
+      "lines": 52,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/overlays/FrameLayer.vue",
+      "lines": 28,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/overlays/OverlayItem.vue",
+      "lines": 26,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/overlays/OverlayLayer.vue",
+      "lines": 32,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/toolbar/ArrangeSwitch.vue",
+      "lines": 25,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/toolbar/BackgroundPicker.vue",
+      "lines": 77,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/toolbar/CanvasToolbar.vue",
+      "lines": 155,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/toolbar/ScreenshotPopover.vue",
+      "lines": 195,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/toolbar/ScreenshotSetup.vue",
+      "lines": 191,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/toolbar/SearchMatchStepper.vue",
+      "lines": 27,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/toolbar/ToolSwitch.vue",
+      "lines": 38,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/toolbar/ToolbarButton.vue",
+      "lines": 52,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/toolbar/ToolbarPopover.vue",
+      "lines": 57,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/toolbar/ViewportMenu.vue",
+      "lines": 105,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/toolbar/ZoomMenu.vue",
+      "lines": 58,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/tools/PluginToolLayer.vue",
+      "lines": 50,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/views/PluginCanvasView.vue",
+      "lines": 59,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/command/CommandPrompts.vue",
+      "lines": 103,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/command/PromptSelect.vue",
+      "lines": 146,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/command/PromptText.vue",
+      "lines": 67,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/CommentComposer.vue",
+      "lines": 78,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/CommentContext.vue",
+      "lines": 56,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/CommentPin.vue",
+      "lines": 31,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/CommentThread.vue",
+      "lines": 113,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/CommentsCanvasOverlay.vue",
+      "lines": 172,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/prompt/AgentPrompt.vue",
+      "lines": 187,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/prompt/AttachMenuPanel.vue",
+      "lines": 67,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/prompt/AttachmentStrip.vue",
+      "lines": 51,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/prompt/AttachmentTile.vue",
+      "lines": 41,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/prompt/AttachmentViewer.vue",
+      "lines": 37,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/prompt/ContextChip.vue",
+      "lines": 28,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/prompt/PromptAttachMenu.vue",
+      "lines": 52,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/prompt/PromptMenu.vue",
+      "lines": 51,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/prompt/PromptSuggestions.vue",
+      "lines": 33,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/prompt/SessionPicker.vue",
+      "lines": 49,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/prompt/SessionRadioList.vue",
+      "lines": 30,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/prompt/SessionSettings.vue",
+      "lines": 70,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/AgentActivityPhase.vue",
+      "lines": 46,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/AgentLiveTail.vue",
+      "lines": 53,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/AgentMarkdown.vue",
+      "lines": 32,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/AgentPlan.vue",
+      "lines": 39,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/AgentPlanDecision.vue",
+      "lines": 29,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/ThreadMessage.vue",
+      "lines": 70,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/questions/AgentElicitation.vue",
+      "lines": 34,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/questions/AgentPlanApproval.vue",
+      "lines": 36,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/questions/ElicitationField.vue",
+      "lines": 74,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/questions/ElicitationForm.vue",
+      "lines": 54,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/questions/ElicitationLink.vue",
+      "lines": 61,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/questions/ElicitationOptions.vue",
+      "lines": 101,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/embed/EmbedDialog.vue",
+      "lines": 204,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/embed/EmbedMenu.vue",
+      "lines": 36,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/extensions/ExtensionView.vue",
+      "lines": 70,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/inspector/DocsTab.vue",
+      "lines": 15,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/inspector/EventsBadge.vue",
+      "lines": 9,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/inspector/EventsTab.vue",
+      "lines": 24,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/inspector/InspectorHeader.vue",
+      "lines": 36,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/inspector/InspectorTabs.vue",
+      "lines": 132,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/inspector/PropsTab.vue",
+      "lines": 33,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/inspector/SourceDrawer.vue",
+      "lines": 181,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/inspector/StoryInspector.vue",
+      "lines": 145,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/inspector/TestsBadge.vue",
+      "lines": 14,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/inspector/TestsTab.vue",
+      "lines": 24,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/menu/ContextMenu.vue",
+      "lines": 124,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/menu/MenuItem.vue",
+      "lines": 12,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/menu/SubMenu.vue",
+      "lines": 50,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/misc/HatchedPattern.vue",
+      "lines": 3,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/home/BrowseSections.vue",
+      "lines": 39,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/home/GuidesList.vue",
+      "lines": 31,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/home/HomeHeader.vue",
+      "lines": 30,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/home/HomePage.vue",
+      "lines": 102,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/home/HomeSearch.vue",
+      "lines": 22,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/home/NeedsAttention.vue",
+      "lines": 47,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/home/PluginHomeSections.vue",
+      "lines": 44,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/home/UpdatesList.vue",
+      "lines": 46,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/markdown/MarkdownOutline.vue",
+      "lines": 26,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/markdown/MarkdownPage.vue",
+      "lines": 141,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/markdown/MarkdownPager.vue",
+      "lines": 30,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/AboutSection.vue",
+      "lines": 27,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/AgentAdvancedSettings.vue",
+      "lines": 135,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/AgentArgumentsField.vue",
+      "lines": 49,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/AgentEnvironmentField.vue",
+      "lines": 67,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/AgentModelSettings.vue",
+      "lines": 50,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/AgentPresetRow.vue",
+      "lines": 78,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/AgentsSection.vue",
+      "lines": 144,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/AppearanceSection.vue",
+      "lines": 60,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/BackgroundsSection.vue",
+      "lines": 96,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/GeneralSection.vue",
+      "lines": 33,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/McpSection.vue",
+      "lines": 48,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/ProjectSourceBadge.vue",
+      "lines": 32,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/SaveToProject.vue",
+      "lines": 71,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/SettingsNav.vue",
+      "lines": 28,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/SettingsPage.vue",
+      "lines": 58,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/ShortcutsSection.vue",
+      "lines": 28,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/TestsSection.vue",
+      "lines": 20,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/ViewportsSection.vue",
+      "lines": 76,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/ai/AiCreatedStories.vue",
+      "lines": 27,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/ai/AiPanel.vue",
+      "lines": 102,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/ai/AiThreadComposer.vue",
+      "lines": 71,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/ai/AiThreadHeader.vue",
+      "lines": 28,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/ai/AiThreadList.vue",
+      "lines": 78,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/ai/AiThreadView.vue",
+      "lines": 102,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/mcp/McpActivity.vue",
+      "lines": 56,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/mcp/McpClients.vue",
+      "lines": 38,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/mcp/McpContent.vue",
+      "lines": 44,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/mcp/McpCurrentOperation.vue",
+      "lines": 33,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/mcp/McpEndpoint.vue",
+      "lines": 51,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/mcp/McpHistory.vue",
+      "lines": 39,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/search/SearchPanel.vue",
+      "lines": 288,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/search/SearchResultItem.vue",
+      "lines": 65,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/search/SearchScopes.vue",
+      "lines": 21,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue",
+      "lines": 290,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/tests/FunctionalTestsPanel.vue",
+      "lines": 97,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/tests/TestsFilter.vue",
+      "lines": 15,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/tests/TestsPanel.vue",
+      "lines": 18,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/tests/TestsSummary.vue",
+      "lines": 33,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/tests/TestsTree.vue",
+      "lines": 117,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/tests/TestsTreeRow.vue",
+      "lines": 45,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/visual/VisualImageLabel.vue",
+      "lines": 16,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/visual/VisualResultRow.vue",
+      "lines": 42,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/visual/VisualResultsList.vue",
+      "lines": 43,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/visual/VisualSlider.vue",
+      "lines": 91,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/visual/VisualTestsPanel.vue",
+      "lines": 107,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/visual/VisualTestsSummary.vue",
+      "lines": 36,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/visual/VisualViewer.vue",
+      "lines": 215,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/visual/VisualViewerActions.vue",
+      "lines": 40,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/visual/VisualViewerDock.vue",
+      "lines": 75,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/visual/VisualViewerHeader.vue",
+      "lines": 85,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/AppRail.vue",
+      "lines": 121,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/InspectorFrame.vue",
+      "lines": 31,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/PanelResizeHandle.vue",
+      "lines": 33,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/PluginPane.vue",
+      "lines": 22,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/RailButton.vue",
+      "lines": 44,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/ShellLayout.vue",
+      "lines": 104,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/SidePanelHost.vue",
+      "lines": 24,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/WorkbenchEmptyState.vue",
+      "lines": 37,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/WorkbenchErrorState.vue",
+      "lines": 37,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/WorkbenchLoadingSkeleton.vue",
+      "lines": 17,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/WorkbenchLoadingState.vue",
+      "lines": 30,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/WorkbenchPaneHeader.vue",
+      "lines": 19,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/WorkbenchPaneList.vue",
+      "lines": 12,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/WorkbenchPaneToolbar.vue",
+      "lines": 17,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/WorkbenchPanelAction.vue",
+      "lines": 54,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/story/StoryVariantGridSandbox.vue",
+      "lines": 227,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/story/StoryVariantGridSandboxItem.vue",
+      "lines": 151,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/toolbar/ToolbarNewTab.vue",
+      "lines": 30,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/style/tokens.pcss",
+      "lines": 135,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/bundle-main-dev.js",
+      "lines": 4,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/bundle-main.js",
+      "lines": 6,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/embed/EmbedDocument.vue",
+      "lines": 29,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls-stories/histoire-setup.ts",
+      "lines": 1,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls-stories/tailwind.config.cjs",
+      "lines": 10,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/postcss.config.cjs",
+      "lines": 6,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/postcss.peer.config.cjs",
+      "lines": 27,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/HstCopyIcon.vue",
+      "lines": 96,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/HstWrapper.vue",
+      "lines": 31,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/button/HstButton.story.vue",
+      "lines": 30,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/button/HstButton.vue",
+      "lines": 29,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/button/HstButtonGroup.vue",
+      "lines": 57,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/design-tokens/HstColorShades.story.vue",
+      "lines": 111,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/design-tokens/HstColorShades.vue",
+      "lines": 35,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/design-tokens/HstTokenDetails.vue",
+      "lines": 33,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/design-tokens/HstTokenGrid.story.vue",
+      "lines": 36,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/design-tokens/HstTokenGrid.vue",
+      "lines": 57,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/design-tokens/HstTokenList.story.vue",
+      "lines": 81,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/design-tokens/HstTokenList.vue",
+      "lines": 47,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/json/HstJson.vue",
+      "lines": 159,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/json/HstJsonEditor.vue",
+      "lines": 204,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/number/HstNumber.vue",
+      "lines": 117,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/select/HstSelect.story.vue",
+      "lines": 161,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/slider/HstSlider.vue",
+      "lines": 115,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/components/textarea/HstTextarea.vue",
+      "lines": 31,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/style/controls.pcss",
+      "lines": 143,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/style/main.css",
+      "lines": 11,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/style/peer.css",
+      "lines": 9,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-controls/src/style/tailwind-defaults.spec.ts",
+      "lines": 40,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/__tests__/source-highlighting.spec.ts",
+      "lines": 72,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/__tests__/workbench-state-components.spec.ts",
+      "lines": 108,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/components/controls/GenericControls.ts",
+      "lines": 34,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/components/controls/HistoireControls.ts",
+      "lines": 176,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/components/controls/PresetMenu.ts",
+      "lines": 170,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/components/controls/StatePresets.ts",
+      "lines": 113,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/components/docs/HistoireDocs.ts",
+      "lines": 117,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/components/events/HistoireEvents.ts",
+      "lines": 87,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/components/extensions/HistoireExtensionView.ts",
+      "lines": 57,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/components/source/HistoireSource.ts",
+      "lines": 84,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/components/tests/HistoireTests.ts",
+      "lines": 114,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/foundation/VirtualList.ts",
+      "lines": 162,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/index.ts",
+      "lines": 18,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/internal.ts",
+      "lines": 31,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/styles/content.css",
+      "lines": 22,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/styles/controls.css",
+      "lines": 26,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/styles/embed.css",
+      "lines": 15,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/styles/explorer.css",
+      "lines": 67,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/styles/extensions.css",
+      "lines": 17,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/styles/navigation.css",
+      "lines": 51,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/styles/style.css",
+      "lines": 88,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/styles/tests.css",
+      "lines": 59,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-vue/src/styles/virtual-list.css",
+      "lines": 6,
+      "new": false
+    },
+    {
+      "file": "packages/histoire/src/node/__tests__/sandbox-html.spec.ts",
+      "lines": 30,
+      "new": false
+    },
+    {
+      "file": "packages/histoire/src/node/alias.ts",
+      "lines": 19,
+      "new": false
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/base/overflow/presentation.ts",
+      "lines": 12,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/base/popover/PopoverDivider.vue",
+      "lines": 12,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/base/popover/PopoverError.vue",
+      "lines": 12,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/base/popover/PopoverMeta.vue",
+      "lines": 10,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/base/popover/PopoverRow.vue",
+      "lines": 19,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/base/popover/PopoverTitle.vue",
+      "lines": 16,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasHintBar.vue",
+      "lines": 16,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasHintButton.vue",
+      "lines": 18,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasHintItem.vue",
+      "lines": 16,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/CanvasHintKey.vue",
+      "lines": 10,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/SingleVariantResizeHandle.vue",
+      "lines": 11,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixAxisForm.vue",
+      "lines": 16,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixAxisFormActions.vue",
+      "lines": 12,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/CommentContextChip.vue",
+      "lines": 21,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/AgentDisclosure.vue",
+      "lines": 12,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/questions/QuestionActions.vue",
+      "lines": 12,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/questions/QuestionInput.vue",
+      "lines": 3,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/questions/QuestionOption.vue",
+      "lines": 13,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/comments/thread/questions/QuestionOptionLabel.vue",
+      "lines": 12,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/inspector/InspectorExtensionOutlet.vue",
+      "lines": 28,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/inspector/SourceAction.vue",
+      "lines": 14,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/home/HomeCard.vue",
+      "lines": 12,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/home/HomeHeading.vue",
+      "lines": 12,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/home/HomeRow.vue",
+      "lines": 18,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/AgentLaunchField.vue",
+      "lines": 19,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/SettingsCard.vue",
+      "lines": 12,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/SettingsChoices.vue",
+      "lines": 7,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/pages/settings/SettingsRow.vue",
+      "lines": 20,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/visual/VisualViewerDockButton.vue",
+      "lines": 15,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/panes/visual/VisualViewerSurface.vue",
+      "lines": 19,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/components/shell/WorkbenchStateLayout.vue",
+      "lines": 36,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/style/main.css",
+      "lines": 25,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-app/src/app/style/theme.css",
+      "lines": 101,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-controls/scripts/flatten-tailwind-layers.cjs",
+      "lines": 19,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-controls/scripts/generate-peer-theme.mjs",
+      "lines": 39,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-controls/scripts/postcss-tailwind-isolation.cjs",
+      "lines": 34,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-controls/src/style/base-theme.css",
+      "lines": 15,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-controls/src/style/compile-styles.test-support.mjs",
+      "lines": 19,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-controls/src/style/peer-theme.css",
+      "lines": 219,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-controls/src/style/tailwind-assets.spec.ts",
+      "lines": 19,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-controls/src/style/tailwind-theme.spec.ts",
+      "lines": 44,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-controls/src/style/tailwind-workspace.spec.ts",
+      "lines": 26,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-controls/src/style/theme.css",
+      "lines": 219,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-vue/src/components/source/render.ts",
+      "lines": 12,
+      "new": true
+    },
+    {
+      "file": "packages/histoire-vue/src/foundation/parts.ts",
+      "lines": 20,
+      "new": true
+    },
+    {
+      "file": "packages/histoire/src/node/__tests__/app-styling-guard.spec.ts",
+      "lines": 43,
+      "new": true
+    },
+    {
+      "file": "packages/histoire/src/node/__tests__/embed/integration/extension-interactivity.spec.ts",
+      "lines": 105,
+      "new": true
+    }
+  ],
+  "markers": [
+    "__histoire-render-custom-controls",
+    "__histoire-render-story",
+    "agent-markdown",
+    "agent-prompt",
+    "canvas-comment-overlay",
+    "canvas-comment-pin",
+    "capture-message",
+    "collection-progress",
+    "header-anchor",
+    "histoire-agent-arg",
+    "histoire-app",
+    "histoire-base-popover",
+    "histoire-canvas-file",
+    "histoire-canvas-frame",
+    "histoire-canvas-header",
+    "histoire-canvas-hint",
+    "histoire-canvas-info",
+    "histoire-canvas-replica",
+    "histoire-canvas-status",
+    "histoire-canvas-toolbar",
+    "histoire-canvas-viewport",
+    "histoire-context-menu",
+    "histoire-control-popover",
+    "histoire-controls",
+    "histoire-controls-reset",
+    "histoire-docs",
+    "histoire-event-row",
+    "histoire-events",
+    "histoire-events-count",
+    "histoire-frame-content",
+    "histoire-frame-label",
+    "histoire-frame-select",
+    "histoire-frame-title",
+    "histoire-generic-render-story",
+    "histoire-inspector-frame",
+    "histoire-markdown-path",
+    "histoire-matrix-axis-position",
+    "histoire-matrix-base-prop",
+    "histoire-matrix-board",
+    "histoire-matrix-cell",
+    "histoire-matrix-cell-content",
+    "histoire-matrix-cell-select",
+    "histoire-measure-box",
+    "histoire-measure-hit",
+    "histoire-prop-control-reset",
+    "histoire-provider",
+    "histoire-root",
+    "histoire-settings-content",
+    "histoire-shell-layout",
+    "histoire-single-frame-shell",
+    "histoire-single-variant",
+    "histoire-source-content",
+    "histoire-state-control",
+    "histoire-story-controls",
+    "histoire-submenu-panel",
+    "histoire-workbench",
+    "htw-dark",
+    "htw-sandbox-hidden",
+    "image-scroll",
+    "inspector-source",
+    "inspector-source-retry",
+    "is-selected",
+    "overflow-toolbar-item",
+    "overflow-toolbar-items",
+    "phase-row",
+    "phase-steps",
+    "recent-capture",
+    "screenshot-setup",
+    "stories-count",
+    "stories-group",
+    "stories-label",
+    "stories-row",
+    "stories-tree",
+    "test-row",
+    "test-story-heading",
+    "tests-panel",
+    "viewport-custom"
+  ],
+  "missingMarkers": [],
+  "styleFiles": [
+    "app/style/controls.css",
+    "app/style/density.css",
+    "app/style/document.pcss",
+    "app/style/fonts.pcss",
+    "app/style/main.css",
+    "app/style/theme.css",
+    "app/style/tokens.pcss",
+    "embed/document.css"
+  ],
+  "styleBlocks": [],
+  "markerElements": [
+    {
+      "marker": "__histoire-render-custom-controls",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "__histoire-render-story",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/story/GenericRenderStory.vue",
+          "element": "component"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/story/GenericRenderStory.vue",
+          "element": "component"
+        }
+      ]
+    },
+    {
+      "marker": "agent-markdown",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/thread/AgentMarkdown.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/comments/thread/AgentMarkdown.vue",
+          "element": "p"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/thread/AgentMarkdown.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/comments/thread/AgentMarkdown.vue",
+          "element": "p"
+        }
+      ]
+    },
+    {
+      "marker": "agent-prompt",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/prompt/AgentPrompt.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/prompt/AgentPrompt.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "canvas-comment-overlay",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/CommentsCanvasOverlay.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/CommentsCanvasOverlay.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "canvas-comment-pin",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/CommentsCanvasOverlay.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/comments/CommentsCanvasOverlay.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/CommentsCanvasOverlay.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/comments/CommentsCanvasOverlay.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "capture-message",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/toolbar/ScreenshotPopover.vue",
+          "element": "p"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/toolbar/ScreenshotPopover.vue",
+          "element": "p"
+        }
+      ]
+    },
+    {
+      "marker": "collection-progress",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/tests/FunctionalTestsPanel.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/tests/FunctionalTestsPanel.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "header-anchor",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-agent-arg",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/pages/settings/AgentArgumentsField.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/pages/settings/AgentArgumentsField.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-app",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/App.vue",
+          "element": "HistoireProvider"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/App.vue",
+          "element": "HistoireProvider"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-base-popover",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/base/popover/BasePopover.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/base/popover/BasePopover.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-canvas-file",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasHeader.vue",
+          "element": "button"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasHeader.vue",
+          "element": "span"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasHeader.vue",
+          "element": "button"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasHeader.vue",
+          "element": "span"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-canvas-frame",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasFrame.vue",
+          "element": "section"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasFrame.vue",
+          "element": "section"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-canvas-header",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasViewport.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasViewport.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-canvas-hint",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasStatus.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasStatus.vue",
+          "element": "CanvasMeasureHint"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasStatus.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasHintBar.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-canvas-info",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasStatus.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasStatus.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-canvas-replica",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasReplicaPreview.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasReplicaPreview.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-canvas-status",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasStatus.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasStatus.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-canvas-toolbar",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/toolbar/CanvasToolbar.vue",
+          "element": "BaseOverflowToolbar"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/toolbar/CanvasToolbar.vue",
+          "element": "BaseOverflowToolbar"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-canvas-viewport",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasViewport.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasViewport.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-context-menu",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/menu/ContextMenu.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/menu/ContextMenu.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-control-popover",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/base/popover/BasePopover.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/menu/ContextMenu.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/menu/ContextMenu.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/menu/SubMenu.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/base/popover/BasePopover.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/menu/ContextMenu.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/menu/ContextMenu.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/menu/SubMenu.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-controls",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-controls-reset",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-docs",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-event-row",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-events",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-events-count",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-frame-content",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasFrame.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasFrame.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-frame-label",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasFrame.vue",
+          "element": "button"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasFrame.vue",
+          "element": "button"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-frame-select",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasFrame.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasFrame.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-frame-title",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasFrame.vue",
+          "element": "span"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasFrame.vue",
+          "element": "span"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-generic-render-story",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/story/GenericRenderStory.vue",
+          "element": "component"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/story/GenericRenderStory.vue",
+          "element": "component"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-inspector-frame",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/shell/InspectorFrame.vue",
+          "element": "aside"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/shell/InspectorFrame.vue",
+          "element": "aside"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-markdown-path",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/pages/markdown/MarkdownPage.vue",
+          "element": "p"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/pages/markdown/MarkdownPage.vue",
+          "element": "p"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-matrix-axis-position",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixView.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixView.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-matrix-base-prop",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixBaseProp.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixBaseProp.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-matrix-board",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixView.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixView.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-matrix-cell",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixCell.vue",
+          "element": "section"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixCell.vue",
+          "element": "section"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-matrix-cell-content",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixCell.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixCell.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-matrix-cell-select",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixCell.vue",
+          "element": "button"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixCell.vue",
+          "element": "button"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-measure-box",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/MeasureOverlay.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/MeasureOverlay.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-measure-hit",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/MeasureOverlay.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/MeasureOverlay.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-prop-control-reset",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-provider",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-root",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-settings-content",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/pages/settings/SettingsPage.vue",
+          "element": "main"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/pages/settings/SettingsPage.vue",
+          "element": "main"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-shell-layout",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/shell/ShellLayout.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/shell/ShellLayout.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-single-frame-shell",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasSingleVariant.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasSingleVariant.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-single-variant",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasSingleVariant.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasSingleVariant.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-source-content",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-state-control",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-story-controls",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "histoire-submenu-panel",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/menu/SubMenu.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/menu/SubMenu.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "histoire-workbench",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "htw-dark",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "htw-sandbox-hidden",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "image-scroll",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/visual/VisualViewer.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/panes/visual/VisualViewer.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/visual/VisualViewer.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/panes/visual/VisualViewer.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "inspector-source",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/inspector/SourceDrawer.vue",
+          "element": "section"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/inspector/SourceDrawer.vue",
+          "element": "section"
+        }
+      ]
+    },
+    {
+      "marker": "inspector-source-retry",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/inspector/SourceDrawer.vue",
+          "element": "HstButton"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/inspector/SourceDrawer.vue",
+          "element": "HstButton"
+        }
+      ]
+    },
+    {
+      "marker": "is-selected",
+      "before": [],
+      "after": []
+    },
+    {
+      "marker": "overflow-toolbar-item",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/base/overflow/BaseOverflowToolbarItem.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/base/overflow/BaseOverflowToolbarItem.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "overflow-toolbar-items",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/base/overflow/BaseOverflowToolbar.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/base/overflow/BaseOverflowToolbar.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "phase-row",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/thread/AgentActivityPhase.vue",
+          "element": "button"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/thread/AgentActivityPhase.vue",
+          "element": "AgentDisclosure"
+        }
+      ]
+    },
+    {
+      "marker": "phase-steps",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/thread/AgentActivityPhase.vue",
+          "element": "ul"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/thread/AgentActivityPhase.vue",
+          "element": "ul"
+        }
+      ]
+    },
+    {
+      "marker": "recent-capture",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/toolbar/ScreenshotPopover.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/toolbar/ScreenshotPopover.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "screenshot-setup",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/toolbar/ScreenshotSetup.vue",
+          "element": "section"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/toolbar/ScreenshotSetup.vue",
+          "element": "section"
+        }
+      ]
+    },
+    {
+      "marker": "stories-count",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue",
+          "element": "span"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue",
+          "element": "span"
+        }
+      ]
+    },
+    {
+      "marker": "stories-group",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue",
+          "element": "h3"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue",
+          "element": "h3"
+        }
+      ]
+    },
+    {
+      "marker": "stories-label",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue",
+          "element": "span"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue",
+          "element": "span"
+        }
+      ]
+    },
+    {
+      "marker": "stories-row",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue",
+          "element": "HstButton"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue",
+          "element": "HstButton"
+        }
+      ]
+    },
+    {
+      "marker": "stories-tree",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "test-row",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/tests/TestsTreeRow.vue",
+          "element": "HstButton"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/tests/TestsTreeRow.vue",
+          "element": "HstButton"
+        }
+      ]
+    },
+    {
+      "marker": "test-story-heading",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/tests/TestsTree.vue",
+          "element": "HstButton"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/tests/TestsTree.vue",
+          "element": "HstButton"
+        }
+      ]
+    },
+    {
+      "marker": "tests-panel",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/tests/FunctionalTestsPanel.vue",
+          "element": "section"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/panes/tests/FunctionalTestsPanel.vue",
+          "element": "section"
+        }
+      ]
+    },
+    {
+      "marker": "viewport-custom",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/toolbar/ViewportMenu.vue",
+          "element": "form"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/toolbar/ViewportMenu.vue",
+          "element": "form"
+        }
+      ]
+    }
+  ],
+  "markerElementDifferences": [
+    {
+      "marker": "histoire-canvas-hint",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasStatus.vue",
+          "element": "div"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasStatus.vue",
+          "element": "CanvasMeasureHint"
+        },
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasStatus.vue",
+          "element": "div"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/canvas/CanvasHintBar.vue",
+          "element": "div"
+        }
+      ]
+    },
+    {
+      "marker": "phase-row",
+      "before": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/thread/AgentActivityPhase.vue",
+          "element": "button"
+        }
+      ],
+      "after": [
+        {
+          "file": "packages/histoire-app/src/app/components/comments/thread/AgentActivityPhase.vue",
+          "element": "AgentDisclosure"
+        }
+      ]
+    }
+  ],
+  "markerReview": "CanvasHintBar retains the div at all three original render sites. AgentDisclosure retains the phase-row button. Dynamic marker bindings and foreign markdown header-anchor remain intact. Other literal app marker placements match HEAD.",
+  "dynamicMarkersReviewed": [
+    "is-selected with histoire-canvas-frame",
+    "inspector-test-${status}",
+    "data-density",
+    "data-histoire-controls"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "changed": [
+    "packages/histoire-app/src/app/components/panes/ai/AiCreatedStories.vue",
+    "packages/histoire-app/src/app/components/panes/ai/AiPanel.vue",
+    "packages/histoire-app/src/app/components/panes/ai/AiThreadComposer.vue",
+    "packages/histoire-app/src/app/components/panes/ai/AiThreadHeader.vue",
+    "packages/histoire-app/src/app/components/panes/ai/AiThreadList.vue",
+    "packages/histoire-app/src/app/components/panes/ai/AiThreadView.vue",
+    "packages/histoire-app/src/app/components/panes/mcp/McpActivity.vue",
+    "packages/histoire-app/src/app/components/panes/mcp/McpClients.vue",
+    "packages/histoire-app/src/app/components/panes/mcp/McpContent.vue",
+    "packages/histoire-app/src/app/components/panes/mcp/McpCurrentOperation.vue",
+    "packages/histoire-app/src/app/components/panes/mcp/McpEndpoint.vue",
+    "packages/histoire-app/src/app/components/panes/mcp/McpHistory.vue",
+    "packages/histoire-app/src/app/components/panes/search/SearchPanel.vue",
+    "packages/histoire-app/src/app/components/panes/search/SearchResultItem.vue",
+    "packages/histoire-app/src/app/components/panes/search/SearchScopes.vue",
+    "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue",
+    "packages/histoire-app/src/app/components/panes/tests/FunctionalTestsPanel.vue",
+    "packages/histoire-app/src/app/components/panes/tests/TestsPanel.vue",
+    "packages/histoire-app/src/app/components/panes/tests/TestsSummary.vue",
+    "packages/histoire-app/src/app/components/panes/tests/TestsTree.vue",
+    "packages/histoire-app/src/app/components/panes/tests/TestsTreeRow.vue",
+    "packages/histoire-app/src/app/components/panes/visual/VisualImageLabel.vue",
+    "packages/histoire-app/src/app/components/panes/visual/VisualResultRow.vue",
+    "packages/histoire-app/src/app/components/panes/visual/VisualResultsList.vue",
+    "packages/histoire-app/src/app/components/panes/visual/VisualSlider.vue",
+    "packages/histoire-app/src/app/components/panes/visual/VisualTestsPanel.vue",
+    "packages/histoire-app/src/app/components/panes/visual/VisualTestsSummary.vue",
+    "packages/histoire-app/src/app/components/panes/visual/VisualViewer.vue",
+    "packages/histoire-app/src/app/components/panes/visual/VisualViewerActions.vue",
+    "packages/histoire-app/src/app/components/panes/visual/VisualViewerDock.vue",
+    "packages/histoire-app/src/app/components/panes/visual/VisualViewerHeader.vue"
+  ],
+  "created": [
+    "packages/histoire-app/src/app/components/panes/visual/VisualViewerDockButton.vue",
+    "packages/histoire-app/src/app/components/panes/visual/VisualViewerSurface.vue"
+  ],
+  "deleted": [],
+  "sourceFilesOver300Lines": [],
+  "customCssExceptionsAdded": [],
+  "testsAdded": []
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "file": "packages/histoire-app/dist/bundled/app.css",
+    "bytes": 196584,
+    "gzipBytes": 30992,
+    "sha256": "41a9e2cdee90dc861323380ca0b8a8e67c842220338aebb8e3f95a7cbdfd88da",
+    "baselineBytes": 198045,
+    "baselineGzipBytes": 31130,
+    "rawChangePercent": -0.74
+  },
+  {
+    "file": "packages/histoire-app/dist/style.css",
+    "bytes": 115517,
+    "gzipBytes": 13896,
+    "sha256": "cd6e41b8a4ba87a7e73ab491ca12f1ef87af745b34b8eeb44f13a77ade99e219",
+    "baselineBytes": 104082,
+    "baselineGzipBytes": 14505,
+    "rawChangePercent": 10.99
+  },
+  {
+    "file": "packages/histoire-controls/dist/style-standalone.css",
+    "bytes": 28100,
+    "gzipBytes": 4801,
+    "sha256": "8931fd6b3185e2324c6f61048c43a6893edca2dfbe323def7dfbb269c23ad9ca",
+    "baselineBytes": 27384,
+    "baselineGzipBytes": 4852,
+    "rawChangePercent": 2.61
+  },
+  {
+    "file": "packages/histoire-controls/dist/peer/style.css",
+    "bytes": 33924,
+    "gzipBytes": 5638,
+    "sha256": "e99b03d42b4e8301e1fc0fb7fee1011a630b70bb8d9ee021add605196dfc2093",
+    "baselineBytes": 33074,
+    "baselineGzipBytes": 5514,
+    "rawChangePercent": 2.57
+  }
+]

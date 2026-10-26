@@ -1,0 +1,50 @@
+[
+  {
+    "file": "packages/histoire-app/dist/bundled/app.css",
+    "before": {
+      "bytes": 198045,
+      "gzipBytes": 31130
+    },
+    "after": {
+      "bytes": 23818,
+      "gzipBytes": 4648
+    },
+    "sha256": "5d258164d2cd151e2e63cd253d6ad99f3814ec3b46b978a5770aad324fd23c79"
+  },
+  {
+    "file": "packages/histoire-app/dist/style.css",
+    "before": {
+      "bytes": 104082,
+      "gzipBytes": 14505
+    },
+    "after": {
+      "bytes": 243729,
+      "gzipBytes": 31732
+    },
+    "sha256": "4ffe915de214711608c9c25f8a43888fbba206f16a07456e2cddf94b0fb7fff9"
+  },
+  {
+    "file": "packages/histoire-controls/dist/style-standalone.css",
+    "before": {
+      "bytes": 27384,
+      "gzipBytes": 4852
+    },
+    "after": {
+      "bytes": 29087,
+      "gzipBytes": 4941
+    },
+    "sha256": "e0bf1f2b09631de0b8be080452e1cc41b9fb322f1072a64b13e77df666750f97"
+  },
+  {
+    "file": "packages/histoire-controls/dist/peer/style.css",
+    "before": {
+      "bytes": 33074,
+      "gzipBytes": 5514
+    },
+    "after": {
+      "bytes": 36908,
+      "gzipBytes": 5820
+    },
+    "sha256": "5be7f59d82c1a5b4fadf7244d9e4e9b08d76d04c04ee7fef1b3e7d3790bfa6e8"
+  }
+]

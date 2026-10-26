@@ -1,6 +1,10 @@
 # Tailwind-only histoire-app slice plans
 
-Status: planned 2026-10-24. No slice started. Base: `main` at `e42bad8f` with unrelated uncommitted work in the checkout (see [baseline.md](baseline.md) once slice 01 records it).
+Status: slices 01–12 are implemented locally (2026-10-26). Final comparisons match accepted references (104 main, 16 comments, 16 native); unit/Cypress checks pass. App has zero Vue style blocks/deep selectors and one documented Shiki important utility. Full acceptance remains blocked by inherited controls/app declaration errors, nine embed and six Tailwind integration failures; installed-consumer checks are reserved for the orchestrator. See [conformance](conformance.md) and [slice 12 Status](12-conformance.md#status). Changes are uncommitted.
+
+Slice 04 source hooks are implemented; its [Status](04-source-fixes.md#status) records validation, actual API ownership, and inherited build/test limits. App style migration is complete through slice 11.
+
+Slice 05 shared primitives are implemented locally; [Status and handoff APIs](05-shell-and-base.md#status) list `fill`, toolbar presentation, pane position and popover parts. Its 104-screen comparison was exact; E13 was removed by slice 07, and slices 06–10 are complete. Inherited broad build/test limits remain documented.
 
 ## Intended outcome
 

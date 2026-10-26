@@ -1,0 +1,737 @@
+{
+  "before": "/home/akryum/Projects/histoire/plans/tailwind-only/evidence/baseline",
+  "after": "/tmp/histoire-tailwind-repeat",
+  "threshold": 0.1,
+  "includeAA": true,
+  "screens": [
+    {
+      "file": "canvas-grid-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-grid-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-grid-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-grid-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-list-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-list-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-list-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-list-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-matrix-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-matrix-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-matrix-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-matrix-narrow.png",
+      "status": "changed",
+      "changedPixels": 3365,
+      "totalPixels": 304500,
+      "ratio": 0.011050903119868637
+    },
+    {
+      "file": "canvas-measure-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-measure-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-measure-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-measure-narrow.png",
+      "status": "changed",
+      "changedPixels": 3845,
+      "totalPixels": 304500,
+      "ratio": 0.012627257799671592
+    },
+    {
+      "file": "canvas-single-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-single-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-single-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-single-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "coexistence-v3-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "coexistence-v3-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "coexistence-v3-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "coexistence-v3-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "coexistence-v4-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "coexistence-v4-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "coexistence-v4-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "coexistence-v4-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "embed-dialog-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "embed-dialog-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "embed-dialog-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "embed-dialog-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "home-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "home-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "home-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "home-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "inspector-docs-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "inspector-docs-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "inspector-docs-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "inspector-docs-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "inspector-events-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "inspector-events-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "inspector-events-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "inspector-events-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "inspector-props-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "inspector-props-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "inspector-props-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "inspector-props-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "markdown-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "markdown-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "markdown-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "markdown-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-inspector-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-inspector-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-inspector-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-inspector-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-overlay-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-overlay-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-overlay-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-overlay-narrow.png",
+      "status": "changed",
+      "changedPixels": 2234,
+      "totalPixels": 304500,
+      "ratio": 0.007336617405582922
+    },
+    {
+      "file": "plugin-pane-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-pane-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-pane-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-pane-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-view-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-view-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-view-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-view-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "search-empty-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "search-empty-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "search-empty-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "search-empty-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "search-results-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "search-results-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "search-results-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "search-results-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "settings-appearance-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "settings-appearance-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "settings-appearance-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "settings-appearance-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "settings-general-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "settings-general-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "settings-general-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "settings-general-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "settings-plugin-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "settings-plugin-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "settings-plugin-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "settings-plugin-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "source-changed-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "source-changed-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "source-changed-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "source-changed-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "stories-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "stories-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "stories-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "stories-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "toolbar-overflow-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "toolbar-overflow-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "toolbar-overflow-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "toolbar-overflow-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "toolbar-viewport-compact.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "toolbar-viewport-dark.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "toolbar-viewport-light.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 1296000,
+      "ratio": 0
+    },
+    {
+      "file": "toolbar-viewport-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    }
+  ],
+  "captureFailures": []
+}

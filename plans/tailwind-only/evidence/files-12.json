@@ -1,0 +1,212 @@
+[
+  {
+    "file": "eslint.config.mjs",
+    "sha256": "813fabafef1cc97d2257f1730fc9ba1903d2bc64c964935c12f7a8864ea31519",
+    "startingSha256": null
+  },
+  {
+    "file": "packages/histoire-app/package.json",
+    "sha256": "41b8fab16be97243feff83e052f1fb36dc33182789d54b40f4cb327b7ed0fef4",
+    "startingSha256": "8c564dbbb7fe314672e9c5a392fa40dcc3b414cbe94d1acd67f066fbbcd01aa2"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/agents/PermissionPrompt.vue",
+    "sha256": "2638046aa6d63889fa7046029bbbe257034b32b5f1c84c005b7db3e0a1eec87d",
+    "startingSha256": "cef74fc26fb0b58e6e60f894e1616c462e48a5658306c1c718560fd0a0210bb9"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/base/BaseKeyboardShortcut.vue",
+    "sha256": "ba2c2e82efe33b51238f8c9de56aedc004d9ba5fda10964808275c2090d47d45",
+    "startingSha256": "62c3e9a01cd26bab42d5ea12984a85d6c8547a94ce72b580ecbe6e0272bd8f0a"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/canvas/AgentCursor.vue",
+    "sha256": "8f6c9077028422691b3eda9b5507f177c93c1a174b8b6d48471606b133e40f9f",
+    "startingSha256": "0cc94965b6ba3244a193847c70c3b084fa42b6a34329a564cfd143964d8f16ba"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/canvas/CanvasHintBar.vue",
+    "sha256": "4a1185c3d6aa45e0de8cad1edab0726cbcae6e49c4dda4a207a9f1f2267fbe8e",
+    "startingSha256": "5dd2a5aaa299a3f5e0dd2e2b3896827b39fbf1f1d08dc93b0a99df3b2c23ee6a"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/canvas/CanvasHintButton.vue",
+    "sha256": "5317a57f9704af013191c8de3fe47cf67e1fb3c02de47a15b584fc594d37e4b9",
+    "startingSha256": "95ff919bfb3441ebf29f5f8c9e6fdd2e74237d2dad6fd131f1da61146fa65dfa"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/canvas/CanvasHintItem.vue",
+    "sha256": "338e0995bc0c3ccc52a39176ae71357ad5943afe5f103406f6549dad616d73ed",
+    "startingSha256": "0bfa5908dfdd4c3e2070d849a909e60d9ff415a9d59fa930f15d0c3b7d37fa9d"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/canvas/CanvasHintKey.vue",
+    "sha256": "7ac454840f57fb1e6c9e08ae774c1e8cb871b8edb0eff4d8a57ed281d1913a2a",
+    "startingSha256": "9010e71efecb1d7b994531c14f647947624403df5897970a7c81e0937ecdf02a"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/canvas/SingleVariantResizeHandle.vue",
+    "sha256": "380bbd2f786f639e39c7a23e47aab6e94c890db5d92cbe88cf28baf1d33ef7fe",
+    "startingSha256": "d411d20587e22c969174357c8eb5c5b69423278631c5657c9f45cc2f5dcbec9d"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixAxisForm.vue",
+    "sha256": "db41c01a67240b2601f1ffe4ef3bac7e276df2a7d0a79e8f302a3174377d4332",
+    "startingSha256": "99158fae682afe9ebda4d6ee9f3e6abf360c0c1a9669f59d66c4bd7a99ed5ff4"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixAxisFormActions.vue",
+    "sha256": "4ac30c741f1a4e11be65996a575f73fb4a8a2f5c2e353c626b9946f9e51d83f0",
+    "startingSha256": "6e0e5b37d1520c39871b0f288980de5de178ec23119b89ea69d97fa4854ca250"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/canvas/matrix/MatrixInspector.vue",
+    "sha256": "00fbbc74cac76b4a741c44c6310b3d55f28ed2210a7a2381d8a1b5b6e143d258",
+    "startingSha256": "b25464c85213b3f29763b8145a48a55aa4f557874f4cf7b4311b401cc19143e2"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/canvas/toolbar/BackgroundPicker.vue",
+    "sha256": "2c02cc8192356e89c5f97d1a4c03c2de5558bd4f12b44dec4c18882d2ffd7edb",
+    "startingSha256": "1e115e54656e91284965b0e3fc3976448dd4f105dac1aaf7c32d6c72b9d06550"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/canvas/toolbar/ScreenshotSetup.vue",
+    "sha256": "d881b84b5cd2a6bd104d7ec85bbfe431efb1494aeffcb80cd2f68c60924132be",
+    "startingSha256": "eb832f98257345951e5da496629937f5f4968c1efc9d8a17e87f0ffe0f85c81c"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/canvas/toolbar/ViewportMenu.vue",
+    "sha256": "946954e7a2ba4f0e3a444c1ff38f3cfd1435022339705ded21b801e084c5f156",
+    "startingSha256": "9081aa5c7d6bb10666a109abe2b7869ad07631bebaddfecc5ec62bed3504c53c"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/command/CommandPrompts.vue",
+    "sha256": "60e97f31e98f358ca643e23c74e707a0e0e3b93569a14ed077c9beb2e209b788",
+    "startingSha256": "6f85cd2f03394e49d6cc393d020b5cdd63e06d3317b0ab560cee75c35e3bc29d"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/command/PromptSelect.vue",
+    "sha256": "2e8bbe0e6b59edff6836c1b6e232c3120ed78b266d32c829c17a4c55c79f4810",
+    "startingSha256": "19ecd6737f5dccf7a900845b7d4510f6e785f7b166bdcda3b4a3579484120c7f"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/command/PromptText.vue",
+    "sha256": "7932de18c336e9cb095c3d9128cd39aefca9298a4442b1b82a36c504641f8294",
+    "startingSha256": "7bb59e0e29af607bca065351f69a3f031d099fe7653a1b8d889b756aa8fc8a6f"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/comments/thread/AgentDisclosure.vue",
+    "sha256": "dfee0d98bc1d291cb2baa6d725aaede27847e8c3007541e682f2ee17b0bdde33",
+    "startingSha256": "9655a298c30d22f0598c187d1eca81b1881fd75aebbe420219f1a67efc1efc1c"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/comments/thread/questions/QuestionActions.vue",
+    "sha256": "829a715fcf16cbdffe16275db09fc47c821dead4c704e56713b258a1ed6f2282",
+    "startingSha256": "b9f78af8ab50ace444ac65ec0e48b1945985502e015c22670ec08cee5f8a0e06"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/comments/thread/questions/QuestionOption.vue",
+    "sha256": "9038dda7d724284a7b7db2934b43893e3710bc3e0ae7de0f2baf996fce9d1f99",
+    "startingSha256": "e49ced1262b8d478847066a666bba8a57ad5d7d93ade23ef8378187480d36aa1"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/comments/thread/questions/QuestionOptionLabel.vue",
+    "sha256": "3599d25dbef7d12b35e1b8b39645e85fd5973b28e98cd48ad6299e45a3b5c716",
+    "startingSha256": "b29c556a8a9a5aabe5880502efac93d5ef31ca8d95fbe317efbca251bf1fc0c0"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/inspector/SourceAction.vue",
+    "sha256": "c61526d3bc82dc2ac3e5866065ee6231a8b69beeae2f408523127211873e9109",
+    "startingSha256": "39ebe7c98a76bbf272d1d6c9421c76a44c4f5c03e9b869fb7ab553188f5300b1"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/pages/home/HomeCard.vue",
+    "sha256": "182c5cec7d6ebb84e01a90a4bcaef702fa52f1c96b68c3ceb515501b9186cedb",
+    "startingSha256": "ac57f1d2c2e78f14f713da0903c5710e3519a4b51afa2f059c9da8bd80734028"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/pages/home/HomeHeading.vue",
+    "sha256": "7c547e9d4572c36c4d48772d979e906e314ba6514a653833b5c977c956c34816",
+    "startingSha256": "b87e01068dc4de11f1018d5a01f6261f9e4bb180ef7c8d71d1420438024142e6"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/pages/home/HomeRow.vue",
+    "sha256": "a5b5bfd57bdd6cd1dd13069b2752dee87530292da6a84047ea1422794622d446",
+    "startingSha256": "40779d9b18e018610c0e7e99d87826c75c6c5ad0d8a4d4306f87d4bc7814017c"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/pages/settings/AgentLaunchField.vue",
+    "sha256": "37efe7ea4c93135650c0ed7fe23c21bf52f1913c9c35d5c5b98c6825b7001bf4",
+    "startingSha256": "f69267420c57674d5da0e53033330b8186f95752819a46c927d93a9139b8af7a"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/pages/settings/SettingsCard.vue",
+    "sha256": "09369eb579f25bcc6ecdc357d093d2af7b50b982b2b7e8d636a612399c219075",
+    "startingSha256": "9a08e4375629bf5e4d23b5cee25ea37bbf0601e801078846fa8b0f29f0da3fb2"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/pages/settings/SettingsRow.vue",
+    "sha256": "ec7a98f679044866526645ddc27440dd370dfb155ed65712e5d9fa9541685edc",
+    "startingSha256": "90ce0fa22e1ba6cc16823c764d5d83ec14f2b1b5da922da01aeeaf5c366fc260"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/panes/visual/VisualViewerDockButton.vue",
+    "sha256": "9acae3ee7b67c7771827478c46863351fee0669f93f1a0809b3f0a98186fcd1a",
+    "startingSha256": "ce37cf7042f20a6c1bd18c7c580946cb96a21c21309ccff32552a78a6004f796"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/panes/visual/VisualViewerSurface.vue",
+    "sha256": "5538fd3fe243c9ede01d9fcb7681b3aafb2b2d5ca49b31579dea8ac81421b6ca",
+    "startingSha256": "66a85720d67498682b1bbc41300a07574a00f15d76b57afc0c52b29360b06b66"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/story/StoryVariantGridSandboxItem.vue",
+    "sha256": "7a6ff0d505f8c4ce85f317a0f0a08f03efb06397821c9cb11477f87096421bb5",
+    "startingSha256": "c3bf947656db13bf7cc6a722b2e7a4e1b95995fde942cbe0abc87da8b28f09f5"
+  },
+  {
+    "file": "packages/histoire-app/src/app/components/toolbar/ToolbarNewTab.vue",
+    "sha256": "92a9d14926b1e72259cec418f5d0c44b3edf63d35d0a2db94021021d2699aa6d",
+    "startingSha256": "6b70a1b78a16ad04d4b394afdbeb7497388ec9f481120143c57930ed1c447e83"
+  },
+  {
+    "file": "packages/histoire-controls/package.json",
+    "sha256": "ade64a0c491f4c8c43489383504ba4a370862944faaafc90f3299f912e6d605a",
+    "startingSha256": "a0ab9622146473685b08d879a38bccbb1cf2137690b3c84c13ac6e292fc11813"
+  },
+  {
+    "file": "plans/tailwind-only/05-shell-and-base.md",
+    "sha256": "aaae7b09ef084ec98b6b66b15788bec54250ff74667769985cba82b6894b17d3",
+    "startingSha256": null
+  },
+  {
+    "file": "plans/tailwind-only/12-conformance.md",
+    "sha256": "3c6dec9cdb13d711a8c638529b51a5258ad882891bd4d13af2f911a22333418a",
+    "startingSha256": null
+  },
+  {
+    "file": "plans/tailwind-only/README.md",
+    "sha256": "aed1b6a3ba3b8f86e2e10fbf8226dfa0f3c7704c69c0f456603b9c74b66c5a77",
+    "startingSha256": null
+  },
+  {
+    "file": "plans/tailwind-only/conformance.md",
+    "sha256": "f7b65be2e731681716a57eba359942a8fa9333ef98617bb6638c85fdc39a8900",
+    "startingSha256": null
+  },
+  {
+    "file": "plans/tailwind-only/evidence/controls-11.mjs",
+    "sha256": "0bfa0f38a2521214ae78f27a649c2d6071072b15edccb5007a184f60a2d7f0e6",
+    "startingSha256": null
+  },
+  {
+    "file": "plans/tailwind-only/evidence/probe-v4.mjs",
+    "sha256": "ee9c4d105f455203e6c47460c61db99161122e7fa86b238bb90863eee96ef799",
+    "startingSha256": null
+  },
+  {
+    "file": "pnpm-lock.yaml",
+    "sha256": "4440032358efa959e10cd87afa3fdfb0889121d402d6db62dec74046290ac5bd",
+    "startingSha256": "140f78b6b256852522cf76d02e57f58c90c42df0f07f00dc2b0f23628b1d919b"
+  }
+]

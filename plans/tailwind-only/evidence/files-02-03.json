@@ -1,0 +1,254 @@
+[
+  {
+    "status": "changed",
+    "file": "examples/vue3/tailwind.config.cjs"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-app/package.json"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-app/postcss-scope-wrapper.cjs"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-app/postcss.config.cjs"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-app/src/app/components/base/BaseKeyboardShortcut.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-app/src/app/components/command/CommandPrompts.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-app/src/app/components/command/PromptSelect.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-app/src/app/components/command/PromptText.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-app/src/app/components/story/StoryVariantGridSandbox.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-app/src/app/components/story/StoryVariantGridSandboxItem.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-app/src/app/components/toolbar/ToolbarNewTab.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-app/src/app/style/README.md"
+  },
+  {
+    "status": "deleted",
+    "file": "packages/histoire-app/src/app/style/main.pcss"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-app/src/bundle-main-dev.js"
+  },
+  {
+    "status": "deleted",
+    "file": "packages/histoire-app/tailwind.config.cjs"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls-stories/histoire-setup.ts"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls-stories/tailwind.config.cjs"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/package.json"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/postcss.config.cjs"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/postcss.peer.config.cjs"
+  },
+  {
+    "status": "deleted",
+    "file": "packages/histoire-controls/scripts/peer-style.mjs"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/HstCopyIcon.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/button/HstButton.story.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/design-tokens/HstColorShades.story.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/design-tokens/HstColorShades.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/design-tokens/HstTokenDetails.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/design-tokens/HstTokenGrid.story.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/design-tokens/HstTokenGrid.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/design-tokens/HstTokenList.story.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/design-tokens/HstTokenList.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/json/HstJson.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/json/HstJsonEditor.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/number/HstNumber.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/select/HstSelect.story.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/components/slider/HstSlider.vue"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/style/main.css"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/style/peer.css"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/src/style/tailwind-defaults.spec.ts"
+  },
+  {
+    "status": "deleted",
+    "file": "packages/histoire-controls/tailwind.config.cjs"
+  },
+  {
+    "status": "deleted",
+    "file": "packages/histoire-controls/tailwind.peer.config.cjs"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire-controls/tsconfig.json"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire/src/node/__tests__/sandbox-html.spec.ts"
+  },
+  {
+    "status": "changed",
+    "file": "packages/histoire/src/node/alias.ts"
+  },
+  {
+    "status": "changed",
+    "file": "plans/tailwind-only/02-controls-v4.md"
+  },
+  {
+    "status": "changed",
+    "file": "plans/tailwind-only/03-app-v4.md"
+  },
+  {
+    "status": "changed",
+    "file": "plans/tailwind-only/README.md"
+  },
+  {
+    "status": "changed",
+    "file": "plans/tailwind-only/architecture.md"
+  },
+  {
+    "status": "changed",
+    "file": "plans/tailwind-only/exceptions.md"
+  },
+  {
+    "status": "changed",
+    "file": "plans/tailwind-only/inventory.md"
+  },
+  {
+    "status": "changed",
+    "file": "plans/tailwind-only/validation.md"
+  },
+  {
+    "status": "created",
+    "file": "packages/histoire-app/src/app/style/main.css"
+  },
+  {
+    "status": "created",
+    "file": "packages/histoire-app/src/app/style/theme.css"
+  },
+  {
+    "status": "created",
+    "file": "packages/histoire-controls/scripts/flatten-tailwind-layers.cjs"
+  },
+  {
+    "status": "created",
+    "file": "packages/histoire-controls/scripts/generate-peer-theme.mjs"
+  },
+  {
+    "status": "created",
+    "file": "packages/histoire-controls/scripts/postcss-tailwind-isolation.cjs"
+  },
+  {
+    "status": "created",
+    "file": "packages/histoire-controls/src/style/base-theme.css"
+  },
+  {
+    "status": "created",
+    "file": "packages/histoire-controls/src/style/compile-styles.test-support.mjs"
+  },
+  {
+    "status": "created",
+    "file": "packages/histoire-controls/src/style/peer-theme.css"
+  },
+  {
+    "status": "created",
+    "file": "packages/histoire-controls/src/style/tailwind-assets.spec.ts"
+  },
+  {
+    "status": "created",
+    "file": "packages/histoire-controls/src/style/tailwind-theme.spec.ts"
+  },
+  {
+    "status": "created",
+    "file": "packages/histoire-controls/src/style/tailwind-workspace.spec.ts"
+  },
+  {
+    "status": "created",
+    "file": "packages/histoire-controls/src/style/theme.css"
+  },
+  {
+    "status": "created",
+    "file": "scripts/build-tailwind.mjs"
+  }
+]

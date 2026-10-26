@@ -1,0 +1,16 @@
+{
+  "note": "Shared checkout observation only; final slice build is blocked by the global lock. Not a per-slice CSS delta.",
+  "slice05BundledBytes": 178310,
+  "files": {
+    "packages/histoire-app/dist/bundled/app.css": {
+      "bytes": 23055,
+      "gzipBytes": 4465,
+      "sha256": "bc2f3263de3015dbe7a26b945b8a1714b187659406a4d18af5ca6fd8c2ba85c7"
+    },
+    "packages/histoire-app/dist/style.css": {
+      "bytes": 244282,
+      "gzipBytes": 31389,
+      "sha256": "25664cf687031b8e3a6117c0d427fbf08d4c253e974e005b4eb20d8b3d2cee1b"
+    }
+  }
+}

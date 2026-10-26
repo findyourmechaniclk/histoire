@@ -50,4 +50,86 @@ Converting `<style>` blocks (05–10), shrinking global CSS (11).
 
 ## Status
 
-Not started.
+Implemented 2026-10-25, uncommitted; validated jointly with slice 02.
+
+Landed:
+
+- `main.css` replaces `main.pcss`; v4 CSS-first theme imports, package CSS in
+  components layer, no preflight, explicit controls source scan and typography.
+- `theme.css` maps all semantic colors (including measure variants), primary /
+  gray shades, fonts, density spacing, radii, shadows, easing and skeleton
+  animation. Existing token definitions and all 136 app style blocks remain.
+- Prefix migration of the seven listed components; named groups preserve the
+  prompt / legacy variant interactions. Marker classes remain on their nodes.
+- Scope wrapper runs after expansion and hoists global `@property` rules and
+  layer-order statements. Existing nested CSS, container queries and Vue deep
+  selectors continue through the app Vite build.
+- `getHistoireStyleFiles` and `bundle-main-dev.js` use built CSS during source
+  development. Generated layers are normalized and unwrapped so external v3
+  compilers cannot reject them and host preflight cannot override chrome.
+- Theme/opacity compilation, external v3 consumption and source-dev URL
+  contracts have focused tests. Real-browser coexistence probe is checked in at
+  `evidence/probe-v4.mjs` for dark host, opacity and v3/v4 composed effects.
+
+Deviations:
+
+- Pointing source-dev aliases at built CSS alone was insufficient: root v3
+  rejects built v4 layers with `@layer utilities is used but no matching
+  @tailwind utilities directive is present`. The shared compiler normalizes and
+  unwraps emitted layer blocks, preserving utility-after-default order.
+  Regression coverage uses the real v3 compiler, without workspace path guards.
+  Root PostCSS config remains unchanged.
+- Used shared PostCSS builder because v4 CLI cannot run scope plugins. Existing
+  installed unused legacy PostCSS dependencies remain untouched with the
+  orchestrator-owned lockfile.
+- Initial screenshot comparison exposed specificity changes when layered package
+  CSS met untouched app rules. Layering all components fixed specificity but
+  let Nuxt's unlayered preflight override them. E12 therefore preserves the
+  original unlayered cascade across app, standalone and peer outputs; a browser
+  probe also verifies standalone controls against an unlayered host reset.
+- V4 rebases imported font URLs into source directories. The shared standalone
+  builder relocates local font URLs to existing `dist/fonts` assets; Vite keeps
+  its own asset handling. An emitted-artifact test catches missing font files.
+- Shared isolation plugin lives in controls and app resolves it through the
+  existing package wildcard export, so copied/source consumers do not require
+  an unshipped root helper. Source-dev verification also refreshes emitted
+  Histoire JavaScript without deleting its existing runtime artifacts.
+- Manual migration of this small literal class set avoided an uninstalled
+  upgrade tool. Radius/palette values retain the v3 definitions, rather than
+  inheriting changed v4 defaults.
+
+Exceptions: existing E1/E2/E11 implemented; E12 shared with controls. No new
+component CSS or app style block added; no component-style conversion attempted.
+
+Validation completed with baseline limits (2026-10-25):
+
+- App Vite bundle, standalone CSS, copied assets, Vue3 (44 stories / 1,098
+  variants) and Nuxt UI static books pass. Full app build still stops at baseline
+  declaration errors (`Module '"vue"' has no exported member 'createApp'`).
+- Final controls / Vue / Histoire tests: 90 / 773 / 2,083 pass. Histoire's final
+  retry used four workers after one unrelated worker exit. Bundle uniqueness,
+  all theme mappings, v3 consumption, font paths and source-dev URL checks pass.
+- Final focused embed check: 8 files / 19 tests pass, including controls,
+  content sizing, scoped embeds, Nuxt and source HMR. Full embed run: 44 files /
+  84 tests pass, 4 files / 9 tests fail; all are existing baseline visual/host
+  failures. Tailwind integration retains baseline 8 pass / 6 fail.
+- Lint: zero errors, 39 existing warnings. Diff whitespace check passes.
+  Root vue-tsc binary is missing; existing controls binary reports baseline
+  workbench missing-export errors. Cypress is blocked by its read-only cache.
+- Browser: 104 captures, no browser errors. **99 match exactly**. Five baseline
+  references have differing font/layout state; Matrix light/dark reproduce
+  exactly with fonts disabled. Three plugin-inspector references reproduce
+  fallback chrome but retain a small canvas-region difference in that probe.
+  Strict zero-diff visual acceptance remains open; no baseline image changed.
+- A narrow Nuxt header initially differed; same-build repeats reproduced both
+  states and an ordinary final recapture matched. V3/v4 effects, embedded dark,
+  opacity and unlayered host-reset isolation pass in the real-browser probe.
+- App bundled CSS: 198,045 to 196,584 bytes. App stylesheet: 104,082 to 115,517
+  (+10.99% raw; gzip drops from 14,505 to 13,896). Native property/nesting output
+  explains raw growth; no static whole-palette emission.
+
+Exact files, commands/results, diagnostics, known limits and screenshot links:
+[joint report](evidence/after-03/report.md). Orchestrator follow-up: review the five
+reference-state images, resolve baseline declaration/test environment failures,
+and run installed-consumer checks where dependency installation is allowed.
+No files staged, committed or pushed.

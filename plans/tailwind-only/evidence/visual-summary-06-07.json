@@ -1,0 +1,182 @@
+{
+  "references": "baseline, except canvas-matrix-light/dark from after-03; neither reference directory changed",
+  "captures": 40,
+  "exactFullScreens": 16,
+  "changedFullScreens": [
+    {
+      "file": "canvas-grid-compact.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "canvas-grid-dark.png",
+      "status": "changed",
+      "changedPixels": 2069,
+      "totalPixels": 1296000,
+      "ratio": 0.0015964506172839506
+    },
+    {
+      "file": "canvas-grid-light.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "canvas-list-compact.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "canvas-list-dark.png",
+      "status": "changed",
+      "changedPixels": 2069,
+      "totalPixels": 1296000,
+      "ratio": 0.0015964506172839506
+    },
+    {
+      "file": "canvas-list-light.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "canvas-measure-compact.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "canvas-measure-dark.png",
+      "status": "changed",
+      "changedPixels": 2069,
+      "totalPixels": 1296000,
+      "ratio": 0.0015964506172839506
+    },
+    {
+      "file": "canvas-measure-light.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "canvas-single-compact.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "canvas-single-dark.png",
+      "status": "changed",
+      "changedPixels": 2069,
+      "totalPixels": 1296000,
+      "ratio": 0.0015964506172839506
+    },
+    {
+      "file": "canvas-single-light.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "plugin-overlay-compact.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "plugin-overlay-dark.png",
+      "status": "changed",
+      "changedPixels": 2069,
+      "totalPixels": 1296000,
+      "ratio": 0.0015964506172839506
+    },
+    {
+      "file": "plugin-overlay-light.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "plugin-view-compact.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "plugin-view-dark.png",
+      "status": "changed",
+      "changedPixels": 2069,
+      "totalPixels": 1296000,
+      "ratio": 0.0015964506172839506
+    },
+    {
+      "file": "plugin-view-light.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "toolbar-overflow-compact.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "toolbar-overflow-dark.png",
+      "status": "changed",
+      "changedPixels": 2069,
+      "totalPixels": 1296000,
+      "ratio": 0.0015964506172839506
+    },
+    {
+      "file": "toolbar-overflow-light.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "toolbar-viewport-compact.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    },
+    {
+      "file": "toolbar-viewport-dark.png",
+      "status": "changed",
+      "changedPixels": 2069,
+      "totalPixels": 1296000,
+      "ratio": 0.0015964506172839506
+    },
+    {
+      "file": "toolbar-viewport-light.png",
+      "status": "changed",
+      "changedPixels": 1964,
+      "totalPixels": 1296000,
+      "ratio": 0.0015154320987654322
+    }
+  ],
+  "fullDifferenceExplanation": "Stories pane variant row labels/dots moved horizontally and changed selection treatment in concurrent Track B. All tested canvas regions and matrix inspector fields match exactly.",
+  "ownedRegions": 43,
+  "ownedChangedPixels": 0,
+  "supplementalCaptures": 14,
+  "supplementalFailures": [],
+  "supplementalReferenceLimit": "Zoom, custom-axis form, keyboard-resize, and 1024/768 overflow captures have no original baseline screenshots. Functional actions/readiness pass; no pixel-parity claim for these additions.",
+  "unavailable": "Screenshot popover is compiled out of static WorkbenchApp; remains unverified as documented by baseline.md."
+}

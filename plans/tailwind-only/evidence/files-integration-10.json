@@ -1,0 +1,25 @@
+{
+  "changed": {
+    "packages/histoire-app/src/app/components/panes/stories/StoriesPanel.vue": "Preserve inline tree depth by limiting important padding to logical end",
+    "packages/histoire-app/src/app/components/inspector/EventsTab.vue": "Preserve normal line height from legacy font shorthand",
+    "packages/histoire-app/src/app/components/embed/EmbedDialog.vue": "Restore state margins and monospaced code through package specificity",
+    "packages/histoire-app/src/app/components/pages/markdown/MarkdownPage.vue": "Enable grid only above the existing desktop breakpoint",
+    "packages/histoire-app/src/app/components/pages/settings/SettingsNav.vue": "Restore package selection colors and mobile navigation sizing",
+    "packages/histoire-app/src/app/components/pages/settings/SettingsPage.vue": "Separate medium and narrow padding ranges",
+    "packages/histoire-app/src/app/components/comments/CommentPin.vue": "Restore pin radius and native pressed text color",
+    "packages/histoire-app/src/app/components/comments/prompt/AgentPrompt.vue": "Retain field focus reset inside prompt focus ring",
+    "packages/histoire-app/src/app/components/comments/prompt/SessionPicker.vue": "Restore chip padding and fallback icon color",
+    "packages/histoire-app/src/app/components/comments/prompt/SessionRadioList.vue": "Restore choice padding and opposite-edge alignment",
+    "packages/histoire-app/src/app/components/comments/thread/AgentPlan.vue": "Escape underscore in in_progress selector",
+    "packages/histoire-app/src/app/components/comments/thread/questions/ElicitationOptions.vue": "Restore custom-answer wrapper margin",
+    "plans/tailwind-only/evidence/capture.mjs": "Record outstanding URLs on capture failures",
+    "plans/tailwind-only/evidence/comments-09/build.mjs": "Refresh generated artifact identity after injecting fixture assets",
+    "plans/tailwind-only/evidence/comments-09/main.ts": "Use actual appearance, density, font tokens and controls context",
+    "packages/histoire-app/src/app/components/pages/settings/SettingsRow.vue": "Own viewport density through optional presentation prop",
+    "packages/histoire-app/src/app/components/pages/settings/ViewportsSection.vue": "Use row presentation prop to retain narrow viewport preset spacing"
+  },
+  "createdSourceFiles": [],
+  "deletedSourceFiles": [],
+  "testsAdded": [],
+  "exceptionsAdded": []
+}

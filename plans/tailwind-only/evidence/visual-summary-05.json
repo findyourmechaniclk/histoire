@@ -1,0 +1,10 @@
+{
+  "referenceScreens": 104,
+  "exactMatches": 104,
+  "changedPixels": 0,
+  "captureFailures": [],
+  "supplementalScreens": 10,
+  "supplementalFailures": [],
+  "supplementalBrowserErrors": 0,
+  "supplementalReference": "No baseline; manual visual review and real keyboard/rail assertions only"
+}

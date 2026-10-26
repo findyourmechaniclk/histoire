@@ -1,0 +1,27 @@
+{
+  "baselineDiagnostics": 1309,
+  "finalDiagnostics": 1313,
+  "addedMessages": [
+    {
+      "code": "TS2614",
+      "message": "Module '\"vue\"' has no exported member 'computed'. Did you mean to use 'import computed from \"vue\"' instead?",
+      "count": 1
+    },
+    {
+      "code": "TS2614",
+      "message": "Module '\"vue\"' has no exported member 'ComputedRef'. Did you mean to use 'import ComputedRef from \"vue\"' instead?",
+      "count": 1
+    },
+    {
+      "code": "TS2614",
+      "message": "Module '\"vue\"' has no exported member 'useSlots'. Did you mean to use 'import useSlots from \"vue\"' instead?",
+      "count": 1
+    },
+    {
+      "code": "TS2614",
+      "message": "Module '\"vue\"' has no exported member 'Component'. Did you mean to use 'import Component from \"vue\"' instead?",
+      "count": 1
+    }
+  ],
+  "removedMessages": []
+}

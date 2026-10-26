@@ -1,0 +1,21 @@
+{
+  "vueFiles": 224,
+  "styleBlocks": [],
+  "deepSelectors": [],
+  "stylesheets": [
+    "app/style/controls.css",
+    "app/style/density.css",
+    "app/style/document.pcss",
+    "app/style/fonts.pcss",
+    "app/style/main.css",
+    "app/style/theme.css",
+    "app/style/tokens.pcss",
+    "embed/document.css"
+  ],
+  "importantUtilities": [
+    [
+      "packages/histoire-app/src/app/components/inspector/SourceDrawer.vue",
+      "htw:bg-transparent!"
+    ]
+  ]
+}

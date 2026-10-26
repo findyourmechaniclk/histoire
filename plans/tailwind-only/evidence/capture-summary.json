@@ -1,0 +1,20 @@
+{
+  "head": "acfebdf9",
+  "screens": 26,
+  "images": 104,
+  "modes": [
+    "compact",
+    "dark",
+    "light",
+    "narrow"
+  ],
+  "pngBytes": 8301836,
+  "directoryBytes": 8372068,
+  "browser": "147.0.7727.15",
+  "node": "v24.16.0",
+  "comparisonThreshold": 0.1,
+  "changedImages": 0,
+  "changedPixels": 0,
+  "missingImages": 0,
+  "captureErrors": 0
+}

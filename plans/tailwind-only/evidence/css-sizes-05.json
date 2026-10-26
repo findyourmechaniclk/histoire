@@ -1,0 +1,18 @@
+[
+  {
+    "file": "packages/histoire-app/dist/bundled/app.css",
+    "bytes": 178310,
+    "gzipBytes": 27743,
+    "sha256": "cd2c6e9f037e7c5354fa94db79fdf48b6d5c5ff23a9afc61bc08508e45a51511",
+    "slice03Bytes": 196584,
+    "rawChangePercent": -9.3
+  },
+  {
+    "file": "packages/histoire-app/dist/style.css",
+    "bytes": 139198,
+    "gzipBytes": 16932,
+    "sha256": "fcac621ef611eb8745e59445bb3badb696de899c58955c54b5b42a6a291bdf53",
+    "slice03Bytes": 115517,
+    "rawChangePercent": 20.5
+  }
+]

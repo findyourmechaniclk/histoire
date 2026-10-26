@@ -1,0 +1,51 @@
+{
+  "embed": {
+    "passed": 85,
+    "failed": 10,
+    "failures": [
+      "src/node/__tests__/embed/integration/controls-provider-isolation.spec.ts > controls provider lifecycle isolation > keeps unavailable panels inert, generic edits canonical and stale replica work harmless",
+      "src/node/__tests__/embed/integration/visual-recovery.spec.ts > durable visual recovery consumer > restores finished comparison after CLI is killed before report publication",
+      "src/node/__tests__/embed/integration/visual-recovery.spec.ts > durable visual recovery consumer > restores interrupted captures, approves retained bytes, merges targeted runs and invalidates only changed story",
+      "src/node/__tests__/embed/integration/visual-recovery.spec.ts > durable visual recovery consumer > restores workbench review after actual server restart and reruns only selected comparison",
+      "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > cLI produces missing, approved, passing, and changed reports with meaningful exit codes",
+      "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > captures canonical and two durable Matrix cases, approves, reruns, and rejects stale approval",
+      "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > saves displayed filtered Matrix cells with complete props through real UI",
+      "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > workbench captures, reviews, approves selected results, then passes next run",
+      "src/node/__tests__/embed/integration/visual-transport.spec.ts > visual browser ownership > reviews and approves large saved props and axes through bounded pages",
+      "src/node/__tests__/embed/integration/vue-host-isolation.spec.ts > native Vue host isolation > keeps host router/form/styles, two sessions, scoped themes/overlays and runtime cleanup independent"
+    ],
+    "newFailures": [
+      "src/node/__tests__/embed/integration/controls-provider-isolation.spec.ts > controls provider lifecycle isolation > keeps unavailable panels inert, generic edits canonical and stale replica work harmless"
+    ],
+    "resolvedFailures": [],
+    "resolvedByIsolatedRerun": [
+      "src/node/__tests__/embed/integration/controls-provider-isolation.spec.ts > controls provider lifecycle isolation > keeps unavailable panels inert, generic edits canonical and stale replica work harmless"
+    ],
+    "effectiveFailures": [
+      "src/node/__tests__/embed/integration/visual-recovery.spec.ts > durable visual recovery consumer > restores finished comparison after CLI is killed before report publication",
+      "src/node/__tests__/embed/integration/visual-recovery.spec.ts > durable visual recovery consumer > restores interrupted captures, approves retained bytes, merges targeted runs and invalidates only changed story",
+      "src/node/__tests__/embed/integration/visual-recovery.spec.ts > durable visual recovery consumer > restores workbench review after actual server restart and reruns only selected comparison",
+      "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > cLI produces missing, approved, passing, and changed reports with meaningful exit codes",
+      "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > captures canonical and two durable Matrix cases, approves, reruns, and rejects stale approval",
+      "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > saves displayed filtered Matrix cells with complete props through real UI",
+      "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > workbench captures, reviews, approves selected results, then passes next run",
+      "src/node/__tests__/embed/integration/visual-transport.spec.ts > visual browser ownership > reviews and approves large saved props and axes through bounded pages",
+      "src/node/__tests__/embed/integration/vue-host-isolation.spec.ts > native Vue host isolation > keeps host router/form/styles, two sessions, scoped themes/overlays and runtime cleanup independent"
+    ],
+    "effectiveNewFailures": []
+  },
+  "tailwind": {
+    "passed": 8,
+    "failed": 6,
+    "failures": [
+      "src/node/__tests__/tailwind/integration/browser.spec.ts > automatic Tailwind token books > renders dev token stories with Tailwind v4",
+      "src/node/__tests__/tailwind/integration/browser.spec.ts > automatic Tailwind token books > renders static token stories with Tailwind v4",
+      "src/node/__tests__/tailwind/integration/single-variant.spec.ts > tailwind Single variant workbench > uses native Single view in dev Tailwind v3 books",
+      "src/node/__tests__/tailwind/integration/single-variant.spec.ts > tailwind Single variant workbench > uses native Single view in dev Tailwind v4 books",
+      "src/node/__tests__/tailwind/integration/single-variant.spec.ts > tailwind Single variant workbench > uses native Single view in static Tailwind v3 books",
+      "src/node/__tests__/tailwind/integration/single-variant.spec.ts > tailwind Single variant workbench > uses native Single view in static Tailwind v4 books"
+    ],
+    "newFailures": [],
+    "resolvedFailures": []
+  }
+}

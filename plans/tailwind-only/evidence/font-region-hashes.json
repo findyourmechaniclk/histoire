@@ -1,0 +1,182 @@
+[
+  {
+    "file": "baseline/canvas-grid-light.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "58c32cd5363e3a6761282d354bc6505ef6116181367062ba8fec54ed480566dc"
+  },
+  {
+    "file": "after-03/canvas-grid-light.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "58c32cd5363e3a6761282d354bc6505ef6116181367062ba8fec54ed480566dc"
+  },
+  {
+    "file": "baseline/canvas-matrix-light.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "3c77675dfc355c81850c104c5f641cfaa89c60979b825e31a40228259ac6ad8d"
+  },
+  {
+    "file": "after-03/canvas-matrix-light.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "58c32cd5363e3a6761282d354bc6505ef6116181367062ba8fec54ed480566dc"
+  },
+  {
+    "file": "baseline/plugin-inspector-light.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "3c77675dfc355c81850c104c5f641cfaa89c60979b825e31a40228259ac6ad8d"
+  },
+  {
+    "file": "after-03/plugin-inspector-light.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "58c32cd5363e3a6761282d354bc6505ef6116181367062ba8fec54ed480566dc"
+  },
+  {
+    "file": "baseline/canvas-grid-dark.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "7fea8f98ffd8824f38a8e82f60a0fe588c215f12d1c42415665f47848775fa55"
+  },
+  {
+    "file": "after-03/canvas-grid-dark.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "7fea8f98ffd8824f38a8e82f60a0fe588c215f12d1c42415665f47848775fa55"
+  },
+  {
+    "file": "baseline/canvas-matrix-dark.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "562fc04254fc993de5b954ca5e4a9ee51da2f67286db08bfac7e8957edfae1f8"
+  },
+  {
+    "file": "after-03/canvas-matrix-dark.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "7fea8f98ffd8824f38a8e82f60a0fe588c215f12d1c42415665f47848775fa55"
+  },
+  {
+    "file": "baseline/plugin-inspector-dark.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "562fc04254fc993de5b954ca5e4a9ee51da2f67286db08bfac7e8957edfae1f8"
+  },
+  {
+    "file": "after-03/plugin-inspector-dark.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "7fea8f98ffd8824f38a8e82f60a0fe588c215f12d1c42415665f47848775fa55"
+  },
+  {
+    "file": "baseline/canvas-grid-compact.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "58c32cd5363e3a6761282d354bc6505ef6116181367062ba8fec54ed480566dc"
+  },
+  {
+    "file": "after-03/canvas-grid-compact.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "58c32cd5363e3a6761282d354bc6505ef6116181367062ba8fec54ed480566dc"
+  },
+  {
+    "file": "baseline/canvas-matrix-compact.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "58c32cd5363e3a6761282d354bc6505ef6116181367062ba8fec54ed480566dc"
+  },
+  {
+    "file": "after-03/canvas-matrix-compact.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "58c32cd5363e3a6761282d354bc6505ef6116181367062ba8fec54ed480566dc"
+  },
+  {
+    "file": "baseline/plugin-inspector-compact.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "3c77675dfc355c81850c104c5f641cfaa89c60979b825e31a40228259ac6ad8d"
+  },
+  {
+    "file": "after-03/plugin-inspector-compact.png",
+    "region": {
+      "x": 70,
+      "y": 20,
+      "width": 80,
+      "height": 20
+    },
+    "sha256": "58c32cd5363e3a6761282d354bc6505ef6116181367062ba8fec54ed480566dc"
+  }
+]

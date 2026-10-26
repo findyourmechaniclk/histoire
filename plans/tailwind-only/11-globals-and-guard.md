@@ -48,4 +48,104 @@ Token renames or value changes.
 
 ## Status
 
-Not started.
+Implemented and validated locally on 2026-10-25 within the baseline limits below.
+No staging, commit, branch, dependency installation, or reserved-port use.
+
+### Landed
+
+- Converted the sole remaining SFC style block in `embed/EmbedDocument.vue` to
+  literal utilities. All 224 app Vue files now have zero style blocks; no deep
+  selectors remain. Eight global CSS/PCSS files remain, exactly the guard
+  allowlist. No component CSS file was added.
+- Added `histoire/src/node/__tests__/app-styling-guard.spec.ts`: Vue style-block,
+  stylesheet allowlist, and deep-selector checks. It first failed on the real
+  `EmbedDocument.vue` style block, then passed all three checks.
+- Audited E3–E10. Kept density resets for cross-package inheritance and hidden
+  runtime mounts for reliable visibility under arbitrary story CSS. Documented
+  all remaining global rules; reduced root reset specificity with `:where()`.
+- Removed **345 of 346 important utility occurrences** across **67 app files**.
+  The one retained source-background override defeats Shiki's inline background
+  and is documented in the Important modifiers table.
+  Native provider qualification and peer CSS use `:where(.histoire-provider)`;
+  controls' context/appearance qualifiers no longer outrank passed-through
+  utilities. Native element/alert-role qualifiers and disabled defaults yield to explicit
+  utility classes, including hidden disabled actions and source-error text.
+- Corrected static stylesheet order in `src/bundle-main.js`: bundled component
+  defaults load before app utilities. E12 previously ordered each output only;
+  the static entry reintroduced defaults after utilities across files.
+- Made StoriesPanel and SettingsNav neutral selected-row treatment explicit. The old accent
+  utility was suppressed by native selected-button specificity; the new explicit
+  neutral utility preserves the reviewed visual result. Native list resets yield
+  to explicit Events margins. All 66 inventoried marker names retain their
+  original elements in changed templates.
+- Added app-owned `flush` spacing on workbench states and `HomeRow.muted`,
+  replacing competing parent/child utility defaults. Explicit hover utilities
+  retain fixed backgrounds on floating surfaces and transparent actions.
+- Added Styling guidance to root `AGENTS.md` and updated style README with token
+  mapping, new-token workflow, and current component ownership.
+
+### Scope and exceptions
+
+- Additional package/style and app-template edits implement the orchestrator's
+  important-modifier scope. No package component API or behavior changed.
+- E14 documents the existing, temporary story-sizing stylesheet in
+  `content-measure.ts`; no new custom CSS was introduced. E3 lists cross-content
+  defaults and E7 is confirmed. The Important modifiers table records document,
+  motion, intrinsic-sizing and runtime appearance priorities. The sole app
+  utility modifier remains on the Shiki background override.
+- `main.pcss` and removed component-stylesheet imports have no source consumers.
+- Standalone/peer comparison uses actual SSR-rendered shared controls and
+  representative native panel markup, in light/dark and normal/hover/focus states.
+  System fallback font is held constant there; full book captures cover Manrope.
+
+### Validation
+
+- Source guard: 3/3 pass after its demonstrated initial failure.
+- `pnpm --filter @histoire/controls test`: 24 files / 90 tests pass.
+- `pnpm --filter @histoire/vue test`: 155 files / 774 tests pass. One refresh
+  hit the existing dynamic-list focus assertion in jsdom; immediate full rerun
+  passed without source changes.
+- `pnpm --filter histoire test`: 405 files / 2,086 tests pass; one file / two tests
+  skipped by existing configuration.
+- Scoped ESLint and `git diff --check`: pass.
+- Full controls/app build commands hit inherited declaration errors, including
+  `Module '"vue"' has no exported member 'ref'`. Separate Vite, peer CSS, app CSS,
+  copy and Vue3 static-book builds pass.
+- Root vue-tsc entry is unavailable (`Command "vue-tsc" not found`). Invoking the
+  installed controls-package binary reaches the existing workbench declaration
+  errors (`Module '"vue"' has no exported member 'computed'`). No installation.
+- Initial root lint scan was interrupted without a result.
+  Source-only root lint identifies an existing blank-line error in slice 05;
+  changed source, documentation and evidence tooling lint pass.
+- Full Cypress: 40 specs / 155 tests pass, 5 existing pending tests. Final
+  targeted run after the last corrections: 3 specs / 21 tests pass.
+- Main screenshot matrix: **104/104 exact**, including targeted recaptures
+  after final Events/Settings/Source fixes. Comments: **16/16 exact**. Native
+  standalone/peer: **16/16 exact**, covering light/dark, hover/focus, tone props,
+  native tree/source states and competing host element resets. A final full
+  main sweep and refreshed comments/native fixtures all have zero changed pixels.
+- One earlier narrow Search capture failed before app mount. One final narrow
+  Nuxt UI capture had a 1,045-pixel header-text alignment difference. Both matched
+  on isolated retries against the same respective builds, without code changes.
+  Reference images are unchanged.
+- CSS receipt: app styles total **267,547 bytes**, down from **269,418 bytes**
+  in integration 10; CSS exports resolve. Full details and commands:
+  [evidence report](evidence/report-11.md).
+
+- Final embed integration: **78 pass / 17 fail**. Nine failures match baseline;
+  eight extra cases failed binding local servers (`EADDRINUSE` / `EACCES :1`).
+  Fresh-process rerun of their five files: **13/13 pass**. Effective remaining
+  failures match the same nine baseline cases. Earlier extra dropdown-reopen
+  failure also passed its isolated retry.
+- Final Tailwind integration: **8 pass / 6 fail**, same six baseline identities.
+  [Final failure comparison](evidence/failures-final-11.json).
+- Every build, package suite, static-book build and browser session ran under
+  `/tmp/histoire-tailwind.lock`; only owned server PIDs were stopped.
+
+### Open issues and handoff
+
+Inherited declaration/type failures, one unrelated slice-05 root lint error,
+and nine embed/six Tailwind baseline failures remain. No new unresolved failure
+identity. Packed installed-consumer checks remain delegated because they install
+packages. Slice 12 conformance/handoff is outside this track. Exact changed paths,
+commands, screenshots, CSS sizes and limitations are in the evidence report.

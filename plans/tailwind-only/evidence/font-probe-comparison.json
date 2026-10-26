@@ -1,0 +1,30 @@
+{
+  "before": "/tmp/histoire-font-a",
+  "after": "/tmp/histoire-font-b",
+  "threshold": 0.1,
+  "includeAA": true,
+  "screens": [
+    {
+      "file": "canvas-matrix-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "canvas-measure-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    },
+    {
+      "file": "plugin-overlay-narrow.png",
+      "status": "same",
+      "changedPixels": 0,
+      "totalPixels": 304500,
+      "ratio": 0
+    }
+  ],
+  "captureFailures": []
+}

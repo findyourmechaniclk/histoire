@@ -41,4 +41,150 @@ Inspector behavior, docs rendering pipeline.
 
 ## Status
 
-Not started.
+Code implemented locally on 2026-10-25. Serial integration completed final
+rebuild and capture; four required Source-edge removals remain intentional
+non-AA differences. Current gates supersede historical lock blockers below.
+Nothing staged, committed, pushed or installed.
+
+### Files and implementation
+
+- Converted all 20 owned Vue style blocks and all consumers of the four shared
+  stylesheets to literal Tailwind v4 utilities. Deleted `home.css`,
+  `settings.css`, `agents-settings.css`, and `markdown.css`; no replacement CSS.
+- Added local `HomeCard`, `HomeHeading`, `HomeRow`, `SettingsCard`, `SettingsRow`,
+  `SettingsChoices`, `AgentLaunchField`, `SourceAction`, and
+  `InspectorExtensionOutlet` components for repeated layouts. All owned Vue
+  files are at most 204 lines. Exact source changes: `evidence/files-10.json`;
+  line-count/style scan: `evidence/source-scan-10.json`.
+- Preserved inventory markers on their original elements. Also retained the
+  capture selectors `histoire-home-page`, `histoire-markdown-page`, and
+  `histoire-settings-plugin`; inspector's native new-tab link retains
+  `histoire-icon-button` for package sizing.
+- Native docs, events, controls, tests and source consume existing `classes`
+  parts. Empty/loading state margins and flex use classes directly on those
+  state components, avoiding extra wrappers. Extension outlets use the
+  existing slot and `ExtensionView.classes` contract.
+- Source drawer owns its expansion data attribute and optional surface tone.
+  Tab labels use direct-child variants so detached measurement clones remain
+  naturally sized. Agent disclosure icons follow a named native-open group.
+- Additive shared-package change: `HstButtonGroup.classes` exposes `options`
+  and `option`. Slice 04 had `block` but no choice-container/button passthrough;
+  settings needs wrapping and content-based flex without descendant selectors.
+  Existing defaults, events, keyboard focus and marker classes are unchanged.
+  No shared shell/base/menu or theme file changes.
+
+### Deviations and exceptions
+
+- **No new CSS exceptions.** E12 requires `!` on conflicts with provider-scoped
+  package declarations: button/group geometry, selected navigation appearance,
+  inline control margins, panel padding, source typography and Shiki's inline
+  background. Root/part hooks choose the target; the modifier handles remaining
+  specificity. Events time/margins and Tests font size also override their
+  native provider selectors.
+- Markdown uses existing native typography plus root-scoped foreign-content
+  utilities instead of enabling `prose`, whose additional defaults would
+  change the existing document rendering contract. Full page and inspector
+  typography remain separate.
+- Source changed lines retain the 15% accent background. Removed their colored
+  inset edge, as required by the user's no-accent-edge rule. Source error text
+  now uses `danger`. These intentional differences still need visual review.
+- Shared CSS had additional style-free consumers absent from the byte-count
+  inventory. Their ownership and the new local primitives are appended to
+  `inventory.md`.
+
+### Commands and results
+
+All commands use installed Node 24.16.0 / cached pnpm 10.33.0. Vitest and vue-tsc
+use `NODE_OPTIONS=--max-old-space-size=8192`. Package suites/build attempts are
+wrapped in `flock /tmp/histoire-tailwind.lock`; single-file reruns are unlocked.
+Logs: `evidence/logs/10/`.
+
+- `pnpm --filter @histoire/vue test`: **155 files / 774 tests pass**.
+- Focused final checks: `source-expansion.spec.ts` **6/6**,
+  `workbench-agent-settings.spec.ts` **9/9**, `inspector-extensions.spec.ts`
+  **7/7**. No new tests; existing behavior checks cover the wrapper changes.
+- `pnpm --filter @histoire/app build`: Vite stage passes; complete command fails
+  at inherited embed declarations: `Module '"vue"' has no exported member
+  'createApp'`. This earlier bundle predates final local cleanup, so it is not
+  final-source build proof.
+- `pnpm exec vue-tsc --noEmit -p packages/histoire-app/tsconfig.workbench.json`:
+  `Command "vue-tsc" not found`. Installed controls vue-tsc runs but fails on
+  existing Vue/vendor declarations (including missing Vue named exports).
+- Scoped ESLint and owned `git diff --check`: **pass**. Source scan: **zero
+  `<style>` blocks or component CSS files** in owned scope; zero `:deep()`.
+- Final controls peer bundle, app Vite/CSS/copy, Vue3 static-book build and
+  capture command were queued behind the lock and never started. First queued
+  rebuild exited 143; two separate `flock -w 20` probes exited 1 without acquiring
+  it. Other tracks report the same persistent lock failure. Waiting Track D
+  jobs are guarded from starting artifact work after handoff.
+- `pnpm --filter histoire test:embed:integration inspector-plugin-tab
+  scoped-embed-dialog`: queued but **not run** because of the same lock.
+
+### Visual evidence and remaining work
+
+**Zero new screenshots; no pixel-parity claim.** No server was started; port
+4614 and reserved ports 6006/6106 were not used. Baseline and after-03 are
+unchanged. `evidence/reference-10/` prepares the 44 expected references, taking
+plugin-inspector light/dark/compact from after-03 and everything else from
+baseline; `sources.json` records each source.
+
+Orchestrator must release/identify the existing lock holder, rebuild final
+sources, then run (inside the lock):
+
+```bash
+pnpm --filter @histoire/controls exec vite build --config vite.peer.config.ts
+pnpm --filter @histoire/app exec vite build
+pnpm --filter @histoire/app build:css
+pnpm --filter @histoire/app exec node scripts/copy.mjs
+pnpm -C examples/vue3 story:build
+node plans/tailwind-only/evidence/serve-capture.mjs \
+  --out plans/tailwind-only/evidence/after-10 --port 4614 \
+  --only '{home,inspector-*,source-changed,settings-*,markdown,embed-dialog,plugin-inspector}'
+node plans/tailwind-only/evidence/compare.mjs \
+  plans/tailwind-only/evidence/reference-10 \
+  plans/tailwind-only/evidence/after-10 \
+  --out plans/tailwind-only/evidence/diffs-10
+```
+
+Run the embed integration command above and review/fix every image difference.
+For home at 1024px, use `NODE_OPTIONS='--max-old-space-size=8192
+--import=./plans/tailwind-only/evidence/capture-10-medium.mjs'` with
+`serve-capture.mjs --only home --modes medium` and a separate output directory.
+This extra viewport has no baseline and needs visual inspection. The wrapper
+stops only its own server PID.
+
+Static baseline cannot cover live agents/settings, Tests execution, unavailable
+source errors or populated developer-only home issues. Those remain explicit
+interactive/dev coverage gaps, as in the baseline plan. No dependency install
+or unrelated repair was attempted.
+
+### Integration pass — 2026-10-25
+
+Final rebuild and complete 104-image capture finished under the shared lock.
+**100 images match exactly**; all four remaining differences are the 37-pixel
+Source changed-line inset edge already removed to obey AGENTS.md. These are
+intentional non-AA differences, not strict pixel parity. Zero browser errors.
+
+Fixed Events font shorthand/line-height, Embed state margins and code font,
+Markdown's narrow display, Settings medium/narrow precedence and native selected
+navigation appearance. `SettingsRow.viewport` owns viewport preset padding at
+all widths; `ViewportsSection` consumes it instead of competing class fallthrough.
+Final Settings recapture matches all 12 references. E12 requires focused important
+utilities for native code font, state margins and narrow button padding; removed
+conflicting important navigation declarations only to restore baseline behavior.
+No general `!` cleanup and no CSS exception or tests added.
+
+Vue suite: 155 files / 774 tests pass. Histoire: 404 files / 2,083 tests pass after
+`vite build --emptyOutDir` removed stale chunks. All 99 retained bundle files were
+byte-identical. Broad gates, file manifest, remaining static-only limits and the
+Source reference-policy conflict are in
+[integration report](evidence/after-10/report.md).
+
+Integration gate result: embed 85 passed / 10 failed initially, with the extra
+startup-navigation failure cleared by a 3/3 content-sizing file rerun; effective
+remaining failures match all nine slice 05 baselines. Tailwind: 8 passed / 6
+failed, exact slice 05 failure set. Cypress result is in the integration report.
+
+Cypress integration: all 40 specs pass, 155 tests pass / 5 pending / zero
+failures, using the documented XDG workaround and installed npm CLI through
+a temporary PATH launcher. No dependency installation or user-server changes.

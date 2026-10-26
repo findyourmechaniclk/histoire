@@ -1,0 +1,170 @@
+[
+  {
+    "file": "canvas-grid-compact.png",
+    "left": 103,
+    "top": 461,
+    "right": 240,
+    "bottom": 527
+  },
+  {
+    "file": "canvas-grid-dark.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "canvas-grid-light.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "canvas-list-compact.png",
+    "left": 103,
+    "top": 461,
+    "right": 240,
+    "bottom": 527
+  },
+  {
+    "file": "canvas-list-dark.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "canvas-list-light.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "canvas-measure-compact.png",
+    "left": 103,
+    "top": 461,
+    "right": 240,
+    "bottom": 527
+  },
+  {
+    "file": "canvas-measure-dark.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "canvas-measure-light.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "canvas-single-compact.png",
+    "left": 103,
+    "top": 461,
+    "right": 240,
+    "bottom": 527
+  },
+  {
+    "file": "canvas-single-dark.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "canvas-single-light.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "plugin-overlay-compact.png",
+    "left": 103,
+    "top": 461,
+    "right": 240,
+    "bottom": 527
+  },
+  {
+    "file": "plugin-overlay-dark.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "plugin-overlay-light.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "plugin-view-compact.png",
+    "left": 103,
+    "top": 461,
+    "right": 240,
+    "bottom": 527
+  },
+  {
+    "file": "plugin-view-dark.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "plugin-view-light.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "toolbar-overflow-compact.png",
+    "left": 103,
+    "top": 461,
+    "right": 240,
+    "bottom": 527
+  },
+  {
+    "file": "toolbar-overflow-dark.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "toolbar-overflow-light.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "toolbar-viewport-compact.png",
+    "left": 103,
+    "top": 461,
+    "right": 240,
+    "bottom": 527
+  },
+  {
+    "file": "toolbar-viewport-dark.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  },
+  {
+    "file": "toolbar-viewport-light.png",
+    "left": 103,
+    "top": 519,
+    "right": 240,
+    "bottom": 593
+  }
+]

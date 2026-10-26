@@ -61,4 +61,60 @@ Migrating controls `<style>` blocks (7 files) or `controls.pcss` to utilities.
 
 ## Status
 
-Not started.
+Implemented 2026-10-25, uncommitted; validated jointly with slice 03.
+
+Landed:
+
+- Package-local v4 PostCSS compilation, `htw:` utility prefixes in all 14 Vue
+  files, shared `base-theme.css`, generated channel themes, dual dark selector,
+  unchanged standalone/peer CSS output names. No controls component style block
+  converted. Existing `htw-range-input` and `htw-bind-col-size` markers remain.
+- `generate:peer-theme` emits both checked-in theme files from root v3 palette
+  and protocol color parsing. Peer scoping maps theme roots onto the provider.
+- Shared `scripts/build-tailwind.mjs` builds with actual PostCSS chains and
+  supports watches; peer CSS composition now happens on each build/watch, so
+  obsolete `scripts/peer-style.mjs` is removed. Old Tailwind configs removed.
+- Defaults guard compiles actual standalone, peer and app entries; added theme
+  coverage and external v3-consumer compatibility coverage. Fault probes remove isolation and
+  surface mapping in memory and demonstrate the intended assertions failing.
+
+Deviations:
+
+- V4 CLI no longer supports `--postcss`. A shared PostCSS runner is required to
+  preserve peer/app scoping and identical Vite/standalone processing; no extra
+  package or dependency install needed.
+- Old standalone config used literal colors, not channel variables. It uses
+  generated canonical fallbacks like peer controls, preserving use without a
+  themed host. App theme remains without palette fallbacks.
+- Controls stories retain root v3 with local config, and import built standalone
+  CSS instead of feeding the v4 source entry to root v3. No standalone-controls
+  baseline screenshots were supplied; build/browser boundaries recorded below.
+- `HstColorShades.story.vue` exceeded 300 lines because it duplicated Node
+  `defaultColors`. Exact deep equality verified, then replaced that duplicate
+  with the existing portable data import; file is now below 300 lines.
+  Story fixtures are excluded from controls declaration emission so they do
+  not pull that example-only import outside the library `rootDir`.
+- Shared compiler helpers and controls-stories setup are added to owned scope
+  in inventory drift. No existing app/component CSS was migrated in this slice.
+
+Exceptions: E12 drops v4's universal fallback reset layer. Native global
+`@property` defaults remain; supported browsers need v4's published baseline.
+
+Validation completed with baseline limits (2026-10-25):
+
+- `pnpm --filter @histoire/controls build`: emits JS/CSS, then baseline vendor
+  declaration error (`Module '"@iconify/vue"' has no exported member 'Icon'`).
+  Standalone/peer CSS, Vite bundles and `build:peer:types` pass independently.
+- Controls tests: 24 files / 90 tests pass. App/Histoire and Vue results are
+  recorded with slice 03 and in the joint report.
+- Actual v3/v4 browser effects, both stylesheet orders, peer-only spacing,
+  standalone palette fallbacks, and standalone controls versus unlayered host
+  reset all pass. The latter required preserving the unlayered output cascade.
+- Controls stories build: 17 stories / 32 variants pass. No standalone gallery
+  baseline was supplied; that before/after comparison remains unavailable.
+- Shared source files, tests, exact commands, intermediate failures and retained
+  screenshots: [joint report](evidence/after-03/report.md).
+
+Open: baseline type-generation failures and isolated installed-consumer gate
+(the suite runs `pnpm install` internally, forbidden in this task). CSS output
+paths and shipped font references pass artifact checks. No commit or staging.

@@ -1,0 +1,26 @@
+[
+  {
+    "file": "packages/histoire-app/dist/bundled/app.css",
+    "bytes": 198045,
+    "gzipBytes": 31130,
+    "sha256": "2cb3d63819e9cdf1a11b8be669d4cf242a628e779d79f0dd39b749657986399e"
+  },
+  {
+    "file": "packages/histoire-app/dist/style.css",
+    "bytes": 104082,
+    "gzipBytes": 14505,
+    "sha256": "5e719a0e19f5f4fb7b8ddd56635c7d9e339c8d5deb2031c754e332b873ea22aa"
+  },
+  {
+    "file": "packages/histoire-controls/dist/style-standalone.css",
+    "bytes": 27384,
+    "gzipBytes": 4852,
+    "sha256": "6a4f0c0aca677b25e9f403cea8fd877cc2817d3fc6bc37cc577c622a60430b2b"
+  },
+  {
+    "file": "packages/histoire-controls/dist/peer/style.css",
+    "bytes": 33074,
+    "gzipBytes": 5514,
+    "sha256": "d5c8516a9c135b775c02cdcc34ad71858fe6911adf5f42c79b5cfaca21a55d5e"
+  }
+]

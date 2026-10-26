@@ -1,0 +1,13 @@
+{
+  "cases": 16,
+  "controls": "Real Hst SSR controls",
+  "native": "Representative native panel markup",
+  "states": [
+    "normal",
+    "hover",
+    "focus",
+    "tree-hover",
+    "source-hover"
+  ],
+  "fonts": "System fallback, same in both revisions; app font coverage belongs to full matrix"
+}

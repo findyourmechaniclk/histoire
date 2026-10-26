@@ -64,7 +64,7 @@ Histoire CSS shares documents with story CSS (merged sandboxes, teleported overl
 
 - v4 uses `@property --tw-*` registrations and, for browsers without `@property`, an `@supports` fallback `@layer properties { *, ::before, ::after, ::backdrop { --tw-…: initial } }`. That universal rule is exactly what `optimizeUniversalDefaults` avoided in v3. Slice 02 ports `tailwind-defaults.spec.ts` to compile v4 output and assert no rule outside `.htw\:` selectors sets `--tw-*`; if v4 emits the fallback, a small PostCSS step drops or rescopes it.
 - `@property` registrations are document-global and identical across v4 builds; duplicate registration is harmless. They must stay outside `@scope` (scope wrapper hoists them).
-- Cascade layers: app utilities live in `@layer utilities` inside `@scope`. Story styles are excluded from the app subtree by the scope `to` bound only in one direction; unlayered story CSS leaking into app chrome (teleported overlays) would beat layered app utilities. Slice 02/03 spike with `examples/nuxt-ui` (Tailwind 4) and `examples/vue3` (Tailwind 3) and records the outcome in [exceptions.md](exceptions.md) if a mitigation is needed.
+- Cascade layers: app utilities are authored in `utilities`; compatibility output currently unwraps this layer inside `@scope` (E12, foundation notes below). Story styles are excluded from the app subtree by the scope `to` bound only in one direction; unlayered story CSS leaking into app chrome (teleported overlays) would beat layered app utilities. Slice 02/03 spike with `examples/nuxt-ui` (Tailwind 4) and `examples/vue3` (Tailwind 3) and records the outcome in [exceptions.md](exceptions.md) if a mitigation is needed.
 
 ## Conversion rules
 
@@ -102,3 +102,50 @@ Every folder slice follows the same loop per file, in the order its slice lists 
 Per slice, before closing: `grep -l '<style' <owned folders>` returns nothing; `pnpm --filter @histoire/app build`, vue-tsc, eslint on changed files, `pnpm --filter @histoire/vue test`, the class-selector suites if the slice touched a marker element; full matrix rows for its screens.
 
 Files stay under 300 lines. If moving styles into a template pushes a component over, split it by responsibility (sub-component), not by moving classes into constants.
+
+## Foundation implementation notes — slices 02/03
+
+- Both Vite and stylesheet scripts run the same PostCSS chain. V4's CLI does not
+  accept v3's `--postcss` option, so `scripts/build-tailwind.mjs` performs the
+  PostCSS build and watches source trees; package-local CLI dependencies remain.
+- `packages/histoire-controls/scripts/postcss-tailwind-isolation.cjs` removes Tailwind's universal
+  `@layer properties` fallback block. Native `@property` registrations remain
+  global; the app scope wrapper hoists them and layer-order statements after
+  Tailwind has expanded imports. Supported browsers use those registrations.
+- `HISTOIRE_DEV` styles and `bundle-main-dev.js` consume built `dist/style.css`.
+  Output normalizes then unwraps theme/base/components/utilities blocks, because
+  v3 consumers otherwise reject the sheet and unlayered host resets override
+  layered Histoire rules. Root PostCSS and docs/examples remain on v3 without
+  special file-path routing.
+- Shared generated themes preserve the v3 palette. App uses channel variables
+  without fallback. Standalone and peer controls both use canonical fallbacks:
+  old standalone config contained literal colors and worked without a provider.
+- Controls stories retain a local v3 config and import built standalone CSS.
+  Their source import would otherwise send v4 directives through a v3 project.
+
+E12 preserves the legacy unlayered cascade in all three outputs, with utility
+rules emitted after defaults. Initial layered output changed selection/docs
+specificity; layering all components then allowed Nuxt's unlayered preflight to
+override chrome and standalone controls. Both cases are reproduced in browser
+checks. The document-reset layer remains low priority and the runtime hidden
+marker remains last. Later source-fix slices must verify class-hook specificity
+rather than assuming a layer override. CSS-first authoring remains unchanged.
+
+## Closure cascade correction — slice 11
+
+Static `src/bundle-main.js` now imports `bundled/app.css` before `style.css`.
+Flattening only orders rules inside one output; the old import order reintroduced
+bundled controls defaults after utility CSS in the final book. Native provider
+component qualification and peer controls use `:where(.histoire-provider)`.
+Zero-specificity font/color resets retain one provider class so host element
+resets cannot leak in; native box sizing keeps that same boundary. Controls keep
+one target class plus interaction state; layout/ordinary appearance/context
+qualifiers select without raising specificity. Explicit tones retain enough
+priority to survive pressed state, while disabled opacity permits hidden actions. Native element qualifiers use
+`:where()` where passed-through utilities must override the default. Standalone
+and peer rendering remain independently checked by `evidence/controls-11.mjs`.
+
+App-owned defaults use props instead of conflicting utilities: workbench states
+accept `flush` when the parent supplies complete margins, and `HomeRow` accepts
+`muted`. Fixed surface backgrounds explicitly cover hover. No important utility
+is needed for these cases.

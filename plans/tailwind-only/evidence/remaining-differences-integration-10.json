@@ -1,0 +1,58 @@
+[
+  {
+    "file": "source-changed-compact.png",
+    "status": "changed",
+    "changedPixels": 37,
+    "totalPixels": 1296000,
+    "ratio": 0.000028549382716049384,
+    "bounds": [
+      1119,
+      581,
+      1120,
+      599
+    ],
+    "reason": "Removed colored changed-line inset edge required by AGENTS.md; not antialiasing"
+  },
+  {
+    "file": "source-changed-dark.png",
+    "status": "changed",
+    "changedPixels": 37,
+    "totalPixels": 1296000,
+    "ratio": 0.000028549382716049384,
+    "bounds": [
+      1119,
+      581,
+      1120,
+      599
+    ],
+    "reason": "Removed colored changed-line inset edge required by AGENTS.md; not antialiasing"
+  },
+  {
+    "file": "source-changed-light.png",
+    "status": "changed",
+    "changedPixels": 37,
+    "totalPixels": 1296000,
+    "ratio": 0.000028549382716049384,
+    "bounds": [
+      1119,
+      581,
+      1120,
+      599
+    ],
+    "reason": "Removed colored changed-line inset edge required by AGENTS.md; not antialiasing"
+  },
+  {
+    "file": "source-changed-narrow.png",
+    "status": "changed",
+    "changedPixels": 37,
+    "totalPixels": 304500,
+    "ratio": 0.00012151067323481117,
+    "bounds": [
+      54,
+      519,
+      55,
+      537
+    ],
+    "reason": "Removed colored changed-line inset edge required by AGENTS.md; not antialiasing"
+  }
+]

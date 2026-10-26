@@ -37,4 +37,31 @@ Fixing failures, changing styles.
 
 ## Status
 
-Not started.
+Completed 2026-10-25 on `main` at `acfebdf9`, with baseline failures and coverage limits recorded.
+
+Landed:
+
+- Reusable `capture.mjs`, `compare.mjs`, shared capture recipes/helpers, PID-owned `histoire preview` wrapper, README and behavioral comparator test under `evidence/`. Every source script is below 300 lines.
+- `baseline.md` records clean initial source state, package/type/test results, CSS raw/gzip sizes, screenshot recipes, skipped surfaces and handoff. Full command ledger and named failures are in `evidence/`.
+- All 152 inventory rows and bytes match (136 styled Vue files, 16 CSS files); only a localized drift/extra-marker note was added to shared inventory.
+- 104 screenshots: 25 Vue3 screens plus Nuxt UI fixture, each in light/dark/compact/375 px modes. Baseline directory 8,372,068 bytes. Final independent comparison: 104 matching pairs, zero detected changed pixels, no missing captures or browser errors.
+
+Deviations and calibration:
+
+- User replaces stale 6006 procedure with static Vue3 on 4610; Nuxt on 4611 uses its actual `/_stories/` base. IPv4 resolution is forced for the CLI's localhost binding. Servers stop by owned PID.
+- Root/package builds stop at Vue/vendor declaration errors. Existing asset-only build subcommands complete usable bundles/styles/fonts; both books then build. App's build aliases native Vue/controls source, so captured UI reflects current source. No source/build-config repair attempted.
+- Static books hide dev-only tests/AI/MCP/comments/agents/screenshot surfaces. No embedded native host exists in the selected examples. Scope and remaining transform/ring proof gaps are explicit in baseline.
+- Implicit variants use `_default`; Markdown catalog uses `.story.js` IDs. Measurement uses an explicitly selected Grid frame. Tailwind 3 coexistence uses the existing Box Shadow token story.
+- Initial 11 pixel differences came from loading skeletons, font timing and audit completion order. Network/control/font waits, explicit shipped font-face loading and a single-frame Audit pane eliminated all final differences; calibration evidence retained.
+
+Validation:
+
+- Controls: 82 tests pass. Vue: 773 pass. Histoire: 2,082 pass, 2 skipped.
+- Embed integration: 80 pass / 13 fail (8 failed files). Tailwind integration: 8 pass / 6 fail (2 failed files). Every failing outer test is named in `evidence/validation-failures.md`.
+- Root/controls/app full builds fail at type generation. Root/app-package `vue-tsc` command unavailable; existing controls binary checks app project and reports 1,309 errors. CSS asset steps and Vue3/Nuxt book builds pass.
+- Cypress command attempted; tests cannot start: `EROFS: read-only file system, open '/home/akryum/.config/Cypress/cy/production/cache'`. Skipped under user's sandbox exception.
+- Final repository lint: zero errors, 39 existing warnings. Comparator CLI test: pass. Style scan: expected 136 Vue style files. `git diff --check`: clean.
+
+Exceptions: no custom CSS added. No staging, commits, dependency installs, source edits or deletions.
+
+Open findings for orchestrator: build/types and integration failures above; Cypress runtime restriction; uncaptured dev/embedded-host surfaces and dedicated transform/ring coexistence probes. Slice 01 capture/tooling work is complete; no app/style conversion or failure repair was attempted.

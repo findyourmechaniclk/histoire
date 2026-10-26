@@ -1,0 +1,51 @@
+{
+  "captured": 104,
+  "statuses": {
+    "captured": 104
+  },
+  "exactMatches": 99,
+  "referenceDifferences": [
+    {
+      "file": "canvas-matrix-dark.png",
+      "status": "changed",
+      "changedPixels": 26316,
+      "totalPixels": 1296000,
+      "ratio": 0.020305555555555556
+    },
+    {
+      "file": "canvas-matrix-light.png",
+      "status": "changed",
+      "changedPixels": 27264,
+      "totalPixels": 1296000,
+      "ratio": 0.021037037037037038
+    },
+    {
+      "file": "plugin-inspector-compact.png",
+      "status": "changed",
+      "changedPixels": 22664,
+      "totalPixels": 1296000,
+      "ratio": 0.017487654320987655
+    },
+    {
+      "file": "plugin-inspector-dark.png",
+      "status": "changed",
+      "changedPixels": 20847,
+      "totalPixels": 1296000,
+      "ratio": 0.016085648148148148
+    },
+    {
+      "file": "plugin-inspector-light.png",
+      "status": "changed",
+      "changedPixels": 21719,
+      "totalPixels": 1296000,
+      "ratio": 0.01675848765432099
+    }
+  ],
+  "strictPixelGatePassed": false,
+  "notes": [
+    "Two Matrix images reproduce exactly with fonts disabled.",
+    "Three plugin-inspector reference images have the same alternate heading font as those Matrix references; disabling fonts reproduces their chrome but leaves 1822/1841 canvas-region pixels, so these references still require review.",
+    "Nuxt narrow header varied without code changes: two of three repeats matched baseline; final ordinary recapture matched.",
+    "No baseline image was edited."
+  ]
+}

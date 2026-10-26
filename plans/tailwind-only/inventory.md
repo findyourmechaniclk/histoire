@@ -235,13 +235,15 @@ App rules that target classes owned by `@histoire/vue` (`histoire-vue/src`) or `
 | `.histoire-controls`, `fieldset`, `legend`, `.histoire-controls-reset` | vue `HistoireControls.ts` | `components/inspector/PropsTab.vue` |
 | `.histoire-state-presets`, `.histoire-preset-trigger` | vue `StatePresets.ts`, `PresetMenu.ts` | `PropsTab.vue` |
 | `.histoire-source`, `.histoire-content-actions`, `pre`, `.line[data-source-changed]`, `[role="alert"]` | vue `HistoireSource.ts` | `components/inspector/SourceDrawer.vue` |
-| `.histoire-extension-view`, `.histoire-extension-mount` | vue `HistoireExtensionView.ts` | `components/canvas/overlays/OverlayItem.vue`, `components/canvas/views/PluginCanvasView.vue`, `StoryInspector.vue` |
+| `.histoire-extension-view`, `.histoire-extension-mount` | app-local `components/extensions/ExtensionView.vue`; native counterpart `HistoireExtensionView.ts` | `components/canvas/overlays/OverlayItem.vue`, `components/canvas/views/PluginCanvasView.vue`, `StoryInspector.vue` |
 | `.histoire-select` | controls `HstSelect.vue`, `CustomSelect.vue` | `components/panes/visual/VisualTestsPanel.vue`, `components/canvas/matrix/MatrixAxisBar.vue`, `components/canvas/matrix/MatrixInspector.vue`, `components/pages/settings/agents-settings.css` |
 | `.histoire-switch` | controls `HstSwitch.vue` | `components/panes/tests/FunctionalTestsPanel.vue`, `agents-settings.css` |
 | `.histoire-button[data-color="flat"]` | controls `HstButton.vue` | `components/shell/WorkbenchEmptyState.vue`, `components/shell/WorkbenchErrorState.vue`, `components/pages/home/home.css` |
 | `.histoire-button-group`, `.histoire-button-group-options` | controls `HstButtonGroup.vue` | `components/panes/search/SearchScopes.vue`, `components/shell/workbench-pane.css`, `agents-settings.css`, `ArrangeSwitch.vue`, `EmbedDialog.vue`, `InspectorTabs.vue`, `MatrixAxisEntry.vue`, `ToolSwitch.vue` |
 | `.histoire-control-content`, `.histoire-control-value` | controls `HstWrapper.vue` | `SearchScopes.vue` |
 | `.histoire-icon-button` (and `--histoire-icon-button-size`) | controls `HstButton.vue` | `components/panes/visual/VisualViewerDock.vue`, `components/canvas/toolbar/ToolbarButton.vue`, `components/inspector/InspectorHeader.vue` |
+| `textarea` in clipboard recovery | controls `HstTextarea.vue` (`inputClass`) | `components/menu/ContextMenu.vue` |
+| `HstButton` roots, `BuiltinIcon`, `HstPulsatingDisc` and its SVG | Existing root fallthrough / `size` / `currentColor` | `McpActivity.vue`, `MarkdownOutline.vue`, `AiThreadHeader.vue`, `CommentContext.vue`, `AgentPrompt.vue`, `SessionRadioList.vue`, `TestsTreeRow.vue` |
 
 Slice 04 re-greps (`:deep(`, plus plain descendant selectors in `.css` files) before closing; the table above is the starting point, not a proof of completeness.
 
@@ -259,3 +261,115 @@ Public theming and runtime roots:
 `histoire-app`, `histoire-workbench`, `histoire-root` (`histoire/src/node/virtual/resolved-theme.ts:21`), `histoire-shell-layout` with `data-density`, `htw-dark` (dark class, also `sandboxDarkClass` default context), `htw-sandbox-hidden`, `__histoire-render-story`, `__histoire-render-custom-controls`, `[data-histoire-controls]`.
 
 Dynamic class bindings (`:class` with computed names) must be checked by hand; known one: `` `inspector-test-${status}` `` (slice 10).
+
+## Inventory drift — slice 01, 2026-10-25
+
+Re-scanned `acfebdf9`: all 152 paths and every byte count match these tables exactly (136 styled Vue files, 16 CSS/PCSS files). No added, removed or moved files; slice assignments unchanged. Machine-readable regeneration: `evidence/inventory.json`.
+
+Re-grep of runtime DOM queries and test/Cypress selectors: `evidence/marker-consumers.txt`. Additional markers omitted from the original keep list must also survive on their current elements:
+
+- Slice 05: `overflow-toolbar-item` (`base/overflow/measurement.ts`).
+- Slice 07: `viewport-custom` (`examples/cypress/single-variant.js`).
+- Slice 08: `stories-row`, `stories-group`, `stories-label` (`examples/cypress/workbench-actions.js`); `image-scroll` (`panes/visual/VisualViewer.vue`).
+- Slice 09: `canvas-comment-overlay`, `canvas-comment-pin` (`comments/dismiss-outside.ts`).
+- Slice 10: `histoire-source-content` (`composables/context-menu.ts`, `inspector/SourceDrawer.vue`), `histoire-agent-arg` (`pages/settings/AgentArgumentsField.vue`).
+- Cross-package owners: `histoire-control-popover` (controls overlay; `composables/context-menu.ts`), `histoire-state-control`, `histoire-prop-control-reset`, `histoire-controls-reset`, `histoire-events`, `histoire-event-row`, `histoire-events-count` (vue-owned controls/events; existing consumer tests). These remain source-fix contracts, not app classes to rename.
+
+This is a source-consumer inventory, not a claim that every selector suite passed. Baseline test results are recorded separately.
+
+## Foundation drift — slices 02/03
+
+Baseline byte counts above remain the comparison inventory. Slice 03 renames
+`app/style/main.pcss` to `app/style/main.css` and adds `app/style/theme.css`.
+All 136 app Vue style blocks remain. Seven listed utility components and the
+14 controls Vue files receive prefix changes; range/grid CSS marker names stay.
+Shared `scripts/build-tailwind.mjs` and
+`packages/histoire-controls/scripts/postcss-tailwind-isolation.cjs`, controls generated theme files, and
+controls-stories config/setup belong to this joint foundation track.
+`HstColorShades.story.vue` reuses the identical existing Node `defaultColors`
+object, removing its duplicated palette and bringing it below 300 lines.
+
+`examples/vue3/tailwind.config.cjs` now owns the former app v3 config because its
+token-story catalogue imports that config. Theme and catalogue remain unchanged.
+
+## Source-hook audit — slice 04
+
+Re-grep of Vue deep selectors and plain CSS descendants found clipboard recovery's
+native textarea missing from the initial table. `HstTextarea.inputClass` now
+covers it. `GenericControls` owns fieldsets/legends; `HistoireVirtualList` owns the
+nested event `ol`. These helpers and controls `src/style/controls.pcss` join slice
+04's source scope. Native `styles/extensions.css` owns the opt-in pointer rule
+for interactive plugin roots under pointer-transparent canvas layers. App overlays and inspector extensions render app-local
+`components/extensions/ExtensionView.vue`, which receives the same additive
+`classes`/`interactive` API as its native counterpart. No app selector migrated.
+Other discovered button/icon selectors need existing fallthrough or size props.
+
+## Shared primitive adoption — slice 05
+
+Small caller edits outside the folder scope are required when removing shared
+selectors: flat state action tones, pane group `block`, and popover part tags.
+Feature-folder styles otherwise remain for their owning slices. Additional files:
+
+- `components/embed/EmbedMenu.vue`
+- `components/canvas/toolbar/{BackgroundPicker,ViewportMenu,ZoomMenu,ScreenshotSetup,ScreenshotPopover}.vue`
+- `components/canvas/{matrix/MatrixAvailabilityState,views/PluginCanvasView}.vue`
+- `components/comments/prompt/AttachMenuPanel.vue`
+- `components/panes/{ai/AiPanel,ai/AiThreadList,search/SearchPanel,tests/TestsFilter,tests/FunctionalTestsPanel,visual/VisualTestsPanel,visual/VisualViewer}.vue`
+
+New shared components: `shell/WorkbenchStateLayout.vue` and
+`base/popover/Popover{Row,Title,Meta,Divider,Error}.vue`; new presentation reader:
+`base/overflow/presentation.ts`. Keep `workbench-loading-skeleton` as an additional
+capture-readiness marker (`evidence/capture.mjs`). Keep `workbench-state`,
+`workbench-pane-header` and `workbench-pane-toolbar` until later caller migration.
+
+Slice 05 also updates the existing standalone-state test in
+`packages/histoire-vue/src/__tests__/workbench-state-components.spec.ts`: exact
+prop-bag equality becomes rendered status/title/detail assertions, since adding
+an optional presentation prop must not invalidate the host behavior contract.
+
+## Comment migration additions — slice 09
+
+Question styles also belong to previously unstyled native owners:
+`comments/thread/questions/{AgentElicitation,AgentPlanApproval,ElicitationField,ElicitationLink,ElicitationOptions}.vue`.
+Shared utility-only primitives added inside this slice:
+`comments/CommentContextChip.vue`, `comments/thread/AgentDisclosure.vue`, and
+`comments/thread/questions/{QuestionActions,QuestionInput,QuestionOption,QuestionOptionLabel}.vue`.
+No other feature folders or package hooks changed. Existing comment marker elements remain.
+
+## Inspector and pages adoption — slice 10
+
+Shared CSS also styles these previously unlisted, style-free consumers:
+`inspector/{DocsTab,EventsTab,TestsTab}.vue`,
+`pages/home/PluginHomeSections.vue`,
+`pages/markdown/MarkdownPage.vue`, and
+`pages/settings/{SettingsPage,SettingsNav,AboutSection,AppearanceSection,GeneralSection,TestsSection,ShortcutsSection,McpSection,AgentsSection,AgentPresetRow,AgentAdvancedSettings,AgentArgumentsField,AgentEnvironmentField,AgentModelSettings,SaveToProject}.vue`.
+Slice 10 owns their utility adoption. New local primitives:
+`pages/home/{HomeHeading,HomeCard,HomeRow}.vue` and
+`pages/settings/{SettingsCard,SettingsRow}.vue`.
+
+Additional capture markers retained on original elements:
+`histoire-home-page`, `histoire-markdown-page`, `histoire-settings-plugin`.
+`histoire-icon-button` remains on inspector's native link for its package sizing.
+An additive `HstButtonGroup.classes` hook passes utilities to `options` and
+`option`; default structure, markers and behavior remain unchanged.
+
+Slice 10's repeated choice and launch layouts also use
+`pages/settings/{SettingsChoices,AgentLaunchField}.vue`; repeated inspector
+wrappers use `inspector/{SourceAction,InspectorExtensionOutlet}.vue`.
+
+## Closure audit — slice 11
+
+- All 224 app Vue files are free of style blocks; no app deep selectors remain.
+- Eight CSS/PCSS files remain, exactly the source guard allowlist and E1–E10:
+  `app/style/{main.css,theme.css,tokens.pcss,density.css,document.pcss,controls.css,fonts.pcss}`
+  and `embed/document.css`.
+- `EmbedDocument.vue` was the sole remaining SFC style conversion. Marker classes
+  remain on their original elements. No component stylesheet was added.
+- Additional orchestrator scope: native CSS under `histoire-vue/src/styles`,
+  controls' `controls.pcss` and peer scoping, static `bundle-main.js`, and 67 app
+  files with important utilities. Exact owned-file manifest is in slice 11 evidence.
+
+- App state spacing uses `flush`; `HomeRow.muted` owns muted row text. These
+  explicit variants replace parent/child utility conflicts found during review.
+- E14 records existing temporary story-sizing CSS; runtime geometry is not a
+  component stylesheet and does not add a physical CSS file to the allowlist.

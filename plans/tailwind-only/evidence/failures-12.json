@@ -1,0 +1,127 @@
+{
+  "embed": {
+    "passed": 86,
+    "failed": 9,
+    "baselineFailures": [
+      "src/node/__tests__/embed/integration/visual-recovery.spec.ts > durable visual recovery consumer > restores finished comparison after CLI is killed before report publication",
+      "src/node/__tests__/embed/integration/visual-recovery.spec.ts > durable visual recovery consumer > restores interrupted captures, approves retained bytes, merges targeted runs and invalidates only changed story",
+      "src/node/__tests__/embed/integration/visual-recovery.spec.ts > durable visual recovery consumer > restores workbench review after actual server restart and reruns only selected comparison",
+      "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > cLI produces missing, approved, passing, and changed reports with meaningful exit codes",
+      "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > captures canonical and two durable Matrix cases, approves, reruns, and rejects stale approval",
+      "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > saves displayed filtered Matrix cells with complete props through real UI",
+      "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > workbench captures, reviews, approves selected results, then passes next run",
+      "src/node/__tests__/embed/integration/visual-transport.spec.ts > visual browser ownership > reviews and approves large saved props and axes through bounded pages",
+      "src/node/__tests__/embed/integration/vue-host-isolation.spec.ts > native Vue host isolation > keeps host router/form/styles, two sessions, scoped themes/overlays and runtime cleanup independent"
+    ],
+    "failures": [
+      {
+        "name": "src/node/__tests__/embed/integration/visual-recovery.spec.ts > durable visual recovery consumer > restores interrupted captures, approves retained bytes, merges targeted runs and invalidates only changed story",
+        "messages": [
+          "AssertionError: expected 'ENOENT: no such file or directory, re\u2026' to be undefined\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/embed/integration/visual-recovery.spec.ts:65:47\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/embed/integration/visual-recovery.spec.ts > durable visual recovery consumer > restores workbench review after actual server restart and reruns only selected comparison",
+        "messages": [
+          "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('dialog', { name: /One/ }).getByRole('button', { name: 'Create baseline', exact: true })\u001b[22m\n\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/embed/integration/visual-recovery.spec.ts:148:82\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/embed/integration/visual-recovery.spec.ts > durable visual recovery consumer > restores finished comparison after CLI is killed before report publication",
+        "messages": [
+          "Error: Visual testing requires enabled configuration and a ready development source\n    at resolveVisualSource (/home/akryum/Projects/histoire/packages/histoire/dist/node/visual/source.js:30:15)\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/embed/integration/visual-recovery.spec.ts:18:12\n    at current (/home/akryum/Projects/histoire/packages/histoire/dist/node/visual/service.js:22:24)\n    at Object.createReviewSession (/home/akryum/Projects/histoire/packages/histoire/dist/node/visual/service.js:32:26)\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/embed/integration/visual-recovery.spec.ts:196:39\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > saves displayed filtered Matrix cells with complete props through real UI",
+        "messages": [
+          "AssertionError: expected +0 to be 4 // Object.is equality\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/embed/integration/visual-regression.spec.ts:76:83\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > captures canonical and two durable Matrix cases, approves, reruns, and rejects stale approval",
+        "messages": [
+          "AssertionError: expected [ 'cancelled', 'cancelled', \u2026(2) ] to deeply equal [ 'passed', 'passed', 'passed', \u2026(1) ]\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/embed/integration/visual-regression.spec.ts:142:81\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > cLI produces missing, approved, passing, and changed reports with meaningful exit codes",
+        "messages": [
+          "AssertionError: `server.hmr.protocol/host/port/path/clientPort/timeout/server` is deprecated. Use `server.ws.*` instead. Note that this option may be set by a plugin. Set VITE_DEPRECATION_TRACE=1 to see where it is called.\nUsing 1 thread for story collection\nRestored 1 story file from the collection cache\nCollect stories start all\nVisual: 0/2 passed\nReport: .histoire/visual/runs/e50ba15d-7695-4033-be08-b4cb24f401ed/index.html\nJSON: .histoire/visual/runs/e50ba15d-7695-4033-be08-b4cb24f401ed/report.json\ncancelled: Card \u203a One \u00b7 small \u2014 canvas could not become ready\ncancelled: Card \u203a Two \u00b7 small \u2014 Visual run cancelled\nError while collecting story /tmp/histoire-mcp-project-bLtoWi/Book.story.vue:\nError: Terminating worker thread\n    at Object.ThreadTermination (file:///home/akryum/Projects/histoire/node_modules/.pnpm/@akryum+tinypool@0.3.1/node_modules/@akryum/tinypool/dist/esm/index.js:345:28)\n    at WorkerInfo.destroy (file:///home/akryum/Projects/histoire/node_modules/.pnpm/@akryum+tinypool@0.3.1/node_modules/@akryum/tinypool/dist/esm/index.js:376:28)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n: expected 1 to be +0 // Object.is equality\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/embed/integration/visual-regression.spec.ts:167:44\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/embed/integration/visual-regression.spec.ts > visual consumer acceptance > workbench captures, reviews, approves selected results, then passes next run",
+        "messages": [
+          "Error: locator.evaluate: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('dialog', { name: 'Card \u203a One', exact: true }).getByRole('button', { name: 'Create baseline', exact: true })\u001b[22m\n\n    at Proxy.__VITEST_POLL_CHAIN__ (file:///home/akryum/Projects/histoire/node_modules/.pnpm/vitest@4.1.10_@types+node@22.19.3_@vitest+browser-playwright@4.1.10_jsdom@27.4.0_msw@2._a5a4f5e2eb4cbbab4a868e871fd057c9/node_modules/vitest/dist/chunks/test.DNmyFkvJ.js:3748:47)\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/embed/integration/visual-regression.spec.ts:254:157\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/embed/integration/visual-transport.spec.ts > visual browser ownership > reviews and approves large saved props and axes through bounded pages",
+        "messages": [
+          "AssertionError: expected true to be false // Object.is equality\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/embed/integration/visual-transport.spec.ts:56:63\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/embed/integration/vue-host-isolation.spec.ts > native Vue host isolation > keeps host router/form/styles, two sessions, scoped themes/overlays and runtime cleanup independent",
+        "messages": [
+          "AssertionError: expected [ 'Maximum call stack size exceeded' ] to deeply equal []\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/embed/integration/vue-host-isolation.spec.ts:101:22\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      }
+    ],
+    "newFailures": [],
+    "baselineNotFailing": []
+  },
+  "tailwind": {
+    "passed": 8,
+    "failed": 6,
+    "baselineFailures": [
+      "src/node/__tests__/tailwind/integration/browser.spec.ts > automatic Tailwind token books > renders dev token stories with Tailwind v4",
+      "src/node/__tests__/tailwind/integration/browser.spec.ts > automatic Tailwind token books > renders static token stories with Tailwind v4",
+      "src/node/__tests__/tailwind/integration/single-variant.spec.ts > tailwind Single variant workbench > uses native Single view in dev Tailwind v3 books",
+      "src/node/__tests__/tailwind/integration/single-variant.spec.ts > tailwind Single variant workbench > uses native Single view in dev Tailwind v4 books",
+      "src/node/__tests__/tailwind/integration/single-variant.spec.ts > tailwind Single variant workbench > uses native Single view in static Tailwind v3 books",
+      "src/node/__tests__/tailwind/integration/single-variant.spec.ts > tailwind Single variant workbench > uses native Single view in static Tailwind v4 books"
+    ],
+    "failures": [
+      {
+        "name": "src/node/__tests__/tailwind/integration/browser.spec.ts > automatic Tailwind token books > renders dev token stories with Tailwind v4",
+        "messages": [
+          "Error: TimeoutError: locator.textContent: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-tailwind-value$=\"text-lg\"]')\u001b[22m\n; browser errors: \n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/tailwind/integration/browser.spec.ts:66:13\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/tailwind/integration/browser.spec.ts > automatic Tailwind token books > renders static token stories with Tailwind v4",
+        "messages": [
+          "Error: TimeoutError: locator.textContent: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-tailwind-value$=\"text-lg\"]')\u001b[22m\n; browser errors: \n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/tailwind/integration/browser.spec.ts:66:13\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/tailwind/integration/single-variant.spec.ts > tailwind Single variant workbench > uses native Single view in dev Tailwind v3 books",
+        "messages": [
+          "Error: AssertionError: expected 1 to be +0 // Object.is equality; console: ; runtime: []\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/tailwind/integration/single-variant.spec.ts:144:13\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/tailwind/integration/single-variant.spec.ts > tailwind Single variant workbench > uses native Single view in static Tailwind v3 books",
+        "messages": [
+          "Error: AssertionError: expected 1 to be +0 // Object.is equality; console: ; runtime: []\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/tailwind/integration/single-variant.spec.ts:144:13\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/tailwind/integration/single-variant.spec.ts > tailwind Single variant workbench > uses native Single view in dev Tailwind v4 books",
+        "messages": [
+          "Error: AssertionError: expected 1 to be +0 // Object.is equality; console: ; runtime: []\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/tailwind/integration/single-variant.spec.ts:144:13\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      },
+      {
+        "name": "src/node/__tests__/tailwind/integration/single-variant.spec.ts > tailwind Single variant workbench > uses native Single view in static Tailwind v4 books",
+        "messages": [
+          "Error: AssertionError: expected 1 to be +0 // Object.is equality; console: ; runtime: []\n    at /home/akryum/Projects/histoire/packages/histoire/src/node/__tests__/tailwind/integration/single-variant.spec.ts:144:13\n    at async file:///home/akryum/Projects/histoire/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ]
+      }
+    ],
+    "newFailures": [],
+    "baselineNotFailing": []
+  }
+}

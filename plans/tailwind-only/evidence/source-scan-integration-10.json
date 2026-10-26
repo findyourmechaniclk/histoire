@@ -1,0 +1,32 @@
+{
+  "canvas": {
+    "vueFiles": 53,
+    "styleBlocks": [],
+    "maxLines": 283
+  },
+  "panes": {
+    "vueFiles": 36,
+    "styleBlocks": [],
+    "maxLines": 290
+  },
+  "comments": {
+    "vueFiles": 37,
+    "styleBlocks": [],
+    "maxLines": 187
+  },
+  "inspector": {
+    "vueFiles": 12,
+    "styleBlocks": [],
+    "maxLines": 181
+  },
+  "pages": {
+    "vueFiles": 37,
+    "styleBlocks": [],
+    "maxLines": 144
+  },
+  "embed": {
+    "vueFiles": 2,
+    "styleBlocks": [],
+    "maxLines": 204
+  }
+}

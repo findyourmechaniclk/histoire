@@ -1,0 +1,18 @@
+{
+  "packages/histoire-app/dist/bundled/app.css": {
+    "bytes": 23818,
+    "gzip": 4648
+  },
+  "packages/histoire-app/dist/style.css": {
+    "bytes": 243729,
+    "gzip": 31069
+  },
+  "packages/histoire-controls/dist/style-standalone.css": {
+    "bytes": 29087,
+    "gzip": 4893
+  },
+  "packages/histoire-controls/dist/peer/style.css": {
+    "bytes": 36908,
+    "gzip": 5753
+  }
+}

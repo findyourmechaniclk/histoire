@@ -1,0 +1,55 @@
+{
+  "created": [
+    "packages/histoire-app/src/app/components/comments/CommentContextChip.vue",
+    "packages/histoire-app/src/app/components/comments/thread/AgentDisclosure.vue",
+    "packages/histoire-app/src/app/components/comments/thread/questions/QuestionActions.vue",
+    "packages/histoire-app/src/app/components/comments/thread/questions/QuestionInput.vue",
+    "packages/histoire-app/src/app/components/comments/thread/questions/QuestionOption.vue",
+    "packages/histoire-app/src/app/components/comments/thread/questions/QuestionOptionLabel.vue"
+  ],
+  "changed": [
+    "packages/histoire-app/src/app/components/comments/CommentComposer.vue",
+    "packages/histoire-app/src/app/components/comments/CommentContext.vue",
+    "packages/histoire-app/src/app/components/comments/CommentPin.vue",
+    "packages/histoire-app/src/app/components/comments/CommentThread.vue",
+    "packages/histoire-app/src/app/components/comments/CommentsCanvasOverlay.vue",
+    "packages/histoire-app/src/app/components/comments/prompt/AgentPrompt.vue",
+    "packages/histoire-app/src/app/components/comments/prompt/AttachMenuPanel.vue",
+    "packages/histoire-app/src/app/components/comments/prompt/AttachmentStrip.vue",
+    "packages/histoire-app/src/app/components/comments/prompt/AttachmentTile.vue",
+    "packages/histoire-app/src/app/components/comments/prompt/AttachmentViewer.vue",
+    "packages/histoire-app/src/app/components/comments/prompt/ContextChip.vue",
+    "packages/histoire-app/src/app/components/comments/prompt/PromptAttachMenu.vue",
+    "packages/histoire-app/src/app/components/comments/prompt/PromptMenu.vue",
+    "packages/histoire-app/src/app/components/comments/prompt/PromptSuggestions.vue",
+    "packages/histoire-app/src/app/components/comments/prompt/SessionPicker.vue",
+    "packages/histoire-app/src/app/components/comments/prompt/SessionRadioList.vue",
+    "packages/histoire-app/src/app/components/comments/prompt/SessionSettings.vue",
+    "packages/histoire-app/src/app/components/comments/thread/AgentActivityPhase.vue",
+    "packages/histoire-app/src/app/components/comments/thread/AgentLiveTail.vue",
+    "packages/histoire-app/src/app/components/comments/thread/AgentMarkdown.vue",
+    "packages/histoire-app/src/app/components/comments/thread/AgentPlan.vue",
+    "packages/histoire-app/src/app/components/comments/thread/AgentPlanDecision.vue",
+    "packages/histoire-app/src/app/components/comments/thread/ThreadMessage.vue",
+    "packages/histoire-app/src/app/components/comments/thread/questions/AgentElicitation.vue",
+    "packages/histoire-app/src/app/components/comments/thread/questions/AgentPlanApproval.vue",
+    "packages/histoire-app/src/app/components/comments/thread/questions/ElicitationField.vue",
+    "packages/histoire-app/src/app/components/comments/thread/questions/ElicitationForm.vue",
+    "packages/histoire-app/src/app/components/comments/thread/questions/ElicitationLink.vue",
+    "packages/histoire-app/src/app/components/comments/thread/questions/ElicitationOptions.vue"
+  ],
+  "deleted": [
+    "packages/histoire-app/src/app/components/comments/thread/questions/questions.css"
+  ],
+  "plans": [
+    "plans/tailwind-only/09-comments.md",
+    "plans/tailwind-only/inventory.md"
+  ],
+  "tooling": [
+    "plans/tailwind-only/evidence/comments-09/README.md",
+    "plans/tailwind-only/evidence/comments-09/build.mjs",
+    "plans/tailwind-only/evidence/comments-09/capture.mjs",
+    "plans/tailwind-only/evidence/comments-09/index.html",
+    "plans/tailwind-only/evidence/comments-09/main.ts"
+  ]
+}

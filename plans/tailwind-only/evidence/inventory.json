@@ -1,0 +1,762 @@
+[
+  {
+    "file": "app/components/agents/AgentLogo.vue",
+    "bytes": 218,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/agents/agents.css",
+    "bytes": 1383,
+    "kind": ".css"
+  },
+  {
+    "file": "app/components/base/overflow/BaseOverflowToolbar.vue",
+    "bytes": 441,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/base/overflow/BaseOverflowToolbarItem.vue",
+    "bytes": 2137,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/base/popover/BasePopover.vue",
+    "bytes": 840,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/AgentCursor.vue",
+    "bytes": 592,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/CanvasFrame.vue",
+    "bytes": 3300,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/CanvasHeader.vue",
+    "bytes": 1811,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/CanvasLoadingIndicator.vue",
+    "bytes": 149,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/CanvasMatrixPrimary.vue",
+    "bytes": 193,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/CanvasMeasureHint.vue",
+    "bytes": 1451,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/CanvasReplicaPreview.vue",
+    "bytes": 389,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/CanvasSingleVariant.vue",
+    "bytes": 480,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/CanvasStatus.vue",
+    "bytes": 2199,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/CanvasViewport.vue",
+    "bytes": 1751,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/CollectErrorCard.vue",
+    "bytes": 604,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/FrameGrid.vue",
+    "bytes": 177,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/FrameList.vue",
+    "bytes": 130,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/MeasureBoxModel.vue",
+    "bytes": 297,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/MeasureGuides.vue",
+    "bytes": 528,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/MeasureOverlay.vue",
+    "bytes": 694,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/SingleVariantResizeHandles.vue",
+    "bytes": 1771,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/matrix/MatrixAxisBar.vue",
+    "bytes": 762,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/matrix/MatrixAxisEntry.vue",
+    "bytes": 1184,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/matrix/MatrixBaseProp.vue",
+    "bytes": 576,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/matrix/MatrixCell.vue",
+    "bytes": 1260,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/matrix/MatrixCustomAxes.vue",
+    "bytes": 361,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/matrix/MatrixInspector.vue",
+    "bytes": 1897,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/matrix/MatrixNumericValues.vue",
+    "bytes": 125,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/matrix/MatrixView.vue",
+    "bytes": 1444,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/matrix/MatrixVisualActions.vue",
+    "bytes": 453,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/matrix/matrix-axis-form.css",
+    "bytes": 946,
+    "kind": ".css"
+  },
+  {
+    "file": "app/components/canvas/overlays/FrameLayer.vue",
+    "bytes": 218,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/overlays/OverlayItem.vue",
+    "bytes": 528,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/overlays/OverlayLayer.vue",
+    "bytes": 145,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/toolbar/BackgroundPicker.vue",
+    "bytes": 945,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/toolbar/CanvasToolbar.vue",
+    "bytes": 513,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/toolbar/ScreenshotPopover.vue",
+    "bytes": 1296,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/toolbar/ScreenshotSetup.vue",
+    "bytes": 1397,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/toolbar/SearchMatchStepper.vue",
+    "bytes": 268,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/toolbar/ToolbarButton.vue",
+    "bytes": 747,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/toolbar/ToolbarPopover.vue",
+    "bytes": 74,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/toolbar/ViewportMenu.vue",
+    "bytes": 576,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/toolbar/ZoomMenu.vue",
+    "bytes": 245,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/tools/PluginToolLayer.vue",
+    "bytes": 119,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/canvas/views/PluginCanvasView.vue",
+    "bytes": 430,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/CommentComposer.vue",
+    "bytes": 611,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/CommentContext.vue",
+    "bytes": 1551,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/CommentPin.vue",
+    "bytes": 793,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/CommentThread.vue",
+    "bytes": 425,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/CommentsCanvasOverlay.vue",
+    "bytes": 1386,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/prompt/AgentPrompt.vue",
+    "bytes": 1815,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/prompt/AttachMenuPanel.vue",
+    "bytes": 549,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/prompt/AttachmentStrip.vue",
+    "bytes": 317,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/prompt/AttachmentTile.vue",
+    "bytes": 2105,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/prompt/AttachmentViewer.vue",
+    "bytes": 1061,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/prompt/ContextChip.vue",
+    "bytes": 540,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/prompt/PromptAttachMenu.vue",
+    "bytes": 70,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/prompt/PromptMenu.vue",
+    "bytes": 128,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/prompt/PromptSuggestions.vue",
+    "bytes": 1030,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/prompt/SessionPicker.vue",
+    "bytes": 427,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/prompt/SessionRadioList.vue",
+    "bytes": 563,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/prompt/SessionSettings.vue",
+    "bytes": 609,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/thread/AgentActivityPhase.vue",
+    "bytes": 1249,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/thread/AgentLiveTail.vue",
+    "bytes": 313,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/thread/AgentMarkdown.vue",
+    "bytes": 962,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/thread/AgentPlan.vue",
+    "bytes": 1099,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/thread/AgentPlanDecision.vue",
+    "bytes": 1045,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/thread/ThreadMessage.vue",
+    "bytes": 1318,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/thread/questions/ElicitationForm.vue",
+    "bytes": 71,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/comments/thread/questions/questions.css",
+    "bytes": 3503,
+    "kind": ".css"
+  },
+  {
+    "file": "app/components/embed/EmbedDialog.vue",
+    "bytes": 4384,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/inspector/EventsBadge.vue",
+    "bytes": 138,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/inspector/InspectorHeader.vue",
+    "bytes": 962,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/inspector/InspectorTabs.vue",
+    "bytes": 1630,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/inspector/PropsTab.vue",
+    "bytes": 1144,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/inspector/SourceDrawer.vue",
+    "bytes": 2207,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/inspector/StoryInspector.vue",
+    "bytes": 2923,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/inspector/TestsBadge.vue",
+    "bytes": 270,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/menu/ContextMenu.vue",
+    "bytes": 914,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/menu/MenuItem.vue",
+    "bytes": 523,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/menu/SubMenu.vue",
+    "bytes": 141,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/misc/HatchedPattern.vue",
+    "bytes": 185,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/home/BrowseSections.vue",
+    "bytes": 1350,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/home/GuidesList.vue",
+    "bytes": 206,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/home/HomeHeader.vue",
+    "bytes": 505,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/home/HomePage.vue",
+    "bytes": 1570,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/home/HomeSearch.vue",
+    "bytes": 467,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/home/NeedsAttention.vue",
+    "bytes": 678,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/home/UpdatesList.vue",
+    "bytes": 605,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/home/home.css",
+    "bytes": 1928,
+    "kind": ".css"
+  },
+  {
+    "file": "app/components/pages/markdown/MarkdownOutline.vue",
+    "bytes": 786,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/markdown/MarkdownPager.vue",
+    "bytes": 540,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/markdown/markdown.css",
+    "bytes": 3102,
+    "kind": ".css"
+  },
+  {
+    "file": "app/components/pages/settings/BackgroundsSection.vue",
+    "bytes": 627,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/settings/ProjectSourceBadge.vue",
+    "bytes": 255,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/settings/ViewportsSection.vue",
+    "bytes": 386,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/pages/settings/agents-settings.css",
+    "bytes": 7944,
+    "kind": ".css"
+  },
+  {
+    "file": "app/components/pages/settings/settings.css",
+    "bytes": 4130,
+    "kind": ".css"
+  },
+  {
+    "file": "app/components/panes/ai/AiCreatedStories.vue",
+    "bytes": 208,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/ai/AiPanel.vue",
+    "bytes": 309,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/ai/AiThreadComposer.vue",
+    "bytes": 167,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/ai/AiThreadHeader.vue",
+    "bytes": 447,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/ai/AiThreadList.vue",
+    "bytes": 1370,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/ai/AiThreadView.vue",
+    "bytes": 313,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/mcp/McpActivity.vue",
+    "bytes": 2977,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/mcp/McpClients.vue",
+    "bytes": 1145,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/mcp/McpContent.vue",
+    "bytes": 849,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/mcp/McpCurrentOperation.vue",
+    "bytes": 1231,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/mcp/McpEndpoint.vue",
+    "bytes": 882,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/mcp/McpHistory.vue",
+    "bytes": 1216,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/search/SearchPanel.vue",
+    "bytes": 1929,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/search/SearchResultItem.vue",
+    "bytes": 887,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/search/SearchScopes.vue",
+    "bytes": 340,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/stories/StoriesPanel.vue",
+    "bytes": 1925,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/tests/FunctionalTestsPanel.vue",
+    "bytes": 1327,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/tests/TestsPanel.vue",
+    "bytes": 326,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/tests/TestsSummary.vue",
+    "bytes": 1080,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/tests/TestsTree.vue",
+    "bytes": 1099,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/tests/TestsTreeRow.vue",
+    "bytes": 1113,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/visual/VisualImageLabel.vue",
+    "bytes": 412,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/visual/VisualResultRow.vue",
+    "bytes": 1845,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/visual/VisualResultsList.vue",
+    "bytes": 802,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/visual/VisualSlider.vue",
+    "bytes": 1066,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/visual/VisualTestsPanel.vue",
+    "bytes": 1151,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/visual/VisualTestsSummary.vue",
+    "bytes": 1509,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/visual/VisualViewer.vue",
+    "bytes": 2711,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/visual/VisualViewerActions.vue",
+    "bytes": 764,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/visual/VisualViewerDock.vue",
+    "bytes": 871,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/panes/visual/VisualViewerHeader.vue",
+    "bytes": 2211,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/shell/AppRail.vue",
+    "bytes": 1259,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/shell/InspectorFrame.vue",
+    "bytes": 1043,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/shell/PanelResizeHandle.vue",
+    "bytes": 884,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/shell/PluginPane.vue",
+    "bytes": 297,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/shell/RailButton.vue",
+    "bytes": 1231,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/shell/ShellLayout.vue",
+    "bytes": 1235,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/shell/SidePanelHost.vue",
+    "bytes": 765,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/shell/WorkbenchEmptyState.vue",
+    "bytes": 219,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/shell/WorkbenchErrorState.vue",
+    "bytes": 260,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/shell/WorkbenchLoadingSkeleton.vue",
+    "bytes": 653,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/shell/WorkbenchPanelAction.vue",
+    "bytes": 652,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/components/shell/workbench-pane.css",
+    "bytes": 1073,
+    "kind": ".css"
+  },
+  {
+    "file": "app/components/shell/workbench-state.css",
+    "bytes": 724,
+    "kind": ".css"
+  },
+  {
+    "file": "app/components/story/StoryVariantGridSandboxItem.vue",
+    "bytes": 160,
+    "kind": ".vue"
+  },
+  {
+    "file": "app/style/controls.css",
+    "bytes": 872,
+    "kind": ".css"
+  },
+  {
+    "file": "app/style/density.css",
+    "bytes": 1603,
+    "kind": ".css"
+  },
+  {
+    "file": "app/style/document.pcss",
+    "bytes": 830,
+    "kind": ".pcss"
+  },
+  {
+    "file": "app/style/fonts.pcss",
+    "bytes": 51,
+    "kind": ".pcss"
+  },
+  {
+    "file": "app/style/main.pcss",
+    "bytes": 889,
+    "kind": ".pcss"
+  },
+  {
+    "file": "app/style/tokens.pcss",
+    "bytes": 6068,
+    "kind": ".pcss"
+  },
+  {
+    "file": "embed/EmbedDocument.vue",
+    "bytes": 211,
+    "kind": ".vue"
+  },
+  {
+    "file": "embed/document.css",
+    "bytes": 199,
+    "kind": ".css"
+  }
+]

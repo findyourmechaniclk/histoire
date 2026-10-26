@@ -1,0 +1,7 @@
+{
+  "@histoire/app/dist/style.css": "/home/akryum/Projects/histoire/packages/histoire-app/dist/style.css",
+  "@histoire/app/dist/bundled/app.css": "/home/akryum/Projects/histoire/packages/histoire-app/dist/bundled/app.css",
+  "@histoire/controls/dist/style-standalone.css": "/home/akryum/Projects/histoire/packages/histoire-controls/dist/style-standalone.css",
+  "@histoire/controls/vue/style.css": "/home/akryum/Projects/histoire/packages/histoire-controls/dist/peer/style.css",
+  "@histoire/vue/style.css": "/home/akryum/Projects/histoire/packages/histoire-vue/dist/style.css"
+}

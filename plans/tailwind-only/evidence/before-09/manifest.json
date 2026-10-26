@@ -1,0 +1,487 @@
+{
+  "browser": "147.0.7727.15",
+  "node": "v24.16.0",
+  "fixedTime": "2026-10-25T12:00:00Z",
+  "results": [
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-fixture",
+      "mode": "light",
+      "path": "/__comments09/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-fixture-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-fixture",
+      "mode": "dark",
+      "path": "/__comments09/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-fixture-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-fixture",
+      "mode": "compact",
+      "path": "/__comments09/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-fixture-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-fixture",
+      "mode": "narrow",
+      "path": "/__comments09/",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-fixture-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-thread",
+      "mode": "light",
+      "path": "/__comments09/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-thread-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-thread",
+      "mode": "dark",
+      "path": "/__comments09/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-thread-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-thread",
+      "mode": "compact",
+      "path": "/__comments09/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-thread-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-thread",
+      "mode": "narrow",
+      "path": "/__comments09/",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-thread-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-details",
+      "mode": "light",
+      "path": "/__comments09/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-details-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-details",
+      "mode": "dark",
+      "path": "/__comments09/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-details-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-details",
+      "mode": "compact",
+      "path": "/__comments09/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-details-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-details",
+      "mode": "narrow",
+      "path": "/__comments09/",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-details-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-questions",
+      "mode": "light",
+      "path": "/__comments09/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-questions-light.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-questions",
+      "mode": "dark",
+      "path": "/__comments09/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-questions-dark.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-questions",
+      "mode": "compact",
+      "path": "/__comments09/",
+      "viewport": [
+        1440,
+        900
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-questions-compact.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    },
+    {
+      "suite": "vue3",
+      "origin": "http://127.0.0.1:4613",
+      "base": "/",
+      "screen": "comments-questions",
+      "mode": "narrow",
+      "path": "/__comments09/",
+      "viewport": [
+        375,
+        812
+      ],
+      "errors": [],
+      "typography": [
+        {
+          "selector": ".histoire-canvas-viewport"
+        },
+        {
+          "selector": ".histoire-canvas-heading h1"
+        },
+        {
+          "selector": ".histoire-frame-label"
+        },
+        {
+          "selector": ".measure-path"
+        }
+      ],
+      "file": "comments-questions-narrow.png",
+      "status": "captured",
+      "url": "http://127.0.0.1:4613/__comments09/"
+    }
+  ]
+}

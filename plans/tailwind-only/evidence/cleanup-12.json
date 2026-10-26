@@ -1,0 +1,45 @@
+{
+  "removedUnusedClasses": {
+    "packages/histoire-app/src/app/components/base/BaseKeyboardShortcut.vue": [
+      "histoire-base-keyboard-shortcut"
+    ],
+    "packages/histoire-app/src/app/components/canvas/AgentCursor.vue": [
+      "histoire-agent-cursor"
+    ],
+    "packages/histoire-app/src/app/components/canvas/matrix/MatrixInspector.vue": [
+      "histoire-matrix-preset"
+    ],
+    "packages/histoire-app/src/app/components/canvas/toolbar/ScreenshotSetup.vue": [
+      "screenshot-setup-driver",
+      "screenshot-setup-repair"
+    ],
+    "packages/histoire-app/src/app/components/command/CommandPrompts.vue": [
+      "histoire-command-prompts"
+    ],
+    "packages/histoire-app/src/app/components/command/PromptSelect.vue": [
+      "histoire-prompt-select"
+    ],
+    "packages/histoire-app/src/app/components/command/PromptText.vue": [
+      "histoire-prompt-text"
+    ],
+    "packages/histoire-app/src/app/components/story/StoryVariantGridSandboxItem.vue": [
+      "histoire-story-variant-grid-item"
+    ],
+    "packages/histoire-app/src/app/components/toolbar/ToolbarNewTab.vue": [
+      "histoire-toolbar-new-tab"
+    ],
+    "packages/histoire-app/src/app/components/canvas/SingleVariantResizeHandle.vue": [
+      "histoire-single-resize-handle"
+    ],
+    "packages/histoire-app/src/app/components/agents/PermissionPrompt.vue": [
+      "histoire-settings-action"
+    ],
+    "packages/histoire-app/src/app/components/canvas/toolbar/BackgroundPicker.vue": [
+      "visually-hidden"
+    ],
+    "packages/histoire-app/src/app/components/canvas/toolbar/ViewportMenu.vue": [
+      "visually-hidden",
+      "viewport-size"
+    ]
+  }
+}

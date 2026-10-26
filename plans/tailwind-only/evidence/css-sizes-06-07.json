@@ -1,0 +1,13 @@
+{
+  "note": "Concurrent tracks 06-10 also migrate source; aggregate workspace size, not isolated track delta.",
+  "files": {
+    "packages/histoire-app/dist/bundled/app.css": {
+      "bytes": 23055,
+      "gzip": 4465
+    },
+    "packages/histoire-app/dist/style.css": {
+      "bytes": 245737,
+      "gzip": 31566
+    }
+  }
+}
