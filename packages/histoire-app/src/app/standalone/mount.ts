@@ -33,6 +33,8 @@ export function mountStandaloneApp(options: {
   const abort = new AbortController()
   const resources: (() => void | Promise<void>)[] = []
   let closing: Promise<void> | undefined
+  /** Set once the Vue app exists; `close` runs it before any session disposal. */
+  let unmountApp: (() => void) | undefined
   const ready = Promise.resolve().then(async () => {
     await core.connect()
     abort.signal.throwIfAborted()
@@ -54,9 +56,10 @@ export function mountStandaloneApp(options: {
     resources.push(document.close, navigation.router.afterEach(document.synchronize))
     const app = createApp(App, { session: selection.session, runtime, navigation, folders, commands, tests: tests.model, previewBase: options.url, hostWindow: window, onError: console.error })
     let mounted = false
-    resources.push(() => {
+    unmountApp = () => {
+      unmountApp = undefined
       if (mounted) app.unmount()
-    })
+    }
     app.config.errorHandler = createWorkbenchErrorHandler(window)
     app.use(navigation.router)
     // Entries load lazily inside the workbench host; mounting never waits for plugin code.
@@ -82,6 +85,14 @@ export function mountStandaloneApp(options: {
     abort.abort()
     closing = Promise.resolve().then(async () => {
       const errors: unknown[] = []
+      // Unmount before disposing the core: components still mounted would react to
+      // disposal (e.g. inspector remounts) and subscribe to an already disposed session.
+      try {
+        unmountApp?.()
+      }
+      catch (error) {
+        errors.push(error)
+      }
       // Core disposal interrupts startup without waiting for initial story readiness.
       try {
         await core.dispose()

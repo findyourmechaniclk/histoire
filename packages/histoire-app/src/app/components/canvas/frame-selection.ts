@@ -65,15 +65,17 @@ export function watchCanvasSelectedSession(options: CanvasSelectedSessionOptions
     const owner = frame?.session
     const documentId = frame?.documentId
     const iframe = frame?.iframe
-    if (options.unavailable() || !owner || !target || !documentId || !iframe || canonical.stale) {
+    // A retired frame can still be registered with its disposed session; subscribing would throw.
+    if (options.unavailable() || !owner || !target || !documentId || !iframe || canonical.stale || owner.getSnapshot().status === 'disposed') {
       publish()
       return
     }
-    /** Reject stale and replaced owners even when they publish after route navigation. */
+    /** Reject stale, replaced and disposed owners even when they publish after route navigation. */
     function synchronize(snapshot: ReturnType<HistoireSession['getSnapshot']>): void {
       const generation = getCanvasTargetGeneration(snapshot, target!)
+      // Disposal keeps the last runtime snapshot `ready`, so the session status must be checked too.
       const valid = frame?.session === owner && frame.documentId === documentId && frame.iframe === iframe
-        && snapshot.runtime.status === 'ready' && snapshot.runtime.runtimeId === documentId
+        && snapshot.status !== 'disposed' && snapshot.runtime.status === 'ready' && snapshot.runtime.runtimeId === documentId
         && snapshot.selection?.storyId === target!.storyId && snapshot.selection.variantId === target!.variantId
         && generation && generation === getCanvasTargetGeneration(canonical, target!)
       publish(valid ? owner : undefined)

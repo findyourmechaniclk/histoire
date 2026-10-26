@@ -73,6 +73,18 @@ describe('canvas selected frame session', () => {
     expect(test.publish).toHaveBeenLastCalledWith(undefined)
   })
 
+  it('releases a disposed frame session and never subscribes to it again', async () => {
+    const test = await selectionFixture()
+    expect(test.publish).toHaveBeenLastCalledWith(test.first)
+    // Disposal keeps the last runtime snapshot `ready`; only the session status turns terminal.
+    void test.first.dispose()
+    expect(test.publish).toHaveBeenLastCalledWith(undefined)
+    // Re-running the watcher while the retired registration still points at it must not throw.
+    test.unavailable.value = true
+    test.unavailable.value = false
+    expect(test.publish).toHaveBeenLastCalledWith(undefined)
+  })
+
   it('releases inspector ownership for Matrix and changed source generation', async () => {
     const test = await selectionFixture()
     test.unavailable.value = true
