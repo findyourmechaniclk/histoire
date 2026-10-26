@@ -85,7 +85,8 @@ export * from '${filepath}'\n`.replace(/\n/g, process.platform === 'win32' ? '\r
           {
             const tempPkgFile = path.resolve(tempDir, 'package.json')
             fs.writeJsonSync(tempPkgFile, tempPkg)
-            execaSync('npm', ['install', '--prefer-offline --legacy-peer-deps'], { cwd: tempDir })
+            // Each flag must be its own argument, otherwise npm ignores both.
+            execaSync('npm', ['install', '--prefer-offline', '--legacy-peer-deps'], { cwd: tempDir })
             const dtsFiles = globbySync(['**/*.d.{ts,mts}', '**/package.json'], {
               cwd: path.join(tempDir, 'node_modules'),
               dot: true,
@@ -101,7 +102,11 @@ export * from '${filepath}'\n`.replace(/\n/g, process.platform === 'win32' ? '\r
           fs.writeJsonSync('./package.json', pkg, { spaces: 2 })
         }
         catch (e) {
+          // Fail the build: swallowing this leaves empty vendor type stubs
+          // (`export * from './node_modules/vue'` resolving to nothing), which
+          // breaks every downstream declaration build with TS2614.
           console.error(e)
+          throw e
         }
       },
     },
