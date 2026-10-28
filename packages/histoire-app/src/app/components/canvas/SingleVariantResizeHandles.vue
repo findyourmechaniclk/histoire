@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { SingleResizeAxis, SingleResizeSize } from './single-resize.js'
 import { useElementBounding, useEventListener } from '@vueuse/core'
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, watch } from 'vue'
+import { useKeyboardInput } from '../../composables/keyboard-input.js'
 import { createSingleResizeController, SINGLE_RESIZE_MAX, SINGLE_RESIZE_MIN } from './single-resize.js'
 import SingleVariantResizeHandle from './SingleVariantResizeHandle.vue'
 
@@ -29,8 +30,7 @@ const emit = defineEmits<{
 
 const ownerDocument = computed(() => props.frame?.ownerDocument)
 const ownerWindow = computed(() => ownerDocument.value?.defaultView ?? undefined)
-/** Pointer input clears keyboard focus feedback even when programmatic focus persists. */
-const keyboardInput = ref(false)
+const keyboardInput = useKeyboardInput(ownerDocument)
 const surfaceBounds = useElementBounding(() => props.surface)
 const frameBounds = useElementBounding(() => props.frame)
 /** Project scroll content into its sibling overlay without extending scroll bounds. */
@@ -79,8 +79,6 @@ function keyDown(axis: 'width' | 'height', event: KeyboardEvent): void {
 useEventListener(ownerDocument, 'pointermove', controller.onPointerMove, { capture: true, passive: false })
 useEventListener(ownerDocument, ['pointerup', 'pointercancel'], controller.onPointerEnd, { capture: true })
 useEventListener(ownerWindow, 'blur', () => controller.release())
-useEventListener(ownerDocument, 'keydown', () => keyboardInput.value = true, { capture: true })
-useEventListener(ownerDocument, 'pointerdown', () => keyboardInput.value = false, { capture: true })
 watch(controller.active, active => emit('update:active', active), { immediate: true })
 onBeforeUnmount(() => {
   controller.close()
