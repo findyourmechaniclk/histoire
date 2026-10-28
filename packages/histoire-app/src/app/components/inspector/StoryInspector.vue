@@ -47,10 +47,14 @@ const builtin = computed(() => Object.hasOwn(INSPECTOR_BUILTIN_VIEWS, active.val
 /** Qualified id of the active tab; sections attach to it. */
 const activeId = computed(() => getInspectorTabId(active.value))
 const panelKey = computed(() => getInspectorTabKey(active.value))
-const tabs = computed((): InspectorTabItem[] => [
-  ...getInspectorTabs(testsEnabled.value).map(tab => ({ value: tab.value, label: tab.label, icon: INSPECTOR_BUILTIN_VIEWS[tab.value].icon, badge: INSPECTOR_BUILTIN_VIEWS[tab.value].badge })),
-  ...extensions.tabs.value.map(tab => ({ value: tab.id, label: tab.label, icon: resolveContributionIcon(tab), badgeText: extensions.badgeOf(tab) })),
-])
+const tabs = computed((): InspectorTabItem[] => {
+  const noDocs = story.value?.content.docs === false
+  const items: InspectorTabItem[] = [
+    ...getInspectorTabs(testsEnabled.value).map(tab => ({ value: tab.value, label: tab.label, icon: INSPECTOR_BUILTIN_VIEWS[tab.value].icon, badge: INSPECTOR_BUILTIN_VIEWS[tab.value].badge, dimmed: tab.value === 'docs' && noDocs })),
+    ...extensions.tabs.value.map(tab => ({ value: tab.id, label: tab.label, icon: resolveContributionIcon(tab), badgeText: extensions.badgeOf(tab) })),
+  ]
+  return noDocs ? [...items.filter(tab => tab.value !== 'docs'), ...items.filter(tab => tab.value === 'docs')] : items
+})
 /** A selected variant whose frame is not admitted yet: plugin views wait for it. */
 const frameLoading = computed(() => snapshot.value.status === 'ready' && Boolean(snapshot.value.selection?.variantId) && !snapshot.value.stale && snapshot.value.runtime.status !== 'failed')
 

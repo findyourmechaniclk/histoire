@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { HistoireEvents } from '@histoire/vue'
 import WorkbenchEmptyState from '../shell/WorkbenchEmptyState.vue'
+import InspectorGuideLink from './InspectorGuideLink.vue'
 import { useInspectorModel } from './model.js'
 
 defineEmits<{ error: [error: unknown] }>()
@@ -20,5 +21,9 @@ const { events } = useInspectorModel()
       argument: 'htw:mt-[8px] htw:mx-0 htw:mb-0 htw:max-h-[120px] htw:overflow-auto htw:whitespace-pre-wrap htw:[overflow-wrap:anywhere] htw:text-muted htw:font-mono htw:text-[10px] htw:leading-[1.6]',
     }" inline-details
   />
-  <WorkbenchEmptyState v-else icon="flash" title="No events yet" />
+  <WorkbenchEmptyState v-else icon="flash" title="No events yet">
+    <template #actions>
+      <InspectorGuideLink guide="events" />
+    </template>
+  </WorkbenchEmptyState>
 </template>

@@ -58,8 +58,10 @@ export interface InspectorTabItem {
   badge?: Component
   /** Plugin badge text. */
   badgeText?: string | number
-  /** Bundled glyph shown before the label (plugin tabs). */
+  /** Glyph shown before the label. */
   icon?: string
+  /** De-emphasize an available tab with no content. */
+  dimmed?: boolean
 }
 
 /** Route tab resolved against built-ins and the plugin tabs available now. */

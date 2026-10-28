@@ -1,6 +1,6 @@
 import type { Disposer, WorkbenchPluginApi } from '../../../histoire-plugin-kit/src/index.js'
 import { flushPromises } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { defineWorkbenchPlugin } from '../../../histoire-plugin-kit/src/index.js'
 import { deferred } from '../../../histoire-sdk/src/__tests__/fixtures/session.js'
@@ -21,6 +21,57 @@ function addPanel(api: WorkbenchPluginApi, extra: { available?: (context: any) =
 }
 
 describe('inspector extensions', () => {
+  it('moves Docs after plugin tabs when documentation is absent and restores its position when available', async () => {
+    const fixture = await storyInspectorFixture({ plugins: [pluginEntry(acme(api => addPanel(api)))] })
+    await fixture.selectFrame('c')
+    expect(fixture.tabList()).toEqual(['*Props', 'Docs', 'Events', 'Tests', 'Acme'])
+
+    fixture.source.descriptor.catalog.stories[0].content.docs = false
+    fixture.source.emitCatalog()
+    await flushPromises()
+    expect(fixture.tabList()).toEqual(['*Props', 'Events', 'Tests', 'Acme', 'Docs'])
+    await fixture.inspector().get('[role="tablist"]').trigger('keydown', { key: 'End' })
+    await flushPromises()
+    expect(fixture.panels[0]).toEqual(['docs'])
+    await vi.waitFor(() => expect(fixture.inspector().get('[role="tabpanel"]').text()).toContain('No documentation'))
+
+    fixture.source.descriptor.catalog.stories[0].content.docs = true
+    fixture.source.emitCatalog()
+    await flushPromises()
+    expect(fixture.tabList()).toEqual(['Props', '*Docs', 'Events', 'Tests', 'Acme'])
+  })
+
+  it('links empty inspector tabs to relevant guides for the selected story', async () => {
+    const fixture = await storyInspectorFixture({ plugins: [] })
+    await fixture.selectFrame('c')
+    fixture.source.descriptor.catalog.stories[0].content.docs = false
+    fixture.source.descriptor.catalog.stories[0].supportPluginId = 'svelte4'
+    fixture.source.emitCatalog()
+    await flushPromises()
+
+    for (const [name, url] of [
+      ['Docs', 'https://histoire.dev/guide/svelte3/docs.html'],
+      ['Events', 'https://histoire.dev/guide/svelte3/events.html'],
+      ['Tests', 'https://histoire.dev/guide/testing.html'],
+    ]) {
+      const tab = fixture.inspector().findAll('[role="tab"]').find(item => item.text().trim() === name)!
+      await tab.trigger('click')
+      await vi.waitFor(() => expect(fixture.inspector().get('[role="tabpanel"] a').attributes('href')).toBe(url))
+    }
+
+    fixture.source.descriptor.catalog.stories[0].supportPluginId = 'vue3'
+    fixture.source.emitCatalog()
+    await flushPromises()
+    for (const [name, url] of [
+      ['Docs', 'https://histoire.dev/guide/vue3/docs.html'],
+      ['Events', 'https://histoire.dev/guide/vue3/events.html'],
+    ]) {
+      const tab = fixture.inspector().findAll('[role="tab"]').find(item => item.text().trim() === name)!
+      await tab.trigger('click')
+      await vi.waitFor(() => expect(fixture.inspector().get('[role="tabpanel"] a').attributes('href')).toBe(url))
+    }
+  })
+
   it('keeps a plugin tab deep link while plugins load, then on reload', async () => {
     const load = deferred<{ default: unknown }>()
     const plugin = acme(api => addPanel(api))

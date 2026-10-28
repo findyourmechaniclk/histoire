@@ -11,7 +11,7 @@ import { useTabOverflow } from './tab-overflow.js'
 const props = defineProps<{
   /** Displayed tab value; `undefined` while a plugin tab named by the route is still loading. */
   activeTab: InspectorTab | undefined
-  /** Ordered tabs: built-ins, then plugin tabs. Also owns keyboard navigation. */
+  /** Ordered tabs; also owns keyboard navigation. */
   tabs: readonly InspectorTabItem[]
   /** Inspector-local IDs keep accessibility links within this mounted workbench. */
   idPrefix: string
@@ -106,7 +106,7 @@ function choose(value: InspectorTab): void {
 <template>
   <div class="histoire-button-group-options htw:mt-0 htw:mx-inspector-gutter htw:mb-pane-gutter">
     <div ref="list" class="htw:relative htw:flex htw:flex-1 htw:gap-[3px] htw:min-w-0" role="tablist" aria-label="Inspector" @keydown="navigate">
-      <HstButton v-for="tab in tabs" :id="`${idPrefix}-tab-${getInspectorTabKey(tab.value)}`" :key="tab.value" class="htw:flex htw:items-center htw:justify-center htw:gap-[5px] htw:min-w-0 htw:min-h-[32px] htw:overflow-hidden htw:text-muted htw:font-bold htw:flex-auto htw:hover:text-text htw:[[hidden]]:hidden" color="flat" type="button" role="tab" :hidden="overflowed.has(tab.value)" :aria-selected="activeTab === tab.value" :aria-controls="`${idPrefix}-panel-${getInspectorTabKey(tab.value)}`" :tabindex="activeTab === tab.value || (activeTab === undefined && !tab.value) ? 0 : -1" :data-test-id="tab.value === 'tests' ? 'story-tests-tab' : undefined" @click="select(tab.value)">
+      <HstButton v-for="tab in tabs" :id="`${idPrefix}-tab-${getInspectorTabKey(tab.value)}`" :key="tab.value" class="htw:flex htw:items-center htw:justify-center htw:gap-[5px] htw:min-w-0 htw:min-h-[32px] htw:overflow-hidden htw:text-muted htw:font-bold htw:flex-auto htw:hover:text-text htw:[[hidden]]:hidden" :class="{ 'htw:opacity-60': tab.dimmed }" color="flat" type="button" role="tab" :hidden="overflowed.has(tab.value)" :aria-selected="activeTab === tab.value" :aria-controls="`${idPrefix}-panel-${getInspectorTabKey(tab.value)}`" :tabindex="activeTab === tab.value || (activeTab === undefined && !tab.value) ? 0 : -1" :data-test-id="tab.value === 'tests' ? 'story-tests-tab' : undefined" @click="select(tab.value)">
         <!-- Direct-child variants leave measurement clones at natural width. The space keeps label and badge separate words in the accessible name; flex layout ignores it. -->
         <BuiltinIcon v-if="tab.icon" :icon="tab.icon" class="htw:flex-none" :size="16" />
         <span class="htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap htw:[[role=tablist]>[role=tab]>&]:data-[compact=true]:absolute htw:[[role=tablist]>[role=tab]>&]:data-[compact=true]:w-px htw:[[role=tablist]>[role=tab]>&]:data-[compact=true]:h-px htw:[[role=tablist]>[role=tab]>&]:data-[compact=true]:[clip-path:inset(50%)]" :data-compact="compact && activeTab === tab.value">{{ tab.label }}</span>{{ ' ' }}<component :is="tab.badge" v-if="tab.badge" />
@@ -118,7 +118,7 @@ function choose(value: InspectorTab): void {
     </HstButton>
     <BasePopover v-if="open" v-model:open="open" :anchor="trigger" label="More tabs" role="menu" :width="200" :focus-last="focusLast" :overlay-target="context.overlay.value ?? context.root.value">
       <div @keydown="menuKey">
-        <MenuItem v-for="tab in menu" :key="tab.value" :label="tab.label" :icon="tab.icon" @click="choose(tab.value)">
+        <MenuItem v-for="tab in menu" :key="tab.value" :label="tab.label" :icon="tab.icon" :class="{ 'htw:opacity-60': tab.dimmed }" @click="choose(tab.value)">
           <component :is="tab.badge" v-if="tab.badge" />
           <span v-else-if="tab.badgeText !== undefined" class="htw:text-muted htw:text-[13px] htw:tabular-nums">{{ tab.badgeText }}</span>
         </MenuItem>
