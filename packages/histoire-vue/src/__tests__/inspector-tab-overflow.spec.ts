@@ -23,11 +23,19 @@ const manyTabs = defineWorkbenchPlugin({ id: 'acme', apiVersion: 1, setup(api) {
  */
 function tabGeometry(available: number) {
   const observers = resizeObserverFixture()
+  let widthAvailable = available
   vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-    const width = this.getAttribute('role') === 'tab' ? 80 : this.getAttribute('aria-label') === 'More tabs' ? 28 : this.querySelector(':scope > [role="tablist"]') ? available : 0
+    const width = this.getAttribute('role') === 'tab' ? 80 + (this.querySelector('[aria-label$="unseen events"]') ? 20 : 0) : this.getAttribute('aria-label') === 'More tabs' ? 28 : this.querySelector(':scope > [role="tablist"]') ? widthAvailable : 0
     return { x: 0, y: 0, left: 0, top: 0, right: width, bottom: 32, width, height: 32, toJSON: () => ({}) }
   })
-  return observers
+  return {
+    ...observers,
+    /** Resize the row and notify the inspector. */
+    resize(width: number) {
+      widthAvailable = width
+      observers.deliver()
+    },
+  }
 }
 
 /** Tabs shown in the tab row, `*` marking the selected one. */
@@ -46,6 +54,86 @@ function trigger(): HTMLButtonElement {
 }
 
 describe('inspector tab overflow', () => {
+  it('exchanges a built-in tab for a selected overflowed plugin tab', async () => {
+    const geometry = tabGeometry(350)
+    const fixture = await storyInspectorFixture({ plugins: [pluginEntry(manyTabs)] })
+    await fixture.selectFrame('c')
+    geometry.deliver()
+    await flushPromises()
+    expect(inlineTabs()).toEqual(['*Props', 'Docs', 'Events'])
+
+    trigger().click()
+    await flushPromises()
+    expect(menuItems()).toEqual(['Tests', 'One', 'Two', 'Three', 'Four', 'Five'])
+    ;[...document.querySelectorAll<HTMLButtonElement>('[role="menuitem"]')].find(item => item.textContent?.trim() === 'Four')!.click()
+    await flushPromises()
+    expect(fixture.panels[0]).toEqual(['acme:four'])
+    expect(inlineTabs()).toEqual(['Props', 'Docs', '*Four'])
+    expect(document.activeElement?.textContent?.trim()).toBe('Four')
+
+    trigger().click()
+    await flushPromises()
+    expect(menuItems()).toEqual(['Events', 'Tests', 'One', 'Two', 'Three', 'Five'])
+    ;[...document.querySelectorAll<HTMLButtonElement>('[role="menuitem"]')].find(item => item.textContent?.trim() === 'Events')!.click()
+    await flushPromises()
+    expect(fixture.panels[0]).toEqual(['acme:four', 'events'])
+    expect(inlineTabs()).toEqual(['Props', 'Docs', '*Events'])
+    expect(document.activeElement?.textContent?.trim()).toBe('Events')
+    await fixture.inspector().get('[role="tablist"]').trigger('keydown', { key: 'ArrowRight' })
+    await flushPromises()
+    expect(inlineTabs()).toEqual(['Props', 'Docs', '*Tests'])
+    expect(document.activeElement?.textContent?.trim()).toBe('Tests')
+  })
+
+  it('overflows built-in tabs and restores them when the row grows', async () => {
+    const geometry = tabGeometry(200)
+    const fixture = await storyInspectorFixture({ plugins: [] })
+    await fixture.selectFrame('c')
+    geometry.deliver()
+    await flushPromises()
+    expect(inlineTabs()).toEqual(['*Props', 'Docs'])
+    trigger().click()
+    await flushPromises()
+    expect(menuItems()).toEqual(['Events', 'Tests'])
+
+    geometry.resize(400)
+    await flushPromises()
+    expect(inlineTabs()).toEqual(['*Props', 'Docs', 'Events', 'Tests'])
+    expect(trigger().hidden).toBe(true)
+    expect(menuItems()).toEqual([])
+  })
+
+  it('reflows a built-in badge after an event and shows its count in the menu', async () => {
+    const geometry = tabGeometry(290)
+    const fixture = await storyInspectorFixture({ plugins: [], tabs: ['docs'] })
+    await fixture.selectFrame('c')
+    const surface = fixture.session.mount(document.createElement('div'), { surface: 'preview' })
+    await surface.ready
+    geometry.deliver()
+    await flushPromises()
+    expect(inlineTabs()).toEqual(['Props', '*Docs', 'Events'])
+
+    fixture.source.emitEvent()
+    await flushPromises()
+    expect(fixture.session.getSnapshot().events.items).toHaveLength(1)
+    expect(inlineTabs()).toEqual(['Props', '*Docs'])
+    trigger().click()
+    await flushPromises()
+    expect(menuItems()).toEqual(['Events1', 'Tests'])
+    expect(document.querySelector('[role="menuitem"] [aria-label="1 unseen events"]')).not.toBeNull()
+  })
+
+  it('keeps an active built-in tab selectable at an extremely narrow width', async () => {
+    const geometry = tabGeometry(70)
+    const fixture = await storyInspectorFixture({ plugins: [], tabs: ['events'] })
+    await fixture.selectFrame('c')
+    geometry.deliver()
+    await flushPromises()
+    expect(inlineTabs()).toEqual(['*Events'])
+    expect(trigger().hidden).toBe(false)
+    expect(fixture.inspector().get('[role="tabpanel"]').attributes('aria-labelledby')).toBe(fixture.inspector().get('[role="tab"][aria-selected="true"]').attributes('id'))
+  })
+
   it('moves plugin tabs that do not fit into a menu and keeps the active tab in the row', async () => {
     const geometry = tabGeometry(600)
     const fixture = await storyInspectorFixture({ plugins: [pluginEntry(manyTabs)] })
@@ -91,14 +179,13 @@ describe('inspector tab overflow', () => {
     expect(document.activeElement?.textContent?.trim()).toBe('Five')
   })
 
-  it('compacts the active plugin tab only when it does not fit next to the built-ins', () => {
-    const values = ['', 'docs', 'acme:one', 'acme:two']
+  it('compacts an active icon tab only when it cannot fit alongside the menu', () => {
     const metrics = (available: number) => ({ widths: new Map([['', 50], ['docs', 50], ['acme:one', 80], ['acme:two', 80]]), available, trigger: 28, gap: 3 })
 
-    expect(isActiveTabCompact(values, metrics(190), 2, 'acme:one')).toBe(false)
-    expect(isActiveTabCompact(values, metrics(150), 2, 'acme:one')).toBe(true)
-    // Built-in tabs never compact; other plugin tabs simply overflow.
-    expect(isActiveTabCompact(values, metrics(150), 2, 'docs')).toBe(false)
-    expect(isActiveTabCompact(values, null, 2, 'acme:one')).toBe(false)
+    expect(isActiveTabCompact(metrics(111), 'acme:one', true, true)).toBe(false)
+    expect(isActiveTabCompact(metrics(110), 'acme:one', true, true)).toBe(true)
+    expect(isActiveTabCompact(metrics(70), 'docs', false, true)).toBe(false)
+    expect(isActiveTabCompact(metrics(70), 'acme:one', true, false)).toBe(false)
+    expect(isActiveTabCompact(null, 'acme:one', true, true)).toBe(false)
   })
 })

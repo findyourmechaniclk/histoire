@@ -24,12 +24,7 @@ const trigger = computed(() => (more.value?.element as HTMLElement | undefined) 
 const open = ref(false)
 const focusLast = ref(false)
 const values = computed(() => props.tabs.map(tab => tab.value))
-// Leading tabs that never overflow (built-ins).
-const pinned = computed(() => {
-  const index = props.tabs.findIndex(tab => tab.overflow)
-  return index < 0 ? props.tabs.length : index
-})
-const { overflowed, compact } = useTabOverflow(list, () => trigger.value, () => values.value, () => pinned.value, () => props.activeTab)
+const { overflowed, compact } = useTabOverflow(list, () => trigger.value, () => values.value, () => props.activeTab, () => Boolean(props.tabs.find(tab => tab.value === props.activeTab)?.icon))
 const menu = computed(() => props.tabs.filter(tab => overflowed.value.has(tab.value)))
 watch(() => menu.value.length, (length) => {
   if (!length) open.value = false
@@ -124,7 +119,8 @@ function choose(value: InspectorTab): void {
     <BasePopover v-if="open" v-model:open="open" :anchor="trigger" label="More tabs" role="menu" :width="200" :focus-last="focusLast" :overlay-target="context.overlay.value ?? context.root.value">
       <div @keydown="menuKey">
         <MenuItem v-for="tab in menu" :key="tab.value" :label="tab.label" :icon="tab.icon" @click="choose(tab.value)">
-          <span v-if="tab.badgeText !== undefined" class="htw:text-muted htw:text-[13px] htw:tabular-nums">{{ tab.badgeText }}</span>
+          <component :is="tab.badge" v-if="tab.badge" />
+          <span v-else-if="tab.badgeText !== undefined" class="htw:text-muted htw:text-[13px] htw:tabular-nums">{{ tab.badgeText }}</span>
         </MenuItem>
       </div>
     </BasePopover>

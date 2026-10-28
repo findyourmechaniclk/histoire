@@ -16,37 +16,29 @@ export interface TabRowMetrics {
 }
 
 /**
- * Tab values that do not fit the row and move to the overflow menu. The first `pinned` tabs
- * (built-ins) and the active tab always stay in the row; the other tabs keep their order and
- * fill the remaining room with the shared overflow fit (`fitOverflowItems`).
+ * Tab values that do not fit the row and move to the overflow menu. The active tab takes
+ * priority; the other tabs fill remaining space in their original order.
  * @param values Tab values in display order.
  * @param metrics Row geometry; nothing overflows before the first measurement.
- * @param pinned Number of leading tabs that never overflow.
  * @param active Active tab value.
  */
-export function getOverflowedTabs(values: readonly string[], metrics: TabRowMetrics | null, pinned: number, active: string | undefined): ReadonlySet<string> {
+export function getOverflowedTabs(values: readonly string[], metrics: TabRowMetrics | null, active: string | undefined): ReadonlySet<string> {
   if (!metrics) return new Set()
-  const rest = values.slice(pinned)
-  const keepsActive = active !== undefined && rest.includes(active)
-  // Fit order: pinned tabs, then the active tab, then the others in display order.
-  const order = [...values.slice(0, pinned), ...(keepsActive ? [active] : []), ...rest.filter(value => value !== active)]
+  const keepsActive = active !== undefined && values.includes(active)
+  const order = [...(keepsActive ? [active] : []), ...values.filter(value => value !== active)]
   const fitted = fitOverflowItems(order.map(value => ({ width: metrics.widths.get(value) ?? 0 })), metrics.available, metrics.trigger, metrics.gap)
-  return new Set(order.slice(Math.max(fitted, pinned + (keepsActive ? 1 : 0))))
+  return new Set(order.slice(Math.max(fitted, keepsActive ? 1 : 0)))
 }
 
 /**
- * Whether the active tab is a non-pinned (plugin) tab that does not fit the row next to the
- * pinned tabs at its natural width. It still stays in the row; the inspector shows it compact
- * (icon and badge, label kept for assistive technology) so built-in labels keep their room.
- * @param values Tab values in display order.
+ * Whether an active tab with an icon needs its label visually hidden to leave room for the menu.
  * @param metrics Row geometry; never compact before the first measurement.
- * @param pinned Number of leading tabs that never overflow.
  * @param active Active tab value.
+ * @param hasIcon Whether the active tab has an icon to represent it.
+ * @param hasOverflow Whether the menu trigger is needed.
  */
-export function isActiveTabCompact(values: readonly string[], metrics: TabRowMetrics | null, pinned: number, active: string | undefined): boolean {
-  if (!metrics || active === undefined || !values.slice(pinned).includes(active)) return false
-  const kept = [...values.slice(0, pinned), active].map(value => ({ width: metrics.widths.get(value) ?? 0 }))
-  return fitOverflowItems(kept, metrics.available, metrics.trigger, metrics.gap) < kept.length
+export function isActiveTabCompact(metrics: TabRowMetrics | null, active: string | undefined, hasIcon: boolean, hasOverflow: boolean): boolean {
+  return Boolean(metrics && active !== undefined && hasIcon && hasOverflow && (metrics.widths.get(active) ?? 0) + metrics.trigger + metrics.gap > metrics.available)
 }
 
 /**
@@ -56,25 +48,20 @@ export function isActiveTabCompact(values: readonly string[], metrics: TabRowMet
  * @param list Tab list element; its direct `[role="tab"]` children follow `values()` order.
  * @param trigger Overflow trigger element.
  * @param values Tab values in display order.
- * @param pinned Number of leading tabs that never overflow.
  * @param active Active tab value.
+ * @param activeHasIcon Whether the active tab has an icon.
  */
-export function useTabOverflow(list: ShallowRef<HTMLElement | null>, trigger: () => HTMLElement | null, values: () => readonly string[], pinned: () => number, active: () => string | undefined) {
+export function useTabOverflow(list: ShallowRef<HTMLElement | null>, trigger: () => HTMLElement | null, values: () => readonly string[], active: () => string | undefined, activeHasIcon: () => boolean) {
   const metrics = shallowRef<TabRowMetrics | null>(null)
   const cache = createItemWidthCache()
   let resize: ResizeObserver | undefined
+  let mutations: MutationObserver | undefined
   let fonts: FontFaceSet | undefined
 
   /** Reads all widths in one detached measurement host, then publishes them at once. */
   function measure(): void {
     const element = list.value
     if (!element) return
-    // Only non-pinned (plugin) tabs overflow or compact: a row of built-ins needs no geometry,
-    // and skipping it avoids a forced layout while the inspector mounts.
-    if (values().length <= pinned()) {
-      metrics.value = null
-      return
-    }
     const host = element.ownerDocument.createElement('div')
     host.setAttribute('aria-hidden', 'true')
     host.inert = true
@@ -104,6 +91,20 @@ export function useTabOverflow(list: ShallowRef<HTMLElement | null>, trigger: ()
   onMounted(() => {
     fonts = list.value?.ownerDocument.fonts
     fonts?.addEventListener('loadingdone', remeasureAll)
+    if (typeof MutationObserver !== 'undefined' && list.value) {
+      mutations = new MutationObserver((records) => {
+        // Measurement clones are detached before delivery. Only changes inside live tabs
+        // matter; presentation attributes on the tab itself must not trigger another measure.
+        if (records.some((record) => {
+          const target = record.target instanceof Element ? record.target : record.target.parentElement
+          const tab = target?.closest('[role="tab"]')
+          return tab?.parentElement === list.value && (record.type !== 'attributes' || target !== tab)
+        })) {
+          measure()
+        }
+      })
+      mutations.observe(list.value, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class', 'style'] })
+    }
     if (typeof ResizeObserver !== 'undefined' && list.value?.parentElement) {
       // The initial observation measures once layout is computed, before paint. Measuring here
       // too would force a synchronous layout of the whole freshly mounted inspector.
@@ -116,10 +117,11 @@ export function useTabOverflow(list: ShallowRef<HTMLElement | null>, trigger: ()
   })
   onBeforeUnmount(() => {
     resize?.disconnect()
+    mutations?.disconnect()
     fonts?.removeEventListener('loadingdone', remeasureAll)
   })
 
-  const overflowed = computed(() => getOverflowedTabs(values(), metrics.value, pinned(), active()))
-  const compact = computed(() => isActiveTabCompact(values(), metrics.value, pinned(), active()))
+  const overflowed = computed(() => getOverflowedTabs(values(), metrics.value, active()))
+  const compact = computed(() => isActiveTabCompact(metrics.value, active(), activeHasIcon(), overflowed.value.size > 0))
   return { overflowed, compact }
 }

@@ -18,6 +18,8 @@ const TestsTab = defineAsyncComponent(() => import('./TestsTab.vue'))
 export interface InspectorBuiltinView {
   /** Tab body. */
   component: Component
+  /** Offline Carbon icon used by the tab and its overflow entry. */
+  icon: string
   /** Optional badge rendered inside the tab button. */
   badge?: Component
 }
@@ -27,8 +29,8 @@ export interface InspectorBuiltinView {
  * `INSPECTOR_BUILTIN_TABS`. A new built-in panel adds one entry in each, never a template branch.
  */
 export const INSPECTOR_BUILTIN_VIEWS: Readonly<Record<BuiltinInspectorTabValue, InspectorBuiltinView>> = {
-  '': { component: PropsTab },
-  'docs': { component: DocsTab },
-  'events': { component: EventsTab, badge: EventsBadge },
-  'tests': { component: TestsTab, badge: TestsBadge },
+  '': { component: PropsTab, icon: 'settings-adjust' },
+  'docs': { component: DocsTab, icon: 'document' },
+  'events': { component: EventsTab, icon: 'flash', badge: EventsBadge },
+  'tests': { component: TestsTab, icon: 'test-tool', badge: TestsBadge },
 }

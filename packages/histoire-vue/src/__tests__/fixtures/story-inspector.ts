@@ -90,5 +90,5 @@ export async function storyInspectorFixture(options: { plugins: WorkbenchPluginE
   }
 
   await flushPromises()
-  return { wrapper, session, workbench, tabs, panels, selectFrame, inspector, tabList }
+  return { wrapper, session, source, workbench, tabs, panels, selectFrame, inspector, tabList }
 }

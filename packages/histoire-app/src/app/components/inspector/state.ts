@@ -60,8 +60,6 @@ export interface InspectorTabItem {
   badgeText?: string | number
   /** Bundled glyph shown before the label (plugin tabs). */
   icon?: string
-  /** May move to the overflow menu when the row is full (plugin tabs); built-ins stay in the row. */
-  overflow?: boolean
 }
 
 /** Route tab resolved against built-ins and the plugin tabs available now. */
