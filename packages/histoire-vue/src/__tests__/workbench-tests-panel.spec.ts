@@ -116,6 +116,8 @@ describe('workbench Tests pane loading', () => {
       await nextTick()
       expect(test.wrapper.find('[role="status"][aria-atomic="true"]').exists()).toBe(false)
       expect(test.wrapper.text()).toContain(tested ? 'No failing tests' : 'No tests')
+      const guide = test.wrapper.find('[aria-label="Project tests"] a[href="https://histoire.dev/guide/testing.html"]')
+      expect(guide.exists()).toBe(!tested)
       if (tested) {
         const tree = test.wrapper.get('[aria-label="Project tests"]').element
         test.model.retryCollection()

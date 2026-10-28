@@ -5,6 +5,7 @@ import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, nextTick } from 'vue'
 import McpActivity from '../../../histoire-app/src/app/components/panes/mcp/McpActivity.vue'
+import McpContent from '../../../histoire-app/src/app/components/panes/mcp/McpContent.vue'
 import { createMcpStore, provideMcpStore } from '../../../histoire-app/src/app/stores/mcp.js'
 import { sourceFixture } from '../../../histoire-sdk/src/__tests__/fixtures/session.js'
 
@@ -33,6 +34,34 @@ afterEach(() => {
 })
 
 describe('workbench MCP activity cancellation', () => {
+  it('offers configuration guidance when MCP is disabled', async () => {
+    const source = sourceFixture()
+    const session = createHistoireSessionWithAdapters({ url: 'https://book.example/' }, source.adapters)
+    await session.connect()
+    const store = createMcpStore()
+    store.connect()
+    channel.listeners.get('histoire:ui:mcp-snapshot')!({ status: 'disabled', clients: [], operations: [] })
+    const Host = defineComponent({
+      setup() {
+        provideMcpStore(store)
+        return () => h(McpContent)
+      },
+    })
+    const wrapper = mount(HistoireProvider, { props: { session }, slots: { default: () => h(Host) } })
+    try {
+      expect(wrapper.text()).toContain('MCP disabled in project config.')
+      expect(wrapper.get('a').attributes('href')).toBe('https://histoire.dev/guide/mcp.html')
+      channel.listeners.get('histoire:ui:mcp-snapshot')!({ status: 'enabled', clients: [], operations: [] })
+      await nextTick()
+      expect(wrapper.find('a[href="https://histoire.dev/guide/mcp.html"]').exists()).toBe(false)
+    }
+    finally {
+      wrapper.unmount()
+      store.close()
+      await session.dispose()
+    }
+  })
+
   it('hides Cancel for uncancellable reads and sends exact owned execution identity', async () => {
     const fixture = sourceFixture()
     const session = createHistoireSessionWithAdapters({ url: 'https://book.example/' }, fixture.adapters)

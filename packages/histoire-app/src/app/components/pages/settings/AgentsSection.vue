@@ -7,6 +7,7 @@ import { useAgentsStore } from '../../../stores/agents.js'
 import { agentCatalogRows } from '../../../util/agent-catalog-rows.js'
 import { histoireConfig } from '../../../util/config.js'
 import WorkbenchEmptyState from '../../shell/WorkbenchEmptyState.vue'
+import WorkbenchGuideLink from '../../shell/WorkbenchGuideLink.vue'
 import WorkbenchLoadingState from '../../shell/WorkbenchLoadingState.vue'
 import AgentPresetRow from './AgentPresetRow.vue'
 import SaveToProject from './SaveToProject.vue'
@@ -112,7 +113,11 @@ function saved(path: 'presets' | 'permissions'): void {
       <AgentPresetRow v-for="row in rows" :key="row.id" :agent-id="row.id" :registry-entry="row.registryEntry" />
       <WorkbenchLoadingState v-if="!rows.length && !agents.connected.value" title="Connecting to dev server" />
       <WorkbenchLoadingState v-else-if="!rows.length && agents.catalogLoading.value" title="Loading agents" />
-      <WorkbenchEmptyState v-else-if="!rows.length" icon="search" :title="query.trim() ? 'No matches' : 'No agents configured'" />
+      <WorkbenchEmptyState v-else-if="!rows.length" icon="search" :title="query.trim() ? 'No matches' : 'No agents configured'">
+        <template v-if="!query.trim()" #actions>
+          <WorkbenchGuideLink href="https://histoire.dev/guide/ui-agents.html" label="Configure agents" />
+        </template>
+      </WorkbenchEmptyState>
       <SaveToProject path="agents.presets" :value="state.presets" :project-value="projectPresets" :local="JSON.stringify(state.presets) !== JSON.stringify(projectPresets)" @reset="agents.resetProject(['agents.presets'])" @saved="saved('presets')" />
     </SettingsCard>
     <SettingsCard>

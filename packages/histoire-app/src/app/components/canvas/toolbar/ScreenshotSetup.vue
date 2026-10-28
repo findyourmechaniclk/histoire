@@ -7,6 +7,7 @@ import { computed, ref } from 'vue'
 import PopoverDivider from '../../base/popover/PopoverDivider.vue'
 import PopoverTitle from '../../base/popover/PopoverTitle.vue'
 import WorkbenchEmptyState from '../../shell/WorkbenchEmptyState.vue'
+import WorkbenchGuideLink from '../../shell/WorkbenchGuideLink.vue'
 import WorkbenchLoadingState from '../../shell/WorkbenchLoadingState.vue'
 
 const props = defineProps<{
@@ -152,6 +153,7 @@ function checkAgain(): void {
         <HstButton v-if="firstRepair?.command" color="flat" tone="accent" type="button" @click="copyCommand">
           Copy command
         </HstButton>
+        <WorkbenchGuideLink href="https://histoire.dev/guide/ui-screenshots-mcp.html#check-existing-setup" label="Setup guide" />
       </template>
     </WorkbenchEmptyState>
     <div v-if="attempts.length && !loading && setup.snapshot.value?.state !== 'ready'" class="htw:m-2 htw:text-muted htw:text-[11px]">

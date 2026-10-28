@@ -6,6 +6,7 @@ import { computed, onMounted, ref, useId } from 'vue'
 import { useWorkbenchVisual } from '../../../stores/visual.js'
 import WorkbenchEmptyState from '../../shell/WorkbenchEmptyState.vue'
 import WorkbenchErrorState from '../../shell/WorkbenchErrorState.vue'
+import WorkbenchGuideLink from '../../shell/WorkbenchGuideLink.vue'
 import WorkbenchLoadingState from '../../shell/WorkbenchLoadingState.vue'
 import WorkbenchPaneHeader from '../../shell/WorkbenchPaneHeader.vue'
 import WorkbenchPaneToolbar from '../../shell/WorkbenchPaneToolbar.vue'
@@ -89,7 +90,11 @@ onMounted(() => {
         </template>
       </WorkbenchEmptyState>
     </template>
-    <WorkbenchEmptyState v-else-if="!model.cases.value.length" icon="camera" title="No visual cases" />
+    <WorkbenchEmptyState v-else-if="!model.cases.value.length" icon="camera" title="No visual cases">
+      <template #actions>
+        <WorkbenchGuideLink href="https://histoire.dev/guide/visual-testing.html" label="Add visual cases" />
+      </template>
+    </WorkbenchEmptyState>
     <WorkbenchEmptyState v-else icon="camera" title="Ready to compare">
       {{ planned }}
     </WorkbenchEmptyState>

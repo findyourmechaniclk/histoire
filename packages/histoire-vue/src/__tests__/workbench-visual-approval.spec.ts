@@ -44,6 +44,37 @@ function reply(value: UiVisualReply): void {
   for (const listener of channel.listeners) listener(value)
 }
 
+it('offers guidance when the visual case inventory is empty', async () => {
+  const fixture = sourceFixture()
+  const session = createHistoireSessionWithAdapters({ url: 'https://book.example/' }, fixture.adapters)
+  await session.connect()
+  channel.send = (_event, request) => {
+    queueMicrotask(() => reply(request.action === 'inventory'
+      ? { requestId: request.requestId, inventory: { cases: [], total: 0, profiles: [], baselineRef: 'main' } }
+      : { requestId: request.requestId, recovered: { results: [], total: 0, issues: [] } }))
+    return true
+  }
+  let model: ReturnType<typeof createWorkbenchVisual> | undefined
+  const host = defineComponent({
+    setup() {
+      model = createWorkbenchVisual(session)
+      provideWorkbenchVisual(model)
+      return () => h(VisualTestsPanel)
+    },
+  })
+  const wrapper = mount(HistoireProvider, { props: { session }, slots: { default: () => h(host) } })
+  try {
+    await vi.waitFor(() => expect(wrapper.text()).toContain('No visual cases'))
+    expect(wrapper.get('a').attributes('href')).toBe('https://histoire.dev/guide/visual-testing.html')
+  }
+  finally {
+    wrapper.unmount()
+    model?.close()
+    await session.dispose()
+    channel.listeners.clear()
+  }
+})
+
 it.each([false, true])('replaces approval controls while pending and restores remaining selections (failure: %s)', async (failed) => {
   const fixture = sourceFixture()
   const session = createHistoireSessionWithAdapters({ url: 'https://book.example/' }, fixture.adapters)

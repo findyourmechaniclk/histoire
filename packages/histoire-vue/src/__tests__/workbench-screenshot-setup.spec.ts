@@ -129,6 +129,7 @@ describe('workbench screenshot setup', () => {
       const request = setupRequests()[0]
       await emitUiResult('histoire:ui:screenshot-setup-result', { requestId: request.requestId, setup: setupSnapshot() })
       expect(wrapper.text()).toContain('Screenshot setup needed')
+      expect(wrapper.get('a').attributes('href')).toBe('https://histoire.dev/guide/ui-screenshots-mcp.html#check-existing-setup')
       await button(wrapper, 'Copy command').trigger('click')
       expect(writeText).toHaveBeenCalledExactlyOnceWith('pnpm add -D playwright')
       expect(wrapper.text()).toContain('Command copied')

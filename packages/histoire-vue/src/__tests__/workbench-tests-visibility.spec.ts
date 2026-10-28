@@ -26,7 +26,8 @@ describe('project test visibility', () => {
       expect(wrapper.find('.test-story-heading').exists()).toBe(false)
       expect(wrapper.findAll('.test-row')).toHaveLength(1)
       await wrapper.setProps({ rows: [] })
-      expect(wrapper.text()).toBe('No tests')
+      expect(wrapper.text()).toContain('No tests')
+      expect(wrapper.get('a').attributes('href')).toBe('https://histoire.dev/guide/testing.html')
     }
     finally { await owner.close() }
   })

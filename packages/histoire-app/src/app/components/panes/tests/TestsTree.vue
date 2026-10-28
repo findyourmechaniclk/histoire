@@ -7,6 +7,7 @@ import { computed, ref } from 'vue'
 import { isContextMenuShortcut, useContextMenu } from '../../../composables/context-menu.js'
 import WorkbenchVirtualList from '../../lists/WorkbenchVirtualList.vue'
 import WorkbenchEmptyState from '../../shell/WorkbenchEmptyState.vue'
+import WorkbenchGuideLink from '../../shell/WorkbenchGuideLink.vue'
 
 import TestsTreeRow from './TestsTreeRow.vue'
 
@@ -98,7 +99,11 @@ function onGroupKeydown(event: KeyboardEvent, item: Extract<TestTreeEntry, { kin
 
 <template>
   <div class="htw:flex-1 htw:min-h-0 htw:overflow-hidden htw:pt-0 htw:px-pane-gutter htw:pb-4" aria-label="Project tests">
-    <WorkbenchEmptyState v-if="!visible.length" :icon="empty.icon" :title="empty.title" />
+    <WorkbenchEmptyState v-if="!visible.length" :icon="empty.icon" :title="empty.title">
+      <template v-if="!rows.length" #actions>
+        <WorkbenchGuideLink href="https://histoire.dev/guide/testing.html" label="Add tests" />
+      </template>
+    </WorkbenchEmptyState>
     <WorkbenchVirtualList v-else :items="visible" :item-size="40" list-tag="ul" item-tag="li">
       <template #default="{ item }">
         <HstButton v-if="item.kind === 'heading'" color="flat" type="button" class="test-story-heading htw:flex htw:items-center htw:gap-2 htw:w-full htw:h-[var(--histoire-virtual-row-height,_39px)] htw:py-test-heading htw:px-pane-row-inset htw:text-text htw:leading-4.5 htw:text-left htw:hover:bg-chip htw:focus-visible:[outline:2px_solid_var(--histoire-accent)] htw:focus-visible:outline-offset-[-2px]" :aria-expanded="!closed.has(item.id)" @click="toggle(item.id)" @contextmenu="openGroupMenu($event, item)" @keydown="onGroupKeydown($event, item)">

@@ -55,6 +55,19 @@ async function tree(density: 'comfortable' | 'compact', options: { count?: numbe
 }
 
 describe('production story tree keyboard focus', () => {
+  it('offers story creation guidance when the catalog becomes empty', async () => {
+    const owner = await tree('comfortable', { count: 1 })
+    try {
+      owner.fixture.descriptor.catalog.stories = []
+      owner.fixture.descriptor.catalog.tree = []
+      owner.fixture.emitCatalog()
+      await nextTick()
+      expect(owner.wrapper.text()).toContain('No stories')
+      expect(owner.wrapper.get('a').attributes('href')).toBe('https://histoire.dev/guide/getting-started.html')
+    }
+    finally { await owner.close() }
+  })
+
   it.each([
     { icon: 'mdi:tailwind', expected: 'mdi:tailwind' },
     { icon: undefined, expected: 'cube' },

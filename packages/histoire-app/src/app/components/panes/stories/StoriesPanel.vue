@@ -11,6 +11,7 @@ import { histoireConfig } from '../../../util/config.js'
 import WorkbenchVirtualList from '../../lists/WorkbenchVirtualList.vue'
 import WorkbenchEmptyState from '../../shell/WorkbenchEmptyState.vue'
 import WorkbenchErrorState from '../../shell/WorkbenchErrorState.vue'
+import WorkbenchGuideLink from '../../shell/WorkbenchGuideLink.vue'
 import WorkbenchPaneHeader from '../../shell/WorkbenchPaneHeader.vue'
 
 import { useWorkbenchTestsModel } from '../tests/model.js'
@@ -285,6 +286,10 @@ function icon(row: StoryTreeRow): string {
         </template>
       </WorkbenchVirtualList>
     </div>
-    <WorkbenchEmptyState v-if="!items.length && snapshot.capabilities.catalog.available" icon="catalog" title="No stories" />
+    <WorkbenchEmptyState v-if="!items.length && snapshot.capabilities.catalog.available" icon="catalog" title="No stories">
+      <template #actions>
+        <WorkbenchGuideLink href="https://histoire.dev/guide/getting-started.html" label="Create a story" />
+      </template>
+    </WorkbenchEmptyState>
   </section>
 </template>

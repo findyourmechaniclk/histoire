@@ -2,6 +2,7 @@
 import { BuiltinIcon, HstButton } from '@histoire/controls/vue'
 import { useMatrixStore } from '../../../stores/matrix.js'
 import WorkbenchEmptyState from '../../shell/WorkbenchEmptyState.vue'
+import WorkbenchGuideLink from '../../shell/WorkbenchGuideLink.vue'
 import WorkbenchLoadingState from '../../shell/WorkbenchLoadingState.vue'
 
 defineProps<{
@@ -40,6 +41,7 @@ function addAxis(): void {
           <BuiltinIcon icon="add" :size="16" />
           Add custom axis
         </HstButton>
+        <WorkbenchGuideLink class="htw:pointer-events-auto" href="https://histoire.dev/guide/ui-matrix.html" label="Matrix guide" />
       </template>
     </WorkbenchEmptyState>
   </template>

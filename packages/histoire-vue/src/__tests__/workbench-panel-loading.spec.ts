@@ -24,6 +24,10 @@ describe('agent settings connection loading', () => {
       await nextTick()
       expect(wrapper.find('[role="status"][aria-atomic="true"]').exists()).toBe(false)
       expect(wrapper.text()).toContain('No agents configured')
+      expect(wrapper.get('a').attributes('href')).toBe('https://histoire.dev/guide/ui-agents.html')
+      await wrapper.get('[aria-label="Search agents"]').setValue('no matching agent')
+      expect(wrapper.text()).toContain('No matches')
+      expect(wrapper.find('a').exists()).toBe(false)
     }
     finally {
       wrapper.unmount()
