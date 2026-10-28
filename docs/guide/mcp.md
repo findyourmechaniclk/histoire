@@ -2,6 +2,8 @@
 
 Histoire exposes stories, docs, source, preview URLs, screenshots, rendered inspection, and story tests through Model Context Protocol (MCP).
 
+Rendered inspection here uses a fresh isolated runtime. For unsaved state and events in an already mounted browser session, configure the separate authenticated adapter in the [Devframe live-inspection guide](./devframe.md).
+
 ## Development HTTP
 
 Start your existing project:

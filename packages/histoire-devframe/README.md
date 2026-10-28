@@ -2,6 +2,8 @@
 
 This package provides opt-in, authenticated access to an already mounted Histoire session. Importing it starts no listener, connection, event observation or diagnostic instrumentation. The host owns its Histoire session, Devframe instance, HTTP server, credentials and authorization policy.
 
+Start with the [live-inspection guide](../../docs/guide/devframe.md) for installation, source configuration, browser pairing, and MCP calls. See the [adapter reference](../../docs/reference/devframe.md) for API defaults, tool inputs, reports, and troubleshooting.
+
 Packed-consumer and compatibility gates remain part of release verification; no publication is implied by these APIs.
 
 ## Host contract

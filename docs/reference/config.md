@@ -82,6 +82,37 @@ When enabled, book origin is allowed automatically. Additional origins must exac
 
 Built books can replace additional origins at deployment without rebuilding. Static output reads optional same-base `histoire-embed-origins.json` with `{ "version": 1, "allowedOrigins": [...] }`; Node deployment reads comma-separated `HISTOIRE_EMBED_ORIGINS`. Invalid present override permits book origin only. See [deployment headers](../guide/embedding.md#origins-and-deployment-headers) for matching `frame-ancestors`/host `frame-src` policies.
 
+## `inspection`
+
+`{ enabled?: boolean, diagnostics?: boolean, components?: boolean, accessibility?: boolean, allowedOrigins?: string[] }` - Default: all flags `false`, no additional origins.
+
+Enable source-owned live inspection independently of MCP and agent exposure. For an authenticated host integration, follow the [Devframe guide](../guide/devframe.md).
+
+```ts
+export default defineConfig({
+  embed: { enabled: true, allowedOrigins: ['https://host.example.com'] },
+  inspection: {
+    enabled: true,
+    allowedOrigins: ['https://host.example.com'],
+    components: false,
+    accessibility: false,
+    diagnostics: false,
+  },
+})
+```
+
+| Field | Behavior |
+| --- | --- |
+| `enabled` | Opt into available variant/DOM inspection and temporary highlighting of an existing mounted runtime |
+| `components` | Enable available framework component providers; runtime support still required |
+| `accessibility` | Enable bounded audits when locally available `axe-core` can be loaded; Histoire declares it as an optional dependency |
+| `diagnostics` | Permit explicit diagnostic subscriptions; enabling the flag alone does not start observation |
+| `allowedOrigins` | Additional exact browser-host origins permitted to inspect; intersected with effective embedding allowlist |
+
+The book's own origin is permitted automatically when inspection is enabled. Cross-origin hosts must appear in both inspection and embedding allowlists. Origin values follow the same exact scheme/host/port rules as `embed.allowedOrigins`. Neither allowlist authenticates an agent or grants adapter scopes. Optional flags do not enable inspection without `enabled: true`; available capabilities also depend on the mounted runtime. No browser or accessibility dependency is installed by an inspection request.
+
+See [SDK live inspection](./sdk.md#live-inspection) for runtime reads and [Devframe reference](./devframe.md) for separately authenticated agent access.
+
 ## `preview` <Badge type="tip" text="1.0-beta.2+" />
 
 `{ globals?: Record<string, string | number | boolean | null>, textDirection?: 'ltr' | 'rtl' }` - Default: empty globals, `'ltr'`.

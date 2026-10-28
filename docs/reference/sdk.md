@@ -79,7 +79,7 @@ Results are detached, bounded, read-only observations with `mode: 'live'`, owner
 
 When the source advertises the relevant capability, `inspect.pick({ x, y })` hit-tests CSS client coordinates in the exact runtime document and returns a selector when a story element matches. `inspect.highlightLease({ selector, expectedOwner })` returns an owned temporary overlay lease. A supported Vue component with a single provable story-root element can instead be highlighted with `componentId` when both `highlight` and `componentHighlight` are available; ambiguous, teleported or stale targets are unavailable. Clear the lease with `inspect.clearHighlight({ target: lease.owner.target, expectedOwner: lease.owner, leaseId: lease.leaseId })`; an old lease cannot clear a successor. `inspect.accessibility()` runs an explicit bounded axe audit when the source and runtime advertise `accessibilityAudit`; automated findings do not establish full accessibility compliance.
 
-See [Devframe live inspection](./devframe.md) for explicitly authenticated agent access.
+See the [Devframe guide](../guide/devframe.md) for browser pairing and explicitly authenticated agent access, and the [adapter reference](./devframe.md) for host APIs, scopes, and recovery.
 
 ## Snapshots and settings
 

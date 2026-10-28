@@ -2,6 +2,8 @@
 
 See [setup](../guide/mcp.md) and [Node deployment](../guide/deploy-node.md) for launch commands.
 
+This reference covers the isolated Histoire MCP server. The optional live adapter has a separate endpoint and tool/resource contract; see the [Devframe guide](../guide/devframe.md) and [live adapter reference](./devframe.md).
+
 Histoire uses the official MCP server SDK 2.2.0 and Node adapter 2.1.0. Supported protocol revisions are `2026-07-28` and `2025-11-25`. HTTP is stateless Streamable HTTP with legacy compatibility. Stdio uses a compiled owned worker. Prompts, sampling, elicitation, protocol tasks, resource subscriptions, and list-changed notifications are not exposed.
 
 ## Results and identity

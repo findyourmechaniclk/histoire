@@ -2,6 +2,8 @@
 
 Use `@histoire/sdk` to mount a complete explorer or independent iframe surfaces. Vue hosts can use `@histoire/vue` to compose native panels around isolated story runtimes. Both connect to a running Histoire dev server or a deployed static book.
 
+To give an authenticated MCP agent access to an already mounted variant and its unsaved state, follow the [Devframe live-inspection guide](./devframe.md).
+
 ## Enable book embedding
 
 Embedding is disabled by default. Configure additional parent origins explicitly:

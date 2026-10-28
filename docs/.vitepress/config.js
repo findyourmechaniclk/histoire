@@ -74,6 +74,7 @@ module.exports = {
               { text: 'Troubleshooting', link: '/guide/troubleshooting' },
               { text: 'MCP server', link: '/guide/mcp' },
               { text: 'Embedding and SDK', link: '/guide/embedding' },
+              { text: 'Devframe live inspection', link: '/guide/devframe' },
               { text: 'Deploy to Node.js', link: '/guide/deploy-node' },
               {
                 text: 'Plugins',
@@ -313,6 +314,7 @@ module.exports = {
             { text: 'Troubleshooting', link: '/guide/troubleshooting' },
             { text: 'MCP server', link: '/guide/mcp' },
             { text: 'Embedding and SDK', link: '/guide/embedding' },
+            { text: 'Devframe live inspection', link: '/guide/devframe' },
             { text: 'Deploy to Node.js', link: '/guide/deploy-node' },
           ],
         },
