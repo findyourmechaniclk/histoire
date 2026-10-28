@@ -32,5 +32,5 @@ export const INSPECTOR_BUILTIN_VIEWS: Readonly<Record<BuiltinInspectorTabValue, 
   '': { component: PropsTab, icon: 'settings-adjust' },
   'docs': { component: DocsTab, icon: 'document' },
   'events': { component: EventsTab, icon: 'flash', badge: EventsBadge },
-  'tests': { component: TestsTab, icon: 'test-tool', badge: TestsBadge },
+  'tests': { component: TestsTab, icon: 'chemistry', badge: TestsBadge },
 }
