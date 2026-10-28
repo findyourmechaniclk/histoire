@@ -42,6 +42,12 @@ export default _defineComponent({
       type: Boolean,
       default: false,
     },
+
+    /** Explicit opt-in; other renderer slots never register a provider. */
+    enableInspection: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   emits: {
@@ -52,6 +58,7 @@ export default _defineComponent({
     const sandbox = _ref<HTMLDivElement>()
     let host: ReturnType<typeof createPreviewHost>
     let mounting = false
+    let inspectionEpoch = 0
 
     const externalState = reactive<Variant['state']>({})
     let stateSync = syncStateBundledAndExternal(props.variant.state, externalState)
@@ -66,6 +73,7 @@ export default _defineComponent({
     })
 
     function unmountVariant() {
+      inspectionEpoch++
       host?.unmount()
       host = null
     }
@@ -97,6 +105,7 @@ export default _defineComponent({
         renderContext,
         wrapInDiv: true,
         configureStory: props.configureStory,
+        enableInspection: props.enableInspection,
       })
 
       await host.mount()
@@ -124,9 +133,13 @@ export default _defineComponent({
       syncExternalState()
     })
 
-    _watch(() => [props.story.id, props.slotName, props.variant.id, props.variant.configReady] as const, async ([, slotName]) => {
+    _watch(() => [props.story.id, props.slotName, props.variant.id, props.variant.configReady] as const, async ([storyId, slotName, variantId], [previousStoryId, previousSlotName, previousVariantId]) => {
       renderContext.currentVariant = props.variant
       renderContext.slotName = slotName
+      const changedOwner = storyId !== previousStoryId || slotName !== previousSlotName || variantId !== previousVariantId
+      const currentHost = host
+      const epoch = changedOwner ? ++inspectionEpoch : inspectionEpoch
+      if (changedOwner) currentHost?.invalidateInspection()
 
       if (canMount() && !mounting) {
         if (!host) {
@@ -135,6 +148,11 @@ export default _defineComponent({
         else {
           host.forceUpdate()
         }
+      }
+      if (changedOwner && currentHost) {
+        // Do not register the successor while Vue still renders the old target.
+        await _nextTick()
+        if (host === currentHost && epoch === inspectionEpoch && canMount() && !mounting) currentHost.refreshInspection()
       }
     })
 

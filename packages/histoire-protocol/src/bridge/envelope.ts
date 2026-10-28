@@ -2,7 +2,7 @@ import type { HistoireBridgeCommand, HistoireBridgeEnvelope, HistoireBridgeEvent
 import { validateBridgeEventPayload } from './events.js'
 import { validateBridgePayload } from './payload.js'
 import { validateBridgeResult, validateHistoireErrorData } from './results.js'
-import { validateWireValue } from './size.js'
+import { measureWireValue, validateWireValue } from './size.js'
 import { HISTOIRE_BRIDGE_COMMANDS, HISTOIRE_BRIDGE_EVENTS } from './types.js'
 import { invalid, validateHistoireTarget, wireId, wireRecord } from './validation.js'
 
@@ -11,9 +11,15 @@ type BridgeDirection = 'parent-to-child' | 'child-to-parent'
 
 /** Runtime-only request groups; data bridge must never execute stories implicitly. */
 const runtimeCommands = ['state.get', 'state.patch', 'state.reset', 'tests.collect', 'controls.preset', 'channel.post', 'plugin.post']
+/** Commands bound to an inspected runtime target; cancellation uses its captured owner. */
+const inspectionCommands: readonly string[] = ['inspection.variant', 'inspection.dom', 'inspection.highlight', 'inspection.debug', 'inspection.components', 'inspection.component', 'inspection.componentForElement', 'inspection.accessibility', 'inspection.pick', 'inspection.highlightLease', 'inspection.highlightClear']
 
 /** Gates role authority before dispatch, independently of advertised capability checks. */
 function validateRole(role: HistoirePortRole, command: HistoireBridgeCommand, payload: Record<string, unknown>, direction: BridgeDirection): void {
+  if (command.startsWith('inspection.')) {
+    if (direction === 'parent-to-child' ? role !== 'primary' : !['primary', 'view'].includes(role)) invalid('Inspection requires primary runtime or view intent')
+    return
+  }
   if (command === 'controls.configure') {
     if (role !== 'controls' || direction !== 'parent-to-child') invalid('Controls presentation requires parent controls port')
     return
@@ -52,6 +58,7 @@ export function validateBridgeEnvelope(value: unknown, owner: HistoireBridgeIden
  */
 function validateBridgeEnvelopeMetadata(value: unknown, owner: HistoireBridgeIdentity, direction: BridgeDirection): Record<string, unknown> {
   const input = wireRecord(value)
+  if (input.kind === 'request' && inspectionCommands.includes(input.command as string) && !wireId(owner.runtimeId)) invalid('Inspection requires an owned runtime')
   const keys = ['protocolVersion', 'sessionId', 'connectionId', 'mountId', 'sourceId', 'epoch', 'revision'] as const
   const allowed = [...keys, 'runtimeId', 'target', 'selectionVersion', 'kind', ...(input.kind === 'request' ? ['requestId', 'command', 'payload', 'selectionRequestId'] : input.kind === 'response' ? ['requestId', 'ok', 'result', 'error'] : ['event', 'sequence', 'payload'])]
   if (Object.keys(input).some(key => !allowed.includes(key))) invalid('Unknown bridge envelope field')
@@ -74,7 +81,8 @@ function validateBridgeEnvelopeMetadata(value: unknown, owner: HistoireBridgeIde
     validateHistoireTarget(input.target)
     metadata.target = input.target
     const target = input.target as Record<string, unknown>
-    if (owner.target && (target.storyId !== owner.target.storyId || target.variantId !== owner.target.variantId)) invalid('Mismatched runtime target')
+    const inspectionRequest = input.kind === 'request' && inspectionCommands.includes(input.command as string)
+    if (!inspectionRequest && owner.target && (target.storyId !== owner.target.storyId || target.variantId !== owner.target.variantId)) invalid('Mismatched runtime target')
   }
   else if (owner.target !== undefined) {
     invalid('Missing runtime target')
@@ -83,6 +91,9 @@ function validateBridgeEnvelopeMetadata(value: unknown, owner: HistoireBridgeIde
     if (!Number.isSafeInteger(input.selectionVersion) || (input.selectionVersion as number) < 0) invalid('Invalid selection generation')
     metadata.selectionVersion = input.selectionVersion
     if (input.kind !== 'event' && owner.selectionVersion !== undefined && input.selectionVersion !== owner.selectionVersion) invalid('Mismatched selection generation')
+  }
+  else if (input.kind === 'request' && inspectionCommands.includes(input.command as string) && owner.selectionVersion !== undefined) {
+    invalid('Missing selection generation')
   }
   // Legacy unversioned owners remain valid. New surface ports require a capture
   // on child navigation so an earlier visit to the same target cannot regain authority.
@@ -130,11 +141,28 @@ export function validateBridgeEnvelopeBody(value: unknown, role: HistoirePortRol
     validateWireValue(input.payload, { kind: 'request', name: command })
     validateBridgePayload(command, input.payload, true)
     validateRole(role, command, wireRecord(input.payload), direction)
+    if (inspectionCommands.includes(command)) {
+      const target = wireRecord(input.target)
+      const requested = wireRecord(wireRecord(input.payload).target)
+      if (!wireId(input.runtimeId) || !wireId(target.variantId) || target.storyId !== requested.storyId || target.variantId !== requested.variantId) invalid('Inspection target does not match request')
+      if (command === 'inspection.highlightClear') {
+        const expected = wireRecord(wireRecord(input.payload).expectedOwner)
+        const expectedTarget = wireRecord(expected.target)
+        if (['sourceId', 'epoch', 'revision', 'runtimeId'].some(key => expected[key] !== input[key]) || target.storyId !== expectedTarget.storyId || target.variantId !== expectedTarget.variantId) invalid('Highlight lease owner does not match request')
+      }
+    }
   }
   else if (input.kind === 'response') {
+    if (responseCommand?.startsWith('inspection.')) measureWireValue(input, { maxBytes: 64 * 1024 })
     if (input.ok) {
       if (!responseCommand) invalid('Successful response requires captured command')
       validateBridgeResult(responseCommand, input.result)
+      if (inspectionCommands.includes(responseCommand)) {
+        const resultOwner = wireRecord(wireRecord(input.result).owner)
+        const target = wireRecord(input.target)
+        const resultTarget = wireRecord(resultOwner.target)
+        if (['sourceId', 'epoch', 'revision', 'runtimeId'].some(key => resultOwner[key] !== input[key]) || target.storyId !== resultTarget.storyId || target.variantId !== resultTarget.variantId) invalid('Mismatched inspection result owner')
+      }
     }
     else {
       validateHistoireErrorData(input.error)

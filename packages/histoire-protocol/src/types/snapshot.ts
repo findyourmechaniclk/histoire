@@ -1,5 +1,6 @@
 import type { HistoireCatalog, HistoireDiagnostic } from './catalog.js'
 import type { HistoireCapabilities, HistoireSourceIdentity, HistoireTarget } from './common.js'
+import type { HistoireInspectionCapabilities } from './inspection.js'
 import type { HistoireSettings } from './settings.js'
 
 /** Session connection lifecycle. */
@@ -49,6 +50,8 @@ export interface HistoireRuntimeSnapshot {
   viewports: readonly HistoireViewport[]
   /** Selected visible entry, otherwise null. */
   viewport: HistoireViewport | null
+  /** Inspection supported by the current runtime actor; absence denies access. */
+  inspection?: HistoireInspectionCapabilities
 }
 
 /** One cleaned event from exact runtime target. */
@@ -87,6 +90,8 @@ export interface HistoireSnapshot {
   settings: HistoireSettings
   /** Source capabilities filtered by selection/readiness. */
   capabilities: HistoireCapabilities
+  /** Effective inspection support; absence denies access. */
+  inspection?: HistoireInspectionCapabilities
   /** Latest 1,000 events and loss accounting. */
   events: { items: readonly HistoireEvent[], droppedCount: number }
 }

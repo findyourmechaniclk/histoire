@@ -1,7 +1,10 @@
 import type { Plugin as VitePlugin } from 'vite'
 import type { Context } from '../context.js'
+import { readFile } from 'node:fs/promises'
 import { resolve } from 'pathe'
 import { generateDocSearchData, generateTitleSearchData, getSearchDataJS } from '../search.js'
+import { resolveAccessibilityRuntime } from '../util/resolve-accessibility-runtime.js'
+import { createAxeEngineModule } from './axe-engine.js'
 import { EMBED_SOURCE_ID, embedSourceModule, LOCAL_SOURCE_ID, RESOLVED_EMBED_SOURCE_ID, RESOLVED_LOCAL_SOURCE_ID } from './embed/virtual.js'
 import * as VirtualFiles from './index.js'
 import { ID_SEPARATOR } from './util.js'
@@ -17,6 +20,7 @@ export function createVirtualFilesPlugin(ctx: Context, isServer: boolean) {
     },
 
     async resolveId(id, importer) {
+      if (id === VirtualFiles.AXE_ENGINE_ID && resolveAccessibilityRuntime(ctx.root, ctx.config.inspection)) return VirtualFiles.RESOLVED_AXE_ENGINE_ID
       if (id === EMBED_SOURCE_ID) return RESOLVED_EMBED_SOURCE_ID
       if (id === LOCAL_SOURCE_ID) return RESOLVED_LOCAL_SOURCE_ID
       if (id === VirtualFiles.BUILD_INFO_ID) return VirtualFiles.RESOLVED_BUILD_INFO_ID
@@ -113,6 +117,11 @@ export function createVirtualFilesPlugin(ctx: Context, isServer: boolean) {
     },
 
     async load(id) {
+      if (id === VirtualFiles.RESOLVED_AXE_ENGINE_ID) {
+        const runtime = resolveAccessibilityRuntime(ctx.root, ctx.config.inspection)
+        if (!runtime) throw new Error('Accessibility audit unavailable')
+        return createAxeEngineModule(await readFile(runtime.axeId, 'utf8'))
+      }
       if (id === RESOLVED_EMBED_SOURCE_ID) return embedSourceModule('embed', command)
       if (id === RESOLVED_LOCAL_SOURCE_ID) return embedSourceModule('local', command)
       if (id === VirtualFiles.RESOLVED_BUILD_INFO_ID) return VirtualFiles.resolvedBuildInfo(ctx)

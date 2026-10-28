@@ -10,6 +10,7 @@ import { createManagedHosting } from '../runtime/hosting/managed.js'
 import { createMiddlewareHosting } from '../runtime/hosting/middleware.js'
 import { buildProject } from './build.js'
 import { captureProjectScreenshot } from './capture.js'
+import { inspectProject } from './inspection.js'
 import { registerProjectServices } from './internal.js'
 import { previewProject } from './preview.js'
 import { runProjectTests } from './tests.js'
@@ -87,6 +88,28 @@ export async function createHistoireProject(options: HistoireProjectOptions): Pr
   }
   const visual = createProjectVisual(services, track, assertOpen)
   const project: HistoireProject = {
+    inspect: {
+      variant(options) {
+        assertOpen()
+        return track(inspectProject(services, 'variant', options))
+      },
+      dom(options) {
+        assertOpen()
+        return track(inspectProject(services, 'dom', options))
+      },
+      aria(options) {
+        assertOpen()
+        return track(inspectProject(services, 'aria', options))
+      },
+      accessibility(options) {
+        assertOpen()
+        return track(inspectProject(services, 'accessibility', options))
+      },
+      diagnostics(options) {
+        assertOpen()
+        return track(inspectProject(services, 'diagnostics', options))
+      },
+    },
     visual: visual.api,
     async startDev(options = {}) {
       const common = claimDev()

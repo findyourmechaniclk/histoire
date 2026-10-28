@@ -30,6 +30,8 @@ export interface EmbedSurfaceInstance {
   ready: Promise<HistoireRuntimeSnapshot | void>
   /** Finite runtime methods; data views omit dispatcher. */
   request?: (command: HistoireBridgeCommand, payload: unknown, capture: HistoireRequestCapture) => Promise<unknown> | unknown
+  /** Retire a failed inspection request's exact runtime-owned side effect. */
+  cancelInspection?: (capture: HistoireRequestCapture) => void
   /** Resource cleanup before document becomes inactive. */
   close: () => Promise<void> | void
 }

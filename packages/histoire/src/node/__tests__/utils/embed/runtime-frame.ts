@@ -1,4 +1,4 @@
-import type { HistoireFramePluginInfo, HistoireRuntimeSnapshot } from '@histoire/protocol'
+import type { HistoireFramePluginInfo, HistoireInspectionCapabilities, HistoireRuntimeSnapshot } from '@histoire/protocol'
 import type { HistoireSessionNotification } from '../../../../../../histoire-sdk/src/adapters/types.js'
 import type { HistoireBridgePort } from '../../../../../../histoire-sdk/src/internal.js'
 import { createEmbedRuntimeFrame } from '../../../../../../histoire-app/src/embed/adapters/runtime-frame.js'
@@ -6,8 +6,9 @@ import { sourceFixture } from '../../../../../../histoire-sdk/src/__tests__/fixt
 import { createHistoireSessionWithAdapters } from '../../../../../../histoire-sdk/src/internal.js'
 
 /** Real controller/runtime adapter; only already-validated notification delivery is synchronous. */
-export async function createRuntimeFrameFixture(options: { standalone?: boolean, sourceBase?: string, runtimeRevision?: string, extraVariants?: string[], requestTimeout?: number, framePlugins?: HistoireFramePluginInfo[], storyCollectTimeout?: number } = {}) {
+export async function createRuntimeFrameFixture(options: { standalone?: boolean, sourceBase?: string, runtimeRevision?: string, extraVariants?: string[], requestTimeout?: number, framePlugins?: HistoireFramePluginInfo[], storyCollectTimeout?: number, inspection?: HistoireInspectionCapabilities } = {}) {
   const fixture = sourceFixture()
+  if (options.inspection) fixture.descriptor.inspection = options.inspection
   for (const id of options.extraVariants ?? []) fixture.descriptor.catalog.stories[0].variants.push({ id, title: id })
   if (options.runtimeRevision) fixture.descriptor.catalog.stories[0].runtimeRevision = options.runtimeRevision
   fixture.descriptor.config = { title: 'Book', autoApplyContrastColor: false, theme: { defaultColorScheme: 'light', darkClass: 'dark' }, responsivePresets: [], backgroundPresets: [], storyCollectTimeout: options.storyCollectTimeout ?? 100 }

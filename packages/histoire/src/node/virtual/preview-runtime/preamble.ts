@@ -36,6 +36,8 @@ export interface PreviewRuntimePreambleOptions {
   variantTestSessionId: string
   /** Resolved id of the static (build mode) mock runtime module. */
   staticMockRuntimeId: string
+  /** Browser scanner and optional local axe module, present only when enabled and resolved. */
+  accessibilityRuntime?: { scannerId: string, axeId: string }
   /**
    * Resolved sandbox entry of the bundled `@histoire/app` build. Baked as absolute
    * paths because a bare specifier in this virtual module would be resolved
@@ -77,6 +79,7 @@ export function previewRuntimePreamble({
   histoireSharedId,
   variantTestSessionId,
   staticMockRuntimeId,
+  accessibilityRuntime,
   histoireAppSandboxId,
   histoireVendorIds,
   files,
@@ -101,11 +104,23 @@ import { ModuleMocker, ModuleMockerMSWInterceptor } from ${JSON.stringify(vitest
 import FloatingVue from ${JSON.stringify(histoireVendorIds.floatingVue)}
 import { createPinia } from ${JSON.stringify(histoireVendorIds.pinia)}
 import { computed, createApp, defineComponent, h, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } from ${JSON.stringify(histoireVendorIds.vue)}
-import { ELEMENT_PICK_REQUEST, ELEMENT_PICK_RESULT, MEASURE_REQUEST, MEASURE_RESULT, PROPS_OVERRIDE, applyVariantStateUpdate, createControlsOverlayBridge, createControlsStateRevision, createFailedRunSummary, createVariantStateSyncGuards, getFramePurpose, getVariantStateKey, isInteractiveFramePurpose, measureWireValue, serializeTestError } from ${JSON.stringify(histoireSharedId)}
+import { ELEMENT_PICK_REQUEST, ELEMENT_PICK_RESULT, MEASURE_REQUEST, MEASURE_RESULT, PROPS_OVERRIDE, applyVariantStateUpdate, createControlsOverlayBridge, createControlsStateRevision, createFailedRunSummary, createVariantStateSyncGuards, getFramePurpose, getFrameworkInspection, invalidateFrameworkInspection, getVariantStateKey, isInteractiveFramePurpose, measureWireValue, serializeTestError } from ${JSON.stringify(histoireSharedId)}
 import { createVariantTestSession, hasVanillaSetupHooks } from ${JSON.stringify(variantTestSessionId)}
 ${hasVitestPreview
   ? `import { createStaticPreviewMockRpc, createStaticPreviewMswOptions, enableStaticPreviewMockInterception } from ${JSON.stringify(staticMockRuntimeId)}`
   : ''}
+
+const runtimeAccessibilityAvailable = ${Boolean(accessibilityRuntime)}
+/** Load the opt-in scanner and locally installed axe only in the selected document. */
+async function scanRuntimeAccessibility(root, selector, options) {
+  ${accessibilityRuntime
+    ? `const scanner = await import(${JSON.stringify(accessibilityRuntime.scannerId)})
+  return scanner.scanAccessibility(root, selector, { ...options, loadAxe: async () => {
+    const module = await import('virtual:$histoire-axe-engine')
+    return module.default
+  } })`
+    : `throw Object.assign(new Error('Accessibility audit unavailable'), { code: 'CAPABILITY_UNAVAILABLE' })`}
+}
 
 /**
  * Imports the frame plugin manifest (\`FRAME_PLUGINS_ID\`). Only the frame-plugins

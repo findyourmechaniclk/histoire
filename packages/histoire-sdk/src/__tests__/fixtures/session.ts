@@ -20,7 +20,7 @@ export function sourceFixture() {
   const initial = structuredClone(value)
   const owner = () => ({ connectionId: 'surface-connection', sourceId: descriptor.sourceId, epoch: descriptor.epoch, revision: descriptor.revision, mountId, runtimeId })
   const state = (): HistoireStateSnapshot => ({ target, runtimeId, value: structuredClone(value) })
-  const runtime = () => ({ status: 'ready' as const, mountId, runtimeId, viewports: [], viewport: null })
+  const runtime = () => ({ status: 'ready' as const, mountId, runtimeId, viewports: [], viewport: null, ...(descriptor.inspection ? { inspection: structuredClone(descriptor.inspection) } : {}) })
   const emit = (notification: HistoireSessionNotification, frames = false) => {
     for (const listener of frames ? frameListeners : listeners) listener(notification)
   }

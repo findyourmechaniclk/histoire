@@ -2,7 +2,7 @@ import type { HistoireErrorCode } from '@histoire/protocol'
 import type { ScreenshotSetupSnapshot } from '@histoire/shared'
 
 /** Browser service exposes existing portable codes, without transport schemas. */
-export type PreviewErrorCode = Extract<HistoireErrorCode, 'DEPENDENCY_MISSING' | 'BROWSER_UNAVAILABLE' | 'PREVIEW_NOT_READY' | 'RESULT_TOO_LARGE' | 'CANCELLED' | 'TIMEOUT' | 'INTERNAL_ERROR'>
+export type PreviewErrorCode = Extract<HistoireErrorCode, 'INVALID_SELECTOR' | 'CAPABILITY_UNAVAILABLE' | 'DEPENDENCY_MISSING' | 'BROWSER_UNAVAILABLE' | 'PREVIEW_NOT_READY' | 'RESULT_TOO_LARGE' | 'CANCELLED' | 'TIMEOUT' | 'INTERNAL_ERROR'>
 
 /** Capture lifecycle error, independent of transport schemas or SDK packages. */
 export class PreviewError extends Error {

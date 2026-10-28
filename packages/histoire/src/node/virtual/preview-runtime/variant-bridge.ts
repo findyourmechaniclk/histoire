@@ -35,6 +35,7 @@ if (import.meta.hot) {
       return
     }
 
+    window.dispatchEvent(new CustomEvent('histoire:inspection-retire', { detail: { storyId } }))
     handleFrameStoryChanged(storyId)
     invalidateStoryRuntime(storyId)
   })

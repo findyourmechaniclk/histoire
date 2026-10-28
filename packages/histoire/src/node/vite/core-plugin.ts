@@ -7,8 +7,10 @@ import { tailwindRuntimeDirectory } from '../builtin-plugins/tailwind/template.j
 import { getContextRegistry } from '../runtime/registry.js'
 import { installUiHttpRouter } from '../server/ui-channel/http.js'
 import { notifyStoryChange } from '../stories.js'
+import { resolveAccessibilityRuntime } from '../util/resolve-accessibility-runtime.js'
 import { resolveHistoireAppBundledDir } from '../util/resolve-histoire-app.js'
 import { createOptimizerCacheIgnore } from '../util/story-ignore.js'
+import { getCollectionCacheFile } from '../util/temp-paths.js'
 import { createEmbedMiddleware } from '../virtual/embed/middleware.js'
 import { resolveVisualConfig } from '../visual/config.js'
 import { retireVisualSource } from '../visual/source.js'
@@ -42,6 +44,7 @@ export function createHistoireVitePlugin(ctx: Context, options: HistoireVitePlug
   const controlsAllowPaths = controlsEntry ? [dirname(controlsEntry)] : []
   const { tempDir } = getContextRegistry(ctx)
   const visual = resolveVisualConfig(ctx.config.visual)
+  const accessibilityRuntime = resolveAccessibilityRuntime(ctx.root, ctx.config.inspection)
 
   return {
     name: 'histoire-vite-plugin',
@@ -133,6 +136,7 @@ export function createHistoireVitePlugin(ctx: Context, options: HistoireVitePlug
               ...controlsAllowPaths,
               ...browserRuntimePaths.allowPaths,
               ...browserRuntimePaths.mswAllowPaths,
+              ...accessibilityRuntime ? [dirname(accessibilityRuntime.scannerId)] : [],
               ...process.env.HISTOIRE_DEV
                 ? [
                     '../../packages/histoire-vendors',
@@ -188,7 +192,9 @@ export function createHistoireVitePlugin(ctx: Context, options: HistoireVitePlug
     },
 
     handleHotUpdate(updateContext) {
-      if (visual && !isServer && !browserRuntime) retireVisualSource(updateContext.server)
+      // Revalidation writes this internal cache after a ready source is exposed;
+      // it is not a story dependency or a change to the rendered document.
+      if (visual && !isServer && !browserRuntime && updateContext.file !== getCollectionCacheFile(ctx.root)) retireVisualSource(updateContext.server)
       const story = ctx.storyFiles.find(file => file.path === updateContext.file)
       if (story) {
         notifyStoryChange(ctx, story)

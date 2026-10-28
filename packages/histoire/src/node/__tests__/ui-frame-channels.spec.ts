@@ -78,6 +78,18 @@ describe('standalone frame plugin channels', () => {
     expect(sent).toEqual([{ id: 'frame-1', payload: { type: HOST_CHANNEL_MESSAGE, ...target, plugin: { pluginId: 'probe', actorId: 'frame-1-actor', type: 'ping', data: 1 } } }])
   })
 
+  it('resolves only the attached actor window and retires it after navigation', async () => {
+    const { frames, api } = await workbench()
+    const [first, second] = frames.values()
+    for (const frame of [first, second]) post(frame, { type: 'histoire:attached' })
+    const [firstActor, secondActor] = api.frames.list()
+    expect(api.frames.window(firstActor)).toEqual({ window: first.iframe!.contentWindow, origin: window.location.origin, documentId: 'frame-1-document' })
+    expect(api.frames.window(secondActor)?.window).toBe(second.iframe!.contentWindow)
+    first.documentId = 'replacement-document'
+    expect(api.frames.window(firstActor)).toBeUndefined()
+    expect(api.frames.window(secondActor)?.window).toBe(second.iframe!.contentWindow)
+  })
+
   it('rejects and counts forged source, origin, document, actor and plugin', async () => {
     const { frames, api } = await workbench()
     const frame = frames.get('frame-1')!

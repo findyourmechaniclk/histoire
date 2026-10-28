@@ -48,7 +48,7 @@ export function installEmbedHandshake(sourcePromise: Promise<EmbedSourceConnecti
       }
       const presentation = parseEmbedPresentation(hints)
       if (presentation && surface !== 'explorer') throw new HistoireSdkError('INVALID_ARGUMENT', 'Embed presentation requires explorer surface')
-      const descriptor = projectEmbedDescriptor(source.descriptor, parentOrigin, window.location.origin)
+      const descriptor = projectEmbedDescriptor(source.descriptor, parentOrigin, window.location.origin, source.allowedOrigins)
       const owner: HistoireBridgeIdentity = { protocolVersion, sessionId: hello.sessionId, mountId: hello.mountId, connectionId: surface ? `${hello.mountId}:connection` : `${hello.mountId}:connection:${hello.nonce}`, sourceId: descriptor.sourceId, epoch: descriptor.epoch, revision: descriptor.revision }
       let view: ReturnType<typeof createParentViewSession> | undefined
       let instance: ReturnType<typeof mountEmbedSurface> | undefined
@@ -98,7 +98,7 @@ export function installEmbedHandshake(sourcePromise: Promise<EmbedSourceConnecti
         return dispatchEmbedCommand(source, parentOrigin, window.location.origin, request, AbortSignal.any([lifecycle.signal, requestSignal]), instance)
       } })
       if (surface) {
-        view = createParentViewSession(bridge, lifecycle.signal, () => projectEmbedDescriptor(source.descriptor, parentOrigin, window.location.origin))
+        view = createParentViewSession(bridge, lifecycle.signal, () => projectEmbedDescriptor(source.descriptor, parentOrigin, window.location.origin, source.allowedOrigins))
       }
       lifecycle.add(() => {
         bridge.post('source.disconnected', {})
@@ -110,7 +110,7 @@ export function installEmbedHandshake(sourcePromise: Promise<EmbedSourceConnecti
           return
         }
         if (notification.type === 'catalog') {
-          bridge.post('catalog.changed', { descriptor: projectEmbedDescriptor(notification.descriptor, parentOrigin, window.location.origin) }, { revision: notification.revision })
+          bridge.post('catalog.changed', { descriptor: projectEmbedDescriptor(notification.descriptor, parentOrigin, window.location.origin, source.allowedOrigins) }, { revision: notification.revision })
         }
         else if (notification.type === 'disconnect') {
           bridge.post('source.disconnected', {})

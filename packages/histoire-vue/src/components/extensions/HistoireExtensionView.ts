@@ -31,6 +31,7 @@ export const HistoireExtensionView = defineComponent({
   setup(props) {
     const provider = useHistoireContext()
     const { id } = props.contribution
+    const framed = 'degradedVisualIntegration' in props.contribution && props.contribution.degradedVisualIntegration === true
     const view = useExtensionView({
       // Captured once: the outlet remounts views when the host or contribution changes.
       host: provider.extensions.host!,
@@ -50,9 +51,11 @@ export const HistoireExtensionView = defineComponent({
         view.failure.value
           ? h(ErrorState, { title: name ? `${name} failed` : 'Extension failed' }, () => error instanceof Error ? error.message : String(error ?? ''))
           : view.component
-            ? h(view.component, { context: view.current.value, onVnodeMounted: view.onComponentMounted })
+            ? framed
+              ? h('div', { class: 'histoire-extension-degraded' }, [h(view.component, { context: view.current.value, onVnodeMounted: view.onComponentMounted })])
+              : h(view.component, { context: view.current.value, onVnodeMounted: view.onComponentMounted })
             : loadingVisible.value ? h(LoadingDelayBoundary, null, () => h(LoadingState, { title: name ? `Loading ${name}` : 'Loading extension' })) : null,
-        view.component ? null : h('div', { ref: view.container, class: mergePartClass('histoire-extension-mount', props.classes?.mount), hidden: !!view.failure.value }),
+        view.component ? null : h('div', { ref: view.container, class: [mergePartClass('histoire-extension-mount', props.classes?.mount), framed && 'histoire-extension-degraded'], hidden: !!view.failure.value }),
       ])
     }
   },

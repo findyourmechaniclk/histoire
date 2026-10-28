@@ -18,6 +18,8 @@ function renderRuntimeError(error) {
   // A module the app imports lazily failed to fetch (e.g. a network change):
   // reload under the per-document guard instead of failing the variant.
   if (isModuleLoadFailure(error) && window.__histoireEntryFailed?.()) return
+  // Retire document-owned observers before the host loses authority to stop them.
+  window.dispatchEvent(new window.Event('histoire:runtime-failed'))
   postToParent({ type: RUNTIME_FAILED, error: serializeTestError(error) })
   const message = error instanceof Error
     ? (error.stack ?? error.message)

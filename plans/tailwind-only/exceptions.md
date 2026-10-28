@@ -25,6 +25,7 @@ Every CSS rule left in `packages/histoire-app` after slice 11 has an entry here.
 | E12 | `packages/histoire-controls/scripts/postcss-tailwind-isolation.cjs` | Remove universal fallback and unwrap generated layers with `flatten-tailwind-layers.cjs` | Universal reset breaks story effects; v3 consumes generic layer names, while unlayered host preflight overrides layered app/controls CSS | 02/03 |
 | E13 (removed) | `components/base/overflow/BaseOverflowToolbarItem.vue` | No remaining component CSS | Slice 07 moved menu presentation into toolbar consumers through `useToolbarPresentation`; temporary bridge deleted | 05/07 |
 | E14 | `app/components/canvas/content-measure.ts` | Temporary story-document sizing stylesheet | Intrinsic measurement must neutralize viewport-sized html/body roots and isolate one live story flow root; the stylesheet is installed and removed with the measurement owner, outside workbench templates | 11 |
+| E15 | `packages/histoire/src/node/virtual/preview-runtime/highlight.ts` | Temporary story-document highlight geometry and translucent background | Runtime creates and removes a non-interactive overlay over arbitrary story elements; its position derives from their live bounds outside app templates | 03 |
 
 E1, E2 and E11 now have implementations. Shared controls `base-theme.css`, generated `theme.css`/`peer-theme.css`, and emitted layer names are compiler configuration, not component styling. See slice statuses for verification and scope deviations.
 

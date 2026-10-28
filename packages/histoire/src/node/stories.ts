@@ -97,6 +97,9 @@ export async function watchStories(context: Context) {
       if (stopped || !matchesStory(file)) return
       try {
         const storyFile = addStory(context, file)
+        // Initial scan completes before collection starts, so its inventory
+        // needs no delayed change event that could retire a ready source.
+        if (!readySettled) return
         const timer = setTimeout(() => {
           delayedChanges.delete(timer)
           if (!stopped) notifyStoryChange(context, storyFile)

@@ -26,6 +26,10 @@
       "types": "./dist/loading-delay.d.ts",
       "default": "./dist/loading-delay.js"
     },
+    "./inspection": {
+      "types": "./dist/inspection/index.d.ts",
+      "default": "./dist/inspection/index.js"
+    },
     "./client-node": {
       "types": "./dist/client/server/run.d.ts",
       "default": "./dist/client/server/run.js"

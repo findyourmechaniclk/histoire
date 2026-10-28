@@ -125,6 +125,15 @@ export function createFrameChannels(options: FrameChannelsOptions) {
       sweep()
       return hub.actors(pluginId).map(actor => Object.freeze({ key: actor.frameKey, target: actor.target, actorId: actor.actorId }))
     },
+    window(pluginId, ref) {
+      sweep()
+      const actor = hub.actors(pluginId).find(actor => actor.frameKey === ref.key && actor.actorId === ref.actorId)
+      const current = actor && locate(actor)?.frame
+      const window = current?.iframe?.contentWindow
+      const origin = current?.iframe?.ownerDocument.defaultView?.location.origin
+      if (!current?.documentId || !window || !origin || origin === 'null') return undefined
+      return Object.freeze({ window, origin, documentId: current.documentId })
+    },
     open(pluginId, frame, signal) {
       assertInstalled(pluginId)
       sweep()

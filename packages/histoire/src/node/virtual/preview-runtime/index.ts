@@ -3,6 +3,7 @@ import type { PreviewRuntimePreambleOptions, PreviewRuntimeStoryFile } from './p
 import { randomUUID } from 'node:crypto'
 import { createRequire } from 'node:module'
 import { hasProjectVitest } from '../../util/has-vitest.js'
+import { resolveAccessibilityRuntime } from '../../util/resolve-accessibility-runtime.js'
 import { resolveBrowserRuntimeEntry } from '../../util/resolve-browser-runtime.js'
 import { resolveHistoireAppEntry } from '../../util/resolve-histoire-app.js'
 import { resolveHistoireSharedEntry } from '../../util/resolve-histoire-shared.js'
@@ -55,6 +56,8 @@ export interface PreviewRuntimeSourceOptions {
   variantTestSessionId: string
   /** Resolved id of the static (build mode) mock runtime module. */
   staticMockRuntimeId: string
+  /** Resolved optional accessibility modules, omitted when disabled or unavailable. */
+  accessibilityRuntime?: PreviewRuntimePreambleOptions['accessibilityRuntime']
   /** Resolved sandbox entry of the bundled `@histoire/app` build. */
   histoireAppSandboxId: string
   /** Already resolved browser vendors keep virtual imports out of consumer root. */
@@ -152,6 +155,7 @@ export function previewRuntime(ctx: Context) {
   const histoireSharedId = resolveHistoireSharedEntry()
   const variantTestSessionId = resolveBrowserRuntimeEntry('variant-test-session')
   const staticMockRuntimeId = resolveBrowserRuntimeEntry('vitest-static-mock-runtime')
+  const accessibilityRuntime = resolveAccessibilityRuntime(ctx.root, ctx.config.inspection)
   const hasVitest = hasProjectVitest(ctx.root)
   const vitestSpyId = tryResolveVitestModule(ctx.root, '@vitest/spy')
   const vitestMockerBrowserId = tryResolveVitestModule(ctx.root, '@vitest/mocker/browser')
@@ -174,6 +178,7 @@ export function previewRuntime(ctx: Context) {
     histoireSharedId,
     variantTestSessionId,
     staticMockRuntimeId,
+    accessibilityRuntime,
     histoireAppSandboxId: resolveHistoireAppEntry('sandbox'),
     // A virtual module has no dependency owner. Resolve from Histoire's package,
     // as with the app build above; consumers need only depend on Histoire.

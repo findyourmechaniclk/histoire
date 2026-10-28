@@ -17,12 +17,16 @@ const props = defineProps<{
    * the support plugin's `RenderStory` does it, when it supports it.
    */
   configureStory?: boolean
+  /** Opt-in provider is passed only to support plugins declaring it. */
+  enableInspection?: boolean
 }>()
 
 const mountComponent = ref(null)
 const supportsConfigure = ref(false)
+const supportsInspection = ref(false)
 /** Only passed to plugins declaring support, other `RenderStory` would get a stray attribute. */
 const configureProps = computed(() => props.configureStory && supportsConfigure.value ? { configureStory: true } : {})
+const inspectionProps = computed(() => props.enableInspection && supportsInspection.value ? { enableInspection: true } : {})
 
 watchEffect(async () => {
   const clientPlugin = clientSupportPlugins[props.story.file?.supportPluginId]
@@ -30,6 +34,7 @@ watchEffect(async () => {
     try {
       const pluginModule = await clientPlugin()
       supportsConfigure.value = !!pluginModule.renderConfiguresStory
+      supportsInspection.value = !!pluginModule.renderSupportsComponentInspection
       if (props.configureStory && supportsConfigure.value) {
         // Normally resolved by the hidden mount, skipped in that case.
         await resolveStoryFileComponent(props.story.file)
@@ -50,6 +55,6 @@ watchEffect(async () => {
     v-if="mountComponent"
     class="histoire-generic-render-story __histoire-render-story"
     :story="story"
-    v-bind="{ ...$attrs, ...configureProps }"
+    v-bind="{ ...$attrs, ...configureProps, ...inspectionProps }"
   />
 </template>

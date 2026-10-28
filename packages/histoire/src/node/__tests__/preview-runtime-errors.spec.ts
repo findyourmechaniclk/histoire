@@ -7,17 +7,20 @@ import { previewErrorOverlay } from '../virtual/preview-runtime/error-overlay.js
 /** Execute emitted reporter against genuine DOM and captured window event ports. */
 function errorReporter() {
   const listeners = new Map<string, (event: { error?: unknown, message?: string, reason?: unknown }) => void>()
-  const postToParent = vi.fn()
+  const order: string[] = []
+  const postToParent = vi.fn(() => {
+    order.push('failure')
+  })
   document.body.innerHTML = '<div id="app">Mounted variant</div>'
   runInNewContext(previewErrorOverlay(), {
-    window: { addEventListener: (type, listener) => listeners.set(type, listener) },
+    window: { Event: window.Event, addEventListener: (type, listener) => listeners.set(type, listener), dispatchEvent: event => order.push(event.type) },
     document,
     Error,
     serializeTestError,
     postToParent,
     RUNTIME_FAILED: 'failed',
   })
-  return { listeners, postToParent }
+  return { listeners, postToParent, order }
 }
 
 afterEach(() => document.body.replaceChildren())
@@ -27,6 +30,7 @@ describe('runtime error reporting during native document resize', () => {
     const reporter = errorReporter()
     reporter.listeners.get('error')!({ message, error: null })
     expect(reporter.postToParent).not.toHaveBeenCalled()
+    expect(reporter.order).toEqual([])
     expect(document.body.textContent).toBe('Mounted variant')
   })
 
@@ -36,6 +40,7 @@ describe('runtime error reporting during native document resize', () => {
     reporter.listeners.get('error')!({ message, error: new Error(message) })
     reporter.listeners.get('unhandledrejection')!({ reason: new Error('Story crashed') })
     expect(reporter.postToParent.mock.calls.map(([value]) => value.error.message)).toEqual([message, 'Story crashed'])
+    expect(reporter.order).toEqual(['histoire:runtime-failed', 'failure', 'histoire:runtime-failed', 'failure'])
     expect(document.querySelector('#app')?.textContent).toBe('Mounted variant')
   })
 })

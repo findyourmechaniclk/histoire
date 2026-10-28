@@ -81,6 +81,10 @@ export type HistoireMountOptions =
 
 /** Framework-neutral controller shared by iframe and native Vue consumers. */
 export interface HistoireSession {
+  /** Opt-in diagnostic observations of the currently mounted document. */
+  debug: import('@histoire/protocol').HistoireDebug
+  /** Bounded reads of an already mounted runtime. */
+  inspect: import('@histoire/protocol').HistoireInspection
   /** Explicitly connect data-only source bridge. */
   connect: () => Promise<void>
   /** Stable read-only current snapshot. */

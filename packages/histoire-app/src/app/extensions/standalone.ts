@@ -3,7 +3,9 @@ import type { WorkbenchHost } from './create-workbench-host.js'
 import type { WorkbenchNavigationTargets } from './navigation.js'
 import { provideHistoireExtensions, useHistoireResource } from '@histoire/vue/internal'
 import { watch } from 'vue'
+import { inspectionPluginEntries } from '../components/inspector/inspection/plugin.js'
 import { injectWorkbenchPlugins, provideExtensionHost } from '../composables/extensions.js'
+import { histoireConfig } from '../util/config.js'
 import { createWorkbenchHost } from './create-workbench-host.js'
 import { resolveDevEventService } from './dev-events.js'
 import { createContributionLookup } from './shell-registry.js'
@@ -20,7 +22,7 @@ export function useStandaloneExtensionHost(props: WorkbenchProps, targets: Omit<
   const workbench = createWorkbenchHost({
     session: props.session,
     mode,
-    plugins: injectWorkbenchPlugins(),
+    plugins: inspectionPluginEntries(injectWorkbenchPlugins(), histoireConfig.inspection?.enabled === true, props.session, props.runtime.current, message => console.warn(message), () => workbench?.selectedFrame.current() ?? null),
     navigation: { ...targets, selectStory: input => props.session.selection.select(input) },
     devEvents: __HISTOIRE_DEV__ ? resolveDevEventService({ mode, hot: Boolean(import.meta.hot), window: props.hostWindow }) : undefined,
     storage: createWorkbenchStorage(props.hostWindow),

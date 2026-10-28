@@ -2,10 +2,16 @@ import type { HistoireBridgeRequest, HistoireSourceDescriptor } from '@histoire/
 import type { HistoireRequestCapture } from '@histoire/sdk/internal'
 import type { EmbedSurfaceInstance } from './surfaces.js'
 import type { EmbedSourceConnection } from './types.js'
-import { HistoireSdkError } from '@histoire/protocol'
+import { HISTOIRE_INSPECTION_OPERATION_CAPABILITIES, HistoireSdkError } from '@histoire/protocol'
+
+/** Unique cleanup correlation within this embedded document. */
+let diagnosticCleanupId = 0
 /** Policy projection applies to every revision, including later HMR publications. */
-export function projectEmbedDescriptor(value: HistoireSourceDescriptor, parentOrigin: string, bookOrigin: string): HistoireSourceDescriptor {
+export function projectEmbedDescriptor(value: HistoireSourceDescriptor, parentOrigin: string, bookOrigin: string, allowedOrigins = value.embed?.allowedOrigins ?? []): HistoireSourceDescriptor {
   const descriptor = structuredClone(value)
+  if (descriptor.inspection && !allowsInspection(descriptor, parentOrigin, bookOrigin, allowedOrigins)) {
+    for (const name of Object.keys(descriptor.inspection) as (keyof typeof descriptor.inspection)[]) descriptor.inspection[name] = { available: false, reason: 'CAPABILITY_UNAVAILABLE' }
+  }
   if (parentOrigin !== bookOrigin) {
     if (!descriptor.embed?.allowOpenInEditor) {
       descriptor.capabilities.openInEditor = { available: false, reason: 'CAPABILITY_UNAVAILABLE' }
@@ -16,8 +22,17 @@ export function projectEmbedDescriptor(value: HistoireSourceDescriptor, parentOr
   }
   return descriptor
 }
+/** Inspection has a separate origin restriction intersected with current embed policy. */
+function allowsInspection(descriptor: HistoireSourceDescriptor, parentOrigin: string, bookOrigin: string, allowedOrigins: readonly string[]): boolean {
+  return parentOrigin === bookOrigin || Boolean(allowedOrigins.includes(parentOrigin) && descriptor.inspectionPolicy?.allowedOrigins.includes(parentOrigin))
+}
 /** Cross-origin policy is enforced at execution as well as capability projection. */
-export function assertEmbedCommandPolicy(source: EmbedSourceConnection, parentOrigin: string, bookOrigin: string, command: string, payload: unknown): void {
+export function assertEmbedCommandPolicy(source: EmbedSourceConnection, parentOrigin: string, bookOrigin: string, command: string, payload: unknown, observedOrigins?: readonly string[]): void {
+  if (command.startsWith('inspection.') && command !== 'inspection.cancel') {
+    const capability = HISTOIRE_INSPECTION_OPERATION_CAPABILITIES[command.slice('inspection.'.length) as keyof typeof HISTOIRE_INSPECTION_OPERATION_CAPABILITIES]
+    const componentHighlight = (command === 'inspection.highlight' || command === 'inspection.highlightLease') && !!payload && typeof payload === 'object' && Object.hasOwn(payload, 'componentId')
+    if (!allowsInspection(source.descriptor, parentOrigin, bookOrigin, source.allowedOrigins) || (parentOrigin !== bookOrigin && observedOrigins && !observedOrigins.includes(parentOrigin)) || !source.descriptor.inspection?.[capability]?.available || (componentHighlight && (!source.descriptor.inspection?.highlight?.available || !source.descriptor.inspection?.componentHighlight?.available))) throw new HistoireSdkError('CAPABILITY_UNAVAILABLE', 'Inspection unavailable')
+  }
   if (parentOrigin === bookOrigin) {
     return
   }
@@ -31,9 +46,29 @@ export function assertEmbedCommandPolicy(source: EmbedSourceConnection, parentOr
   }
 }
 /** Dispatch finite data/runtime methods using local source lifetime, never remote capture IDs. */
-export function dispatchEmbedCommand(source: EmbedSourceConnection, parentOrigin: string, bookOrigin: string, request: HistoireBridgeRequest, signal: AbortSignal, surface?: EmbedSurfaceInstance): Promise<unknown> | unknown {
-  assertEmbedCommandPolicy(source, parentOrigin, bookOrigin, request.command, request.payload)
+export async function dispatchEmbedCommand(source: EmbedSourceConnection, parentOrigin: string, bookOrigin: string, request: HistoireBridgeRequest, signal: AbortSignal, surface?: EmbedSurfaceInstance): Promise<unknown> {
+  try {
+    return await executeEmbedCommand(source, parentOrigin, bookOrigin, request, signal, surface)
+  }
+  catch (error) {
+    if (['inspection.highlight', 'inspection.highlightLease'].includes(request.command)) surface?.cancelInspection?.({ ...request, signal })
+    // A denied or cancelled response may follow successful runtime registration.
+    // Revoke only this exact peer's observation, without publishing its result.
+    const input = request.payload as { action?: string, observationId?: string }
+    if (request.command === 'inspection.debug' && input && surface?.request) {
+      const cleanup = { ...input, action: 'stop' }
+      await Promise.resolve().then(() => surface.request!('inspection.debug', cleanup, { ...request, requestId: `diagnostic-cleanup:${++diagnosticCleanupId}`, signal: AbortSignal.timeout(3000) })).catch(() => {})
+    }
+    throw error
+  }
+}
+/** Execute authorized finite commands and recheck permission after async work. */
+async function executeEmbedCommand(source: EmbedSourceConnection, parentOrigin: string, bookOrigin: string, request: HistoireBridgeRequest, signal: AbortSignal, surface?: EmbedSurfaceInstance): Promise<unknown> {
+  const inspection = request.command.startsWith('inspection.') && request.command !== 'inspection.cancel'
+  const admissionOrigins = inspection && parentOrigin !== bookOrigin ? await source.refreshAllowedOrigins?.(signal) : undefined
+  assertEmbedCommandPolicy(source, parentOrigin, bookOrigin, request.command, request.payload, admissionOrigins)
   const descriptor = source.descriptor
+  const publication = { sourceId: descriptor.sourceId, epoch: descriptor.epoch, revision: descriptor.revision }
   if (['sourceId', 'epoch', 'revision'].some(key => request[key as 'sourceId'] !== descriptor[key as 'sourceId'])) {
     throw new HistoireSdkError('STALE_REVISION', 'Source publication changed')
   }
@@ -56,7 +91,21 @@ export function dispatchEmbedCommand(source: EmbedSourceConnection, parentOrigin
     return source.request(request.command as 'catalog.search' | 'docs.get' | 'source.get' | 'tests.run' | 'openInEditor', request.payload, capture)
   }
   if (surface?.request) {
-    return surface.request(request.command, request.payload, { ...request, signal })
+    try {
+      const result = await surface.request(request.command, request.payload, { ...request, signal })
+      const completionOrigins = inspection && parentOrigin !== bookOrigin ? await source.refreshAllowedOrigins?.(signal) : undefined
+      signal.throwIfAborted()
+      assertEmbedCommandPolicy(source, parentOrigin, bookOrigin, request.command, request.payload, completionOrigins)
+      if (source.descriptor.sourceId !== publication.sourceId || source.descriptor.epoch !== publication.epoch || source.descriptor.revision !== publication.revision) throw new HistoireSdkError('STALE_REVISION', 'Source publication changed')
+      return result
+    }
+    catch (error) {
+      const completionOrigins = inspection && parentOrigin !== bookOrigin ? await source.refreshAllowedOrigins?.(signal) : undefined
+      signal.throwIfAborted()
+      assertEmbedCommandPolicy(source, parentOrigin, bookOrigin, request.command, request.payload, completionOrigins)
+      if (source.descriptor.sourceId !== publication.sourceId || source.descriptor.epoch !== publication.epoch || source.descriptor.revision !== publication.revision) throw new HistoireSdkError('STALE_REVISION', 'Source publication changed')
+      throw error
+    }
   }
   throw new HistoireSdkError('CAPABILITY_UNAVAILABLE', 'Requested command adapter unavailable')
 }

@@ -78,6 +78,10 @@ export function createCanvasService(options: CanvasServiceOptions): CanvasServic
       const origin = viewportRect(options)
       return { x: client.x - origin.x, y: client.y - origin.y }
     },
+    viewportToFrame(frameKey, point) {
+      const origin = viewportRect(options)
+      return options.frames.clientToFrame(frameKey, { x: point.x + origin.x, y: point.y + origin.y })
+    },
     frames: () => [...options.frames.frames.values()].map((entry): CanvasFrameGeometry => Object.freeze({
       frame: Object.freeze({ key: entry.id, target: Object.freeze({ storyId: entry.storyId, variantId: entry.variantId }) }),
       rect: Object.freeze({ x: entry.rect.x, y: entry.rect.y, width: entry.rect.width, height: entry.rect.height }),

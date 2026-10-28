@@ -1,14 +1,27 @@
 import type { ReferenceUi } from 'histoire-example-plugin-reference'
 import { HstVue } from '@histoire/plugin-vue'
+import { HstVueDevtools } from '@histoire/plugin-vue-devtools'
 import { defineConfig, getDefaultConfig } from 'histoire'
 import { referencePlugin } from 'histoire-example-plugin-reference'
 
 export default defineConfig({
+  inspection: {
+    enabled: true,
+    components: true,
+    accessibility: true,
+    diagnostics: true,
+    allowedOrigins: [process.env.HISTOIRE_DEVFRAME_ORIGIN ?? 'http://127.0.0.1:4638'],
+  },
+  embed: { enabled: true, allowedOrigins: [process.env.HISTOIRE_DEVFRAME_ORIGIN ?? 'http://127.0.0.1:4638'] },
   visual: {},
   ui: { frameBudget: 12 },
   // outDir: 'hdist',
   plugins: [
     HstVue(),
+    HstVueDevtools({
+      enabled: process.env.HISTOIRE_VUE_DEVTOOLS !== 'false',
+      clientAuthToken: process.env.HISTOIRE_VUE_DEVTOOLS_TOKEN,
+    }),
     // Reference workbench plugin with React views in a Vue project. Try another variant with
     // HISTOIRE_REFERENCE_UI=vue|dom|svelte.
     referencePlugin({ ui: (process.env.HISTOIRE_REFERENCE_UI as ReferenceUi | undefined) ?? 'react', minTargetSize: 40 }),

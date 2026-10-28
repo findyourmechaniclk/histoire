@@ -4,12 +4,12 @@ import type { OperationScope } from './ownership.js'
 import { HistoireSdkError, validateBridgeResult, validateWireValue } from '@histoire/protocol'
 
 /** Send one captured request; stale success never mutates replacement lifetime. */
-export function request<T>(context: SessionContext, transport: HistoireTransport, command: HistoireSessionCommand, payload: unknown, scope: OperationScope = { kind: 'source' }, signal?: AbortSignal): Promise<T> {
+export function request<T>(context: SessionContext, transport: HistoireTransport, command: HistoireSessionCommand, payload: unknown, scope: OperationScope = { kind: 'source' }, signal?: AbortSignal, explicitTarget?: import('@histoire/protocol').HistoireTarget): Promise<T> {
   const connection = context.assertConnected()
   const source = context.snapshot.source!
   const selectionVersion = context.selectionVersion
   const runtimeVersion = context.runtimeVersion
-  const target = context.snapshot.selection
+  const target = explicitTarget ?? context.snapshot.selection
   const identity = {
     sessionId: context.sessionId,
     connectionId: transport.id,
@@ -17,7 +17,7 @@ export function request<T>(context: SessionContext, transport: HistoireTransport
     epoch: source.epoch,
     revision: source.revision,
     ...(scope.mountId ? { mountId: scope.mountId } : {}),
-    ...(scope.kind === 'runtime' && context.snapshot.runtime.runtimeId ? { runtimeId: context.snapshot.runtime.runtimeId } : {}),
+    ...((scope.kind === 'runtime' || scope.kind === 'inspection') && context.snapshot.runtime.runtimeId ? { runtimeId: context.snapshot.runtime.runtimeId } : {}),
     ...(target ? { target } : {}),
   }
   validateWireValue(payload, { kind: 'request', name: command })
@@ -29,9 +29,17 @@ export function request<T>(context: SessionContext, transport: HistoireTransport
     if (scope.mountId && !context.mounts.get(scope.mountId)?.active) throw new HistoireSdkError('RUNTIME_CHANGED', 'Surface detached during operation.')
     if ((scope.kind === 'runtime' || scope.kind === 'selection') && selectionVersion !== context.selectionVersion) throw new HistoireSdkError('RUNTIME_CHANGED', 'Selected target changed during operation.')
     if (scope.kind === 'runtime' && runtimeVersion !== context.runtimeVersion) throw new HistoireSdkError('RUNTIME_CHANGED', 'Runtime document changed during operation.')
+    if (scope.kind === 'inspection' && context.mounts.get(scope.mountId!)?.runtimeId !== identity.runtimeId) throw new HistoireSdkError('RUNTIME_CHANGED', 'Runtime document changed during operation.')
   }
   return context.operations.run(scope, async (ownedSignal) => {
-    const result = await transport.request<T>(command, payload, { ...identity, signal: ownedSignal } as HistoireRequestCapture)
+    let result: T
+    try {
+      result = await transport.request<T>(command, payload, { ...identity, signal: ownedSignal } as HistoireRequestCapture)
+    }
+    catch (error) {
+      guard()
+      throw error
+    }
     if (result !== undefined) validateWireValue(result, { kind: 'response', name: command })
     if (!['selection.select', 'settings.update', 'events.clear'].includes(command) && !(result === undefined && ['state.patch', 'state.reset'].includes(command))) {
       validateBridgeResult(command, result)

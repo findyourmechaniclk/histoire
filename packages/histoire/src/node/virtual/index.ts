@@ -52,6 +52,10 @@ export const PREVIEW_RUNTIME_ID = 'virtual:$histoire-preview-runtime'
 export const RESOLVED_PREVIEW_RUNTIME_ID = `/__resolved__${PREVIEW_RUNTIME_ID}`
 export const VITEST_BROWSER_RUNTIME_ID = 'virtual:$histoire-vitest-browser-runtime'
 export const RESOLVED_VITEST_BROWSER_RUNTIME_ID = `/__resolved__${VITEST_BROWSER_RUNTIME_ID}`
+/** Opt-in local accessibility engine, isolated from story globals. */
+export const AXE_ENGINE_ID = 'virtual:$histoire-axe-engine'
+/** Private Vite resolution for the engine module. */
+export const RESOLVED_AXE_ENGINE_ID = `\0${AXE_ENGINE_ID}`
 
 export * from './browser-collector.js'
 export * from './build-info.js'

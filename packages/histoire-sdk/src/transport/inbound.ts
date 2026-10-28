@@ -13,21 +13,22 @@ export function createInboundBridgeDispatch(dispatch: ((request: HistoireBridgeR
   return {
     /** Source execution outlives runtime; validate its cancellation against captured owner. */
     sourceCancellationOwner(input: { kind?: unknown, command?: unknown, payload?: unknown }): HistoireBridgeIdentity | undefined {
-      if (input.kind !== 'request' || input.command !== 'tests.cancel' || !input.payload || typeof input.payload !== 'object') return
+      if (input.kind !== 'request' || !['tests.cancel', 'inspection.cancel'].includes(input.command as string) || !input.payload || typeof input.payload !== 'object') return
       const requestId = (input.payload as { requestId?: unknown }).requestId
       const entry = typeof requestId === 'string' ? active.get(requestId) : undefined
-      if (entry?.request.command === 'tests.run' && (entry.request.payload as { mode: string }).mode === 'server') return entry.request
+      if (entry && ((entry.request.command === 'tests.run' && (entry.request.payload as { mode: string }).mode === 'server') || entry.request.command.startsWith('inspection.'))) return entry.request
     },
     /** Ack retires publication; dispatch stays observed until actual cleanup. */
     async run(request: HistoireBridgeRequest): Promise<unknown> {
-      if (request.command === 'tests.cancel') {
+      if (request.command === 'tests.cancel' || request.command === 'inspection.cancel') {
         const requestId = (request.payload as { requestId: string }).requestId
         const entry = active.get(requestId)
-        if (!entry || !sameOwner(entry.request, request)) throw new HistoireSdkError('INVALID_ARGUMENT', 'No matching test request on this port')
-        entry.abort.abort(new HistoireSdkError('CANCELLED', 'Test request cancelled'))
+        const matchesCommand = request.command === 'tests.cancel' ? ['tests.run', 'tests.collect'].includes(entry?.request.command ?? '') : Boolean(entry?.request.command.startsWith('inspection.') && entry.request.command !== 'inspection.cancel')
+        if (!entry || !matchesCommand || !sameOwner(entry.request, request)) throw new HistoireSdkError('INVALID_ARGUMENT', 'No matching request on this port')
+        entry.abort.abort(new HistoireSdkError('CANCELLED', 'Request cancelled'))
         return { requestId, cancelled: true }
       }
-      if (!['tests.run', 'tests.collect'].includes(request.command)) return dispatch?.(request, lifetime.signal)
+      if (!['tests.run', 'tests.collect'].includes(request.command) && !request.command.startsWith('inspection.')) return dispatch?.(request, lifetime.signal)
       if (active.has(request.requestId)) throw new HistoireSdkError('INVALID_ARGUMENT', 'Duplicate test request identity')
       const abort = new AbortController()
       active.set(request.requestId, { request, abort })

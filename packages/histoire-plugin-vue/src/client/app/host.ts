@@ -3,6 +3,7 @@ import type { App, Component, VNode } from 'vue'
 import type { Vue3StorySetupApi } from '../../helpers.js'
 import type { PreviewRenderContext } from './render-context.js'
 import { onHistoireDarkChange, registerHistoireGlobalsAdapter, registerStoryExecutionTargetResolver, useHistoireGlobals, withStoryExecution } from '@histoire/shared'
+import { registerFrameworkInspection } from '@histoire/shared/inspection'
 import {
   createApp,
   getCurrentInstance,
@@ -11,6 +12,7 @@ import {
   reactive,
   Suspense,
 } from 'vue'
+import { createVueInspectionProvider } from '../inspection/provider.js'
 import { createAppHooks, getAppHooks } from './app-hooks.js'
 import { registerGlobalComponents } from './global-components.js'
 import { PreviewHostRoot } from './host-root.js'
@@ -41,6 +43,8 @@ interface PreviewHostOptions {
    * app in this document), run the story mount pass inside this app first.
    */
   configureStory?: boolean
+  /** Permit lazy inspection of this default render mount. */
+  enableInspection?: boolean
 }
 
 /** Own isolated story app and publish readiness after first root Suspense resolves. */
@@ -49,6 +53,9 @@ export function createPreviewHost(options: PreviewHostOptions) {
   let target: HTMLDivElement = null
   let retireMount: (() => void) | undefined
   let storyPass: StoryMountPass | undefined
+  let inspectionReady = false
+  let inspection: ReturnType<typeof createVueInspectionProvider> | undefined
+  let unregisterInspection: (() => void) | undefined
 
   /**
    * Waits for the user Vue app to flush render-time mutations like auto-prop
@@ -156,6 +163,8 @@ export function createPreviewHost(options: PreviewHostOptions) {
       assertOwner()
       await waitForHostRenderSettled()
       assertOwner()
+      inspectionReady = true
+      refreshInspection()
       if (retireMount === retire) retireMount = undefined
     }
     catch (error) {
@@ -193,6 +202,8 @@ export function createPreviewHost(options: PreviewHostOptions) {
 
   /** Retire the current app and remove its element. */
   function unmount() {
+    inspectionReady = false
+    invalidateInspection()
     // A pending mount still runs setup; its failure path closes the app.
     const mountPending = retireMount !== undefined
     retireMount?.()
@@ -212,9 +223,40 @@ export function createPreviewHost(options: PreviewHostOptions) {
     app?._instance?.proxy?.$forceUpdate()
   }
 
+  /** Return only the exact ready default render app, if explicitly enabled. */
+  function getInspectionProvider() {
+    if (!inspectionReady || !options.enableInspection || options.renderContext.mode !== 'render' || options.renderContext.slotName !== 'default' || !app || !target) return null
+    return inspection ??= createVueInspectionProvider(app, target)
+  }
+
+  /** Retire a provider before updating or unmounting its rendered owner. */
+  function invalidateInspection() {
+    unregisterInspection?.()
+    unregisterInspection = undefined
+    inspection?.dispose()
+    inspection = undefined
+  }
+
+  /** Expose a fresh provider only for the settled default render owner. */
+  function refreshInspection() {
+    invalidateInspection()
+    if (!inspectionReady || !options.enableInspection || options.renderContext.mode !== 'render' || options.renderContext.slotName !== 'default' || !target) return
+    const ownerTarget = target
+    const actorRoot = ownerTarget.closest('[data-histoire-runtime-content][data-histoire-variant-id]')
+    if (actorRoot?.contains(ownerTarget)) {
+      unregisterInspection = registerFrameworkInspection(actorRoot, () => actorRoot.contains(ownerTarget) ? getInspectionProvider() ?? undefined : undefined, () => {
+        inspection?.dispose()
+        inspection = undefined
+      })
+    }
+  }
+
   return {
     mount,
     unmount,
     forceUpdate,
+    getInspectionProvider,
+    refreshInspection,
+    invalidateInspection,
   }
 }

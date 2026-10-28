@@ -138,6 +138,22 @@ To add UI to the workbench or code to story frames, give the plugin a `workbench
 
 See the [plugin API reference](../../reference/plugin-api.md).
 
+## Extending Vite configuration
+
+Use `viteConfig` when an integration must change Vite options before Vite resolves its plugins. It receives the merged Vite config and a context containing Histoire `mode`, `isServer`, `browserRuntime`, and `collecting`. Return a partial Vite config to merge, or nothing to leave it unchanged. The hook also runs for collection and test runtimes, so restrict interactive tools to the intended environment.
+
+```ts
+export function MyPlugin(): Plugin {
+  return {
+    name: 'my-plugin',
+    viteConfig(_config, context) {
+      if (context.mode !== 'dev' || context.isServer || context.browserRuntime) return
+      return { define: { __MY_FEATURE__: 'true' } }
+    },
+  }
+}
+```
+
 ## Vue framework integrations
 
 A plugin integrating a Vue framework (like `@histoire/plugin-nuxt` or `@histoire/plugin-quasar`) usually:

@@ -141,6 +141,7 @@ module.exports = {
             { text: 'MCP reference', link: '/reference/mcp' },
             { text: 'Browser and Vue SDK', link: '/reference/sdk' },
             { text: 'Node SDK', link: '/reference/node-sdk' },
+            { text: 'Devframe live inspection', link: '/reference/devframe' },
             {
               text: 'Plugin API',
               link: '/reference/plugin-api',

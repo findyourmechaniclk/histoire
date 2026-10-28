@@ -1,7 +1,7 @@
 import type { PluginChannel } from '../types/channel.js'
 import type { Disposer } from '../types/common.js'
 import type { FrameRef, WorkbenchContext } from '../types/context.js'
-import type { PluginFrameRef, WorkbenchPluginApi } from '../types/plugin.js'
+import type { PluginFrameRef, PluginFrameWindow, WorkbenchPluginApi } from '../types/plugin.js'
 
 /**
  * Key under which a host exposes its {@link PluginFrameService} on the root context it passes to
@@ -18,6 +18,8 @@ export interface PluginFrameService {
    * @param signal Plugin lifetime; aborting it releases the channel's listeners.
    */
   open: (pluginId: string, frame: FrameRef, signal: AbortSignal) => PluginChannel
+  /** Resolve a window only while this plugin's exact actor remains attached. */
+  window?: (pluginId: string, frame: PluginFrameRef) => PluginFrameWindow | undefined
   /** Observes frame-side failures attributed to `pluginId`. */
   onError: (pluginId: string, listener: (error: Error) => void) => Disposer
   /** Observes actor attach and detach of any plugin; `api.frames.subscribe` narrows it. */
@@ -53,6 +55,9 @@ export function createPluginFrames(options: { id: string, context: WorkbenchCont
   const list = () => service && !options.signal.aborted ? service.list(options.id) : []
   return {
     list,
+    window(frame) {
+      return options.signal.aborted ? undefined : service?.window?.(options.id, frame)
+    },
     subscribe(listener) {
       if (!service || options.signal.aborted) return () => {}
       // Host notifications cover every plugin's actors: forward only changes of this plugin's list.

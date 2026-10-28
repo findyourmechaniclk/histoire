@@ -44,6 +44,7 @@ export function previewComponents() {
       story: props.story,
       variant: props.variant,
       configureStory: props.configureStory,
+      enableInspection: histoireConfig.inspection?.enabled === true && histoireConfig.inspection?.components === true && !initialSelection.controls,
       onReady: () => emit('ready'),
     })
   },

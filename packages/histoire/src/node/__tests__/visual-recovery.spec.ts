@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { expect, it } from 'vitest'
 import { baselinePath } from '../visual/baseline.js'
@@ -103,6 +103,22 @@ it('detects changed and newly added public assets without reading outside truste
   expect(await validateVisualEvidence(source, config, first)).toBe('Source assets changed since capture')
   first.fingerprint.files['/etc/passwd'] = '0'.repeat(64)
   expect(await validateVisualEvidence(source, config, first)).toBe('Source dependencies cannot be revalidated')
+})
+
+it('ignores absent generated allow roots but fails closed on other root errors', async () => {
+  const { root, source, config, evidence } = await visualRecoveryFixture()
+  const allow = source.server.config.server.fs.allow!
+  allow.push(join(root, '.histoire/tmp/dev/not-created'))
+  const captured = await evidence('one', 10)
+  expect(captured.fingerprint.reason).toBeUndefined()
+  expect(await validateVisualEvidence(source, config, captured)).toBeUndefined()
+  captured.fingerprint.files['/etc/passwd'] = '0'.repeat(64)
+  expect(await validateVisualEvidence(source, config, captured)).toBe('Source dependencies cannot be revalidated')
+
+  const loop = join(root, 'loop')
+  await symlink('loop', loop)
+  allow.push(loop)
+  expect((await evidence('two', 11)).fingerprint.reason).toContain('ELOOP')
 })
 
 it('keeps recovered approval private to review session and rejects competing or stale writes', async () => {

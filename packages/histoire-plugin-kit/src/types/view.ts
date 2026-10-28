@@ -6,8 +6,14 @@ import type { Awaitable } from './common.js'
  */
 export type WorkbenchComponent = object
 
+/** Presentation options shared by both view renderers. */
+export interface ViewPresentation {
+  /** Ask the host to frame a view that cannot visually integrate with its surrounding surface. */
+  degradedVisualIntegration?: boolean
+}
+
 /** View rendered as a workbench Vue component receiving a `context` prop. */
-export interface ComponentView {
+export interface ComponentView extends ViewPresentation {
   /** Component rendered with the surface context as its `context` prop. */
   component: WorkbenchComponent
   /** Exclusive with `component`. */
@@ -15,7 +21,7 @@ export interface ComponentView {
 }
 
 /** View rendered through the framework-neutral DOM mount contract. */
-export interface MountView<C> {
+export interface MountView<C> extends ViewPresentation {
   /** Mounts into a host-owned container. */
   mount: ViewMount<C>
   /** Exclusive with `mount`. */

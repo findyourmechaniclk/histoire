@@ -1,4 +1,5 @@
 import type { HistoireBridgeCommand } from './types.js'
+import { validateInspectionOwner, validateInspectionResult } from '../inspection/validation.js'
 import { HISTOIRE_ERROR_CODES } from '../types/error.js'
 import { validateHistoireCatalogStory } from './catalog.js'
 import { validateWireValue } from './size.js'
@@ -76,7 +77,35 @@ export function validateHistoireContent(value: unknown, docs: boolean): void {
 /** Correlated successful result must match requested command before observers see it. */
 export function validateBridgeResult(command: HistoireBridgeCommand, value: unknown): void {
   validateWireValue(value, { kind: 'response', name: command })
-  if (command === 'catalog.list') {
+  if (['inspection.variant', 'inspection.dom', 'inspection.debug', 'inspection.components', 'inspection.component', 'inspection.componentForElement', 'inspection.accessibility'].includes(command)) {
+    const result = validateInspectionResult(value)
+    if (result.inspection !== command.slice('inspection.'.length) || result.mode !== 'live') invalid('Mismatched inspection result')
+  }
+  else if (command === 'inspection.highlight') {
+    const result = wireRecord(value)
+    if (Object.keys(result).some(key => !['owner', 'observedAt'].includes(key)) || typeof result.observedAt !== 'string' || !Number.isFinite(Date.parse(result.observedAt))) invalid('Invalid highlight result')
+    validateInspectionOwner(result.owner)
+  }
+  else if (command === 'inspection.pick') {
+    const result = wireRecord(value)
+    if (Object.keys(result).some(key => !['owner', 'observedAt', 'matched', 'selector'].includes(key)) || typeof result.observedAt !== 'string' || !Number.isFinite(Date.parse(result.observedAt)) || typeof result.matched !== 'boolean' || (result.matched ? typeof result.selector !== 'string' || !result.selector || result.selector.length > 512 : result.selector !== undefined)) invalid('Invalid inspection pick result')
+    validateInspectionOwner(result.owner)
+  }
+  else if (command === 'inspection.highlightLease') {
+    const result = wireRecord(value)
+    if (Object.keys(result).some(key => !['owner', 'observedAt', 'leaseId'].includes(key)) || typeof result.observedAt !== 'string' || !Number.isFinite(Date.parse(result.observedAt)) || typeof result.leaseId !== 'string' || !result.leaseId || result.leaseId.length > 128) invalid('Invalid highlight lease result')
+    validateInspectionOwner(result.owner)
+  }
+  else if (command === 'inspection.highlightClear') {
+    const result = wireRecord(value)
+    if (Object.keys(result).some(key => !['owner', 'cleared'].includes(key)) || typeof result.cleared !== 'boolean') invalid('Invalid highlight clear result')
+    validateInspectionOwner(result.owner)
+  }
+  else if (command === 'inspection.cancel') {
+    const result = wireRecord(value)
+    if (Object.keys(result).some(key => !['requestId', 'cancelled'].includes(key)) || !wireId(result.requestId) || result.cancelled !== true) invalid('Invalid inspection cancellation acknowledgment')
+  }
+  else if (command === 'catalog.list') {
     if (!Array.isArray(value)) invalid('Expected catalog stories')
     for (const story of value) validateHistoireCatalogStory(story)
   }

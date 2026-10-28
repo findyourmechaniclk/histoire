@@ -15,9 +15,9 @@ export function createParentViewSession(bridge: HistoireBridgePort, signal: Abor
     return snapshot
   }
   /** Runtime-targeted view intents capture current host document/target. */
-  function request<T>(command: HistoireBridgeCommand, payload: unknown, callerSignal?: AbortSignal): Promise<T> {
+  function request<T>(command: HistoireBridgeCommand, payload: unknown, callerSignal?: AbortSignal, target?: import('@histoire/protocol').HistoireTarget): Promise<T> {
     const current = getSnapshot()
-    return bridge.request(command, payload, { ...bridge.getOwner(), ...(current.runtime.runtimeId ? { runtimeId: current.runtime.runtimeId } : {}), ...(current.selection ? { target: current.selection } : {}), signal: callerSignal ? AbortSignal.any([signal, callerSignal]) : signal })
+    return bridge.request(command, payload, { ...bridge.getOwner(), ...(current.runtime.runtimeId ? { runtimeId: current.runtime.runtimeId } : {}), ...((target ?? current.selection) ? { target: target ?? current.selection! } : {}), signal: callerSignal ? AbortSignal.any([signal, callerSignal]) : signal })
   }
   /** Canonical ACK updates existing parent mirror before replica subscribers run. */
   async function stateRequest(command: 'state.get' | 'state.patch' | 'state.reset', payload: unknown): Promise<HistoireStateSnapshot> {
@@ -33,6 +33,28 @@ export function createParentViewSession(bridge: HistoireBridgePort, signal: Abor
     return state
   }
   const session: HistoireSession = {
+    // View-only proxies do not own the document observation lifetime.
+    debug: {
+      getSnapshot: () => ({ items: [], nextSequence: 0, oldestSequence: 1, droppedCount: 0, gap: false }),
+      clear: () => {},
+      subscribe: () => {
+        const ready = Promise.reject(new HistoireSdkError('CAPABILITY_UNAVAILABLE', 'Diagnostics unavailable'))
+        void ready.catch(() => {})
+        return { ready, closed: ready, unsubscribe: async () => {} }
+      },
+    },
+    inspect: {
+      variant: (options = {}) => inspectionRequest('inspection.variant', options),
+      dom: (options = {}) => inspectionRequest('inspection.dom', options),
+      components: options => inspectionRequest('inspection.components', options ?? {}),
+      component: options => inspectionRequest('inspection.component', options),
+      componentForElement: options => inspectionRequest('inspection.componentForElement', options),
+      accessibility: options => inspectionRequest('inspection.accessibility', options ?? {}),
+      highlight: options => inspectionRequest('inspection.highlight', options),
+      highlightLease: options => inspectionRequest('inspection.highlightLease', options),
+      clearHighlight: options => inspectionRequest('inspection.highlightClear', options),
+      pick: options => inspectionRequest('inspection.pick', options),
+    },
     connect: async () => {
       getSnapshot()
     },
@@ -76,6 +98,12 @@ export function createParentViewSession(bridge: HistoireBridgePort, signal: Abor
     },
     dispose: async () => {
     },
+  }
+  /** Capture target before handing the intent to the parent port. */
+  function inspectionRequest(command: 'inspection.variant' | 'inspection.dom' | 'inspection.highlight' | 'inspection.highlightLease' | 'inspection.highlightClear' | 'inspection.pick' | 'inspection.components' | 'inspection.component' | 'inspection.componentForElement' | 'inspection.accessibility', options: any): Promise<any> {
+    const { signal: callerSignal, ...input } = options
+    const target = input.target ?? getSnapshot().selection
+    return request(command, { ...input, target }, callerSignal, target)
   }
   registerHistoireSessionInternals(session, {
     descriptor() {

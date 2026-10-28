@@ -30,6 +30,7 @@ await session.connect()
 | `state.get()` | Cleaned canonical `HistoireStateSnapshot`; ready primary required |
 | `state.patch(patch)` | Merges serializable edits into owning runtime; ready primary required |
 | `state.reset()` | Restores initial runtime snapshot; ready primary required |
+| `inspect.variant(options?)` / `inspect.dom(options?)` | Bounded reads from an authorized mounted variant |
 | `settings.update(patch)` | Updates session-owned viewport/theme/direction/globals |
 | `events.subscribe(listener)` | Receives future attributable runtime events; returns unsubscribe |
 | `events.clear()` | Clears retained history and dropped count |
@@ -51,6 +52,34 @@ Repeated same-target selections share pending acknowledgment and its outcome. In
 The host mirror does not own runtime callbacks, component instances, or omitted non-serializable values. Patches and reset preserve those runtime identities. Dynamic source reports `explicit`, `slot`, or `generated` provenance. Raw source reports physical/virtual file origin. Present empty content differs from absent content.
 
 Tests never retry or switch engine automatically. Server execution requires a dev source and advertised capability, including cross-origin opt-in. Assertion failures return `summary.ok === false`; transport/dependency/runtime/collection failures reject. Optional `execution` attribution captures one run/request identity, mode, exact target and source generation; preview results also identify runtime document. Cancellation suppresses publication immediately and observes cleanup. Preview cancellation retires sandbox and requires explicit primary remount.
+
+## Live inspection
+
+Live inspection is disabled by default. Enable it in the source configuration, and add each authorized cross-origin host to both inspection and embedding allowlists:
+
+```ts
+export default {
+  inspection: { enabled: true, allowedOrigins: ['https://host.example.com'] },
+  embed: { enabled: true, allowedOrigins: ['https://host.example.com'] },
+}
+```
+
+After connecting, selecting a variant, and waiting for its primary mount, read the existing runtime:
+
+```ts
+const variant = await session.inspect.variant()
+const dom = await session.inspect.dom({ selector: 'button', maxNodes: 50 })
+console.log(variant.mode, variant.owner.target, variant.state)
+console.log(dom.matched, dom.nodes, dom.truncated)
+```
+
+These reads do not select or mount a story. They capture the selected target by default; pass `target: { storyId, variantId }` for an exact mounted target. `expectedOwner` rejects a changed source, revision, runtime, or target. `signal` accepts an `AbortSignal`; `correlationId` is a trace label, not authority. Check `snapshot.inspection` for available capabilities. An unavailable target or withdrawn capability fails instead of selecting another target.
+
+Results are detached, bounded, read-only observations with `mode: 'live'`, ownership, timestamp, duration, and truncation metadata. Variant state omits values that cannot be safely projected. DOM inspection returns the first matching subtree and bounded descriptive attributes, text, geometry, and styles; `maxNodes` defaults to 200 (maximum 500), `maxDepth` defaults to 8 (maximum 20). These observations can contain application data, so grant inspection only to trusted hosts. For a fresh independent render, use [Node project inspection](./node-sdk.md#isolated-inspection).
+
+When the source advertises the relevant capability, `inspect.pick({ x, y })` hit-tests CSS client coordinates in the exact runtime document and returns a selector when a story element matches. `inspect.highlightLease({ selector, expectedOwner })` returns an owned temporary overlay lease. A supported Vue component with a single provable story-root element can instead be highlighted with `componentId` when both `highlight` and `componentHighlight` are available; ambiguous, teleported or stale targets are unavailable. Clear the lease with `inspect.clearHighlight({ target: lease.owner.target, expectedOwner: lease.owner, leaseId: lease.leaseId })`; an old lease cannot clear a successor. `inspect.accessibility()` runs an explicit bounded axe audit when the source and runtime advertise `accessibilityAudit`; automated findings do not establish full accessibility compliance.
+
+See [Devframe live inspection](./devframe.md) for explicitly authenticated agent access.
 
 ## Snapshots and settings
 

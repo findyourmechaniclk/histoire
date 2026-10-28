@@ -1,14 +1,14 @@
-import type { HistoireRuntimeSnapshot, HistoireStateSnapshot, HistoireTarget, HistoireViewport } from '@histoire/protocol'
+import type { HistoireInspectionCapabilities, HistoireRuntimeSnapshot, HistoireStateSnapshot, HistoireTarget, HistoireViewport } from '@histoire/protocol'
 import type { HistoireRequestCapture } from '@histoire/sdk/internal'
 import type { EmbedSurfaceContext } from '../surfaces.js'
-import { COLLECT_TESTS, EVENT_SEND, HistoireSdkError, HOST_CHANNEL_MESSAGE, PREVIEW_SETTINGS_SYNC, PREVIEW_SYNC, RUNTIME_FAILED, RUNTIME_FOCUS, RUNTIME_LAYOUT, RUNTIME_REQUEST, RUNTIME_RESULT, STATE_SYNC, TEST_DEFINITIONS, TEST_RESULT, validateHistoireStateSnapshot, validateHistoireViewports, validateWireValue, VARIANT_READY } from '@histoire/protocol'
+import { COLLECT_TESTS, EVENT_SEND, HistoireSdkError, HOST_CHANNEL_MESSAGE, PREVIEW_SETTINGS_SYNC, PREVIEW_SYNC, RUNTIME_FAILED, RUNTIME_FOCUS, RUNTIME_LAYOUT, RUNTIME_REQUEST, RUNTIME_RESULT, STATE_SYNC, TEST_DEFINITIONS, TEST_RESULT, validateHistoireStateSnapshot, validateHistoireViewports, validateInspectionCapabilities, validateWireValue, VARIANT_READY } from '@histoire/protocol'
 import { createEmbedHostChannels } from './channels.js'
 import { createRuntimeDocumentId, createRuntimeDocumentOwner } from './document.js'
 import { mapRuntimeViewport } from './geometry.js'
 import { createRuntimeLayoutScheduler } from './runtime-layout.js'
 import { createRuntimeLoadRecovery } from './runtime-loading.js'
 import { createRuntimeReadiness } from './runtime-readiness.js'
-import { createRuntimeRequests } from './runtime-requests.js'
+import { cancelRuntimeInspection, createRuntimeRequests } from './runtime-requests.js'
 import { createRuntimeRevisionOwner } from './runtime-revision.js'
 import { createRuntimeFrameUrl, createTestWorkerUrl } from './sandbox-urls.js'
 import { createStalePreview } from './stale-preview.js'
@@ -29,6 +29,8 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext) {
   let retired = false
   let eventCounter = 0
   let selected: HistoireTarget | null = null
+  let inspection: HistoireInspectionCapabilities = {}
+  let highlightGrants = { highlight: false, highlightLease: false, componentHighlight: false }
   const readyIds = new Set<string>()
   let states = new Map<string, Record<string, any>>()
   let viewports: HistoireViewport[] = []
@@ -85,7 +87,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext) {
   }
   /** Portable runtime status aliases currently selected visible content cell. */
   function snapshot(status: HistoireRuntimeSnapshot['status']): HistoireRuntimeSnapshot {
-    return { status, mountId: context.bridge.getOwner().mountId, runtimeId: owner.id, viewports, viewport: viewports.find(viewport => viewport.target.variantId === selected?.variantId) ?? null }
+    return { status, mountId: context.bridge.getOwner().mountId, runtimeId: owner.id, viewports, viewport: viewports.find(viewport => viewport.target.variantId === selected?.variantId) ?? null, ...(status === 'ready' ? { inspection } : {}) }
   }
   /** Runtime identity transitions reach parent before state/layout of replacement. */
   function publish(status: HistoireRuntimeSnapshot['status']) {
@@ -97,6 +99,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext) {
   /** Selected actor must acknowledge before requests resume. */
   function mounting(retainPending = false) {
     readyIds.clear()
+    inspection = {}
     readiness.reset(retainPending)
     publish('mounting')
   }
@@ -132,6 +135,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext) {
   }
   /** Revoke document, requests and channels before retaining pixels or removing DOM. */
   function retireRuntime(status: 'stale' | 'absent', keepFrame = false, publishNow = true) {
+    if (keepFrame && owner.id && selected) post({ type: RUNTIME_REQUEST, command: 'inspection.revoke', payload: { highlight: false, highlightLease: false, componentHighlight: false }, ...selected })
     testWorkers.cancel()
     requests.invalidate(status === 'stale' ? 'PREVIEW_NOT_READY' : 'RUNTIME_CHANGED')
     readiness.retire('Runtime document retired')
@@ -175,7 +179,11 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext) {
   /** Session intent drives existing runtime; no router or independent controller. */
   function synchronize() {
     if (!active || retired) return
-    const target = context.session.getSnapshot().selection
+    const snapshot = context.session.getSnapshot()
+    const grants = { highlight: snapshot.inspection?.highlight?.available === true, highlightLease: snapshot.inspection?.highlightLease?.available === true, componentHighlight: snapshot.inspection?.componentHighlight?.available === true }
+    if (owner.id && selected && ((highlightGrants.highlight && !grants.highlight) || (highlightGrants.highlightLease && !grants.highlightLease) || (highlightGrants.componentHighlight && !grants.componentHighlight))) post({ type: RUNTIME_REQUEST, command: 'inspection.revoke', payload: grants, ...selected })
+    highlightGrants = grants
+    const target = snapshot.selection
     if (!target?.variantId) {
       const retained = stalePreview.retained
       const keepFrame = stalePreview.retain(context.session.getSnapshot(), selected)
@@ -210,7 +218,7 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext) {
       fail(new HistoireSdkError('PREVIEW_NOT_READY', message.error?.message ?? 'Story mount failed'))
       return
     }
-    if (!owner.accepts(message, [RUNTIME_LAYOUT, STATE_SYNC, VARIANT_READY, EVENT_SEND, HOST_CHANNEL_MESSAGE].includes(message.type))) return
+    if (!owner.accepts(message, [RUNTIME_LAYOUT, STATE_SYNC, VARIANT_READY, EVENT_SEND, HOST_CHANNEL_MESSAGE, RUNTIME_RESULT].includes(message.type))) return
     if ((message.type === STATE_SYNC || message.type === VARIANT_READY) && !context.session.getSnapshot().catalog.stories.some(story => story.id === message.storyId && story.variants.some(variant => variant.id === message.variantId))) return
     if (message.type === HOST_CHANNEL_MESSAGE) {
       channels.receive(message)
@@ -229,12 +237,23 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext) {
       readyIds.add(message.variantId)
       refreshLayout()
       if (message.variantId === selected?.variantId) {
+        try {
+          inspection = validateInspectionCapabilities(message.inspectionCapabilities ?? {})
+        }
+        catch { inspection = {} }
         loading.restored()
         stalePreview.remember(context.session.getSnapshot(), selected)
         const runtime = publish('ready')
         publishState()
         readiness.ready(runtime)
       }
+    }
+    else if (message.type === 'histoire:inspection-capabilities' && message.variantId === selected?.variantId && readyIds.has(message.variantId)) {
+      try {
+        inspection = validateInspectionCapabilities(message.inspectionCapabilities)
+      }
+      catch { inspection = {} }
+      publish('ready')
     }
     else if (message.type === RUNTIME_LAYOUT) {
       try {
@@ -268,6 +287,10 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext) {
   const unsubscribe = context.session.subscribe(synchronize)
   synchronize()
   return {
+    /** Rejecting a late highlight result still releases its exact overlay. */
+    cancelInspection(capture: HistoireRequestCapture) {
+      if (capture.requestId && capture.runtimeId === owner.id && active) cancelRuntimeInspection(post, capture, capture.requestId)
+    },
     /** Empty/docs-only primary owns slot without executing modules. */
     get ready(): Promise<HistoireRuntimeSnapshot | void> { return owner.id ? readiness.promise : Promise.resolve() },
     /** Strict runtime methods; selection/settings return null acknowledgment. */
@@ -284,13 +307,14 @@ export function createEmbedRuntimeFrame(context: EmbedSurfaceContext) {
         return null
       }
       if (command === 'events.clear') return null
-      if (!owner.id || capture.runtimeId !== owner.id || capture.target?.storyId !== selected?.storyId || capture.target?.variantId !== selected?.variantId) throw new HistoireSdkError('RUNTIME_CHANGED', 'Runtime request owner changed')
-      if (!readyIds.has(selected!.variantId!)) throw new HistoireSdkError('PREVIEW_NOT_READY', 'Selected runtime unavailable')
+      const inspection = command.startsWith('inspection.')
+      if (!owner.id || capture.runtimeId !== owner.id || capture.target?.storyId !== selected?.storyId || (!inspection && capture.target?.variantId !== selected?.variantId)) throw new HistoireSdkError('RUNTIME_CHANGED', 'Runtime request owner changed')
+      if (!capture.target?.variantId || !readyIds.has(capture.target.variantId)) throw new HistoireSdkError('PREVIEW_NOT_READY', 'Runtime unavailable')
       if (command === 'channel.post') channels.admit(payload)
       const result = command === 'tests.collect' || command === 'tests.run'
         ? await tests.request(command, capture)
         : await requests.request(RUNTIME_REQUEST, { command, payload }, capture)
-      if (capture.runtimeId !== owner.id || !active || capture.target?.storyId !== selected?.storyId || capture.target?.variantId !== selected?.variantId) throw new HistoireSdkError('RUNTIME_CHANGED', 'Runtime response owner changed')
+      if (capture.runtimeId !== owner.id || !active || capture.target?.storyId !== selected?.storyId || !readyIds.has(capture.target?.variantId ?? '') || (!inspection && capture.target?.variantId !== selected?.variantId)) throw new HistoireSdkError('RUNTIME_CHANGED', 'Runtime response owner changed')
       if (command.startsWith('state.')) return { target: capture.target, runtimeId: capture.runtimeId, value: result }
       if (command === 'source.get') return { ...payload, epoch: capture.epoch, revision: capture.revision, ...result }
       return result

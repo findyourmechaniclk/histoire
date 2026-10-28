@@ -26,9 +26,14 @@ it('publishes complete real Vue3 inventory within 5s on three cold source pages,
       const services = getProjectServices(project)
       const stories = services.dev!.controller.current!.context.storyFiles.filter(file => file.story && !file.story.docsOnly)
       const targets = services.dev!.catalog!.current!.catalog.stories.filter(story => !story.docsOnly).flatMap(story => story.variants.map(variant => ({ storyId: story.id, variantId: variant.id })))
-      expect(stories).toHaveLength(41)
-      expect(targets).toHaveLength(1095)
+      const inventory = stories.map(file => ({ title: file.story!.title, raw: file.story!.variants.length, projected: services.dev!.catalog!.current!.catalog.stories.find(story => story.id === file.story!.id)?.variants.length ?? 0 }))
+      // The async mock factory adds one variant; the Devframe example adds two.
+      expect(targets, JSON.stringify(inventory)).toHaveLength(1098)
+      expect(stories).toHaveLength(43)
+      expect(stories.find(file => file.story!.title === 'Devframe example')!.story!.variants).toHaveLength(2)
       expect(stories.find(file => file.story!.title === 'HugeGrid')!.story!.variants).toHaveLength(1000)
+      const asyncFactory = stories.find(file => file.story!.title === 'Vitest Mocking Async Factory')!
+      expect(asyncFactory.story!.variants).toHaveLength(1)
       browser = await launchEmbedBrowser()
       const page = await browser.newPage()
       await page.addInitScript(`localStorage.setItem('_histoire-ui-shell',JSON.stringify({pane:'tests',panelOpen:true}))`)
@@ -47,7 +52,7 @@ it('publishes complete real Vue3 inventory within 5s on three cold source pages,
         })
       })
       /** Both transport inventory and immutable UI evidence must agree before timing can pass. */
-      async function verify(started: number, inventory = targets, definitions = 11, phase = 'cold') {
+      async function verify(started: number, inventory = targets, definitions = 12, phase = 'cold') {
         try {
           // HMR admission may be rejected during catalog publication. Measure
           // actual replacement completion, including any automatic retry.
@@ -69,6 +74,11 @@ it('publishes complete real Vue3 inventory within 5s on three cold source pages,
         expect(published.map((entry: any) => entry.target)).toEqual(inventory)
         expect(published.every((entry: any) => entry.collection && !entry.collection.error && !entry.summary)).toBe(true)
         expect(published.reduce((total: number, entry: any) => total + entry.collection.definitions.length, 0)).toBe(definitions)
+        if (inventory.some(target => target.storyId === asyncFactory.story!.id)) {
+          const factory = published.filter((entry: any) => entry.target.storyId === asyncFactory.story!.id)
+          expect(factory).toHaveLength(1)
+          expect(factory[0].collection.definitions).toHaveLength(1)
+        }
         expect(errors).toEqual([])
         process.stderr.write(`${JSON.stringify({ sample, phase, navigationToPublication: duration, collectionRequest: terminal.duration, targets: inventory.length })}\n`)
         // Full example reload includes opaque Lottie code, which must remain
@@ -93,7 +103,7 @@ it('publishes complete real Vue3 inventory within 5s on three cold source pages,
         terminal = undefined
         const refresh = performance.now()
         await page.reload({ waitUntil: 'domcontentloaded' })
-        await verify(refresh, targets, 11, 'refresh')
+        await verify(refresh, targets, 12, 'refresh')
         terminal = undefined
         const changed = performance.now()
         const lifecycle = stories.find(file => file.story!.title === 'Vitest Lifecycle')!

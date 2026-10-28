@@ -66,6 +66,8 @@ export type CanvasToolInput = ContributionBase<CanvasScopedContext> & {
   onPointerUp?: CanvasToolPointerHandler
   /** Gesture cancelled (Escape, pan takeover, tool switch or removal). */
   onCancel?: (context: CanvasScopedContext) => void
+  /** Tool was switched away, removed, or its viewport disposed; retire any remaining work. */
+  onDeactivate?: (context: CanvasScopedContext) => void
 }
 
 /** Canvas service of one mounted custom view: the viewport service plus layout invalidation. */

@@ -10,7 +10,7 @@ export function observeOperation<T>(promise: Promise<T>): Promise<T> {
 /** Request invalidation scope; runtime work does not cancel unrelated docs reads. */
 export interface OperationScope {
   /** Owning operation category. */
-  kind: 'connect' | 'source' | 'runtime' | 'selection' | 'mount'
+  kind: 'connect' | 'source' | 'runtime' | 'selection' | 'mount' | 'inspection'
   /** Exact surface when operation belongs to an attachment. */
   mountId?: string
 }

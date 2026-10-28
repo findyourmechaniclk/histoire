@@ -16,7 +16,7 @@ export function publishRuntime(context: SessionContext, mount: OwnedMount, runti
   else if (runtime.runtimeId !== null) mount.runtimeId = runtime.runtimeId
   if (retired || replaced || (runtime.status === 'mounting' && context.snapshot.runtime.status !== 'mounting')) {
     context.runtimeVersion++
-    context.operations.reject('RUNTIME_CHANGED', 'Runtime document changed.', scope => scope.kind === 'runtime')
+    context.operations.reject('RUNTIME_CHANGED', 'Runtime document changed.', scope => scope.kind === 'runtime' || ((retired || replaced) && scope.kind === 'inspection'))
   }
   const projected = mount.hidden ? { ...runtime, viewports: [], viewport: null } : runtime
   context.publish({ runtime: context.copy(projected), ...(runtime.status === 'mounting' ? { state: null } : {}) })

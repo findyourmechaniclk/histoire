@@ -57,6 +57,22 @@ export function useCanvasPluginTools(options: CanvasPluginToolsOptions): CanvasP
     return workbench && context ? workbench.host.available('canvas.tool', context) : []
   })
   const active = computed(() => tools.value.find(tool => tool.id === canvas.tool))
+  let observed: PluginCanvasTool | undefined
+  let closed = false
+  /** Retire the previous tool after recording its successor, so reentrant switches stay ordered. */
+  function deactivate(tool: PluginCanvasTool | undefined): void {
+    if (!tool?.onDeactivate || !context) return
+    try {
+      tool.onDeactivate(context)
+    }
+    catch (error) { workbench?.host.reportViewError(tool.id, error, 'report') }
+  }
+  watch(active, (tool) => {
+    if (closed || tool === observed) return
+    const previous = observed
+    observed = tool
+    deactivate(previous)
+  }, { immediate: true, flush: 'sync' })
 
   /** Select a plugin tool; registry ids are always qualified (`<plugin>:<id>`). */
   function activate(tool: PluginCanvasTool): void {
@@ -94,6 +110,10 @@ export function useCanvasPluginTools(options: CanvasPluginToolsOptions): CanvasP
     }
   }, { immediate: true })
   onScopeDispose(() => {
+    closed = true
+    const previous = observed
+    observed = undefined
+    deactivate(previous)
     for (const dispose of bindings.values()) dispose()
     bindings.clear()
   })

@@ -11,6 +11,9 @@
 :where(.histoire-provider) .histoire-pane-toolbar{display:flex;gap:8px;padding:0 16px 12px}
 :where(.histoire-provider) .histoire-pane-list{min-height:0;overflow:auto;padding:0 16px 16px}
 
+/* Frame plugin content that cannot adopt the host's visual system. */
+:where(.histoire-provider) .histoire-extension-degraded{box-sizing:border-box;overflow:hidden;border:1px solid var(--histoire-border);border-radius:var(--histoire-radius-control,7px)}
+
 /* Interactive plugin content opts back in when its canvas layer is pointer-transparent.
    Keep the empty mount container transparent, and let plugin descendants own their input. */
 :where(.histoire-extension-view[data-histoire-interactive="true"]) > :where(:not(.histoire-extension-mount)),

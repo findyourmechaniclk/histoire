@@ -1,6 +1,7 @@
 import type { HistoireMatrixHint } from '../helpers/matrix.js'
 import type { HistoireFramePluginInfo } from '../plugin-channels.js'
 import type { HistoireCapabilities, HistoireTarget } from './common.js'
+import type { HistoireInspectionCapabilities } from './inspection.js'
 import type { HistoireEmbedPolicy, HistoireSourceAssets, HistoireSourceConfig } from './source-descriptor.js'
 
 /** Ownership of one collected story file relative to the user project. */
@@ -131,6 +132,10 @@ export interface HistoireSourceDescriptor {
   catalog: HistoireCatalog
   /** Source-supported engines and surfaces. */
   capabilities: HistoireCapabilities
+  /** Optional inspection support; absence denies access. */
+  inspection?: HistoireInspectionCapabilities
+  /** Additional exact-origin restriction for inspection. */
+  inspectionPolicy?: { allowedOrigins: readonly string[] }
   /** Portable source appearance populated by first-party dev/static adapters. */
   config?: HistoireSourceConfig
   /** Exact document parent-origin policy. */

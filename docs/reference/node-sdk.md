@@ -27,6 +27,7 @@ Vue/Svelte projects can coexist with independent contexts. Nuxt supports one act
 | `preview({ host?, port? })` | Owned built-preview handle with `capture` capability |
 | `runTests({ storyId?, variantId?, signal? })` | Completed project browser-test summary |
 | `captureScreenshot(options)` | Owned PNG bytes, decoded dimensions and SHA-256 |
+| `inspect.variant/dom/aria/diagnostics(options)` | Bounded observations of a fresh isolated render |
 | `getSnapshot()` | Stable detached public lifecycle/catalog snapshot |
 | `subscribe(listener)` | Future coherent snapshots; returns unsubscribe |
 | `close()` | Terminal idempotent owned-resource shutdown |
@@ -121,6 +122,26 @@ Omit IDs for a project run or supply exact story-only/variant filters. `variantI
 Server tests serialize per project and hold the lane through cleanup. Cancellation rejects publication immediately and observes worker/browser shutdown before admitting next work. Unconfirmed cleanup quarantines the lane. Assertion failures return completed summary; missing dependencies, failed collection, unavailable engines and transport failures reject with typed errors. SDK execution does not retry automatically. Isolated runner workers own Vitest process effects; parent cwd, env, exit code and process handlers remain unchanged.
 
 Install required project test dependencies and browser binaries as explicit setup, using [browser testing guide](../guide/testing.md). Metadata/dev/build do not install them for you.
+
+## Isolated inspection
+
+Choose an already ready dev or built source explicitly. Each operation renders a fresh isolated variant, so it does not read unsaved state in a mounted session. It requires project Playwright and a working Chromium installation.
+
+```ts
+const target = { source: 'dev' as const, storyId: 'button', variantId: 'primary' }
+const variant = await project.inspect.variant(target)
+const dom = await project.inspect.dom({ ...target, selector: 'button' })
+const aria = await project.inspect.aria({ ...target, selector: 'button' })
+const diagnostics = await project.inspect.diagnostics({ ...target, observationMs: 250 })
+console.log(variant.mode, variant.source, variant.state)
+console.log(dom.nodes, aria.snapshot, diagnostics.entries)
+```
+
+`source` is `'dev'` or `'preview'` and never falls back to another source. Supply exact `storyId` and `variantId`; optional `expectedRevision` rejects a different source publication and `signal` cancels the operation. Optional viewport, globals, color scheme, and text direction follow capture settings; inspection defaults to 1280 × 800 CSS pixels.
+
+`variant` returns bounded state and automatic prop metadata. `dom` inspects the first CSS match, with `maxNodes` and `maxDepth` limits. `aria` returns Playwright's ARIA snapshot, bounded by `maxCharacters`; it describes accessibility structure and is not an automated accessibility audit. `diagnostics` returns bounded, sanitized console, page, and network observations; `observationMs` is 0–2000 and defaults to 250. Results include `mode: 'isolated'`, source identity, timestamp, duration, and truncation metadata. Source replacement or cancellation rejects work instead of publishing a result for a successor.
+
+Use [live session inspection](./sdk.md#live-inspection) to observe an authorized mounted variant and its unsaved state.
 
 ## Deterministic PNG capture
 

@@ -4,6 +4,7 @@ import type {
   ConfigEnv as ViteConfigEnv,
 } from 'vite'
 import type { HistoireBrowserConfig } from './config-browser.js'
+import type { HistoireInspectionConfig } from './config-inspection.js'
 import type { HistoireThemeConfig } from './config-theme.js'
 import type { HistoireUiConfig } from './config-ui.js'
 import type { HistoireEmbedConfig, HistoirePreviewConfig } from './embed-config.js'
@@ -43,6 +44,8 @@ export * from './config-theme.js'
 export * from './config-ui.js'
 
 export interface HistoireConfig extends HistoireUiConfig {
+  /** Explicit source policy for optional live inspection. */
+  inspection?: HistoireInspectionConfig
   /** Opt-in story visual regression testing. */
   visual?: HistoireVisualConfig
   /** Browser selection for Histoire-owned isolated screenshots and inspections. */

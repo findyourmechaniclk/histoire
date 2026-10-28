@@ -1,6 +1,7 @@
 import type { HistoireCapability, HistoireCatalog, HistoireReadonly } from '@histoire/protocol'
 import type { HistoireProjectVisual, HistoireTestRunSummary } from '@histoire/shared'
 import type { Connect, HttpServer } from 'vite'
+import type { HistoireProjectInspection } from './inspection-types.js'
 
 /** Explicit project location; relative configuration paths resolve against root. */
 export interface HistoireProjectOptions {
@@ -147,6 +148,8 @@ export interface HistoireProjectSnapshot {
 
 /** Public Node SDK; construction acquires no browser, listener or watcher. */
 export interface HistoireProject {
+  /** Fresh bounded observations from an explicitly selected source. */
+  inspect: HistoireProjectInspection
   /** Opt-in capture, comparison, and retained-image approval. */
   visual: HistoireProjectVisual
   /** Acquires one project-owned development listener. */

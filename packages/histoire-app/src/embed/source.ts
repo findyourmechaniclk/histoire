@@ -18,7 +18,8 @@ export async function createEmbedSourceConnection(options: EmbedSourceOptions): 
   const fetcher = options.fetcher ?? globalThis.fetch.bind(globalThis)
   let descriptor = options.descriptor ? validateEmbedDescriptor(options.descriptor) : await loadEmbedDescriptor(base, fetcher, options.signal)
   if (options.descriptor && !isAcceptedHistoireSourceDescriptor(descriptor)) descriptor = structuredClone(descriptor)
-  const allowedOrigins = options.descriptor ? [] : await loadEmbedOrigins(base, descriptor, fetcher, options.signal)
+  let allowedOrigins = options.descriptor ? [] : await loadEmbedOrigins(base, descriptor, fetcher, options.signal)
+  let originRefresh = 0
   const actionBase = options.actionBase ?? '__histoire/embed/'
   if (!['__histoire/embed/', '__histoire/local/'].includes(actionBase)) throw new HistoireSdkError('INVALID_ARGUMENT', 'Unknown first-party action route')
   options.signal?.throwIfAborted()
@@ -102,7 +103,16 @@ export async function createEmbedSourceConnection(options: EmbedSourceOptions): 
   return {
     id,
     get descriptor() { return descriptor },
-    allowedOrigins,
+    get allowedOrigins() { return descriptor.mode === 'dev' && !options.descriptor ? descriptor.embed.allowedOrigins : allowedOrigins },
+    async refreshAllowedOrigins(signal) {
+      if (!options.descriptor && descriptor.mode === 'static') {
+        const version = ++originRefresh
+        const current = await loadEmbedOrigins(base, descriptor, fetcher, signal)
+        if (version === originRefresh) allowedOrigins = current
+        return current
+      }
+      return descriptor.mode === 'dev' && !options.descriptor ? descriptor.embed.allowedOrigins : allowedOrigins
+    },
     initialSettings: { colorScheme: descriptor.config.theme.defaultColorScheme, globals: descriptor.config.globals ?? {}, textDirection: descriptor.config.textDirection ?? 'ltr' },
     request,
     subscribe: subscriptions.subscribe,

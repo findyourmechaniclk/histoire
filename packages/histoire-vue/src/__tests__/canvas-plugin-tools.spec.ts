@@ -88,6 +88,50 @@ describe('plugin canvas tools', () => {
     expect(test.handlers.onPointerUp).not.toHaveBeenCalled()
   })
 
+  it('retires tool-owned work when changing tools after the pointer gesture ends', async () => {
+    const active = new AbortController()
+    const test = await toolFixture({ onDeactivate: () => active.abort() })
+    test.canvas.setTool('acme:draw')
+    await flushPromises()
+    test.surface()!.dispatchEvent(pointer('pointerdown', inside))
+    test.surface()!.dispatchEvent(pointer('pointerup', inside))
+    expect(active.signal.aborted).toBe(false)
+    test.canvas.setTool('select')
+    await flushPromises()
+    expect(active.signal.aborted).toBe(true)
+  })
+
+  it('retires the removed active tool exactly once without touching unrelated tools', async () => {
+    const retired = vi.fn()
+    const test = await toolFixture({ onDeactivate: retired })
+    test.canvas.setTool('acme:draw')
+    test.remove()
+    await flushPromises()
+    expect(retired).toHaveBeenCalledTimes(1)
+    expect(test.canvas.tool).toBe('select')
+    test.canvas.setTool('pan')
+    await flushPromises()
+    expect(retired).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not deactivate a reentrant successor while retiring a previous tool', async () => {
+    let selectThird = () => {}
+    const secondRetired = vi.fn()
+    const thirdRetired = vi.fn()
+    const test = await canvasPluginFixture(replica.create, (api) => {
+      api.canvas.addTool({ id: 'first', label: 'First', icon: 'pen', onDeactivate: () => selectThird() })
+      api.canvas.addTool({ id: 'second', label: 'Second', icon: 'pen', onDeactivate: secondRetired })
+      api.canvas.addTool({ id: 'third', label: 'Third', icon: 'pen', onDeactivate: thirdRetired })
+    })
+    selectThird = () => test.canvas.setTool('acme:third')
+    test.canvas.setTool('acme:first')
+    test.canvas.setTool('acme:second')
+    await flushPromises()
+    expect(test.canvas.tool).toBe('acme:third')
+    expect(secondRetired).toHaveBeenCalledTimes(1)
+    expect(thirdRetired).not.toHaveBeenCalled()
+  })
+
   it('records a failing tool and deactivates it to Select', async () => {
     const test = await toolFixture({
       onPointerDown: () => {

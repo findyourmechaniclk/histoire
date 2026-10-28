@@ -98,6 +98,15 @@ export class SessionContext {
   publish(patch: Partial<HistoireSnapshot>): void {
     const next = { ...this.snapshot, ...patch }
     next.capabilities = effectiveCapabilities(next, this.engine)
+    // Source grants are upper bounds; only the current ready actor can grant execution.
+    if (this.descriptor?.inspection) {
+      next.inspection = Object.fromEntries(Object.entries(this.descriptor.inspection).map(([name, capability]) => [name, capability?.available && next.status === 'ready' && next.runtime.status === 'ready' && next.runtime.inspection?.[name as keyof NonNullable<typeof next.runtime.inspection>]?.available
+        ? { available: true }
+        : { available: false, reason: 'CAPABILITY_UNAVAILABLE' }]))
+    }
+    else {
+      delete next.inspection
+    }
     this.snapshot = freezeProjection(next)
     for (const listener of this.listeners) {
       try {

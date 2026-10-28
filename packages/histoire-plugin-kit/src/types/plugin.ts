@@ -17,6 +17,16 @@ export interface PluginFrameRef extends FrameRef {
   readonly actorId: string
 }
 
+/** Same-origin browser window belonging to one currently attached frame actor. */
+export interface PluginFrameWindow {
+  /** Frame's current window proxy. */
+  readonly window: Window
+  /** Exact permitted origin of that window. */
+  readonly origin: string
+  /** Current frame document identity. */
+  readonly documentId: string
+}
+
 /**
  * API passed to `setup`. Every helper returns a {@link Disposer}; registrations made after
  * setup follow the same ownership and are disposed with the plugin.
@@ -95,6 +105,8 @@ export interface WorkbenchPluginApi {
     list: () => ReadonlyArray<PluginFrameRef>
     /** Opens a channel bound to the exact actor of `frame`. */
     open: (frame: FrameRef) => PluginChannel
+    /** Resolves an attached actor's same-origin window, if the host supports it. */
+    window: (frame: PluginFrameRef) => PluginFrameWindow | undefined
     /**
      * Observes attach and detach of this plugin's frames (`list()` changed). Released with the
      * plugin; never fires in hosts without frame messaging.

@@ -39,6 +39,8 @@ const root = ref<HTMLElement>()
 // Plugin views use the workbench's own state and pane components (plugin-kit `/vue` exports).
 provide(WORKBENCH_COMPONENTS_KEY, workbenchComponents)
 const { id } = props.contribution
+/** Plugin views with their own visual system receive a neutral frame. */
+const framed = 'degradedVisualIntegration' in props.contribution && props.contribution.degradedVisualIntegration === true
 // Same lifecycle as native providers' views; only the rendered states differ.
 const { name, component: viewComponent, current, failure, pending, container, onComponentMounted } = useExtensionView({
   host: props.host ?? useExtensionHost().host,
@@ -61,6 +63,9 @@ const errorMessage = computed(() => failure.value?.error instanceof Error ? fail
         </WorkbenchErrorState>
       </slot>
     </template>
+    <div v-else-if="viewComponent && framed" class="htw:box-border htw:overflow-hidden htw:rounded-control htw:border htw:border-border">
+      <component :is="viewComponent" :context="current" @vue:mounted="onComponentMounted" />
+    </div>
     <component :is="viewComponent" v-else-if="viewComponent" :context="current" @vue:mounted="onComponentMounted" />
     <template v-else-if="loadingVisible">
       <LoadingDelayBoundary>
@@ -69,6 +74,6 @@ const errorMessage = computed(() => failure.value?.error instanceof Error ? fail
         </slot>
       </LoadingDelayBoundary>
     </template>
-    <div v-if="!viewComponent" v-show="!failure" ref="container" :class="mergePartClass('histoire-extension-mount', classes?.mount)" />
+    <div v-if="!viewComponent" v-show="!failure" ref="container" :class="[mergePartClass('histoire-extension-mount', classes?.mount), framed && 'htw:box-border htw:overflow-hidden htw:rounded-control htw:border htw:border-border']" />
   </div>
 </template>

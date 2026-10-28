@@ -44,8 +44,13 @@ export type VisualFingerprintValidation = ReturnType<typeof createVisualFingerpr
 
 /** Canonical roots come from current trusted Vite configuration, never cached metadata. */
 async function roots(source: VisualSource): Promise<string[]> {
-  const paths = [source.ctx.root, ...(source.server.config.server.fs?.allow ?? []), searchForWorkspaceRoot(dirname(fileURLToPath(new URL('../../../package.json', import.meta.url))))]
-  return [...new Set(await Promise.all(paths.map(path => realpath(path))))]
+  const required = [source.ctx.root, searchForWorkspaceRoot(dirname(fileURLToPath(new URL('../../../package.json', import.meta.url))))]
+  const optional = await Promise.all((source.server.config.server.fs?.allow ?? []).map(path => realpath(path).catch((error: NodeJS.ErrnoException) => {
+    // Vite may allow an owned generated directory that was never needed.
+    if (error.code === 'ENOENT') return undefined
+    throw error
+  })))
+  return [...new Set([...(await Promise.all(required.map(path => realpath(path)))), ...optional.filter((path): path is string => path !== undefined)])]
 }
 
 /** Read bounded regular source files only within currently trusted roots. */

@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url'
 
 /** Browser runtimes bundled by `vite.runtime.config.ts`. */
-export type BrowserRuntimeName = 'variant-test-session' | 'vitest-static-mock-runtime'
+export type BrowserRuntimeName = 'variant-test-session' | 'vitest-static-mock-runtime' | 'accessibility'
 
 /**
  * Resolves the bundled entry of a browser runtime that generated modules

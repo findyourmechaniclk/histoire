@@ -58,6 +58,18 @@ export interface PluginConfigContext {
   claimDir: (name: string) => string
 }
 
+/** Vite environment being configured for a Histoire plugin. */
+export interface PluginViteConfigContext {
+  /** Histoire development or build mode. */
+  readonly mode: ConfigMode
+  /** Node-side story collector. */
+  readonly isServer: boolean
+  /** Dedicated browser test runtime. */
+  readonly browserRuntime: boolean
+  /** Collection-only browser runtime. */
+  readonly collecting: boolean
+}
+
 export interface PluginApiBase {
   /** Explicit project root for dependency and configuration resolution. */
   readonly root: string
@@ -181,6 +193,8 @@ export interface Plugin {
    * Handle a custom event from the client in development mode.
    */
   onDevEvent?: (api: PluginApiDevEvent) => Awaitable<any>
+  /** Extend the Vite config before Vite resolves its own integrations. */
+  viteConfig?: (config: ViteInlineConfig, context: PluginViteConfigContext) => Awaitable<ViteInlineConfig | null | void>
   /**
    * Use this hook to manipulate Vite plugins before they are passed to Vite.
    */

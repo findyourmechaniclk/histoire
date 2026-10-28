@@ -5,14 +5,14 @@ import { randomUUID } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import { deserialize, serialize } from 'node:v8'
 import fs from 'fs-extra'
-import { join, relative, resolve } from 'pathe'
+import { join, relative } from 'pathe'
 import { resolveConfigFile } from '../config/load.js'
 import { isPathWithinRoot, readRegisteredText } from '../runtime/content/files.js'
 import { hashContent } from '../runtime/content/hash.js'
 import { captureInlineDocs, getInlineDocs } from '../runtime/content/inline.js'
 import { getContextRegistry } from '../runtime/registry.js'
 import { markGeneratedDir } from '../util/generated-dir.js'
-import { getProjectCacheDir } from '../util/temp-paths.js'
+import { getCollectionCacheFile, getProjectCacheDir } from '../util/temp-paths.js'
 
 /** Bumped whenever the stored shape or the meaning of a stored outcome changes. */
 const FORMAT = 1
@@ -76,7 +76,7 @@ async function readHistoireVersion(): Promise<string> {
  * spares the wait for a first collection: the dev server still collects every
  * story again in the background and publishes any difference.
  */
-export function createCollectionCache(ctx: Context, file = resolve(getProjectCacheDir(ctx.root), 'collection', 'stories.bin')): CollectionCache {
+export function createCollectionCache(ctx: Context, file = getCollectionCacheFile(ctx.root)): CollectionCache {
   const tempDir = getContextRegistry(ctx).tempDir
   let key: Promise<string> | undefined
 

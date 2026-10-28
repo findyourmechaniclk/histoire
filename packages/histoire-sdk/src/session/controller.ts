@@ -4,7 +4,10 @@ import type { HistoireSession, HistoireSessionOptions } from '../types.js'
 import { HistoireSdkError, validateSettingsPatch } from '@histoire/protocol'
 import { createSessionChannels } from './channels.js'
 import { SessionContext } from './context.js'
+import { acquireDiagnosticLease } from './debug-lease.js'
+import { createSessionDebug } from './debug.js'
 import { clearEvents } from './events.js'
+import { createSessionInspection } from './inspection.js'
 import { acceptHistoireSourceDescriptor, bindHistoireSessionInternals, isAcceptedHistoireSourceDescriptor } from './internal.js'
 import { mountSurface } from './mounts.js'
 import { receiveNotification } from './notifications.js'
@@ -92,6 +95,7 @@ export function createHistoireSessionWithAdapters(options: HistoireSessionOption
           stale: false,
           source: context.copy({ sourceId: descriptor.sourceId, url: context.url, mode: descriptor.mode, epoch: descriptor.epoch, revision: descriptor.revision }),
           catalog,
+          inspection: context.copy(descriptor.inspection),
           diagnostics: catalog.diagnostics,
           selection: context.copy(selected),
           settings,
@@ -211,6 +215,8 @@ export function createHistoireSessionWithAdapters(options: HistoireSessionOption
       clear: () => clearEvents(context),
     },
     channels: createSessionChannels(context),
+    inspect: createSessionInspection(context),
+    debug: createSessionDebug(context, () => acquireDiagnosticLease(context)),
     plugins: createSessionPlugins(context),
     docs: { get: storyId => observeOperation(getDocs(context, storyId)) },
     source: { get: input => observeOperation(getSource(context, input)) },

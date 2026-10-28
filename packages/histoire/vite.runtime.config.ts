@@ -21,6 +21,7 @@ export default defineRuntimeBundleConfig({
   entries: {
     'variant-test-session/index': 'src/node/virtual/variant-test-session/index.ts',
     'vitest-static-mock-runtime/index': 'src/node/virtual/vitest-static-mock-runtime/index.ts',
+    'accessibility/index': 'src/node/runtime/inspection/accessibility.ts',
   },
   externalPath(id, importer) {
     if (!importer || !id.startsWith('.')) return

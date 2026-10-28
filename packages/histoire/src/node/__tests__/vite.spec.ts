@@ -6,6 +6,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { getDefaultConfig } from '../config/index.js'
 import { closeContext } from '../context.js'
 import { onStoryChange } from '../stories.js'
+import { onVisualSourceRetired } from '../visual/source.js'
 import { getViteConfigWithPlugins } from '../vite/index.js'
 import { closeDevPreviewHost } from '../vite/mcp-preview-html.js'
 import { createVitestBrowserRuntimeConfig } from '../vitest-browser-config/index.js'
@@ -36,6 +37,36 @@ describe('getViteConfigWithPlugins', () => {
     }
   }
 
+  it('applies plugin Vite configuration before resolution with its execution context', async () => {
+    const ctx = createContext()
+    const calls: unknown[] = []
+    ctx.config.vite = { define: { FROM_USER: 'true' } }
+    ctx.config.plugins.push({
+      name: 'vite-config-test',
+      viteConfig(config, context) {
+        calls.push({ context, userValue: config.define?.FROM_USER })
+        return context.isServer ? undefined : { define: { FROM_PLUGIN: 'true' } }
+      },
+    })
+    try {
+      const client = await getViteConfigWithPlugins(false, ctx)
+      const collector = await getViteConfigWithPlugins(true, ctx)
+      const browser = await getViteConfigWithPlugins(false, ctx, { browserRuntime: true, collecting: true })
+      expect(client.viteConfig.define).toMatchObject({ FROM_USER: 'true', FROM_PLUGIN: 'true' })
+      expect(collector.viteConfig.define).toMatchObject({ FROM_USER: 'true' })
+      expect(collector.viteConfig.define?.FROM_PLUGIN).toBeUndefined()
+      expect(calls).toEqual([
+        { context: { mode: 'dev', isServer: false, browserRuntime: false, collecting: false }, userValue: 'true' },
+        { context: { mode: 'dev', isServer: true, browserRuntime: false, collecting: false }, userValue: 'true' },
+        { context: { mode: 'dev', isServer: false, browserRuntime: true, collecting: true }, userValue: 'true' },
+      ])
+      expect(browser.viteConfig.define?.FROM_PLUGIN).toBe('true')
+    }
+    finally {
+      await closeContext(ctx)
+    }
+  })
+
   it('keeps browser mounts read-only while file updates still request collection', async () => {
     const ctx = createContext()
     const changed = vi.fn()
@@ -54,6 +85,26 @@ describe('getViteConfigWithPlugins', () => {
     finally {
       off()
       closeDevPreviewHost(server)
+      await closeContext(ctx)
+    }
+  })
+
+  it('keeps visual capture active when the internal collection cache is rewritten', async () => {
+    const ctx = createContext()
+    ctx.config.visual = {}
+    const server = {} as any
+    const retired = vi.fn()
+    const off = onVisualSourceRetired(server, retired)
+    try {
+      const { viteConfig } = await getViteConfigWithPlugins(false, ctx)
+      const plugin = viteConfig.plugins.find(plugin => plugin?.name === 'histoire-vite-plugin') as any
+      plugin.handleHotUpdate({ server, file: path.join(ctx.root, '.histoire/cache/collection/stories.bin') })
+      expect(retired).not.toHaveBeenCalled()
+      plugin.handleHotUpdate({ server, file: path.join(ctx.root, 'src/components/Example.vue') })
+      expect(retired).toHaveBeenCalledOnce()
+    }
+    finally {
+      off()
       await closeContext(ctx)
     }
   })

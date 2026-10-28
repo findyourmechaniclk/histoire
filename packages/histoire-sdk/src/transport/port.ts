@@ -242,11 +242,12 @@ export function createBridgePort(options: BridgePortOptions) {
       const request = { ...identity, kind: 'request' as const, command, requestId: 'validation', payload, ...(!options.child && command === 'view.sync' && selectionEcho.requestId ? { selectionRequestId: selectionEcho.requestId } : {}) }
       validateBridgeEnvelope(request, selecting ? { ...owner, runtimeId: undefined, target: undefined } : owner, options.role, undefined, outward)
       let posted = false
-      const pending = requests.add(command, identity, capture.signal, getBridgeRequestTimeout(command, payload, options.descriptor), ['tests.run', 'tests.collect'].includes(command)
+      const cancellationCommand = ['tests.run', 'tests.collect'].includes(command) ? 'tests.cancel' : command.startsWith('inspection.') && command !== 'inspection.cancel' ? 'inspection.cancel' : undefined
+      const pending = requests.add(command, identity, capture.signal, getBridgeRequestTimeout(command, payload, options.descriptor), cancellationCommand
         ? (requestId) => {
             if (!active || !posted) return
-            const cancellation = requests.add('tests.cancel', identity, lifetime.signal, getBridgeRequestTimeout('tests.cancel', {}, options.descriptor))
-            options.port.postMessage({ ...identity, kind: 'request', command: 'tests.cancel', requestId: cancellation.id, payload: { requestId } })
+            const cancellation = requests.add(cancellationCommand, identity, lifetime.signal, getBridgeRequestTimeout(cancellationCommand, {}, options.descriptor))
+            options.port.postMessage({ ...identity, kind: 'request', command: cancellationCommand, requestId: cancellation.id, payload: { requestId } })
           }
         : undefined, isBridgeSourceRequest(command, payload))
       if (!capture.signal.aborted) {

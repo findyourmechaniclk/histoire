@@ -1,6 +1,7 @@
 # Official Plugins
 
 - [@histoire/plugin-vue](https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-vue): Vue 3 (support plugin)
+- [@histoire/plugin-vue-devtools](https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-vue-devtools): Devframe-based Vue DevTools for Vue story frames
 - [@histoire/plugin-nuxt](https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-nuxt): Nuxt 3 and 4
 - [@histoire/plugin-quasar](https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-quasar): Quasar CLI (Vite)
 - [@histoire/plugin-svelte](https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-svelte): Svelte 4/5 and SvelteKit 2/3

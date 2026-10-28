@@ -50,7 +50,16 @@ export async function getViteConfigWithPlugins(
   const userViteConfigFile = await loadViteConfigFromFile({ command: ctx.mode === 'dev' ? 'serve' : 'build', mode: ctx.mode }, undefined, ctx.root)
   const userViteConfig = mergeViteConfig(userViteConfigFile?.config ?? {}, { root: ctx.root, server: { port: 6006 } })
 
-  const inlineConfig = await mergeHistoireViteConfig(userViteConfig, ctx)
+  let inlineConfig = await mergeHistoireViteConfig(userViteConfig, ctx)
+  for (const plugin of ctx.config.plugins) {
+    const override = await plugin.viteConfig?.(inlineConfig, {
+      mode: ctx.mode,
+      isServer,
+      browserRuntime: options.browserRuntime === true,
+      collecting: options.collecting === true,
+    })
+    if (override) inlineConfig = mergeViteConfig(inlineConfig, override)
+  }
   const plugins: VitePlugin[] = []
   const projectHasVitest = hasProjectVitest(ctx.root)
   const browserRuntimePaths = resolveBrowserRuntimePaths(ctx, projectHasVitest)

@@ -7,15 +7,16 @@ import { callMcp, waitMcp } from './process.js'
 
 /** Six public reads plus exact raw resource equivalence from an installed runtime. */
 export async function probePackageReads(client: Client) {
-  const status = await waitMcp(() => callMcp(client, 'histoire_get_project'), value => value.data?.status === 'ready')
+  const status = await waitMcp(() => callMcp(client, 'histoire_get_project'), value => value.data?.status === 'ready' && !value.data.updating)
   expect(status.ok).toBe(true)
   const list = await callMcp(client, 'histoire_list_stories')
   expect(list.data.items.map((story: any) => story.id)).toContain('test-book')
   const story = await callMcp(client, 'histoire_get_story', { storyId: 'test-book' })
   const docs = await callMcp(client, 'histoire_get_docs', { storyId: 'test-book' })
   const source = await callMcp(client, 'histoire_get_source', { storyId: 'test-book' })
-  const preview = await callMcp(client, 'histoire_get_preview', { storyId: 'test-book', variantId: 'normal' })
-  expect([story, docs, source, preview].every(value => value.ok)).toBe(true)
+  // A new collection may start after the readiness read; retry only its explicit transient response.
+  const preview = await waitMcp(() => callMcp(client, 'histoire_get_preview', { storyId: 'test-book', variantId: 'normal' }), value => value.ok || value.error?.code !== 'PROJECT_STARTING' || value.error?.retryable !== true)
+  expect([story, docs, source, preview].every(value => value.ok), JSON.stringify({ story: story.error, docs: docs.error, source: source.error, preview: preview.error })).toBe(true)
   // History routes serve browser document navigation, not arbitrary API Accepts.
   expect((await fetch(preview.data.storyUrl, { headers: { Accept: 'text/html' } })).status).toBe(200)
   expect(source.data.text).toContain('onTest')

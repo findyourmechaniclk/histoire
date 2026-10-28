@@ -18,6 +18,8 @@ export interface PointerFields {
  */
 export function pointer(type: string, values: PointerFields = {}): Event {
   const event = new Event(type, { bubbles: true, cancelable: true })
+  // Match Vue Test Utils: a synthetic event must postdate listeners attached in the same millisecond.
+  Object.defineProperty(event, '_vts', { value: Date.now() + 1 })
   const fields = { pointerId: 1, button: 0, clientX: 0, clientY: 0, ...values }
   Object.defineProperties(event, Object.fromEntries(Object.entries(fields).map(([key, value]) => [key, { value }])))
   return event

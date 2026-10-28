@@ -1,9 +1,10 @@
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { dispatchEmbedCommand } from '../../../../../histoire-app/src/embed/commands.js'
 import { createEmbedSourceConnection } from '../../../../../histoire-app/src/embed/source.js'
 import { createHistoireSessionWithAdapters, getAcceptedHistoireSessionDescriptor } from '../../../../../histoire-sdk/dist/internal.js'
-import { sourceFixture } from '../../../../../histoire-sdk/src/__tests__/fixtures/session.js'
+import { deferred, sourceFixture } from '../../../../../histoire-sdk/src/__tests__/fixtures/session.js'
 import { prepareEmbedOutput, writeEmbedDescriptor } from '../../virtual/embed/output.js'
 import { createEmbedSource } from '../../virtual/embed/source.js'
 import { createEmbedSourceFixture } from '../utils/embed/source.js'
@@ -14,6 +15,48 @@ describe('first-party data-only source adapter', () => {
     fixture = await createEmbedSourceFixture()
   })
   afterEach(() => fixture.close())
+
+  it('does not execute a request whose own concurrent origin refresh observed withdrawal', async () => {
+    fixture.context.config.inspection = { enabled: true, allowedOrigins: ['https://host.test:8443'] }
+    const prepared = await prepareEmbedOutput(fixture.context, createEmbedSource(fixture.context, fixture.catalog), fixture.root, 'assets/bridge.js')
+    await writeEmbedDescriptor(fixture.context, prepared, fixture.root, 'immutable-build')
+    const first = deferred<Response>()
+    const second = deferred<Response>()
+    let policyReads = 0
+    const fetcher: typeof fetch = async (input) => {
+      const url = new URL(String(input))
+      if (url.pathname.endsWith('histoire-embed-origins.json')) {
+        policyReads++
+        if (policyReads === 1) return new Response('', { status: 404 })
+        if (policyReads === 2) return first.promise
+        if (policyReads === 3) return second.promise
+        return Response.json({ version: 1, allowedOrigins: [] })
+      }
+      return new Response(await readFile(join(fixture.root, url.pathname.slice('/nested/book/'.length)), 'utf8'))
+    }
+    const source = await createEmbedSourceConnection({ url: 'https://book.test/nested/book/', fetcher })
+    const executed: string[] = []
+    const surface = { ready: Promise.resolve(), close() {}, request(_command: unknown, payload: any) {
+      executed.push(payload.label)
+      return null
+    } }
+    const request = (label: string) => ({ command: 'inspection.variant', sourceId: source.descriptor.sourceId, epoch: source.descriptor.epoch, revision: source.descriptor.revision, payload: { label } }) as any
+    const controller = new AbortController()
+    try {
+      const denied = dispatchEmbedCommand(source, 'https://host.test:8443', 'https://book.test', request('first'), controller.signal, surface)
+      const later = dispatchEmbedCommand(source, 'https://host.test:8443', 'https://book.test', request('second'), controller.signal, surface)
+      void later.catch(() => {})
+      await expect.poll(() => policyReads).toBe(3)
+      first.resolve(Response.json({ version: 1, allowedOrigins: [] }))
+      await expect(denied).rejects.toMatchObject({ code: 'CAPABILITY_UNAVAILABLE' })
+      expect(executed).toEqual([])
+    }
+    finally {
+      controller.abort()
+      second.resolve(Response.json({ version: 1, allowedOrigins: [] }))
+      await source.close()
+    }
+  })
 
   it('loads descriptor before lazy bodies and replaces baked origins without rebuilding', async () => {
     const prepared = await prepareEmbedOutput(fixture.context, createEmbedSource(fixture.context, fixture.catalog), fixture.root, 'assets/bridge.js')

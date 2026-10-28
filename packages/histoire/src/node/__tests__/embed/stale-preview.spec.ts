@@ -27,6 +27,7 @@ describe('standalone last good preview retention', () => {
     fixture.source.emitCatalog()
     publishFrameMessage(frame, VARIANT_READY)
     await fixture.primary.ready
+    const post = vi.spyOn(frame.contentWindow!, 'postMessage')
     try {
       const stories = [...fixture.source.descriptor.catalog.stories]
       fixture.source.descriptor.catalog = { stories: stories.slice(1), tree: [], diagnostics: [{ code: 'COLLECTION_FAILED', severity: 'error', message: 'Invalid story', [identity]: identity === 'storyId' ? 'a:b' : 'Button.story.vue' }] }
@@ -37,6 +38,7 @@ describe('standalone last good preview retention', () => {
       expect(fixture.container.querySelector('iframe')).toBe(frame)
       expect(frame.src).toBe(originalUrl)
       expect(frame.hasAttribute('inert')).toBe(true)
+      expect(post).toHaveBeenCalledWith(expect.objectContaining({ command: 'inspection.revoke', documentId: new URL(originalUrl).searchParams.get('documentId'), payload: { highlight: false, highlightLease: false, componentHighlight: false } }), window.location.origin)
       const published = fixture.messages.length
       for (const type of [VARIANT_READY, STATE_SYNC, RUNTIME_RESULT, TEST_RESULT, HOST_CHANNEL_MESSAGE, EVENT_SEND]) {
         publishFrameMessage(frame, type, undefined, { state: { count: 900 }, result: {}, summary: {}, event: { forged: true }, channel: { name: 'factory', type: 'application', data: null } })

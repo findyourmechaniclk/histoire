@@ -1,6 +1,7 @@
 import type { HistoireCatalog, HistoireCatalogStory, HistoireSourceDescriptor } from '../types/catalog.js'
 import { validateHostChannelNames } from '../channels.js'
 import { getHistoireMatrixValues, isHistoireMatrixPropName } from '../helpers/matrix.js'
+import { validateInspectionCapabilities, validateInspectionPolicy } from '../inspection/capabilities.js'
 import { HISTOIRE_WIRE_LIMITS } from './limits.js'
 import { measureWireValue } from './size.js'
 import { validateSourceDescriptorFields } from './source-descriptor.js'
@@ -120,6 +121,8 @@ export function validateHistoireSourceDescriptor(value: unknown): HistoireSource
   const input = wireRecord(value)
   if (input.descriptorVersion !== 1 || input.protocolVersion !== 1 || !wireId(input.sourceId) || !wireId(input.epoch) || !wireId(input.revision) || !['dev', 'static'].includes(input.mode as string)) invalid('Invalid source descriptor')
   validateHistoireCapabilities(input.capabilities)
+  if (input.inspection !== undefined) validateInspectionCapabilities(input.inspection)
+  if (input.inspectionPolicy !== undefined) validateInspectionPolicy(input.inspectionPolicy)
   validateHistoireCatalog(input.catalog)
   validateSourceDescriptorFields(input)
   return input as unknown as HistoireSourceDescriptor

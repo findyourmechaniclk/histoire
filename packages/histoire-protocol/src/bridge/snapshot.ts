@@ -1,4 +1,5 @@
 import type { HistoireEvent, HistoireRuntimeSnapshot, HistoireSnapshot, HistoireStateSnapshot } from '../types/snapshot.js'
+import { validateInspectionCapabilities } from '../inspection/capabilities.js'
 import { validateHistoireCapabilities, validateHistoireCatalog, validateHistoireDiagnostics } from './catalog.js'
 import { measureWireValue, validateWireValue } from './size.js'
 import { invalid, validateHistoireTarget, validateSettingsPatch, wireId, wireRecord } from './validation.js'
@@ -28,6 +29,7 @@ export function validateHistoireRuntimeSnapshot(value: unknown): HistoireRuntime
   }
   validateHistoireViewports(input.viewports)
   if (input.viewport !== null) validateHistoireViewports([input.viewport])
+  if (input.inspection !== undefined) validateInspectionCapabilities(input.inspection)
   if (input.status === 'ready' && (!wireId(input.mountId) || !wireId(input.runtimeId))) invalid('Ready runtime requires owner')
   return input as unknown as HistoireRuntimeSnapshot
 }
@@ -94,6 +96,7 @@ export function validateHistoireSnapshot(value: unknown, measured = false): Hist
     if (!Object.hasOwn(settings, key)) invalid('Incomplete session settings')
   }
   validateHistoireCapabilities(input.capabilities)
+  if (input.inspection !== undefined) validateInspectionCapabilities(input.inspection)
   const events = wireRecord(input.events)
   if (!Array.isArray(events.items) || events.items.length > 1000 || !Number.isSafeInteger(events.droppedCount) || (events.droppedCount as number) < 0) invalid('Invalid event history')
   for (const event of events.items) validateHistoireEvent(event)

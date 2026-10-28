@@ -1,5 +1,6 @@
 import type { HistoireBridgeCommand } from './types.js'
 import { validateHostChannelPayload } from '../channels.js'
+import { validateInspectionInput } from '../inspection/validation.js'
 import { validatePluginChannelPayload } from '../plugin-channels.js'
 import { validateHistoireSnapshot } from './snapshot.js'
 import { HISTOIRE_BRIDGE_EVENTS } from './types.js'
@@ -13,6 +14,14 @@ import { invalid, validateHistoireTarget, validateSettingsPatch, wireId, wireRec
  */
 export function validateBridgePayload(command: HistoireBridgeCommand, value: unknown, measured = false): void {
   const input = wireRecord(value)
+  if (command === 'inspection.cancel') {
+    if (Object.keys(input).some(key => key !== 'requestId') || !wireId(input.requestId)) invalid('Exact inspection request identity required')
+    return
+  }
+  if (command.startsWith('inspection.')) {
+    validateInspectionInput(command.slice('inspection.'.length), value)
+    return
+  }
   const fields: Partial<Record<HistoireBridgeCommand, readonly string[]>> = {
     'catalog.list': [],
     'catalog.getStory': ['storyId'],

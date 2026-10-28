@@ -16,6 +16,14 @@ export async function createEmbedBridgeFixture(options: {
   story?: string
   /** Explicit additional origin authority for server test gate. */
   allowServerTests?: boolean
+  /** Enable live inspection and optionally authorize the distinct host origin. */
+  inspection?: 'same-origin' | 'host'
+  /** Enable document-wide diagnostic observation. */
+  inspectionDiagnostics?: boolean
+  /** Enable the opt-in framework provider for runtime inspection. */
+  inspectionComponents?: boolean
+  /** Enable the optional runtime accessibility scanner. */
+  inspectionAccessibility?: boolean
   /** Explicit application namespaces; default fixture grants no host-channel authority. */
   channels?: string[]
   /** Setup hooks run through existing support plugin. */
@@ -60,7 +68,7 @@ export async function createEmbedBridgeFixture(options: {
       await mkdir(dirname(path), { recursive: true })
       await writeFile(path, content)
     }
-    await writeFile(join(fixture.root, 'custom.ts'), `import { HstVue } from '@histoire/plugin-vue'; export default { plugins:[HstVue()${options.plugins ? `,${options.plugins}` : ''}], storyMatch:['*.story.vue'], collectMaxThreads:1, mcp:false, ${options.setup ? 'setupFile:\'./setup.ts\',' : ''} ${options.config ?? ''} embed:{enabled:${options.embedding !== false},channels:${JSON.stringify(options.channels ?? [])},allowServerTests:${options.allowServerTests === true},allowedOrigins:[${JSON.stringify(hostOrigin)}]} }`)
+    await writeFile(join(fixture.root, 'custom.ts'), `import { HstVue } from '@histoire/plugin-vue'; export default { plugins:[HstVue()${options.plugins ? `,${options.plugins}` : ''}], storyMatch:['*.story.vue'], collectMaxThreads:1, mcp:false, ${options.setup ? 'setupFile:\'./setup.ts\',' : ''} ${options.config ?? ''} ${options.inspection ? `inspection:{enabled:true,diagnostics:${options.inspectionDiagnostics === true},components:${options.inspectionComponents === true},accessibility:${options.inspectionAccessibility === true},allowedOrigins:${JSON.stringify(options.inspection === 'host' ? [hostOrigin] : [])}},` : ''} embed:{enabled:${options.embedding !== false},channels:${JSON.stringify(options.channels ?? [])},allowServerTests:${options.allowServerTests === true},allowedOrigins:[${JSON.stringify(hostOrigin)}]} }`)
     let bookUrl: string
     if (options.mode === 'source-dev') {
       sourceDevelopment = await createEmbedSourceDevelopment(fixture.root, 'custom.ts')

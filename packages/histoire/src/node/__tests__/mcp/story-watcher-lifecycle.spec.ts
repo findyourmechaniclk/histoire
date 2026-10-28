@@ -37,6 +37,25 @@ describe('story watcher lifecycle', () => {
     expect(changed).not.toHaveBeenCalled()
   })
 
+  it('publishes initial inventory without a delayed change and reports later additions', async () => {
+    const ctx = await project()
+    const changed = vi.fn()
+    const off = onStoryChange(ctx, changed)
+    cleanups.push(async () => off())
+    await writeFile(join(ctx.root, 'during.story.vue'), '<template><Story /></template>')
+    const watcher = await watchStories(ctx)
+    cleanups.push(() => watcher.close())
+    // An add observed during scanning is inventory for the first collection.
+    watcher.emit('add', 'during.story.vue')
+    await watcher.ready
+    expect(ctx.storyFiles.map((file: any) => file.relativePath).sort()).toEqual(['during.story.vue', 'initial.story.vue'])
+    await new Promise(resolve => setTimeout(resolve, 150))
+    expect(changed).not.toHaveBeenCalled()
+    await writeFile(join(ctx.root, 'later.story.vue'), '<template><Story /></template>')
+    await vi.waitFor(() => expect(changed).toHaveBeenCalledOnce())
+    expect(changed.mock.calls[0][0].relativePath).toBe('later.story.vue')
+  })
+
   it('settles an empty physical inventory for automatic-only books', async () => {
     const ctx = await project()
     ctx.config.storyMatch = []

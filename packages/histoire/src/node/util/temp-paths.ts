@@ -15,6 +15,11 @@ export function getProjectCacheDir(root: string) {
   return resolve(root, '.histoire', 'cache')
 }
 
+/** File published by the background story collection cache. */
+export function getCollectionCacheFile(root: string) {
+  return resolve(getProjectCacheDir(root), 'collection', 'stories.bin')
+}
+
 /**
  * Builds the temp directory owned by a single run.
  *

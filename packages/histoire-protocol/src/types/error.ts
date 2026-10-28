@@ -1,6 +1,7 @@
 /** Stable portable failure codes shared by SDK and Node adapters. */
 export const HISTOIRE_ERROR_CODES = [
   'INVALID_ARGUMENT',
+  'INVALID_SELECTOR',
   'RESULT_TOO_LARGE',
   'BROWSER_REQUIRED',
   'NOT_CONNECTED',

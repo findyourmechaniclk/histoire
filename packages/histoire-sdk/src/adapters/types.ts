@@ -16,6 +16,8 @@ import type { HistoireSession } from '../types.js'
 
 /** Captured ownership supplied to every first-party transport operation. */
 export interface HistoireRequestCapture {
+  /** Allocated bridge request identity when crossing into a runtime. */
+  requestId?: string
   /** Owning browser session. */
   sessionId: string
   /** Connected data bridge lifetime. */
@@ -39,7 +41,7 @@ export interface HistoireRequestCapture {
 }
 
 /** Finite requests supported by injected source/runtime adapters. */
-export type HistoireSessionCommand = 'catalog.search' | 'selection.select' | 'state.get' | 'state.patch' | 'state.reset' | 'controls.preset' | 'settings.update' | 'events.clear' | 'docs.get' | 'source.get' | 'tests.collect' | 'tests.run' | 'openInEditor' | 'channel.post' | 'plugin.post'
+export type HistoireSessionCommand = 'catalog.search' | 'selection.select' | 'state.get' | 'state.patch' | 'state.reset' | 'controls.preset' | 'settings.update' | 'events.clear' | 'docs.get' | 'source.get' | 'tests.collect' | 'tests.run' | 'openInEditor' | 'channel.post' | 'plugin.post' | 'inspection.variant' | 'inspection.dom' | 'inspection.highlight' | 'inspection.debug' | 'inspection.components' | 'inspection.component' | 'inspection.componentForElement' | 'inspection.accessibility' | 'inspection.pick' | 'inspection.highlightLease' | 'inspection.highlightClear'
 
 /** Validated adapter notification ownership; SDK still checks current lifetime. */
 export interface HistoireNotificationOwner {

@@ -21,4 +21,6 @@ export interface EmbedSourceOptions {
 export interface EmbedSourceConnection extends HistoireSourceConnection {
   /** Effective additional origins resolved once before source handshake. */
   allowedOrigins: readonly string[]
+  /** Refresh deployment origin overrides before sensitive operations. */
+  refreshAllowedOrigins?: (signal: AbortSignal) => Promise<readonly string[]>
 }

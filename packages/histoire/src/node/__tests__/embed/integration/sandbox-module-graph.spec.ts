@@ -3,11 +3,11 @@ import { createEmbedBridgeFixture } from '../../utils/embed/bridge-fixture.js'
 
 /**
  * Upper bound of Histoire-owned module requests one dev sandbox document may
- * make. Shared app chunks and vendor bundles keep it below 25; unbundled output was
- * about 180, so going over the budget means a runtime fell back to per-file
- * modules.
+ * make. Inspection adds one entry and its shared provider registry chunk to
+ * the prior budget of 25. Unbundled output was about 180, so exceeding this
+ * budget indicates a runtime fell back to per-file modules.
  */
-const HISTOIRE_MODULE_BUDGET = 25
+const HISTOIRE_MODULE_BUDGET = 27
 
 /** Matches the Histoire package owning a served file, workspace or installed. */
 const HISTOIRE_PACKAGE_RE = /\/(?:packages\/histoire(?:-([\w-]+))?|node_modules\/(?:@histoire\/([\w-]+)|histoire))\//
@@ -69,8 +69,6 @@ const dark = ref(isDark())
         await expect.poll(() => page.getByRole('status').textContent()).toBe(colorScheme === 'dark' ? 'Dark' : 'Light')
       }
       const urls: string[] = await page.evaluate(() => performance.getEntriesByType('resource').map(entry => entry.name))
-      await page.close()
-
       const modules = groupHistoireModuleUrls(urls)
       const appModules = modules.get('app')!
       expect(appModules.length).toBeGreaterThan(0)
@@ -83,10 +81,25 @@ const dark = ref(isDark())
       // Query variants still instantiate the same file twice, even if URLs differ.
       const paths = histoireUrls.map(url => decodeURIComponent(new URL(url).pathname))
       expect(paths.length).toBe(new Set(paths).size)
-      // A second URL (another file or another version query) would be a second
-      // instance of its module state in this document.
-      // Icons are a separate stateless entry, imported by the controls build.
-      expect(modules.get('shared')!.filter(url => !url.includes('/dist/icons/'))).toEqual([expect.stringMatching(/\/dist\/index\.js\?/)])
+      // The inspection entry and main entry must resolve the same provider state.
+      const shared = modules.get('shared')!
+      const main = shared.filter(url => /\/dist\/index\.js\?/.test(url))
+      const inspection = shared.filter(url => /\/dist\/inspection\/index\.js\?/.test(url))
+      const registry = shared.filter(url => /\/dist\/chunks\/provider-registry-[^/]+\.js\?/.test(url))
+      expect(main).toHaveLength(1)
+      expect(inspection).toHaveLength(1)
+      expect(registry).toHaveLength(1)
+      expect(shared.filter(url => !url.includes('/dist/icons/'))).toHaveLength(3)
+      const sharedRegistry = await page.evaluate(`Promise.all([import(${JSON.stringify(main[0])}), import(${JSON.stringify(inspection[0])})]).then(([main, inspection]) => {
+        const root = document.createElement('div')
+        const provider = { marker: true }
+        const dispose = inspection.registerFrameworkInspection(root, () => provider)
+        const shared = main.getFrameworkInspection(root) === provider
+        dispose()
+        return shared && main.getFrameworkInspection(root) === undefined
+      })`)
+      expect(sharedRegistry).toBe(true)
+      await page.close()
       expect(modules.get('protocol')).toEqual([expect.stringMatching(/\/dist\/index\.js\?/)])
       expect(modules.get('histoire')!.length).toBeLessThanOrEqual(5)
       expect(modules.get('plugin-vue')!.length).toBeLessThanOrEqual(5)

@@ -17,18 +17,20 @@ export function previewAppSelection() {
     async function markVariantReady(variantId) {
       const currentFile = file.value
       const currentSelection = previewSelectionVersion
+      const currentInspectionGeneration = typeof inspectionGeneration === 'undefined' ? null : inspectionGeneration
       const targetVariant = getVariantById(variantId)
       if (!targetVariant) return
       frameworkReadyVariants.add(targetVariant)
       await waitForVariantSnapshot()
       if (file.value !== currentFile) return
+      if (currentInspectionGeneration !== null && currentInspectionGeneration !== inspectionGeneration) return
       if (currentSelection !== previewSelectionVersion || variantId !== selection.variantId) return
       getRuntimeState(targetVariant).capture()
       getRuntimePresets(targetVariant).restoreSelected()
       reapplyPropsOverride(variantId)
       readyVariantIds.add(variantId)
       postVariantStateSnapshotById(story.value, variantId)
-      postToParent({ type: VARIANT_READY, storyId: story.value?.id, variantId })
+      postToParent({ type: VARIANT_READY, storyId: story.value?.id, variantId, inspectionCapabilities: getRuntimeInspectionCapabilities(variantId) })
       runtimeLayout.refresh()
       // Frame plugins attach only after readiness is published, so a failing
       // hook cannot change it.
@@ -45,6 +47,9 @@ export function previewAppSelection() {
      */
     async function syncSelection(nextSelection) {
       const token = ++selectionToken
+      if (typeof resetRuntimeDiagnostics === 'function') resetRuntimeDiagnostics()
+      if (typeof resetRuntimeHighlight === 'function') resetRuntimeHighlight()
+      if (typeof resetRuntimeScans === 'function') resetRuntimeScans()
       // Plugins of actors leaving the selection detach before anything is torn
       // down. Re-syncing the same target keeps its actor (restored readiness).
       detachFrameActors(target => target.storyId !== (nextSelection.storyId ?? null) || target.variantId !== (nextSelection.variantId ?? null))

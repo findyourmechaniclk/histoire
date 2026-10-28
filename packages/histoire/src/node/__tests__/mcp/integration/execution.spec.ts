@@ -67,7 +67,7 @@ describe.each(['dev', 'node', 'stdio'])('%s browser job conformance', (mode) => 
         secondClient = await connectMcpHttp(endpoint, options, mode === 'node' ? token : undefined)
       }
       expect(client.getNegotiatedProtocolVersion()).toBe(version)
-      const status = await waitMcp(() => callMcp(client!, 'histoire_get_project'), value => value.data?.status === 'ready')
+      const status = await waitMcp(() => callMcp(client!, 'histoire_get_project'), value => value.data?.status === 'ready' && !value.data.updating)
       const engine = mode === 'node' ? 'built-preview' : 'project-vitest'
       expect(status.data.capabilities.tests).toMatchObject({ available: true, engine })
       if (mode === 'node') {
@@ -75,8 +75,9 @@ describe.each(['dev', 'node', 'stdio'])('%s browser job conformance', (mode) => 
         expect(unavailable).toMatchObject({ ok: false, error: { code: 'SOURCE_UNAVAILABLE' } })
       }
       const parameters = { storyId: 'test-book', variantId: 'normal', width: 480, height: 320, requestKey: `png-${mode}-${version}` }
-      const admitted = await callMcp(client, 'histoire_capture_screenshot', parameters)
-      expect(admitted.ok).toBe(true)
+      // Collection can restart after readiness; retry only its explicit transient admission failure.
+      const admitted = await waitMcp(() => callMcp(client!, 'histoire_capture_screenshot', parameters), value => value.ok || value.error?.code !== 'PROJECT_STARTING' || value.error?.retryable !== true)
+      expect(admitted.ok, JSON.stringify(admitted.error)).toBe(true)
       // Retry same admission after caller discarded response; no second effect.
       expect((await callMcp(secondClient, 'histoire_capture_screenshot', parameters)).data.operationId).toBe(admitted.data.operationId)
       const screenshot = await terminal(client, admitted.data.operationId)

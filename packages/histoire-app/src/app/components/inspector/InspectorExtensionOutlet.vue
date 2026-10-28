@@ -21,7 +21,10 @@ defineProps<{
       <ExtensionView
         :contribution="contribution"
         :context="viewContext"
-        :classes="{ root: footer ? 'htw:flex-none htw:pt-pane-gutter htw:px-inspector-gutter htw:pb-0' : 'htw:pt-0 htw:px-inspector-gutter htw:pb-pane-gutter' }"
+        :classes="{
+          root: footer ? 'htw:flex-none htw:pt-pane-gutter htw:px-inspector-gutter htw:pb-0' : kind === 'inspector.tab' ? 'htw:h-full htw:box-border htw:pt-0 htw:px-inspector-gutter htw:pb-pane-gutter' : 'htw:pt-0 htw:px-inspector-gutter htw:pb-pane-gutter',
+          mount: kind === 'inspector.tab' ? 'htw:h-full' : undefined,
+        }"
       />
     </template>
   </ExtensionOutlet>

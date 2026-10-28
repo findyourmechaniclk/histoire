@@ -118,6 +118,12 @@ export interface CanvasService {
    * frame has no rendered document.
    */
   frameToViewport: (frameKey: string, point: CanvasPoint) => CanvasPoint | null
+  /**
+   * Converts a viewport-local point to the exact frame document's CSS pixels. Returns `null`
+   * while the frame has no rendered document. Coordinates follow the rendered frame box.
+   * Older or external hosts may omit this capability.
+   */
+  viewportToFrame?: (frameKey: string, point: CanvasPoint) => CanvasPoint | null
   /** Frames currently registered on this canvas, including leased ones. */
   frames: () => ReadonlyArray<CanvasFrameGeometry>
   /**

@@ -272,6 +272,8 @@ Plugin views render inside the workbench theme scope, without Shadow DOM:
 - Scope your styles: prefixed class names or SFC `scoped` styles. Nothing isolates them from the workbench, in either direction.
 - Render popovers and menus into `host.overlayRoot` (`useViewHost().overlayRoot` in Vue, `createPortal(..., host.overlayRoot)` in React). It sits inside the theme scope and is removed with the view.
 
+If a view embeds an interface that cannot adopt the workbench theme, set `degradedVisualIntegration: true` on its contribution. Histoire frames and clips that view with a neutral rounded border. The option applies to both `component` and `mount` views; omit it for views that use workbench styling.
+
 ## Context and capabilities
 
 | Context | Surfaces | Adds |
@@ -361,6 +363,7 @@ for (const ref of api.frames.list()) {
 - Messages posted before the workbench opened a channel are dropped. Ask for current data after opening (the reference plugin posts an `audit` request).
 - `api.frames.subscribe(listener)` fires when one of your frame actors attaches or detaches (`list()` changed). Re-read `list()` there instead of polling, as the reference plugin does; the subscription is released with the plugin.
 - Two frames showing the same variant never receive each other's messages.
+- `api.frames.window(ref)` resolves an attached actor to its same-origin `window`, `origin` and `documentId` when the host supports direct browser access. It returns `undefined` in remote hosts and after the actor retires. A window proxy can survive navigation: re-resolve and compare its document identity before each handshake, and close any associated resources when selection or actor ownership changes. Prefer JSON channels unless a browser protocol requires direct window access.
 
 ## Embedding hosts
 

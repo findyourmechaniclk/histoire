@@ -44,6 +44,7 @@ export function receiveNotification(context: SessionContext, notification: Histo
     context.publish({
       source: context.copy({ ...previous.source!, epoch: descriptor.epoch, revision: descriptor.revision, mode: descriptor.mode }),
       catalog,
+      inspection: context.copy(descriptor.inspection),
       diagnostics: catalog.diagnostics,
       selection: context.copy(selection),
       stale: false,

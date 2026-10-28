@@ -6,6 +6,7 @@ export default defineRuntimeBundleConfig({
   entries: {
     'index': 'src/index.ts',
     'loading-delay': 'src/loading-delay.ts',
+    'inspection/index': 'src/inspection/index.ts',
     // Imported by path (`@histoire/shared/dist/icons/index.js`) by the controls.
     'icons/index': 'src/icons/index.ts',
   },

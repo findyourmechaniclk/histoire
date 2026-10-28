@@ -32,7 +32,7 @@ describe('isolated preview inspection', () => {
     expect(projectVariantState({ count: 0 }).propsAvailable).toBe(false)
   })
 
-  it('normalizes refs and omits accessors through generated MCP state inspection', async () => {
+  it('normalizes MCP state and rejects isolated audits without captured nonce and epoch', async () => {
     const getter = vi.fn(() => 'private')
     const derived = vi.fn(() => 4)
     const source: Record<string, unknown> = { label: ref('Save'), count: ref(3), derived: computed(derived) }
@@ -40,14 +40,17 @@ describe('isolated preview inspection', () => {
     const targetVariant = { id: 'variant', state: reactive(source) }
     const messages: Record<string, unknown>[] = []
     const runtimeGet = vi.fn(() => ({ sdk: true }))
+    const scanRuntimeAccessibility = vi.fn(async () => ({ matched: true }))
     const createRuntimeState = vi.fn(() => ({ get: runtimeGet }))
     const generated = previewRuntimeService()
     const dependencies = {
       window: { location: { search: '?mcpNonce=nonce&mcpEpoch=epoch' }, addEventListener: vi.fn() },
+      document: { querySelectorAll: () => [{ getAttribute: () => 'variant' }] },
       story: { value: { id: 'story' } },
       variant: { value: targetVariant },
       initialSelection: { controls: false },
-      histoireConfig: {},
+      histoireConfig: { inspection: { enabled: true, accessibility: true } },
+      scanRuntimeAccessibility,
       getVariantById: (id: string) => id === 'variant' ? targetVariant : undefined,
       readyVariantIds: new Set(['variant']),
       createRuntimeState,
@@ -92,6 +95,20 @@ describe('isolated preview inspection', () => {
     expect(createRuntimeState).toHaveBeenCalledOnce()
     expect(runtimeGet).toHaveBeenCalledOnce()
     expect(messages.at(-1)).toMatchObject({ result: { sdk: true } })
+
+    // The scanner callback observes the generated authorization gate, not axe behavior.
+    const request = { command: 'inspection.accessibility', inspection: true, requestId: 'audit', documentId: 'document', storyId: 'story', variantId: 'variant', payload: {} }
+    const previousMessages = messages.length
+    dependencies.window.location.search = ''
+    await service.handleRuntimeRequest({ ...request, mcpNonce: null, mcpEpoch: null })
+    expect(scanRuntimeAccessibility).not.toHaveBeenCalled()
+    expect(messages).toHaveLength(previousMessages)
+    dependencies.window.location.search = '?mcpNonce=nonce&mcpEpoch=epoch'
+    await service.handleRuntimeRequest({ ...request, mcpNonce: 'nonce', mcpEpoch: 'wrong' })
+    expect(scanRuntimeAccessibility).not.toHaveBeenCalled()
+    await service.handleRuntimeRequest({ ...request, mcpNonce: 'nonce', mcpEpoch: 'epoch' })
+    expect(scanRuntimeAccessibility).toHaveBeenCalledOnce()
+    expect(messages.at(-1)).toMatchObject({ requestId: 'audit', result: { matched: true } })
   })
 
   it('reports clipped component metadata', () => {
