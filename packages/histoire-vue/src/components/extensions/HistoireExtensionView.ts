@@ -1,5 +1,6 @@
 import type { QualifiedContribution, WorkbenchComponents } from '@histoire/plugin-kit'
 import type { Component, PropType } from 'vue'
+import { LoadingDelayBoundary, useLoadingDelay } from '@histoire/controls/vue'
 import { WORKBENCH_COMPONENTS_KEY } from '@histoire/plugin-kit'
 import { defineComponent, h, inject } from 'vue'
 import { mergePartClass, partClassesProp } from '../../foundation/parts.js'
@@ -38,6 +39,7 @@ export const HistoireExtensionView = defineComponent({
       overlayParent: () => provider.overlay.value ?? provider.root.value ?? document.body,
     })
     const { name } = view
+    const loadingVisible = useLoadingDelay(() => view.pending.value && !view.failure.value && !view.component)
     const components = inject<WorkbenchComponents | null>(WORKBENCH_COMPONENTS_KEY, null)
     const ErrorState = (components?.WorkbenchErrorState ?? histoireWorkbenchComponents.WorkbenchErrorState) as Component
     const LoadingState = (components?.WorkbenchLoadingState ?? histoireWorkbenchComponents.WorkbenchLoadingState) as Component
@@ -49,7 +51,7 @@ export const HistoireExtensionView = defineComponent({
           ? h(ErrorState, { title: name ? `${name} failed` : 'Extension failed' }, () => error instanceof Error ? error.message : String(error ?? ''))
           : view.component
             ? h(view.component, { context: view.current.value, onVnodeMounted: view.onComponentMounted })
-            : view.pending.value ? h(LoadingState, { title: name ? `Loading ${name}` : 'Loading extension' }) : null,
+            : loadingVisible.value ? h(LoadingDelayBoundary, null, () => h(LoadingState, { title: name ? `Loading ${name}` : 'Loading extension' })) : null,
         view.component ? null : h('div', { ref: view.container, class: mergePartClass('histoire-extension-mount', props.classes?.mount), hidden: !!view.failure.value }),
       ])
     }

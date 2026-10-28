@@ -43,7 +43,7 @@ describe('plugin-kit package entries', () => {
   it('keeps root and frame graphs free of framework, Node and Vite imports', () => {
     for (const entry of ['dist/index.js', 'dist/index.d.ts', 'dist/frame.js', 'dist/frame.d.ts']) {
       for (const specifier of collectBareImports(entry)) {
-        expect(specifier, `${entry} imports ${specifier}`).toBe('@histoire/protocol')
+        expect(['@histoire/protocol', '@histoire/shared/loading-delay'], `${entry} imports ${specifier}`).toContain(specifier)
       }
     }
   })
@@ -53,7 +53,7 @@ describe('plugin-kit package entries', () => {
       'dist/react/index.js': ['react', 'react-dom', 'react-dom/client'],
       'dist/svelte4/index.js': [],
       'dist/svelte5/index.js': ['svelte', 'svelte/reactivity'],
-      'dist/vue/index.js': ['vue'],
+      'dist/vue/index.js': ['@histoire/shared/loading-delay', 'vue'],
       'dist/vue/mount.js': ['vue'],
     }
     for (const [entry, frameworks] of Object.entries(allowed)) {

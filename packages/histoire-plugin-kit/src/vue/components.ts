@@ -4,7 +4,8 @@
 // importing the host. Outside any host they render plain, unstyled, accessible markup.
 import type { Component, SlotsType, VNode } from 'vue'
 import type { WorkbenchComponents } from '../render/workbench-components.js'
-import { defineComponent, h, inject } from 'vue'
+import { createLoadingDelay } from '@histoire/shared/loading-delay'
+import { defineComponent, h, inject, onScopeDispose, ref } from 'vue'
 import { WORKBENCH_COMPONENTS_KEY } from '../render/workbench-components.js'
 
 /** Optional slot render function. */
@@ -75,7 +76,11 @@ export const WorkbenchLoadingState = defineComponent({
   slots: Object as SlotsType<Pick<StateSlots, 'default'>>,
   setup(props, { slots }) {
     const implementation = useImplementation('WorkbenchLoadingState')
-    return () => implementation ? h(implementation, definedProps(props), slots) : plainState('status', props.title, slots.default)
+    const visible = ref(false)
+    const delay = createLoadingDelay(value => visible.value = value)
+    if (!implementation) delay.setPending(true)
+    onScopeDispose(delay.dispose)
+    return () => implementation ? h(implementation, definedProps(props), slots) : visible.value ? plainState('status', props.title, slots.default) : null
   },
 })
 

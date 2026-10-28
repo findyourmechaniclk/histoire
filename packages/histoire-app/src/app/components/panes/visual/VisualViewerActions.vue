@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BuiltinIcon, HstButton, HstPulsatingDisc } from '@histoire/controls/vue'
+import { BuiltinIcon, HstButton, HstPulsatingDisc, useLoadingDelay } from '@histoire/controls/vue'
 import { computed } from 'vue'
 import { useWorkbenchVisual } from '../../../stores/visual.js'
 import VisualViewerSurface from './VisualViewerSurface.vue'
@@ -17,6 +17,7 @@ const emit = defineEmits<{
 const model = useWorkbenchVisual()!
 const result = model.selectedResult
 const pending = computed(() => !!result.value && model.approvalPending(result.value))
+const pendingVisible = useLoadingDelay(pending)
 /** Preserve review eligibility; keep pending action visible until receipt settles. */
 const approvable = computed(() => !!result.value && !result.value.staleReason && !!result.value.reviewHandle && !model.busy(result.value) && !result.value.approved && !!result.value.currentHash && ['changed', 'missing', 'incompatible'].includes(result.value.status))
 </script>
@@ -31,9 +32,9 @@ const approvable = computed(() => !!result.value && !result.value.staleReason &&
         <BuiltinIcon icon="renew" :size="14" />Run again
       </VisualViewerSurface>
       <HstButton v-if="approvable" class="htw:min-h-9 htw:rounded-[10px] htw:py-[7px] htw:px-3 htw:text-[12px] htw:font-semibold htw:whitespace-nowrap" color="primary" :disabled="model.approving.value" @click="emit('approve')">
-        <HstPulsatingDisc v-if="pending" :size="12" />
+        <HstPulsatingDisc v-if="pendingVisible" immediate :size="12" />
         <BuiltinIcon v-else icon="checkmark" :size="14" />
-        {{ pending ? 'Saving baseline' : result?.status === 'missing' ? 'Create baseline' : 'Approve baseline' }}
+        {{ pendingVisible ? 'Saving baseline' : result?.status === 'missing' ? 'Create baseline' : 'Approve baseline' }}
       </HstButton>
     </div>
   </div>

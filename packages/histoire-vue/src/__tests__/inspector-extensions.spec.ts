@@ -78,7 +78,7 @@ describe('inspector extensions', () => {
     const first = await storyInspectorFixture({ plugins: [pluginEntry(plugin, () => load.promise)], tabs: ['acme:panel'] })
     await first.selectFrame('c')
     // Before setup settles: a loading state, no fallback and no route rewrite.
-    expect(first.inspector().get('[role="tabpanel"]').text()).toContain('Loading')
+    await vi.waitFor(() => expect(first.inspector().get('[role="tabpanel"]').text()).toContain('Loading'))
     expect(first.tabList()).not.toContain('*Props')
     expect(first.panels[0]).toEqual([])
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UiCommentAttachment } from '@histoire/shared'
-import { HstPulsatingDisc } from '@histoire/controls/vue'
+import { HstPulsatingDisc, useLoadingDelay } from '@histoire/controls/vue'
 import { shallowRef } from 'vue'
 import { attachmentUrl } from '../../../util/comments-http.js'
 import { screenshotUrl } from '../../../util/screenshot-file.js'
@@ -8,7 +8,7 @@ import { attachmentMeta, isImage } from './attachment-meta.js'
 import AttachmentTile from './AttachmentTile.vue'
 import AttachmentViewer from './AttachmentViewer.vue'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   /** Stored uploads. */
   attachments: readonly UiCommentAttachment[]
   /** Canvas screenshot captured for a comment. */
@@ -20,6 +20,7 @@ withDefaults(defineProps<{
   /** File cards link to downloads (sent messages). */
   linked?: boolean
 }>(), { uploading: 0 })
+const uploadingVisible = useLoadingDelay(() => props.uploading > 0)
 const emit = defineEmits<{
   /** Detach one upload. */
   remove: [path: string]
@@ -45,7 +46,9 @@ const viewing = shallowRef<{ src: string, name: string, href?: string }>()
       @open="viewing = { src: attachmentUrl(file.path), name: file.name, href: attachmentUrl(file.path) }"
       @remove="emit('remove', file.path)"
     />
-    <span v-for="index in uploading" :key="`uploading-${index}`" class="htw:grid htw:place-items-center htw:w-12 htw:h-12 htw:[border:1px_dashed_var(--histoire-border)] htw:rounded-control htw:text-muted" role="status" aria-label="Uploading" title="Uploading"><HstPulsatingDisc :size="12" /></span>
+    <template v-if="uploadingVisible">
+      <span v-for="index in uploading" :key="`uploading-${index}`" class="htw:grid htw:place-items-center htw:w-12 htw:h-12 htw:[border:1px_dashed_var(--histoire-border)] htw:rounded-control htw:text-muted" role="status" aria-label="Uploading" title="Uploading"><HstPulsatingDisc immediate :size="12" /></span>
+    </template>
     <AttachmentViewer v-if="viewing" :src="viewing.src" :name="viewing.name" :href="viewing.href" @close="viewing = undefined" />
   </div>
 </template>

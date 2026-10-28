@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import WorkbenchLoadingState from '../../../histoire-app/src/app/components/shell/WorkbenchLoadingState.vue'
 
 describe('workbench loading status', () => {
@@ -9,6 +9,7 @@ describe('workbench loading status', () => {
       slots: { default: 'Waiting for test definitions' },
     })
     try {
+      await vi.waitFor(() => expect(wrapper.find('[role="status"]').exists()).toBe(true))
       const status = wrapper.get('[role="status"]')
       expect(status.attributes('aria-atomic')).toBe('true')
       expect(status.text()).toBe('Collecting tests…Waiting for test definitions')

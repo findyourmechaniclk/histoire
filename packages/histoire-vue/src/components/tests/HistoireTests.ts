@@ -2,6 +2,7 @@ import type { HistoireTestCollectionResult, HistoireTestRunSummary } from '@hist
 import type { PropType, SlotsType, VNodeChild } from 'vue'
 import type { HistoireVirtualSlot } from '../../foundation/VirtualList.js'
 import type { HistoireTestsState } from '../../tests/controller.js'
+import { LoadingDelayBoundary, useLoadingDelay } from '@histoire/controls/vue'
 import { defineComponent, h, watch } from 'vue'
 import { useHistoireSnapshot } from '../../composables/snapshot.js'
 import { mergePartClass, partClassesProp, renderPartState } from '../../foundation/parts.js'
@@ -50,6 +51,7 @@ export const HistoireTests = defineComponent({
       if (!provided) controller.close()
     })
     expose(controller)
+    const busyVisible = useLoadingDelay(() => props.running || ['running', 'collecting'].includes(state.value.status))
     let operated = false
     let cachedSummaryAtRun = props.summary
     let cachedCollectionAtRun = props.collection
@@ -85,7 +87,7 @@ export const HistoireTests = defineComponent({
       const cacheChanged = (props.summary && props.summary !== cachedSummaryAtRun) || (props.collection && props.collection !== cachedCollectionAtRun)
       const error = !localBusy && (cacheChanged || (!operated && (props.summary || props.collection))) ? null : state.value.error
       const status = busy
-        ? (state.value.status === 'collecting' ? 'Collecting…' : 'Running…')
+        ? !busyVisible.value ? '' : (state.value.status === 'collecting' ? 'Collecting…' : 'Running…')
         : summary
           ? renderTestCounts(summary)
           : collection ? `${definitions.length} ${definitions.length === 1 ? 'test' : 'tests'}` : STATUS_LABELS[state.value.status]
@@ -101,13 +103,13 @@ export const HistoireTests = defineComponent({
           }),
           h('output', { 'class': 'histoire-tests-status', 'aria-live': 'polite' }, status),
         ]),
-        renderTestProgress(summary, busy),
+        busy && !busyVisible.value ? null : renderTestProgress(summary, busy),
         error ? h('p', { class: 'histoire-tests-alert', role: 'alert' }, (error as Error).message ?? String(error)) : null,
         rows.length
           ? h(HistoireVirtualList, { class: 'histoire-tests-list', items: rows, minItemSize: 36, listTag: 'ul', itemTag: 'li' }, {
               default: ({ index }: HistoireVirtualSlot) => renderTestRow(rows[index]),
             })
-          : renderPartState(busy ? slots.loading?.({ collecting: state.value.status === 'collecting' }) : slots.empty?.({ collected: !!collection }) ?? h('p', { class: 'histoire-tests-empty' }, collection ? 'No tests' : 'Tests not collected'), props.classes?.state),
+          : busy ? busyVisible.value ? h(LoadingDelayBoundary, null, () => renderPartState(slots.loading?.({ collecting: state.value.status === 'collecting' }), props.classes?.state)) : null : renderPartState(slots.empty?.({ collected: !!collection }) ?? h('p', { class: 'histoire-tests-empty' }, collection ? 'No tests' : 'Tests not collected'), props.classes?.state),
       ])
     }
   },

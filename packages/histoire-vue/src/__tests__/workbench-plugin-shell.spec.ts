@@ -121,7 +121,7 @@ describe('plugin rail panes', () => {
     const { wrapper, shell } = await mountShell({ load: () => load.promise })
     await settle()
     expect(shell.pane.value).toBe('acme:removed')
-    expect(wrapper.get('aside [role="status"]').text()).toContain('Loading')
+    await vi.waitFor(() => expect(wrapper.get('aside [role="status"]').text()).toContain('Loading'))
 
     load.resolve({ default: notes })
     await settle()

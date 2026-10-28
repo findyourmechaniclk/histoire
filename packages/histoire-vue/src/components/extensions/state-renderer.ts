@@ -1,7 +1,16 @@
 import type { ViewHost, WorkbenchComponents, WorkbenchState } from '@histoire/plugin-kit'
 import type { Component } from 'vue'
-import { renderPlainWorkbenchState, WORKBENCH_COMPONENTS_KEY } from '@histoire/plugin-kit'
-import { getCurrentInstance, h, inject, render } from 'vue'
+import { LoadingDelayBoundary, useLoadingDelay } from '@histoire/controls/vue'
+import { cancelPlainLoadingState, renderPlainWorkbenchState, WORKBENCH_COMPONENTS_KEY } from '@histoire/plugin-kit'
+import { defineComponent, getCurrentInstance, h, inject, render } from 'vue'
+
+/** Delays plugin-provided loading markup once, including host-supplied components. */
+const DelayedState = defineComponent({
+  setup(_props, { slots }) {
+    const visible = useLoadingDelay(true)
+    return () => visible.value ? h(LoadingDelayBoundary, null, slots.default) : null
+  },
+})
 
 /** Provided component rendering each state kind. */
 const STATE_COMPONENTS = {
@@ -30,6 +39,7 @@ export function createViewStateRenderer(given?: WorkbenchComponents): ViewStateR
   const appContext = getCurrentInstance()?.appContext ?? null
   // Containers currently holding a Vue root; others hold plain markup or plugin content.
   const roots = new Set<HTMLElement>()
+  const plain = new Set<HTMLElement>()
   let released = false
 
   /**
@@ -46,11 +56,15 @@ export function createViewStateRenderer(given?: WorkbenchComponents): ViewStateR
       const component = state && components?.[STATE_COMPONENTS[state.kind]] as Component | undefined
       if (!state || !component) {
         unmountRoot(container)
+        plain.add(container)
         renderPlainWorkbenchState(container, state)
         return
       }
-      const { kind: _kind, detail, ...props } = state
-      const vnode = h(component, props, detail ? { default: () => detail } : undefined)
+      const { kind, detail, ...props } = state
+      cancelPlainLoadingState(container)
+      plain.delete(container)
+      const stateNode = () => h(component, props, detail ? { default: () => detail } : undefined)
+      const vnode = kind === 'loading' ? h(DelayedState, null, stateNode) : stateNode()
       // Same app context as the view: global components, directives and app-level provides.
       vnode.appContext = appContext
       // A first Vue render appends; replace plugin content or plain markup instead.
@@ -61,6 +75,8 @@ export function createViewStateRenderer(given?: WorkbenchComponents): ViewStateR
     release() {
       released = true
       for (const container of [...roots]) unmountRoot(container)
+      for (const container of plain) cancelPlainLoadingState(container)
+      plain.clear()
     },
   }
 }

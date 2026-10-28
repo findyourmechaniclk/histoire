@@ -3,8 +3,10 @@ import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, inject, nextTick, provide, ref } from 'vue'
 import ExtensionOutlet from '../../../histoire-app/src/app/components/extensions/ExtensionOutlet.vue'
+import WorkbenchLoadingState from '../../../histoire-app/src/app/components/shell/WorkbenchLoadingState.vue'
 import { createExtensionHost, defineWorkbenchPlugin } from '../../../histoire-plugin-kit/src/index.js'
 import { useWorkbenchContext } from '../../../histoire-plugin-kit/src/vue/index.js'
+import { deferred } from '../../../histoire-sdk/src/__tests__/fixtures/session.js'
 
 /** Context snapshots tagged so views can show which one they received. */
 type Tagged = WorkbenchContext & { tag: string }
@@ -62,6 +64,30 @@ async function mountOutlet(setup: (api: WorkbenchPluginApi) => void) {
 }
 
 describe('extension outlet', () => {
+  it('delays a pending slot once and removes it when plugin setup finishes', async () => {
+    const setup = deferred<void>()
+    host = createExtensionHost({ plugins: [defineWorkbenchPlugin({ id: 'acme', apiVersion: 1, setup: () => setup.promise })], services: { context: root } })
+    vi.useFakeTimers()
+    const wrapper = mount(ExtensionOutlet, {
+      props: { host, kind: 'shell.pane', context: root },
+      slots: { pending: () => h(WorkbenchLoadingState, { title: 'Loading panes' }) },
+    })
+    try {
+      expect(wrapper.find('[role="status"]').exists()).toBe(false)
+      await vi.advanceTimersByTimeAsync(100)
+      expect(wrapper.get('[role="status"]').text()).toBe('Loading panes')
+      setup.resolve()
+      await host.ready
+      await nextTick()
+      expect(wrapper.find('[role="status"]').exists()).toBe(false)
+    }
+    finally {
+      setup.resolve()
+      wrapper.unmount()
+      vi.useRealTimers()
+    }
+  })
+
   it('pushes context to Vue component views without remounting them', async () => {
     const { wrapper, context } = await mountOutlet((api) => {
       api.shell.addPane({ id: 'counter', label: 'Counter', icon: 'plug', component: CounterPane })

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ExtensionHost, QualifiedContribution } from '@histoire/plugin-kit'
 import type { HistoirePartClasses } from '@histoire/vue'
+import { LoadingDelayBoundary, useLoadingDelay } from '@histoire/controls/vue'
 import { WORKBENCH_COMPONENTS_KEY } from '@histoire/plugin-kit'
 import { mergePartClass, useExtensionView } from '@histoire/vue/internal'
 import { computed, provide, ref } from 'vue'
@@ -47,6 +48,7 @@ const { name, component: viewComponent, current, failure, pending, container, on
   // Plugin popovers sit inside the nearest workbench theme scope so they inherit its variables.
   overlayParent: () => root.value && (root.value.closest<HTMLElement>(THEME_SCOPE_SELECTOR) ?? document.body),
 })
+const loadingVisible = useLoadingDelay(() => pending.value && !failure.value && !viewComponent)
 const errorMessage = computed(() => failure.value?.error instanceof Error ? failure.value.error.message : String(failure.value?.error ?? ''))
 </script>
 
@@ -60,10 +62,12 @@ const errorMessage = computed(() => failure.value?.error instanceof Error ? fail
       </slot>
     </template>
     <component :is="viewComponent" v-else-if="viewComponent" :context="current" @vue:mounted="onComponentMounted" />
-    <template v-else-if="pending">
-      <slot name="pending">
-        <WorkbenchLoadingState :title="name ? `Loading ${name}` : 'Loading extension'" />
-      </slot>
+    <template v-else-if="loadingVisible">
+      <LoadingDelayBoundary>
+        <slot name="pending">
+          <WorkbenchLoadingState :title="name ? `Loading ${name}` : 'Loading extension'" />
+        </slot>
+      </LoadingDelayBoundary>
     </template>
     <div v-if="!viewComponent" v-show="!failure" ref="container" :class="mergePartClass('histoire-extension-mount', classes?.mount)" />
   </div>

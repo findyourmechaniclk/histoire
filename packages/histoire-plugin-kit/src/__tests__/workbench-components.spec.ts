@@ -2,7 +2,7 @@
 import type { Component } from 'vue'
 import type { ViewHost, WorkbenchComponents, WorkbenchState } from '../index.js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createApp, defineComponent, h } from 'vue'
+import { createApp, defineComponent, h, nextTick } from 'vue'
 import { WORKBENCH_COMPONENTS_KEY } from '../index.js'
 import { WorkbenchEmptyState, WorkbenchErrorState, WorkbenchLoadingState, WorkbenchPaneHeader, WorkbenchPaneList } from '../vue/index.js'
 import { createTestHost, plugin } from './fixtures/host.js'
@@ -23,6 +23,7 @@ function renderApp(render: () => ReturnType<typeof h>, components?: WorkbenchCom
 
 afterEach(() => {
   document.body.replaceChildren()
+  vi.useRealTimers()
 })
 
 describe('workbench Vue components', () => {
@@ -44,7 +45,8 @@ describe('workbench Vue components', () => {
     expect(element.textContent).toBe('host:No matchesNothing foundReset')
   })
 
-  it('fall back to accessible markup for components the host does not provide', () => {
+  it('fall back to accessible markup for components the host does not provide', async () => {
+    vi.useFakeTimers()
     const element = renderApp(() => h('div', [
       h(WorkbenchPaneHeader as Component, { title: 'Audit' }, () => h('button', 'Run')),
       h(WorkbenchPaneList as Component, null, () => h('ul', h('li', 'Row'))),
@@ -55,6 +57,9 @@ describe('workbench Vue components', () => {
     expect(element.querySelector('h2')?.textContent).toBe('Audit')
     expect(element.textContent).toContain('Run')
     expect(element.textContent).toContain('Row')
+    expect(element.querySelector('[role="status"]')).toBeNull()
+    vi.advanceTimersByTime(100)
+    await nextTick()
     expect(element.querySelector('[role="status"]')?.textContent).toBe('Loading audit')
     const alert = element.querySelector('[role="alert"]')
     expect(alert?.textContent).toContain('Audit failed')
@@ -78,8 +83,9 @@ describe('view host states', () => {
     await host.ready
     const container = document.createElement('div')
     document.body.append(container)
-    await host.mount('acme:pane', container, host.context, { renderState }).ready
-    return { viewHost, container }
+    const mounted = host.mount('acme:pane', container, host.context, { renderState })
+    await mounted.ready
+    return { viewHost, container, mounted }
   }
 
   it('render plain accessible markup when the host has no renderer, and clear it with null', async () => {
@@ -97,6 +103,41 @@ describe('view host states', () => {
 
     viewHost.renderState(target, null)
     expect(target.childNodes).toHaveLength(0)
+  })
+
+  it('delays plain loading and never replaces a newer state or plugin content', async () => {
+    const { viewHost, container } = await mountPane()
+    const target = document.createElement('div')
+    container.append(target)
+    vi.useFakeTimers()
+    viewHost.renderState(target, { kind: 'loading', title: 'Auditing' })
+    vi.advanceTimersByTime(99)
+    expect(target.textContent).toBe('')
+    viewHost.renderState(target, { kind: 'error', title: 'Failed' })
+    vi.advanceTimersByTime(1)
+    expect(target.querySelector('[role="alert"]')?.textContent).toBe('Failed')
+    viewHost.renderState(target, { kind: 'loading', title: 'Checking' })
+    vi.advanceTimersByTime(100)
+    expect(target.textContent).toBe('Checking')
+    viewHost.renderState(target, { kind: 'loading', title: 'Refreshing' })
+    expect(target.textContent).toBe('Refreshing')
+    viewHost.renderState(target, null)
+    viewHost.renderState(target, { kind: 'loading', title: 'Checking again' })
+    target.textContent = 'Plugin result'
+    vi.advanceTimersByTime(100)
+    expect(target.textContent).toBe('Plugin result')
+  })
+
+  it('cancels a pending loading state when its view is disposed', async () => {
+    const { viewHost, container, mounted } = await mountPane()
+    const target = document.createElement('div')
+    container.append(target)
+    vi.useFakeTimers()
+    viewHost.renderState(target, { kind: 'loading', title: 'Auditing' })
+    await mounted.dispose()
+    viewHost.renderState(target, { kind: 'loading', title: 'Retired' })
+    vi.advanceTimersByTime(100)
+    expect(target.textContent).toBe('')
   })
 
   it('delegate to the renderer the embedding host passes', async () => {

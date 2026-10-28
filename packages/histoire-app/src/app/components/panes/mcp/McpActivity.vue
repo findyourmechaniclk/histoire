@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BuiltinIcon, HstButton } from '@histoire/controls/vue'
+import { BuiltinIcon, HstButton, useLoadingDelay } from '@histoire/controls/vue'
 import { useHistoireSnapshot } from '@histoire/vue'
 import { computed } from 'vue'
 import { isMcpOperationCancellable, mcpOperationIcon, mcpOperationProgress, mcpTargetLabel, mcpTimeAgo } from '../../../stores/mcp-activity.js'
@@ -14,6 +14,7 @@ const snapshot = useHistoireSnapshot()
 const current = computed(() => store.current)
 const cancellable = computed(() => current.value && isMcpOperationCancellable(current.value))
 const progress = computed(() => mcpOperationProgress(current.value))
+const progressVisible = useLoadingDelay(() => !!progress.value, () => current.value?.id)
 const recent = computed(() => store.history.slice(0, 3))
 </script>
 
@@ -30,12 +31,12 @@ const recent = computed(() => store.history.slice(0, 3))
           <BuiltinIcon icon="bot" :size="16" />
           <strong class="htw:shrink-0 htw:max-w-30 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap htw:text-text htw:text-[11px] htw:font-bold" :title="store.clientName(current.clientId)">{{ store.clientName(current.clientId) }}</strong>
           <code class="htw:flex-1 htw:min-w-0 htw:text-[10px] htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap" :title="current.tool">{{ current.tool }}</code>
-          <span v-if="progress" class="htw:flex-none htw:text-muted htw:font-mono htw:text-[10px]">{{ progress.done }} / {{ progress.total }}</span>
+          <span v-if="progress && progressVisible" class="htw:flex-none htw:text-muted htw:font-mono htw:text-[10px]">{{ progress.done }} / {{ progress.total }}</span>
           <HstButton v-if="cancellable" class="htw:[--histoire-icon-button-size:24px] htw:text-danger-text htw:disabled:opacity-[.5] htw:disabled:[cursor:wait]" icon-only color="flat" type="button" :disabled="store.cancelling.includes(current.id)" aria-label="Cancel operation" @click="store.cancel(current.id)">
             <BuiltinIcon icon="stop-filled" :size="12" />
           </HstButton>
         </div>
-        <progress v-if="progress" class="htw:appearance-none htw:block htw:w-full htw:h-1 htw:mt-2 htw:border-0 htw:rounded-full htw:bg-surface htw:overflow-hidden htw:[&::-webkit-progress-bar]:bg-surface htw:[&::-webkit-progress-bar]:rounded-full htw:[&::-webkit-progress-value]:bg-agent htw:[&::-webkit-progress-value]:rounded-full htw:[&::-moz-progress-bar]:bg-agent htw:[&::-moz-progress-bar]:rounded-full" :value="progress.done" :max="progress.total" aria-label="Operation progress" />
+        <progress v-if="progress && progressVisible" class="htw:appearance-none htw:block htw:w-full htw:h-1 htw:mt-2 htw:border-0 htw:rounded-full htw:bg-surface htw:overflow-hidden htw:[&::-webkit-progress-bar]:bg-surface htw:[&::-webkit-progress-bar]:rounded-full htw:[&::-webkit-progress-value]:bg-agent htw:[&::-webkit-progress-value]:rounded-full htw:[&::-moz-progress-bar]:bg-agent htw:[&::-moz-progress-bar]:rounded-full" :value="progress.done" :max="progress.total" aria-label="Operation progress" />
       </div>
       <ul v-if="recent.length" class="htw:grid htw:gap-3 htw:list-none htw:pt-1.5 htw:px-0 htw:pb-0 htw:m-0">
         <li v-for="operation in recent" :key="operation.id" class="htw:group/activity htw:flex htw:items-center htw:gap-2 htw:min-w-0" :data-state="operation.state">

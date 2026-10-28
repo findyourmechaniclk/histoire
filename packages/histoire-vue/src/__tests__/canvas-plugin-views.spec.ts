@@ -86,7 +86,7 @@ describe('custom canvas views', () => {
     const { view, record } = compareView([])
     const test = await viewFixture(view, { gate: gate.promise })
     await test.arrange('acme:compare')
-    expect(test.wrapper.find('[role="status"]').text()).toContain('Loading')
+    await vi.waitFor(() => expect(test.wrapper.find('[role="status"]').text()).toContain('Loading'))
     expect(test.wrapper.findAllComponents(CanvasFrame)).toHaveLength(0)
     expect(record.contexts).toHaveLength(0)
     gate.resolve()

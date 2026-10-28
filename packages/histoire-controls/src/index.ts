@@ -64,6 +64,8 @@ export const components = {
 export { provideHistoireControls, useHistoireControls } from './context.js'
 export type { HistoireControlsContext } from './context.js'
 export { configureControlsApp, getControlElement } from './field.js'
+export { LoadingDelayBoundary } from './loading/LoadingDelayBoundary.js'
+export { useLoadingDelay } from './loading/use-loading-delay.js'
 export { createPropOverridePatch, getControlComponent, getControlStateKeys } from './model.js'
 export type { HstControlOptions } from './options.js'
 export { getControlsAppearance } from './overlay/appearance.js'

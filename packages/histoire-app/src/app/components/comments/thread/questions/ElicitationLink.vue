@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UiAgentElicitationUrl } from '@histoire/shared'
-import { BuiltinIcon, HstButton, HstPulsatingDisc } from '@histoire/controls/vue'
+import { BuiltinIcon, HstButton, HstPulsatingDisc, useLoadingDelay } from '@histoire/controls/vue'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useAgentsStore } from '../../../../stores/agents.js'
 import QuestionActions from './QuestionActions.vue'
@@ -12,6 +12,7 @@ const props = defineProps<{
 const agents = useAgentsStore()
 /** Accepted link waiting for the agent to finish. */
 const waiting = computed(() => agents?.waiting.value.includes(props.request.requestId) ?? false)
+const waitingVisible = useLoadingDelay(waiting)
 /** Link was just copied; resets after a short delay. */
 const copied = ref(false)
 let copiedTimer: ReturnType<typeof setTimeout> | undefined
@@ -46,9 +47,11 @@ async function copy(): Promise<void> {
       <BuiltinIcon :icon="copied ? 'checkmark' : 'copy'" :size="14" />
     </HstButton>
   </p>
-  <p v-if="waiting" class="htw:flex htw:items-center htw:gap-1.5 htw:m-0 htw:text-agent-text" role="status">
-    <HstPulsatingDisc :size="10" />Waiting for completion
-  </p>
+  <template v-if="waiting">
+    <p v-if="waitingVisible" class="htw:flex htw:items-center htw:gap-1.5 htw:m-0 htw:text-agent-text" role="status">
+      <HstPulsatingDisc immediate :size="10" />Waiting for completion
+    </p>
+  </template>
   <!-- While waiting, the header dismiss button cancels. -->
   <QuestionActions v-else>
     <HstButton color="flat" type="button" @click="agents?.replyElicitation(request.requestId, 'decline')">

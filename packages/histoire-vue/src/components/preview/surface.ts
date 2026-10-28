@@ -1,4 +1,5 @@
 import type { HistoireMount } from '@histoire/sdk'
+import { LoadingDelayBoundary, useLoadingDelay } from '@histoire/controls/vue'
 import { HistoireSdkError } from '@histoire/protocol'
 import { isHistoirePrimaryMountActive, subscribeHistoireMountEvents } from '@histoire/sdk/internal'
 import { defineComponent, h, onMounted, shallowRef } from 'vue'
@@ -23,6 +24,7 @@ export function createHistoirePrimary(name: string, surface: 'preview') {
       const container = shallowRef<HTMLElement | null>(null)
       const error = shallowRef<unknown>()
       const ready = shallowRef(false)
+      const loadingVisible = useLoadingDelay(() => !ready.value && !error.value)
       let mount: HistoireMount | undefined
       let removed = false
       let closing: Promise<void> | undefined
@@ -109,7 +111,7 @@ export function createHistoirePrimary(name: string, surface: 'preview') {
         h('div', { 'ref': container, 'class': 'histoire-primary-frame', 'aria-busy': !ready.value && !error.value, 'inert': ready.value ? undefined : true }),
         error.value
           ? (slots.error?.({ error: error.value }) ?? h('div', { role: 'alert', class: 'histoire-primary-status' }, error.value instanceof Error ? error.value.message : 'Variant failed to render.'))
-          : !ready.value ? slots.loading?.() : null,
+          : loadingVisible.value && slots.loading ? h(LoadingDelayBoundary, null, slots.loading) : null,
       ])
     },
   })

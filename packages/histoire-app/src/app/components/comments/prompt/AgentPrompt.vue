@@ -2,7 +2,7 @@
 import type { UiCommentAgent, UiCommentAttachment, UiCommentSessionOptions } from '@histoire/shared'
 import type { PromptCapture } from './actions.js'
 import type { PromptSuggestionSources } from './suggestions.js'
-import { BuiltinIcon, HstButton, HstPulsatingDisc } from '@histoire/controls/vue'
+import { BuiltinIcon, HstButton, HstPulsatingDisc, useLoadingDelay } from '@histoire/controls/vue'
 import { computed, ref, useId, watch } from 'vue'
 import { useAgentDiscovery } from '../../../composables/agent-discovery.js'
 import { useAgentsStore } from '../../../stores/agents.js'
@@ -79,6 +79,7 @@ const files = usePromptAttachments({ attachments: () => props.attachments, updat
 const sendHint = `${formatKey(isMac ? 'meta' : 'ctrl')} ${formatKey('enter')}`
 /** Model/effort/mode choices and probe-announced commands of the current agent. */
 const { discovery } = useAgentDiscovery(useAgentsStore(), () => props.agentId || undefined)
+const discoveryVisible = useLoadingDelay(() => !!discovery.value?.loading)
 const agent = computed(() => props.agents.find(agent => agent.id === props.agentId))
 /** Live session commands win; discovery covers agents that have not run yet. */
 const commands = computed(() => agent.value?.commands ?? discovery.value?.value?.commands ?? [])
@@ -92,7 +93,7 @@ const suggestions = useSuggestions({ input, update: value => emit('update:modelV
 const emptyText = computed(() => {
   if (suggestions.trigger.value?.char === '@') return 'No matching files'
   if (commands.value.length) return 'No matching command'
-  return discovery.value?.loading ? 'Loading commands…' : `No commands from ${agent.value?.name ?? 'this agent'} yet`
+  return discovery.value?.loading ? (discoveryVisible.value ? 'Loading commands…' : '') : `No commands from ${agent.value?.name ?? 'this agent'} yet`
 })
 const showSuggestions = suggestions.visible
 const actions = usePromptActions({ input, picker, update: value => emit('update:modelValue', value), files, suggestions, capture: () => props.capture, locked: () => locked.value })

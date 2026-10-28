@@ -1051,6 +1051,9 @@ importers:
       '@histoire/protocol':
         specifier: workspace:^
         version: link:../histoire-protocol
+      '@histoire/shared':
+        specifier: workspace:^
+        version: link:../histoire-shared
     devDependencies:
       '@types/react':
         specifier: ^19.0.0

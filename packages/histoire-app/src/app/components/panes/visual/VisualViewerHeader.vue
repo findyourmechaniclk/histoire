@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BuiltinIcon, HstButton, HstPulsatingDisc } from '@histoire/controls/vue'
+import { BuiltinIcon, HstButton, HstPulsatingDisc, useLoadingDelay } from '@histoire/controls/vue'
 import { computed, ref, useId, watch } from 'vue'
 import { useWorkbenchVisual } from '../../../stores/visual.js'
 import { visualStatus } from './status.js'
@@ -23,6 +23,7 @@ const emit = defineEmits<{
 }>()
 const model = useWorkbenchVisual()!
 const result = model.selectedResult
+const approvalVisible = useLoadingDelay(() => !!result.value && model.approvalPending(result.value))
 const warningsOpen = ref(false)
 const warningId = useId()
 const warnings = computed(() => [result.value?.error, result.value?.warning].filter(Boolean))
@@ -46,8 +47,8 @@ watch(result, () => {
         </h2>
         <small class="htw:block htw:text-[11px] htw:text-muted htw:wrap-anywhere">{{ result?.spec.id }} · {{ result?.baselineSource }}<code v-if="result?.baselineCommit" class="htw:ml-1"> {{ result.baselineCommit.slice(0, 8) }}</code></small>
         <small v-if="result" class="htw:flex htw:text-[11px] htw:text-muted htw:wrap-anywhere htw:items-center htw:flex-wrap htw:gap-[3px] htw:mt-0.5" role="status">
-          <HstPulsatingDisc v-if="model.approvalPending(result)" :size="10" />
-          <span>{{ model.approvalPending(result) ? 'Saving baseline' : visualStatus(result).label }}</span>
+          <HstPulsatingDisc v-if="approvalVisible" immediate :size="10" />
+          <span>{{ approvalVisible ? 'Saving baseline' : visualStatus(result).label }}</span>
           <span v-if="result.staleReason"> · {{ result.staleReason }}</span>
           <span v-else-if="result.restored"> · Restored<span v-if="result.capturedAt"> · {{ new Date(result.capturedAt).toLocaleString() }}</span></span>
         </small>

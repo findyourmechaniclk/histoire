@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { UiAgentConfigOptions, UiCommentAgent, UiCommentSessionOptions } from '@histoire/shared'
 import type { PromptMenuItem } from './PromptMenu.vue'
-import { BuiltinIcon, HstButton } from '@histoire/controls/vue'
+import { BuiltinIcon, HstButton, useLoadingDelay } from '@histoire/controls/vue'
 import { computed } from 'vue'
 import AgentLogo from '../../agents/AgentLogo.vue'
 import { useMenuTrigger } from './menu-trigger.js'
@@ -30,6 +30,7 @@ const emit = defineEmits<{
   'choose': [id: string]
   'update:options': [value: UiCommentSessionOptions]
 }>()
+const loadingVisible = useLoadingDelay(() => !!props.loading && !props.config)
 const menu = useMenuTrigger()
 const agent = computed(() => props.agents.find(agent => agent.id === props.agentId))
 const agentItems = computed<PromptMenuItem[]>(() => props.agents.map(agent => ({ id: agent.id, label: agent.name, logo: { icon: agent.icon }, checked: agent.id === props.agentId })))
@@ -60,7 +61,7 @@ function switchAgent(id: string): void {
       </HstButton>
       <PromptMenu v-if="menu.open.value" :anchor="menu.anchor.value" label="Agents" :items="agentItems" radio ai @pick="switchAgent" @close="menu.close" />
     </div>
-    <p v-if="loading && !config" class="htw:m-0 htw:text-muted htw:text-[12px]" role="status">
+    <p v-if="loadingVisible" class="htw:m-0 htw:text-muted htw:text-[12px]" role="status">
       Loading models…
     </p>
     <SessionRadioList v-if="selector('model')" label="Model" :selector="selector('model')!" :current="sessionValue(selector('model'), options?.model)" :disabled="disabled" @pick="pick('model', $event)" />

@@ -1,7 +1,7 @@
 import type { HistoireBridgePublication, HistoireControlsOverlayMessage, HistoireControlsOverlayResult } from '@histoire/protocol'
 import type { HistoireMount } from '@histoire/sdk'
 import type { HistoireStatePresetsHandle } from './StatePresets.js'
-import { BuiltinIcon, HstButton, restoreControlsFocus } from '@histoire/controls/vue'
+import { BuiltinIcon, HstButton, LoadingDelayBoundary, restoreControlsFocus, useLoadingDelay } from '@histoire/controls/vue'
 import { configureHistoireMountControls, postHistoireMountEvent, subscribeHistoireMountEvents } from '@histoire/sdk/internal'
 import { defineComponent, h, onMounted, shallowRef, watch } from 'vue'
 import { useHistoireSnapshot } from '../../composables/snapshot.js'
@@ -139,6 +139,7 @@ export const HistoireControls = defineComponent({
       removed = true
       return unmount()
     })
+    const loadingVisible = useLoadingDelay(() => snapshot.value.runtime.status === 'ready' && !!snapshot.value.selection?.variantId && hasControls.value === undefined && !failure.value, () => snapshot.value.runtime.runtimeId)
     return () => h('section', { 'class': mergePartClass('histoire-controls', props.classes?.root), 'aria-label': 'Controls', 'aria-busy': snapshot.value.runtime.status === 'ready' && hasControls.value === undefined }, [
       snapshot.value.runtime.status !== 'ready' || !snapshot.value.selection?.variantId
         ? renderPartState(slots.unavailable?.() ?? h('div', { role: 'status' }, 'Variant unavailable'), props.classes?.state)
@@ -167,7 +168,7 @@ export const HistoireControls = defineComponent({
       // controls. Wait for this document's controls.height publication.
       snapshot.value.runtime.status === 'ready' && snapshot.value.selection?.variantId
         ? hasControls.value === undefined
-          ? renderPartState(slots.loading?.() ?? h('div', { role: 'status' }, 'Loading controls'), props.classes?.state)
+          ? loadingVisible.value ? h(LoadingDelayBoundary, null, () => renderPartState(slots.loading?.() ?? h('div', { role: 'status' }, 'Loading controls'), props.classes?.state)) : null
           : h(GenericControls, { showState: hasControls.value === false, classes: props.classes })
         : null,
       overlay.value ? h(HistoireControlsOverlayHost, { key: overlay.value.id, request: overlay.value, onResult: result }) : null,

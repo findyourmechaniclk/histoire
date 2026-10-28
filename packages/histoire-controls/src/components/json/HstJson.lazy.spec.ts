@@ -60,7 +60,7 @@ describe('json lazy editor boundary', { timeout: 30_000 }, () => {
       await vi.waitFor(() => expect(editorRequested).toHaveBeenCalledOnce())
       expect(editorMounted).not.toHaveBeenCalled()
       expect(first.get('.histoire-control-label').text()).toContain('Initial')
-      expect(first.get('[role="status"]').attributes('aria-busy')).toBe('true')
+      await vi.waitFor(() => expect(first.get('[role="status"]').attributes('aria-busy')).toBe('true'))
       expect(first.get('[role="status"]').text()).toContain('Loading JSON editor')
 
       expect(() => (first.vm as unknown as { focus: () => void }).focus()).not.toThrow()
@@ -142,7 +142,7 @@ describe('json lazy editor boundary', { timeout: 30_000 }, () => {
       wrapper = mount(HstJson, { props: { modelValue: { count: 1 }, title: 'Data' } })
       await vi.waitFor(() => expect(importAttempts).toBe(1))
       expect(wrapper.get('.histoire-control-label').text()).toContain('Data')
-      expect(wrapper.get('[role="status"]').text()).toContain('Loading JSON editor')
+      await vi.waitFor(() => expect(wrapper.get('[role="status"]').text()).toContain('Loading JSON editor'))
 
       failedImport.reject(new Error('transient editor chunk failure'))
       await vi.waitFor(() => expect(wrapper?.find('[role="alert"]').exists()).toBe(true))
@@ -151,7 +151,7 @@ describe('json lazy editor boundary', { timeout: 30_000 }, () => {
 
       await wrapper.get('button[aria-label="Retry"]').trigger('click')
       await vi.waitFor(() => expect(importAttempts).toBe(2))
-      expect(wrapper.get('[role="status"]').attributes('aria-busy')).toBe('true')
+      await vi.waitFor(() => expect(wrapper.get('[role="status"]').attributes('aria-busy')).toBe('true'))
       retryImport.resolve({
         default: defineComponent({
           props: ['modelValue', 'title'],

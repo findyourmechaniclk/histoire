@@ -2,7 +2,7 @@
 import type { MatrixCellData } from '../../../util/matrix.js'
 import type { CanvasFrameLayout } from '../frame-layout.js'
 import type { CanvasRect } from '../pan/usePanZoom.js'
-import { HstButton } from '@histoire/controls/vue'
+import { HstButton, useLoadingDelay } from '@histoire/controls/vue'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useCanvasFrameBackground, useCanvasFrames, useCanvasStore } from '../../../composables/canvas-settings.js'
 import { useContextMenu } from '../../../composables/context-menu.js'
@@ -35,6 +35,7 @@ const matrix = useMatrixStore()
 const menu = useContextMenu()
 const preview = ref<{ getSource: () => Promise<string>, retry: () => Promise<void> }>()
 const status = ref<'loading' | 'ready' | 'error'>('loading')
+const loadingVisible = useLoadingDelay(() => status.value === 'loading', () => props.frame.id)
 const error = ref<unknown>()
 const position = computed(() => ({ left: `${props.frame.x * canvas.effectiveZoom + canvas.panOffset.x}px`, top: `${props.frame.y * canvas.effectiveZoom + canvas.panOffset.y}px`, width: `${props.frame.width * canvas.effectiveZoom}px`, height: `${props.frame.height * canvas.effectiveZoom}px` }))
 const style = computed(() => ({ width: `${props.frame.width}px`, height: `${props.frame.height}px`, transform: `scale(${canvas.effectiveZoom})` }))
@@ -86,7 +87,7 @@ onBeforeUnmount(() => {
     </div>
     <button class="histoire-matrix-cell-select htw:absolute htw:inset-0 htw:w-full htw:m-0 htw:p-0 htw:border-0 htw:rounded-[inherit] htw:bg-transparent htw:cursor-pointer htw:[appearance:none] htw:focus-visible:outline-2 htw:focus-visible:outline-solid htw:focus-visible:outline-accent htw:focus-visible:-outline-offset-[3px]" type="button" :aria-label="`Select matrix cell ${formatMatrixValue(cell.row)} · ${formatMatrixValue(cell.col)}`" :aria-pressed="matrix.selectedCell.value?.key === cell.key" @click="matrix.selectCell(cell.key)" @keydown="onKeyDown" />
     <span v-if="!live" class="htw:absolute htw:inset-0 htw:grid htw:[place-content:center] htw:gap-2 htw:p-3 htw:text-muted htw:bg-input htw:text-[11px] htw:text-center htw:pointer-events-none">Not rendered</span>
-    <div v-else-if="status === 'loading'" class="histoire-matrix-cell-loading htw:absolute htw:inset-0 htw:grid htw:[place-content:center] htw:gap-2 htw:p-3 htw:text-muted htw:bg-input htw:text-[11px] htw:text-center htw:pointer-events-none" role="status" aria-label="Loading variant">
+    <div v-else-if="loadingVisible" class="histoire-matrix-cell-loading htw:absolute htw:inset-0 htw:grid htw:[place-content:center] htw:gap-2 htw:p-3 htw:text-muted htw:bg-input htw:text-[11px] htw:text-center htw:pointer-events-none" role="status" aria-label="Loading variant">
       <CanvasLoadingIndicator />
     </div>
     <div v-else-if="status === 'error'" class="htw:absolute htw:inset-0 htw:grid htw:[place-content:center] htw:gap-2 htw:p-3 htw:text-muted htw:bg-input htw:text-[11px] htw:text-center htw:pointer-events-none htw:text-danger htw:bg-danger-soft" role="alert">

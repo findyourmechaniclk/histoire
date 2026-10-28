@@ -1,4 +1,14 @@
 import type { WorkbenchComponent, WorkbenchState } from '../types/view.js'
+import { createLoadingDelay } from '@histoire/shared/loading-delay'
+
+/** Pending plain loading presentations, keyed by their owned container. */
+const pendingStates = new WeakMap<HTMLElement, { cancel: () => void, update: (state: WorkbenchState) => void }>()
+
+/** Cancels a plain loading state without changing content. */
+export function cancelPlainLoadingState(container: HTMLElement): void {
+  pendingStates.get(container)?.cancel()
+  pendingStates.delete(container)
+}
 
 /**
  * Provide/inject key under which a Vue host provides its {@link WorkbenchComponents}.
@@ -35,10 +45,42 @@ export interface WorkbenchComponents {
  * @param state State to show, or `null` to clear.
  */
 export function renderPlainWorkbenchState(container: HTMLElement, state: WorkbenchState | null): void {
+  const pending = pendingStates.get(container)
+  if (state?.kind === 'loading' && pending) {
+    pending.update(state)
+    return
+  }
+  cancelPlainLoadingState(container)
   if (!state) {
     container.replaceChildren()
     return
   }
+  const document = container.ownerDocument
+  if (state.kind === 'loading') {
+    const marker = document.createComment('loading')
+    container.replaceChildren(marker)
+    let latest: WorkbenchState = state
+    let region: HTMLElement | undefined
+    const delay = createLoadingDelay(() => {
+      // A plugin may have replaced our marker with its own content.
+      if (marker.parentNode === container && container.childNodes.length === 1) region = renderPlainState(container, latest)
+      else pendingStates.delete(container)
+    })
+    pendingStates.set(container, {
+      cancel: delay.dispose,
+      update(value) {
+        latest = value
+        if (region?.parentNode === container && container.childNodes.length === 1) region = renderPlainState(container, latest)
+      },
+    })
+    delay.setPending(true)
+    return
+  }
+  renderPlainState(container, state)
+}
+
+/** Renders one settled state without scheduling. */
+function renderPlainState(container: HTMLElement, state: WorkbenchState): HTMLElement {
   const document = container.ownerDocument
   const region = document.createElement('div')
   region.setAttribute('role', state.kind === 'error' ? 'alert' : 'status')
@@ -52,4 +94,5 @@ export function renderPlainWorkbenchState(container: HTMLElement, state: Workben
     region.append(detail)
   }
   container.replaceChildren(region)
+  return region
 }

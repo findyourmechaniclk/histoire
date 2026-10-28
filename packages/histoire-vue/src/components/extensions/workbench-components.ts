@@ -3,7 +3,7 @@
 // styled by `styles/extensions.css` with the provider theme tokens.
 import type { WorkbenchComponents } from '@histoire/plugin-kit'
 import type { SlotsType, VNode } from 'vue'
-import { BuiltinIcon, HstPulsatingDisc } from '@histoire/controls/vue'
+import { BuiltinIcon, HstPulsatingDisc, useLoadingDelay } from '@histoire/controls/vue'
 import { WORKBENCH_COMPONENTS_KEY } from '@histoire/plugin-kit'
 import { defineComponent, h, inject, provide } from 'vue'
 
@@ -52,7 +52,10 @@ const LoadingState = defineComponent({
   name: 'HistoireWorkbenchLoadingState',
   props: { title: { type: String, required: true } },
   slots: Object as StateSlots,
-  setup: (props, { slots }) => () => state({ 'role': 'status', 'aria-atomic': 'true', 'data-state': 'loading' }, h(HstPulsatingDisc, { size: 24 }), props.title, { default: slots.default }),
+  setup(props, { slots }) {
+    const visible = useLoadingDelay(true)
+    return () => visible.value ? state({ 'role': 'status', 'aria-atomic': 'true', 'data-state': 'loading' }, h(HstPulsatingDisc, { size: 24, immediate: true }), props.title, { default: slots.default }) : null
+  },
 })
 
 /** Native error state, announced as an alert. */

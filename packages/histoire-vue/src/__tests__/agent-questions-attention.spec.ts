@@ -105,7 +105,7 @@ describe('agent questions needing attention', () => {
       { content: 'Add the size prop', status: 'in_progress' },
     ] } })
     const wrapper = mountWith(AgentLiveTail, { threadId: 'one', steps: [], text: '' }, { agents: store, threads: { streaming } as unknown as Partial<AiThreads> })
-    expect(wrapper.get('[role="status"]').text()).toContain('Add the size prop')
+    await vi.waitFor(() => expect(wrapper.get('[role="status"]').text()).toContain('Add the size prop'))
     wrapper.unmount()
   })
 })

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { HistoireSourceContent } from '@histoire/protocol'
-import { BuiltinIcon, HstButton, HstButtonGroup } from '@histoire/controls/vue'
+import { BuiltinIcon, HstButton, HstButtonGroup, useLoadingDelay } from '@histoire/controls/vue'
 import { canOpenHistoireTargetInEditor, requestHistoireOpenInEditor } from '@histoire/sdk/internal'
 import { HistoireSource } from '@histoire/vue'
 import { computed, nextTick, ref, shallowRef, useId, watch } from 'vue'
@@ -42,6 +42,7 @@ let previousBody: string | undefined
 const available = computed(() => mode.value === 'raw' ? story.value?.content.rawSource : !!variant.value && variant.value.source?.dynamic !== false)
 const dynamicReady = computed(() => mode.value === 'raw' || (snapshot.value.status === 'ready' && !snapshot.value.stale && snapshot.value.runtime.status === 'ready'))
 const waitingForPreview = computed(() => mode.value === 'dynamic' && !!available.value && !dynamicReady.value)
+const loadingVisible = useLoadingDelay(() => loading.value || waitingForPreview.value, () => JSON.stringify([snapshot.value.selection?.storyId, snapshot.value.selection?.variantId, mode.value]))
 const fileLabel = computed(() => story.value?.relativePath?.split('/').pop() || '')
 const canEdit = computed(() => canOpenHistoireTargetInEditor(snapshot.value))
 
@@ -166,8 +167,8 @@ function status(value: { status: 'idle' | 'loading' | 'ready' | 'error' }) {
             alert: 'htw:text-danger htw:text-[12px]',
           }" :mode="mode" appearance="dark" data-test-id="story-source-code" @content="receive" @error="report" @status="status"
         />
-        <div v-if="loading || waitingForPreview" class="htw:absolute htw:inset-0 htw:overflow-auto htw:bg-code htw:[--histoire-text:#e6e7ea] htw:[--histoire-muted:#b4b8c0]">
-          <WorkbenchLoadingState title="Loading source…" />
+        <div v-if="loadingVisible" class="htw:absolute htw:inset-0 htw:overflow-auto htw:bg-code htw:[--histoire-text:#e6e7ea] htw:[--histoire-muted:#b4b8c0]">
+          <WorkbenchLoadingState title="Loading source…" immediate />
         </div>
         <p v-if="content?.body === ''" class="htw:p-[16px] htw:[color:#b4b8c0] htw:text-[12px]">
           Source is empty.

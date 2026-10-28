@@ -88,7 +88,7 @@ describe('workbench state components in hosts', () => {
       } })
     })
 
-    expect(wrapper.get('[data-histoire-contribution="acme:slow"]').text()).toBe('workbench loading: Loading extension')
+    await vi.waitFor(() => expect(wrapper.get('[data-histoire-contribution="acme:slow"]').text()).toBe('workbench loading: Loading extension'))
     expect(wrapper.get('[data-histoire-contribution="acme:broken"]').text()).toBe('workbench error: Extension failed mount failed')
     wrapper.unmount()
   })

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UiAgentStep } from '@histoire/shared'
-import { HstPulsatingDisc } from '@histoire/controls/vue'
+import { HstPulsatingDisc, useLoadingDelay } from '@histoire/controls/vue'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useAgentsStore } from '../../../stores/agents.js'
 import { useAiThreads } from '../../../stores/ai-threads.js'
@@ -18,6 +18,7 @@ const props = defineProps<{
   /** Thread identity, to tell when the agent waits for an answer. */
   threadId?: string
 }>()
+const visible = useLoadingDelay(true)
 const agents = useAgentsStore()
 const threads = useAiThreads()
 /** Live plan entry the agent reports working on. */
@@ -47,7 +48,7 @@ const elapsed = computed(() => {
 </script>
 
 <template>
-  <p class="htw:flex htw:items-center htw:gap-1.5 htw:min-w-0 htw:mt-1 htw:mx-0 htw:mb-0 htw:text-agent-text htw:text-[11px]" role="status">
-    <HstPulsatingDisc :size="12" /><span class="label htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap">{{ label }}</span><time v-if="elapsed" class="htw:flex-none htw:text-muted">{{ elapsed }}</time>
+  <p v-if="visible" class="htw:flex htw:items-center htw:gap-1.5 htw:min-w-0 htw:mt-1 htw:mx-0 htw:mb-0 htw:text-agent-text htw:text-[11px]" role="status">
+    <HstPulsatingDisc immediate :size="12" /><span class="label htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap">{{ label }}</span><time v-if="elapsed" class="htw:flex-none htw:text-muted">{{ elapsed }}</time>
   </p>
 </template>

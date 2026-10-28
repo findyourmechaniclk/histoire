@@ -1,6 +1,6 @@
 import type { UiAgentConfigOptions } from '@histoire/shared'
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import SessionPicker from '../../../histoire-app/src/app/components/comments/prompt/SessionPicker.vue'
 import SessionSettings from '../../../histoire-app/src/app/components/comments/prompt/SessionSettings.vue'
 import { readyAgents } from './utils/comment-prompt.js'
@@ -49,7 +49,7 @@ describe('agent session settings', () => {
       expect(wrapper.find('button[aria-label="Switch agent"]').exists()).toBe(false)
       expect(wrapper.text()).toContain('Claude Code')
       await wrapper.setProps({ config: undefined, loading: true })
-      expect(wrapper.text()).toContain('Loading models…')
+      await vi.waitFor(() => expect(wrapper.text()).toContain('Loading models…'))
     }
     finally { wrapper.unmount() }
   })

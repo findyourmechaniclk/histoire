@@ -2,6 +2,7 @@
 import type { Component } from 'vue'
 import type { HstControlLayout } from '../../types'
 import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
+import { useLoadingDelay } from '../../loading/use-loading-delay.js'
 import HstButton from '../button/HstButton.vue'
 import HstWrapper from '../HstWrapper.vue'
 import { loadHstJsonEditor } from './HstJsonEditorAsync'
@@ -32,6 +33,7 @@ interface JsonEditorHandle {
 const editorInstance = ref<JsonEditorHandle | null>(null)
 const editorComponent = shallowRef<Component | null>(null)
 const loading = ref(true)
+const loadingVisible = useLoadingDelay(loading)
 const loadFailed = ref(false)
 let mounted = false
 let pendingFocus = false
@@ -123,8 +125,8 @@ onBeforeUnmount(() => {
     :class="$attrs.class"
     :style="$attrs.style"
   >
-    <div class="__histoire-json-code __histoire-json-load-state" v-bind="{ ...$attrs, class: null, style: null }">
-      <span v-if="loading" role="status" aria-busy="true">Loading JSON editor…</span>
+    <div class="__histoire-json-code __histoire-json-load-state" v-bind="{ ...$attrs, class: null, style: null }" :aria-busy="loading || undefined">
+      <span v-if="loadingVisible" role="status" aria-busy="true">Loading JSON editor…</span>
       <div v-else-if="loadFailed" role="alert" class="__histoire-json-load-error">
         <span>JSON editor failed to load.</span>
         <HstButton color="flat" aria-label="Retry" @click="loadEditor">

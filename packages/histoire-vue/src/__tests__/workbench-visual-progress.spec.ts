@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { expect, it } from 'vitest'
+import { expect, it, vi } from 'vitest'
 import VisualTestsSummary from '../../../histoire-app/src/app/components/panes/visual/VisualTestsSummary.vue'
 
 it('announces active comparison progress instead of stale evidence until run stops', async () => {
@@ -8,7 +8,10 @@ it('announces active comparison progress instead of stale evidence until run sto
   })
   try {
     expect(wrapper.text()).toContain('Source changed, run again to approve')
+    vi.useFakeTimers()
     await wrapper.setProps({ running: true, completed: 3 })
+    expect(wrapper.find('[role="status"]').exists()).toBe(false)
+    await vi.advanceTimersByTimeAsync(100)
     expect(wrapper.get('[role="status"]').text()).toBe('Comparing images… 3 of 12')
     expect(wrapper.text()).not.toContain('Source changed, run again to approve')
     expect(wrapper.get('[role="progressbar"]').attributes('aria-valuenow')).toBe('3')
@@ -18,5 +21,8 @@ it('announces active comparison progress instead of stale evidence until run sto
     expect(wrapper.text()).toContain('Source changed, run again to approve')
     expect(wrapper.text()).not.toContain('Comparing images…')
   }
-  finally { wrapper.unmount() }
+  finally {
+    wrapper.unmount()
+    vi.useRealTimers()
+  }
 })

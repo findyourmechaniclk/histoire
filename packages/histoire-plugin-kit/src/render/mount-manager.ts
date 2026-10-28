@@ -1,7 +1,7 @@
 import type { MountedView } from '../types/host.js'
 import type { ViewHandle, ViewHost, ViewMount } from '../types/view.js'
 import { createScope } from '../host/generation.js'
-import { renderPlainWorkbenchState } from './workbench-components.js'
+import { cancelPlainLoadingState, renderPlainWorkbenchState } from './workbench-components.js'
 
 /** Failure kinds a mount manager reports; `report` comes from the view's own `reportError`. */
 export type MountFailurePhase = 'mount' | 'update' | 'dispose' | 'report'
@@ -45,13 +45,23 @@ export function createMountManager<C>(options: MountManagerOptions<C>): MountedV
   let queued: { context: C } | undefined
   let disposal: Promise<void> | undefined
 
+  const stateContainers = new Set<HTMLElement>()
   const viewHost: ViewHost = {
     signal: scope.signal,
     overlayRoot: options.overlayRoot,
     reportError: (error) => {
       if (scope.active) report(error, 'report')
     },
-    renderState: options.renderState ?? renderPlainWorkbenchState,
+    renderState(container, state) {
+      if (!scope.active) return
+      if (options.renderState) {
+        options.renderState(container, state)
+      }
+      else {
+        stateContainers.add(container)
+        renderPlainWorkbenchState(container, state)
+      }
+    },
   }
 
   /**
@@ -89,6 +99,8 @@ export function createMountManager<C>(options: MountManagerOptions<C>): MountedV
     // Placeholder first: retiring fires the owner-abort listener, which calls back here.
     disposal = Promise.resolve()
     scope.retire()
+    for (const container of stateContainers) cancelPlainLoadingState(container)
+    stateContainers.clear()
     const attached = handle
     handle = undefined
     queued = undefined

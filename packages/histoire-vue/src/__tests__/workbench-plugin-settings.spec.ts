@@ -1,6 +1,6 @@
 import type { WorkbenchPluginApi } from '../../../histoire-plugin-kit/src/index.js'
 import { mount } from '@vue/test-utils'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, nextTick } from 'vue'
 import SettingsPage from '../../../histoire-app/src/app/components/pages/settings/SettingsPage.vue'
 import { provideExtensionHost } from '../../../histoire-app/src/app/composables/extensions.js'
@@ -49,7 +49,7 @@ describe('plugin settings sections', () => {
     const load = deferred<{ default: unknown }>()
     const { wrapper } = mountSettings('acme:prefs', () => load.promise)
     await settle()
-    expect(wrapper.get('main [role="status"]').text()).toContain('Loading')
+    await vi.waitFor(() => expect(wrapper.get('main [role="status"]').text()).toContain('Loading'))
     expect(wrapper.emitted('section')).toBeUndefined()
 
     load.resolve({ default: plugin })

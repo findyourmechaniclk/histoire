@@ -4,6 +4,6 @@ import { HstPulsatingDisc } from '@histoire/controls/vue'
 
 <template>
   <span class="htw:inline-flex htw:text-muted htw:opacity-50 htw:pointer-events-none" aria-hidden="true">
-    <HstPulsatingDisc :size="16" />
+    <HstPulsatingDisc immediate :size="16" />
   </span>
 </template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { HistoireTarget } from '@histoire/protocol'
 import type { WorkbenchTestRow } from './types.js'
-import { BuiltinIcon, HstButton, HstPulsatingDisc, HstSwitch } from '@histoire/controls/vue'
+import { BuiltinIcon, HstButton, HstPulsatingDisc, HstSwitch, useLoadingDelay } from '@histoire/controls/vue'
 import { getHistoireTargetKey } from '@histoire/protocol'
 import { useHistoireSnapshot } from '@histoire/vue'
 import { useHistoireContext, useHistoireResource } from '@histoire/vue/internal'
@@ -22,6 +22,7 @@ const emit = defineEmits<{ select: [target: HistoireTarget], error: [error: unkn
 const { session } = useHistoireContext()
 const snapshot = useHistoireSnapshot()
 const model = useWorkbenchTestsModel()
+const collectingVisible = useLoadingDelay(() => model?.discoveryStatus.value === 'collecting')
 const filter = ref<'failing' | 'all' | 'changed'>('failing')
 const watchModeId = `histoire-watch-tests-${useId()}`
 let active = true
@@ -64,8 +65,8 @@ async function select(row: WorkbenchTestRow) {
     <template v-if="model">
       <TestsSummary :summary="model.summary.value" :running="model.running.value" :completed="model.completed.value" :total="model.total.value" />
       <TestsFilter v-model="filter" />
-      <div v-if="['collecting', 'error'].includes(model.discoveryStatus.value) && model.discoveryProgress.value.completed" class="collection-progress htw:flex htw:items-center htw:gap-2 htw:my-2.5 htw:mx-pane-gutter htw:text-muted htw:text-[12px]" role="status">
-        <HstPulsatingDisc v-if="model.discoveryStatus.value === 'collecting'" :size="12" />
+      <div v-if="(model.discoveryStatus.value === 'error' || (model.discoveryStatus.value === 'collecting' && collectingVisible)) && model.discoveryProgress.value.completed" class="collection-progress htw:flex htw:items-center htw:gap-2 htw:my-2.5 htw:mx-pane-gutter htw:text-muted htw:text-[12px]" role="status">
+        <HstPulsatingDisc v-if="model.discoveryStatus.value === 'collecting'" immediate :size="12" />
         {{ model.discoveryStatus.value === 'collecting' ? 'Collecting tests…' : 'Collected targets' }} {{ model.discoveryProgress.value.completed }}/{{ model.discoveryProgress.value.total }}
       </div>
       <p v-if="issue && !collectionFailed" class="htw:my-2.5 htw:mx-pane-gutter htw:text-danger-text htw:text-[12px] htw:wrap-anywhere htw:whitespace-pre-line" role="alert">

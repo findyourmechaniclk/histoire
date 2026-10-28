@@ -1,11 +1,16 @@
 <script setup lang="ts">
 /** Standard Histoire loading indicator: a disc that pulses into a ring. */
 import { computed } from 'vue'
+import { useLoadingDelay } from '../loading/use-loading-delay.js'
 
 const props = withDefaults(defineProps<{
   /** Displayed square size in CSS pixels or a CSS length. */
   size?: string | number
-}>(), { size: 16 })
+  /** Skip the delay when an enclosing loading region is already delayed. */
+  immediate?: boolean
+}>(), { size: 16, immediate: false })
+
+const visible = useLoadingDelay(() => !props.immediate)
 
 /** Normalize numeric sizes while preserving caller-supplied CSS lengths. */
 const resolvedSize = computed(() => typeof props.size === 'number' ? `${props.size}px` : props.size)
@@ -13,6 +18,7 @@ const resolvedSize = computed(() => typeof props.size === 'number' ? `${props.si
 
 <template>
   <div
+    v-if="immediate || visible"
     aria-hidden="true"
     class="histoire-pulsating-disc"
     :style="{

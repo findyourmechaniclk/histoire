@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import AttachmentStrip from '../../../histoire-app/src/app/components/comments/prompt/AttachmentStrip.vue'
 import { commentAttachment } from '../../../histoire/src/node/__tests__/utils/comments.js'
 
@@ -24,11 +24,19 @@ describe('attachment strip', () => {
     finally { wrapper.unmount() }
   })
 
-  it('shows one placeholder per upload in flight', () => {
+  it('shows one placeholder per upload in flight', async () => {
+    vi.useFakeTimers()
     const wrapper = mount(AttachmentStrip, { props: { attachments: [], uploading: 2 }, global: { stubs: { BuiltinIcon: true } } })
     try {
+      expect(wrapper.findAll('[aria-label="Uploading"]')).toHaveLength(0)
+      await vi.advanceTimersByTimeAsync(100)
       expect(wrapper.findAll('[aria-label="Uploading"]')).toHaveLength(2)
+      await wrapper.setProps({ uploading: 0 })
+      expect(wrapper.findAll('[aria-label="Uploading"]')).toHaveLength(0)
     }
-    finally { wrapper.unmount() }
+    finally {
+      wrapper.unmount()
+      vi.useRealTimers()
+    }
   })
 })

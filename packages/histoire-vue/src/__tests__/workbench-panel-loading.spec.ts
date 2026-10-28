@@ -18,7 +18,7 @@ describe('agent settings connection loading', () => {
     })
     const wrapper = mount(host)
     try {
-      expect(wrapper.get('[role="status"][aria-atomic="true"]').text()).toBe('Connecting to dev server')
+      await vi.waitFor(() => expect(wrapper.get('[role="status"][aria-atomic="true"]').text()).toBe('Connecting to dev server'))
       expect(wrapper.find('[aria-label="Enable local agents"]').exists()).toBe(true)
       agents.connected.value = true
       await nextTick()

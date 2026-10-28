@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { HistoireCatalogVariant } from '@histoire/sdk'
 import type { CanvasRect } from './pan/usePanZoom.js'
-import { BuiltinIcon, HstButton, HstPulsatingDisc } from '@histoire/controls/vue'
+import { BuiltinIcon, HstButton, HstPulsatingDisc, useLoadingDelay } from '@histoire/controls/vue'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useCanvasFrameBackground, useCanvasFrames, useCanvasStore } from '../../composables/canvas-settings.js'
 import { useContextMenu } from '../../composables/context-menu.js'
@@ -50,6 +50,8 @@ const test = computed(() => tests?.rows.value.find(row => row.target.storyId ===
 const testIcon = computed(() => test.value?.failed || test.value?.error ? 'error-filled' : test.value?.stale ? 'warning-alt-filled' : test.value?.summary ? 'checkmark-filled' : props.variant.hasTests ? 'subtract' : null)
 const replica = ref<{ retry: () => Promise<void> }>()
 const status = ref<'loading' | 'ready' | 'error'>('loading')
+const loadingVisible = useLoadingDelay(() => status.value === 'loading', () => props.frame.id)
+const testRunningVisible = useLoadingDelay(() => !!test.value?.running, () => props.frame.id)
 /** A previous rendering stands in while the cell loads. */
 const snapshotShown = ref(false)
 const error = ref<unknown>()
@@ -138,7 +140,7 @@ function openMenu(event: MouseEvent | KeyboardEvent) {
   <!-- Unscaled frame chrome owns selection; group state never restarts its runtime. -->
   <section class="histoire-canvas-frame htw:group/frame htw:absolute htw:min-w-0 htw:pointer-events-auto htw:data-[single=true]:relative htw:data-[single=true]:overflow-hidden htw:data-[single=true]:rounded-[7px] htw:data-[dimmed=true]:data-[selected=false]:opacity-35" :class="{ 'is-selected': selected }" :data-single="single" :data-selected="selected" :data-highlighted="highlighted ?? false" :data-dimmed="dimmed ?? false" :data-stale="stale ?? false" :style="position" :data-frame-id="frame.id" @contextmenu="openMenu">
     <button v-if="!single" type="button" class="histoire-frame-label htw:box-border htw:w-full htw:min-w-0 htw:h-(--histoire-frame-label-height) htw:flex htw:items-center htw:justify-between htw:gap-2 htw:m-0 htw:pt-0 htw:px-0 htw:pb-2 htw:border-0 htw:bg-transparent htw:text-muted htw:[font-family:inherit] htw:text-[13px] htw:leading-5 htw:text-left htw:cursor-pointer htw:group-data-[selected=false]/frame:group-data-[highlighted=false]/frame:enabled:hover:text-text htw:focus-visible:outline-2 htw:focus-visible:outline-solid htw:focus-visible:outline-accent htw:focus-visible:outline-offset-2 htw:disabled:opacity-45 htw:disabled:cursor-default htw:group-data-[selected=true]/frame:text-accent htw:group-data-[selected=true]/frame:font-bold htw:group-data-[highlighted=true]/frame:text-accent" data-canvas-overlay-occluder :aria-pressed="selected" :disabled="!canSelect" @click="select" @keydown="onKeyDown">
-      <span class="histoire-frame-title htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap" :title="variant.title">{{ variant.title }}</span><BuiltinIcon v-if="status === 'error'" icon="error-filled" :size="16" class="htw:flex-none htw:text-danger" /><HstPulsatingDisc v-else-if="test?.running || (showSnapshot && status === 'loading')" :size="14" class="htw:flex-none htw:mx-px htw:text-muted" /><BuiltinIcon v-else-if="testIcon" :icon="testIcon" :size="16" class="htw:flex-none" :class="test?.failed || test?.error ? 'htw:text-danger' : 'htw:text-accent'" />
+      <span class="histoire-frame-title htw:flex-1 htw:min-w-0 htw:overflow-hidden htw:text-ellipsis htw:whitespace-nowrap" :title="variant.title">{{ variant.title }}</span><BuiltinIcon v-if="status === 'error'" icon="error-filled" :size="16" class="htw:flex-none htw:text-danger" /><HstPulsatingDisc v-else-if="testRunningVisible || (showSnapshot && loadingVisible)" immediate :size="14" class="htw:flex-none htw:mx-px htw:text-muted" /><BuiltinIcon v-else-if="testIcon" :icon="testIcon" :size="16" class="htw:flex-none" :class="test?.failed || test?.error ? 'htw:text-danger' : 'htw:text-accent'" />
     </button>
     <div class="htw:relative htw:w-full htw:overflow-hidden htw:border htw:border-solid htw:border-border htw:rounded-[7px] htw:bg-white htw:group-data-[single=true]/frame:border-0 htw:group-data-[selected=true]/frame:border-accent htw:group-data-[highlighted=true]/frame:border-accent htw:group-data-[selected=true]/frame:after:content-[''] htw:after:hidden htw:group-data-[selected=true]/frame:after:block htw:after:absolute htw:after:inset-0 htw:after:rounded-[inherit] htw:after:pointer-events-none htw:after:z-[3] htw:after:shadow-[inset_0_0_0_1px_var(--histoire-accent)] htw:group-data-[single=true]/frame:after:shadow-[inset_0_0_0_1px_var(--histoire-border)]" data-test-id="responsive-preview-bg" :style="{ height: `${height * scale}px`, ...getBackgroundStyle(background) }" @click="selectFromBody">
       <div class="histoire-frame-content htw:origin-top-left htw:group-data-[dimmed=true]/frame:group-data-[selected=true]/frame:opacity-35 htw:group-data-[stale=true]/frame:opacity-40 htw:group-data-[stale=true]/frame:pointer-events-none" :style="previewStyle" :aria-busy="status !== 'ready'" :inert="status !== 'ready' || stale ? true : undefined">
@@ -147,7 +149,7 @@ function openMenu(event: MouseEvent | KeyboardEvent) {
       <div v-if="!live" class="htw:absolute htw:inset-0 htw:flex htw:flex-col htw:items-center htw:justify-center htw:gap-3 htw:p-4 htw:text-[12px] htw:text-center htw:text-muted htw:bg-input">
         {{ variant.title }}
       </div>
-      <div v-else-if="status === 'loading' && !showSnapshot" class="htw:absolute htw:inset-0 htw:flex htw:flex-col htw:items-center htw:justify-center htw:gap-3 htw:p-4 htw:text-[12px] htw:text-center htw:text-muted htw:bg-input" role="status" aria-label="Loading variant">
+      <div v-else-if="loadingVisible && !showSnapshot" class="htw:absolute htw:inset-0 htw:flex htw:flex-col htw:items-center htw:justify-center htw:gap-3 htw:p-4 htw:text-[12px] htw:text-center htw:text-muted htw:bg-input" role="status" aria-label="Loading variant">
         <CanvasLoadingIndicator />
       </div>
       <div v-else-if="status === 'error'" class="htw:absolute htw:inset-0 htw:flex htw:flex-col htw:items-center htw:justify-center htw:gap-3 htw:p-4 htw:text-[12px] htw:text-center htw:z-[2] htw:text-danger htw:bg-danger-soft" role="alert">

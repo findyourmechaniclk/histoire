@@ -75,7 +75,8 @@
     }
   },
   "dependencies": {
-    "@histoire/protocol": "workspace:^"
+    "@histoire/protocol": "workspace:^",
+    "@histoire/shared": "workspace:^"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

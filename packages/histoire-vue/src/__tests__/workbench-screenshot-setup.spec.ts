@@ -225,7 +225,7 @@ describe('workbench screenshot setup', () => {
       expect(channel.send.mock.calls.some(([event]) => event === 'histoire:ui:screenshot-setup-cancel')).toBe(false)
       await wrapper.setProps({ open: true })
       expect(setupRequests().filter(request => request.action === 'check')).toHaveLength(1)
-      expect(wrapper.text()).toContain('Checking screenshot setup')
+      await vi.waitFor(() => expect(wrapper.text()).toContain('Checking screenshot setup'))
       expect(checkRequest.requestId).toBeTruthy()
     }
     finally {
@@ -245,7 +245,7 @@ describe('workbench screenshot setup', () => {
       expect(wrapper.text()).toContain('Setup not checked')
 
       await button(wrapper, 'Check setup').trigger('click')
-      expect(wrapper.text()).toContain('Checking screenshot setup')
+      await vi.waitFor(() => expect(wrapper.text()).toContain('Checking screenshot setup'))
       expect(setupRequests().filter(request => request.action === 'check')).toHaveLength(0)
       await emitUiResult('histoire:ui:screenshot-setup-result', { requestId: reopenedRead.requestId, setup: setupSnapshot({ revision: 2, state: 'unverified', reason: undefined, repairs: [] }) })
       const checkRequest = setupRequests().at(-1)!

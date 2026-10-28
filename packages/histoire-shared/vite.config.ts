@@ -5,6 +5,7 @@ export default defineRuntimeBundleConfig({
   name: 'shared',
   entries: {
     'index': 'src/index.ts',
+    'loading-delay': 'src/loading-delay.ts',
     // Imported by path (`@histoire/shared/dist/icons/index.js`) by the controls.
     'icons/index': 'src/icons/index.ts',
   },

@@ -170,7 +170,7 @@ describe('independent tests panel', () => {
       const collection = { definitions: [{ id: 'cached', name: 'Cached test', fullName: 'Suite > Cached test' }] }
       cached.value = { collection, running: true }
       await nextTick()
-      expect(panel.get('output').text()).toBe('Running…')
+      await vi.waitFor(() => expect(panel.get('output').text()).toBe('Running…'))
       expect(testRows(panel)).toEqual([['Suite › Cached test', 'Running']])
       expect(panel.find('[role="alert"]').exists()).toBe(false)
       expect(panel.findAll('button').every(button => button.attributes('disabled') !== undefined)).toBe(true)

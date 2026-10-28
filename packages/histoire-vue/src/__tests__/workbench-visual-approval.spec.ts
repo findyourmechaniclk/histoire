@@ -108,7 +108,7 @@ it.each([false, true])('replaces approval controls while pending and restores re
     await wrapper.get('footer button').trigger('click')
     expect(pending?.selections).toEqual([{ handle: 'handle-one', resultId: 'one' }, { handle: 'handle-two', resultId: 'two' }])
     expect(wrapper.find('footer').exists()).toBe(false)
-    expect(wrapper.get('[role="status"][aria-atomic="true"]').text()).toBe('Approving screenshots…')
+    await vi.waitFor(() => expect(wrapper.get('[role="status"][aria-atomic="true"]').text()).toBe('Approving screenshots…'))
 
     if (!failed) {
       reply({ requestId: pending!.requestId, receipts: [{ resultId: 'one', status: 'approved' }], done: false })

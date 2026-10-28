@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import MatrixAvailabilityState from '../../../histoire-app/src/app/components/canvas/matrix/MatrixAvailabilityState.vue'
 import { createMatrixStore, provideMatrix } from '../../../histoire-app/src/app/stores/matrix.js'
@@ -25,7 +25,7 @@ describe('matrix canvas guidance', () => {
     try {
       matrix.activate('button', [], {}, {}, [], [], false)
       await nextTick()
-      expect(wrapper.get('[role="status"]').text()).toBe('Reading prop axes')
+      await vi.waitFor(() => expect(wrapper.get('[role="status"]').text()).toBe('Reading prop axes'))
       matrix.activate('button', [{ name: 'disabled', values: [false, true] }, { name: 'singleton', values: ['only'] }], {})
       await nextTick()
       expect(wrapper.get('[role="status"]').text()).toContain('Only disabled has at least two known values.')

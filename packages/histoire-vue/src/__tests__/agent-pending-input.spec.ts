@@ -147,7 +147,7 @@ describe('in-thread agent questions', () => {
     await wrapper.findAll('button').find(button => button.text() === 'Open link')!.trigger('click')
     expect(open).toHaveBeenCalledWith('https://auth.example.com/x', '_blank', 'noopener,noreferrer')
     expect(send).toHaveBeenLastCalledWith('histoire:ui:agent-elicitation-reply', { requestId: 'link', action: 'accept' })
-    expect(wrapper.get('[role="status"]').text()).toBe('Waiting for completion')
+    await vi.waitFor(() => expect(wrapper.get('[role="status"]').text()).toBe('Waiting for completion'))
     callbacks.elicitationResolved({ requestId: 'link', reason: 'completed' })
     await flushPromises()
     expect(wrapper.text()).toBe('')

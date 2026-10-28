@@ -1,7 +1,7 @@
 import { createHistoireSessionWithAdapters } from '@histoire/sdk/internal'
 import { HistoireProvider } from '@histoire/vue'
 import { mount } from '@vue/test-utils'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent, h, nextTick, reactive } from 'vue'
 import CanvasFrame from '../../../histoire-app/src/app/components/canvas/CanvasFrame.vue'
 import CanvasReplicaPreview from '../../../histoire-app/src/app/components/canvas/CanvasReplicaPreview.vue'
@@ -14,6 +14,7 @@ import { sourceFixture } from '../../../histoire-sdk/src/__tests__/fixtures/sess
 let dispose: (() => Promise<void>) | undefined
 
 afterEach(async () => {
+  vi.useRealTimers()
   await dispose?.()
   dispose = undefined
 })
@@ -82,6 +83,20 @@ describe('canvas frame header interaction', () => {
       await nextTick()
       expect(test.component.getComponent(CanvasReplicaPreview).vm).toBe(original)
     }
+  })
+
+  it('delays a canvas loading overlay while keeping the frame inert', async () => {
+    const test = await frameFixture()
+    await test.ready()
+    vi.useFakeTimers()
+    test.component.getComponent(CanvasReplicaPreview).vm.$emit('status', 'loading')
+    await nextTick()
+    expect(test.component.find('[role="status"][aria-label="Loading variant"]').exists()).toBe(false)
+    expect(test.component.get('[aria-busy="true"]').attributes('inert')).toBeDefined()
+    await vi.advanceTimersByTimeAsync(100)
+    expect(test.component.find('[role="status"][aria-label="Loading variant"]').exists()).toBe(true)
+    await test.ready()
+    expect(test.component.find('[role="status"][aria-label="Loading variant"]').exists()).toBe(false)
   })
 
   it('exposes failures on initially selected frame', async () => {

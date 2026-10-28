@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { UiAgentConfigSelector } from '@histoire/shared'
-import { HstButton, HstPulsatingDisc, HstSelect } from '@histoire/controls/vue'
+import { HstButton, HstPulsatingDisc, HstSelect, useLoadingDelay } from '@histoire/controls/vue'
 import { computed } from 'vue'
 import { useAgentDiscovery } from '../../../composables/agent-discovery.js'
 import { useAgentsStore } from '../../../stores/agents.js'
@@ -12,6 +12,7 @@ const agents = useAgentsStore()!
 /** Server-confirmed defaults. */
 const preset = computed(() => agents.state.value.presets.find(item => item.id === props.agentId)!)
 const { allowed, discovery } = useAgentDiscovery(agents, () => props.agentId)
+const loadingVisible = useLoadingDelay(() => !!discovery.value?.loading)
 
 /** Preserve unavailable saved selection visibly instead of displaying misleading default. */
 function choices(selector: UiAgentConfigSelector | undefined, current?: string) {
@@ -37,7 +38,7 @@ function select(field: 'model' | 'effort', value: string): void {
   <div class="htw:flex htw:flex-wrap htw:gap-[12px] htw:p-[0_20px_12px_65px] htw:[@media(max-width:_600px)]:p-[0_14px_12px]">
     <label class="htw:flex-1 htw:min-w-[180px] htw:flex htw:items-center htw:gap-[10px] htw:text-[12px] htw:text-muted"><span>Model</span><HstSelect class="htw:flex-1 htw:min-w-0" layout="inline" :aria-label="`${preset.name} model`" :model-value="preset.model ?? ''" :options="choices(discovery?.value?.model, preset.model)" :disabled="!allowed || agents.pending.value || discovery?.loading || !discovery?.value?.model" @update:model-value="select('model', $event)" /></label>
     <label class="htw:flex-1 htw:min-w-[180px] htw:flex htw:items-center htw:gap-[10px] htw:text-[12px] htw:text-muted"><span>Effort</span><HstSelect class="htw:flex-1 htw:min-w-0" layout="inline" :aria-label="`${preset.name} effort`" :model-value="preset.effort ?? ''" :options="choices(discovery?.value?.effort, preset.effort)" :disabled="!allowed || agents.pending.value || discovery?.loading || !discovery?.value?.effort" @update:model-value="select('effort', $event)" /></label>
-    <span v-if="discovery?.loading" class="htw:flex htw:items-center htw:gap-[8px] htw:text-[12px] htw:w-full" role="status"><HstPulsatingDisc :size="12" />Loading models</span>
+    <span v-if="loadingVisible" class="htw:flex htw:items-center htw:gap-[8px] htw:text-[12px] htw:w-full" role="status"><HstPulsatingDisc immediate :size="12" />Loading models</span>
     <div v-if="discovery?.error" class="htw:flex htw:items-center htw:gap-[8px] htw:text-[12px] htw:w-full">
       <span role="alert">{{ discovery.error }}</span><HstButton type="button" color="default" @click="agents.discoverAgent(agentId, true)">
         Retry

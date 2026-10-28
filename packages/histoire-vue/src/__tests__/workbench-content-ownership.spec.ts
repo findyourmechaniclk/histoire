@@ -167,7 +167,7 @@ describe('workbench content ownership', () => {
       await vi.waitFor(() => expect(wrapper.text()).toContain('source:c'))
       const selection = session.selection.select({ storyId: 'a:b', variantId: 'other' })
       await vi.waitFor(() => expect(session.getSnapshot().runtime.status).toBe('mounting'))
-      expect(wrapper.get('[role="status"]').text()).toBe('Loading source…')
+      await vi.waitFor(() => expect(wrapper.get('[role="status"]').text()).toBe('Loading source…'))
       expect(wrapper.find('[role="alert"]').exists()).toBe(false)
       expect(wrapper.find('.inspector-source-retry').exists()).toBe(false)
       expect(errors).not.toHaveBeenCalled()
