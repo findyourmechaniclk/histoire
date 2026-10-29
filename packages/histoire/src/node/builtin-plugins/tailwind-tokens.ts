@@ -8,6 +8,7 @@ export type { TailwindTokensOptions } from './tailwind/types.js'
 export function tailwindTokens(options: TailwindTokensOptions = {}): Plugin {
   return {
     name: 'builtin:tailwind-tokens',
+    metadata: { displayName: 'Tailwind CSS tokens', description: 'Tailwind CSS design tokens', icon: 'logo-tailwind' },
     async onDev(api, onCleanup) {
       if (options.enabled === false) return
       const session = createTailwindSession(api, options, true)

@@ -179,3 +179,27 @@ export async function setupVue3({ app, hooks, onDarkChange }) {
 ```
 
 See [App setup](../vue3/app-setup.md#lifecycle-hooks) for the list of hooks.
+
+## Plugin details
+
+Plugins may provide public metadata for the Plugins settings page. `name` remains the stable plugin identity; metadata is optional.
+
+```ts
+import type { Plugin } from 'histoire'
+
+export function myPlugin(): Plugin {
+  return {
+    name: 'my-plugin',
+    metadata: {
+      displayName: 'My plugin',
+      description: 'Adds tools to the workbench',
+      icon: 'puzzle',
+      logoUrl: 'https://example.com/logo.svg',
+      docsUrl: 'https://example.com/docs',
+      repoUrl: 'https://github.com/example/my-plugin',
+    },
+  }
+}
+```
+
+`icon` names an offline Histoire glyph. A valid HTTPS `logoUrl` takes precedence; without a logo Histoire uses the icon or the puzzle glyph. A logo that fails to load uses the puzzle glyph. Documentation and repository links accept HTTP or HTTPS URLs. Histoire fills missing description, documentation, and repository details from a matching installed package's `package.json` when available. Metadata is public in development and static builds; never put secrets in it.

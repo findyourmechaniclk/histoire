@@ -8,6 +8,7 @@ import { getUiLibraryInlineDeps } from './util/ui-libraries.js'
 export function HstVue(): Plugin {
   return {
     name: '@histoire/plugin-vue',
+    metadata: { displayName: 'Vue', icon: 'logo-vue', description: 'Vue 3 story support', docsUrl: 'https://histoire.dev/guide/vue3/getting-started.html', repoUrl: 'https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-vue' },
 
     defaultConfig() {
       return {

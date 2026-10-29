@@ -34,6 +34,7 @@ export const SETTINGS_SECTIONS = [
   { id: 'agents', label: 'AI agents (ACP)', icon: 'bot', devOnly: true },
   { id: 'mcp', label: 'MCP server', icon: 'plug', devOnly: true },
   { id: 'shortcuts', label: 'Keyboard shortcuts', icon: 'keyboard' },
+  { id: 'plugins', label: 'Plugins', icon: 'puzzle' },
   { id: 'about', label: 'About', icon: 'info' },
 ] as const
 

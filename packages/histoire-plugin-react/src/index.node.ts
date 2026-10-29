@@ -12,6 +12,7 @@ const REACT_JSX_PLUGIN_NAMES = new Set(['vite:react-babel', 'vite:react-swc', 'v
 export function HstReact(): Plugin {
   return {
     name: '@histoire/plugin-react',
+    metadata: { displayName: 'React', icon: 'logo-react', description: 'React story support', docsUrl: 'https://histoire.dev/guide/plugins/official.html', repoUrl: 'https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-react' },
     /** Story patterns replace arrays during config merging, so extend incoming defaults explicitly. */
     defaultConfig: config => ({
       storyMatch: [...new Set([...config.storyMatch, '**/*.story.tsx', '**/*.story.jsx'])],

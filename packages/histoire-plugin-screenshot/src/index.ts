@@ -49,6 +49,7 @@ export function HstScreenshot(options: ScreenshotPluginOptions = {}): Plugin {
   }
   return {
     name: '@histoire/plugin-screenshot',
+    metadata: { displayName: 'Screenshot', icon: 'camera', description: 'Visual regression testing with screenshots', docsUrl: 'https://histoire.dev/guide/plugins/official.html', repoUrl: 'https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-screenshot' },
 
     onBuild: async (api) => {
       const { default: captureWebsite } = await import('capture-website')

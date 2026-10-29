@@ -16,6 +16,7 @@ export function HstVueDevtools(options: VueDevtoolsOptions = {}): Plugin {
   if (token !== undefined && (token.length < 32 || token.length > 512 || [...token].some(character => character.charCodeAt(0) < 33 || character.charCodeAt(0) > 126))) throw new Error('Invalid Vue DevTools token')
   return {
     name: '@histoire/plugin-vue-devtools',
+    metadata: { displayName: 'Vue DevTools', description: 'Vue DevTools for story frames', icon: 'logo-vue', docsUrl: 'https://histoire.dev/guide/devframe.html', repoUrl: 'https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-vue-devtools' },
     workbench: options.enabled === false
       ? undefined
       : {

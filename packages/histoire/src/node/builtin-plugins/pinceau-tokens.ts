@@ -28,6 +28,7 @@ export function pinceauTokens(_options: PinceauTokensOptions = {}): Plugin {
 
   return {
     name: 'builtin:pinceau-tokens',
+    metadata: { displayName: 'Pinceau tokens', description: 'Pinceau design tokens', icon: 'color-palette' },
 
     config(config) {
       // Add 'design-system' group

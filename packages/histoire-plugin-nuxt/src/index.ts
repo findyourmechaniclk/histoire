@@ -73,6 +73,7 @@ export function HstNuxt(options: HstNuxtOptions = {}): Plugin {
   }
   return {
     name: '@histoire/plugin-nuxt',
+    metadata: { displayName: 'Nuxt', icon: 'logo-nuxt', description: 'Nuxt integration', docsUrl: 'https://histoire.dev/guide/plugins/official.html', repoUrl: 'https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-nuxt' },
 
     async defaultConfig(_config, _mode, context) {
       if (activeNuxtOwner && activeNuxtOwner !== owner) throw new Error('Nuxt integration supports one active project per process')

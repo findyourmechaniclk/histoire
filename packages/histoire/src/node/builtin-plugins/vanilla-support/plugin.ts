@@ -7,6 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 export function vanillaSupport(): Plugin {
   return {
     name: 'builtin:vanilla-support',
+    metadata: { displayName: 'Vanilla', icon: 'logo-javascript', description: 'JavaScript story support', docsUrl: 'https://histoire.dev/guide/getting-started.html' },
 
     defaultConfig() {
       return {

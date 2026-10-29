@@ -11,7 +11,7 @@ interface UiHttpRoute {
 }
 
 /** Reserved `/__histoire/<name>` HTTP namespaces. */
-const UI_HTTP_NAMESPACES = ['screenshots', 'agents', 'visual', 'comments']
+const UI_HTTP_NAMESPACES = ['screenshots', 'agents', 'visual', 'comments', 'plugins']
 
 /** Vite proxies share the public Connect stack identity used by configureServer. */
 const routers = new WeakMap<ViteDevServer['middlewares'], Set<UiHttpRoute>>()

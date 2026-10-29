@@ -1,11 +1,12 @@
 import type { Plugin } from '@histoire/shared'
-import { realpath } from 'node:fs/promises'
+import { realpath, writeFile } from 'node:fs/promises'
 import { join } from 'pathe'
 import { resolveConfig } from 'vite'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { createBrowserEntryResolver, resolveCommandClientSetupFiles } from '../config/browser-entries.js'
 import { resolveWorkbenchPlugins } from '../config/workbench-plugins.js'
 import { closeContext, createContext } from '../context.js'
+import { resolvedConfig } from '../virtual/resolved-config.js'
 import { createWorkbenchPluginProject, ODD_DIRECTORY, WORKBENCH_FIXTURE_CONFIG } from './utils/workbench-plugin-project.js'
 
 let project: Awaited<ReturnType<typeof createWorkbenchPluginProject>>
@@ -100,6 +101,22 @@ describe('command client setup files', () => {
 })
 
 describe('context collection', () => {
+  it.each(['dev', 'build'] as const)('projects public package and plugin details from the real %s context', async (mode) => {
+    await writeFile(join(project.packageDir, 'package.json'), JSON.stringify({ name: 'acme-plugin', description: 'Package description', homepage: 'https://example.com/docs', exports: { './client': './client.js' } }))
+    await project.writeConfig(`{ plugins: [{ name: 'acme-plugin', metadata: { displayName: 'Acme' }, privateField: 'hidden', workbench: { id: 'acme', apiVersion: 1, client: 'acme-plugin/client' } }] }`)
+    const ctx = await createContext({ root: project.root, mode })
+    try {
+      const source = resolvedConfig(ctx)
+      const module = await import(`data:text/javascript,${encodeURIComponent(source)}`)
+      expect(module.installedPlugins.find((item: { name: string }) => item.name === 'acme-plugin')).toEqual({ name: 'acme-plugin', builtin: false, enabled: true, id: 'acme', client: true, frame: false, displayName: 'Acme', description: 'Package description', docsUrl: 'https://example.com/docs' })
+      expect(source).not.toContain('hidden')
+      expect(JSON.stringify(module.installedPlugins)).not.toContain(project.root)
+    }
+    finally {
+      await closeContext(ctx)
+    }
+  })
+
   it('collects resolved workbench plugins and command setup files at startup', async () => {
     await project.writeConfig(WORKBENCH_FIXTURE_CONFIG)
     const ctx = await createContext({ root: project.root, mode: 'dev' })

@@ -7,6 +7,7 @@ import { toHistoireViteConfig } from './config/vite.js'
 export function HstQuasar(): Plugin {
   return {
     name: '@histoire/plugin-quasar',
+    metadata: { displayName: 'Quasar', icon: 'logo-quasar', description: 'Quasar CLI integration', docsUrl: 'https://histoire.dev/guide/plugins/official.html', repoUrl: 'https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-quasar' },
 
     /** Quasar project Vite config, setup code and collection inline deps. */
     async defaultConfig(_config, mode, context) {

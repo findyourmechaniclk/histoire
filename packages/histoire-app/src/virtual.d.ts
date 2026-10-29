@@ -4,6 +4,15 @@ declare module 'virtual:$histoire-commands' {
   export const registeredCommands: ClientCommand[]
 }
 
+declare module 'virtual:$histoire-config' {
+  import type { HistoireConfig, PluginMetadata } from '@histoire/shared'
+
+  export const config: HistoireConfig
+  export const logos: HistoireConfig['theme']['logo']
+  /** Public plugin details in resolved configuration order. */
+  export const installedPlugins: Array<PluginMetadata & { name: string, builtin: boolean, id?: string, client: boolean, frame: boolean, enabled: boolean, toggleId?: string }>
+}
+
 declare module 'virtual:$histoire-workbench-plugins' {
   import type { HistoireJsonValue } from '@histoire/protocol'
 

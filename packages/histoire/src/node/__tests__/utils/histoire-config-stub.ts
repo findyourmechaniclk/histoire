@@ -7,3 +7,4 @@
 export const config = {}
 
 export const logos = {}
+export const installedPlugins = []

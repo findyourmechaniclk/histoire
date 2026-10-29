@@ -22,6 +22,7 @@ import { registerAgentsChannel } from './ui-channel/agents.js'
 import { registerAiThreadsChannel } from './ui-channel/ai-threads.js'
 import { registerConfigChannel } from './ui-channel/config.js'
 import { registerUiChannel } from './ui-channel/index.js'
+import { registerPluginToggleHttp } from './ui-channel/plugin-toggle-http.js'
 import { createViteServers } from './vite-servers.js'
 
 /** Dev generation startup and publication ownership. */
@@ -86,6 +87,7 @@ export async function createServer(ctx: Context, options: CreateServerOptions = 
     attachTestCollectionEligibility(ctx, server)
     registerDevEvents(ctx, server, moduleLoader, execution, isActive)
     const uiChannel = registerUiChannel(ctx, server, execution, isActive)
+    cleanup.add(registerPluginToggleHttp(ctx, server, isActive))
     registerConfigChannel(ctx, uiChannel, isActive)
     if (options.agents !== false) {
       const agents = registerAgentsChannel(ctx, uiChannel, server)
@@ -97,6 +99,7 @@ export async function createServer(ctx: Context, options: CreateServerOptions = 
       const port = await resolveDevServerPort(options.port ?? server.config.server?.port)
       checkActive()
       await server.listen(port)
+      if (options.devProxy) server.resolvedUrls = { local: [new URL(server.config.base, options.devProxy.origin).href], network: [] }
     }
     checkActive()
 

@@ -141,11 +141,29 @@ export interface WorkbenchPluginDescriptor {
   devOnly?: boolean
 }
 
+/** Public details displayed for a configured plugin. */
+export interface PluginMetadata {
+  /** Human-readable name, independent of the plugin identity. */
+  displayName?: string
+  /** Short explanation of the plugin. */
+  description?: string
+  /** Name of an offline Histoire icon. */
+  icon?: string
+  /** HTTPS image URL. */
+  logoUrl?: string
+  /** Documentation URL. */
+  docsUrl?: string
+  /** Source repository URL. */
+  repoUrl?: string
+}
+
 export interface Plugin {
   /**
    * Name of the plugin
    */
   name: string
+  /** Optional public information shown in settings. */
+  metadata?: PluginMetadata
   /**
    * Modify histoire default config. The hook can either mutate the passed config or
    * return a partial config object that will be deeply merged into the existing

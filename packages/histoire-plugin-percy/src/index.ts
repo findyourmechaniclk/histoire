@@ -96,6 +96,7 @@ export function HstPercy(options: PercyPluginOptions = {}): Plugin {
   const finalOptions: PercyPluginOptions = defu(options, defaultOptions)
   return {
     name: '@histoire/plugin-percy',
+    metadata: { displayName: 'Percy', icon: 'logo-percy', description: 'Visual regression testing with Percy', docsUrl: 'https://histoire.dev/guide/plugins/official.html', repoUrl: 'https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-percy' },
 
     onBuild: async (api) => {
       if (!(await isPercyEnabled())) {

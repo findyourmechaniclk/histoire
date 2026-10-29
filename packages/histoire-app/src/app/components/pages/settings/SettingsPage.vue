@@ -21,6 +21,7 @@ const sections = {
   appearance: defineAsyncComponent(() => import('./AppearanceSection.vue')),
   viewports: defineAsyncComponent(() => import('./ViewportsSection.vue')),
   shortcuts: defineAsyncComponent(() => import('./ShortcutsSection.vue')),
+  plugins: defineAsyncComponent(() => import('./PluginsSection.vue')),
   about: defineAsyncComponent(() => import('./AboutSection.vue')),
   ...(dev
     ? {
@@ -41,7 +42,7 @@ watch(section, (value) => {
   <div class="htw:flex htw:h-full htw:min-h-0 htw:bg-canvas htw:text-text htw:[@media(max-width:_600px)]:flex-col">
     <SettingsNav :section="section" :dev="dev" @section="emit('section', $event)" />
     <main class="histoire-settings-content htw:flex-1 htw:min-w-0 htw:overflow-auto htw:p-[42px_6%] htw:[@media(600px<width<=900px)]:p-[28px_24px] htw:[@media(max-width:_600px)]:p-[24px_14px]">
-      <component :is="sections[section as keyof typeof sections]" v-if="!isPluginContributionId(section)" :build-info="buildInfo" />
+      <component :is="sections[section as keyof typeof sections]" v-if="!isPluginContributionId(section)" :build-info="buildInfo" @section="emit('section', $event)" />
       <!-- Plugin preferences live in the plugin's own namespace and never offer "Save to project". -->
       <section v-else-if="pluginSection && plugins.workbench" class="htw:w-[min(100%,_740px)] htw:mx-auto">
         <h1 class="htw:text-[25px] htw:font-bold htw:m-[0_0_22px]">

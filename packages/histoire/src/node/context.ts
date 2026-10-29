@@ -7,11 +7,16 @@ import type {
   ServerStoryFile,
 } from '@histoire/shared'
 import type { ResolvedConfig } from 'vite'
+import type { ConfigurationObserver } from './config/dependencies.js'
+import type { PublicPluginMetadata } from './config/plugin-metadata.js'
+import type { PluginInventoryRow, PluginToggleInventory } from './config/plugin-toggle-inventory.js'
 import type { ResolvedWorkbenchPlugin } from './config/workbench-plugins.js'
 import { resolve } from 'pathe'
 import { resolveConfig as resolveViteConfig } from 'vite'
 import { createBrowserEntryResolver, resolveCommandClientSetupFiles } from './config/browser-entries.js'
 import { processConfig, resolveConfig } from './config/index.js'
+import { resolvePluginMetadata } from './config/plugin-metadata.js'
+import { createPluginInventory } from './config/plugin-toggle-inventory.js'
 import { resolveWorkbenchPlugins } from './config/workbench-plugins.js'
 import { closeContext, getContextRegistry } from './runtime/registry.js'
 import { mergeHistoireViteConfig } from './vite/index.js'
@@ -36,11 +41,19 @@ export interface Context {
   registeredCommands?: PluginCommand[]
   /** Validated `Plugin.workbench` descriptors with resolved entries, in config order. */
   workbenchPlugins?: ResolvedWorkbenchPlugin[]
+  /** Browser-safe plugin details, indexed in resolved configuration order. */
+  pluginMetadata?: PublicPluginMetadata[]
+  /** Browser-safe inventory and server-owned config edit evidence. */
+  pluginInventory?: PluginInventoryRow[]
+  /** Private source and revision data for plugin management. */
+  pluginToggle?: PluginToggleInventory
   /** Resolved `clientSetupFile` of each registered command that has one. */
   commandClientSetupFiles?: Map<PluginCommand, string>
 }
 
 export interface CreateContextOptions {
+  /** Parent-owned CLI config watches can subscribe before plugin startup finishes. */
+  onConfigurationInputs?: ConfigurationObserver
   /** Explicit project root; legacy CLI callers default to launch cwd. */
   root?: string
   mode: Context['mode']
@@ -69,7 +82,7 @@ export async function createContext(options: CreateContextOptions): Promise<Cont
 
   const { pluginContext } = getContextRegistry(ctx)
   try {
-    ctx.config = await resolveConfig(root, options.mode, options.configFile, pluginContext)
+    ctx.config = await resolveConfig(root, options.mode, options.configFile, pluginContext, options.onConfigurationInputs)
     const command = options.mode === 'dev' ? 'serve' : 'build'
     const viteConfig = await resolveViteConfig({ root }, command)
     ctx.supportPlugins = ctx.config.plugins.map(plugin => plugin.supportPlugin).filter(Boolean)
@@ -79,6 +92,10 @@ export async function createContext(options: CreateContextOptions): Promise<Cont
       await plugin.configResolved?.(ctx.config, pluginContext)
       if (plugin.commands?.length) ctx.registeredCommands.push(...plugin.commands)
     }
+    ctx.pluginMetadata = await resolvePluginMetadata(root, ctx.config.plugins)
+    const inventory = await createPluginInventory(ctx)
+    ctx.pluginInventory = inventory.rows
+    ctx.pluginToggle = inventory.toggle
     // Browser modules named by plugins resolve once here, so a bad entry fails startup.
     const resolveEntry = createBrowserEntryResolver(root, viteConfig)
     ctx.workbenchPlugins = await resolveWorkbenchPlugins(ctx.config.plugins, resolveEntry, options.mode)

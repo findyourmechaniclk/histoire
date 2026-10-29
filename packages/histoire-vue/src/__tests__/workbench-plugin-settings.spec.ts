@@ -45,7 +45,7 @@ async function settle(): Promise<void> {
 }
 
 describe('plugin settings sections', () => {
-  it('waits for plugin setup, then renders the section listed after built-ins', async () => {
+  it('waits for plugin setup, then lists the section before Plugins and About', async () => {
     const load = deferred<{ default: unknown }>()
     const { wrapper } = mountSettings('acme:prefs', () => load.promise)
     await settle()
@@ -57,7 +57,7 @@ describe('plugin settings sections', () => {
 
     expect(wrapper.get('main h1').text()).toBe('Acme')
     const nav = wrapper.findAll('nav button').map(button => button.text())
-    expect(nav.at(-1)).toBe('Acme')
+    expect(nav.slice(-3)).toEqual(['Acme', 'Plugins', 'About'])
     expect(wrapper.get('nav [aria-current="page"]').text()).toBe('Acme')
     expect(wrapper.emitted('section')).toBeUndefined()
   })

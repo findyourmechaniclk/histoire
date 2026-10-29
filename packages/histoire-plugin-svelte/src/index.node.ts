@@ -24,6 +24,7 @@ const SVELTE_RUNTIME_MODULES = [
 export function HstSvelte(): Plugin {
   return {
     name: '@histoire/plugin-svelte',
+    metadata: { displayName: 'Svelte', icon: 'logo-svelte', description: 'Svelte story support', docsUrl: 'https://histoire.dev/guide/svelte3/getting-started.html', repoUrl: 'https://github.com/histoire-dev/histoire/tree/main/packages/histoire-plugin-svelte' },
 
     defaultConfig(_config, _mode, context) {
       const svelteClientAliases = getSvelteClientAliases(context?.root ?? process.cwd())

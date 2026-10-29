@@ -16,6 +16,17 @@ export function resolvedConfig(ctx: Context) {
     ? { ...publicConfig, comments, agents: agents ? { ...agents, presets: agents.presets?.map(({ env: _env, ...preset }) => preset) } : undefined }
     : publicConfig
   let js = `export const config = ${JSON.stringify(config)}\n`
+  // Only public identity and entry availability cross the Node/browser boundary.
+  const installedPlugins = ctx.pluginInventory ?? (ctx.config.plugins ?? []).map((plugin, index) => ({
+    name: plugin.name,
+    builtin: plugin.name.startsWith('builtin:'),
+    ...(plugin.workbench ? { id: plugin.workbench.id } : {}),
+    client: Boolean(plugin.workbench?.client && !(ctx.mode === 'build' && plugin.workbench.devOnly)),
+    frame: Boolean(plugin.workbench?.frame && !(ctx.mode === 'build' && plugin.workbench.devOnly)),
+    ...ctx.pluginMetadata?.[index],
+    enabled: true,
+  }))
+  js += `export const installedPlugins = ${JSON.stringify(installedPlugins)}\n`
   if (ctx.config.theme?.logo) {
     for (const key in ctx.config.theme.logo) {
       js += `import Logo_${key} from '${ctx.config.theme.logo[key]}'\n`

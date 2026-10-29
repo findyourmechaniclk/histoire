@@ -29,7 +29,8 @@ describe('workbench public config', () => {
     } as unknown as Context
     const output = resolvedConfig(ctx)
     expect(output).not.toContain('plugin-sentinel')
-    expect(output).not.toContain('node-only-plugin')
+    expect(output.split('\n')[0]).not.toContain('node-only-plugin')
+    expect(output).toContain('node-only-plugin')
     expect(output).not.toContain('vite-sentinel')
     expect(output).toContain('"frameBudget":12')
   })
