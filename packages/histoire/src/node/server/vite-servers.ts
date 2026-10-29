@@ -1,13 +1,17 @@
 import type { Context } from '../context.js'
 import type { MiddlewareHostingOptions } from '../runtime/hosting/types.js'
+import type { DevProxyTransport } from '../vite/dev-proxy.js'
 import { mergeConfig as mergeViteConfig } from 'vite'
 import { RuntimeCleanupError } from '../runtime/cleanup.js'
 import { createHostingHmr, createHostingProxyEvents } from '../runtime/hosting/hmr.js'
 import { acquireViteServer as createViteServer } from '../vite/acquire-server.js'
+import { createDevProxyPlugin } from '../vite/dev-proxy.js'
 import { getViteConfigWithPlugins } from '../vite/index.js'
 import { collectionWatchPlugin, forwardWatcherEvents } from './collection-watcher.js'
 
 export interface CreateServerOptions {
+  /** CLI-only proxy transport; SDK retains existing listener ownership. */
+  devProxy?: DevProxyTransport
   /** Client-facing Vite port; zero selects an ephemeral port. */
   port?: number
   /** Opens the book in the browser after listen. */
@@ -60,6 +64,7 @@ export async function createViteServers(ctx: Context, options: CreateServerOptio
       }
     }
 
+    if (options.devProxy) viteConfig.plugins.push(createDevProxyPlugin(options.devProxy, collecting))
     let server: Awaited<ReturnType<typeof createViteServer>>
     try {
       server = await createViteServer(

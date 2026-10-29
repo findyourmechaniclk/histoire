@@ -8,8 +8,9 @@ import { captureProjectConfigurationRevision } from './config-watchers.js'
 export const startProjectRuntime: ProjectRuntimeDependencies['start'] = async (options, signal, isActive) => {
   const root = resolve(options.root ?? process.cwd())
   const configurationRevision = await captureProjectConfigurationRevision(root, options.config)
-  const context = await createContext({ root, mode: 'dev', configFile: options.config })
+  const context = await createContext({ root, mode: 'dev', configFile: options.config, onConfigurationInputs: options.onConfigurationInputs })
   try {
+    await options.onConfiguration?.(context, configurationRevision)
     signal.throwIfAborted()
     const runtime = await createServer(context, { ...options, signal, isActive })
     return {

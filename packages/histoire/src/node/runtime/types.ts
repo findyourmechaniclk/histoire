@@ -1,6 +1,7 @@
-import type { Buffer } from 'node:buffer'
+import type { ConfigurationRevision } from '@histoire/dev-proxy/config'
 import type { ViteDevServer } from 'vite'
 import type { StoryCollectionOutcome } from '../collect/outcome.js'
+import type { ConfigurationObserver } from '../config/dependencies.js'
 import type { Context } from '../context.js'
 import type { CollectionEvent } from '../server/collect.js'
 import type { CreateServerOptions } from '../server/index.js'
@@ -9,14 +10,7 @@ import type { CreateServerOptions } from '../server/index.js'
 export type ProjectRuntimeStatus = 'starting' | 'ready' | 'restarting' | 'failed' | 'closed'
 
 /** Exact configuration bytes captured before one generation loads its config. */
-export interface ProjectConfigurationRevision {
-  /** Selected Histoire config at acquisition, retained through priority changes. */
-  histoireFile: string | null
-  /** Selected default Vite config at acquisition, absent before first creation. */
-  viteConfigFile: string | null
-  /** Existing bytes, or undefined for a file absent during acquisition. */
-  snapshots: ReadonlyMap<string, Buffer | undefined>
-}
+export type ProjectConfigurationRevision = ConfigurationRevision
 
 /** Resources returned by one dev-server startup. */
 export interface RuntimeGeneration {
@@ -50,6 +44,10 @@ export interface ProjectRuntimeHandle extends RuntimeGeneration {
 
 /** Inputs common to CLI dev and the stdio project worker. */
 export interface ProjectRuntimeOptions extends CreateServerOptions {
+  /** Incremental loader inputs keep proxy watches alive across configuration failures. */
+  onConfigurationInputs?: ConfigurationObserver
+  /** Reports evaluated inputs before expensive Vite/story acquisition. */
+  onConfiguration?: (context: Context, revision: ProjectConfigurationRevision) => void | Promise<void>
   /** Explicit project root; CLI defaults to its launch cwd. */
   root?: string
   /** Explicit Histoire configuration module. */

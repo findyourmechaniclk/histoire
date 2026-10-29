@@ -9,14 +9,14 @@ import { createExecutionOwner } from './execution-owner.js'
 import { createExecutionService } from './execution-service.js'
 
 /** Reuses canonical controller/MCP assembly without command signal or process mutation. */
-export function createDevSession(options: ProjectRuntimeOptions & DevMcpCliOptions & { /** Stable SDK project identity; CLI may generate one session identity. */ projectId?: string }, token?: string) {
+export function createDevSession(options: ProjectRuntimeOptions & DevMcpCliOptions & { /** Stable SDK project identity; CLI may generate one session identity. */ projectId?: string }, token?: string, createController = createProjectRuntimeController) {
   resolveDevMcpOptions(undefined, options)
   const execution = options.execution ? createExecutionOwner(options.execution) : createExecutionService()
   let mcp: Awaited<ReturnType<typeof createDevMcpRuntime>> | undefined
   let closing: Promise<void> | undefined
   let attached: ReturnType<typeof attachRuntimeCatalog> | undefined
   const projectId = options.projectId ?? randomUUID()
-  const controller = createProjectRuntimeController({
+  const controller = createController({
     ...options,
     execution,
     async onBeforeRelease(handle) {
@@ -36,7 +36,7 @@ export function createDevSession(options: ProjectRuntimeOptions & DevMcpCliOptio
       if (options.devHttp === false) policy.enabled = false
       if (policy.enabled && !mcp) {
         const { createDevMcpRuntime } = await import('../mcp/dev-runtime.js')
-        mcp = await createDevMcpRuntime({ controller, root: handle.context.root, token, execution, ownsExecution: false })
+        mcp = await createDevMcpRuntime({ controller, root: handle.context.root, token, execution, ownsExecution: false, projectId: options.devProxy ? projectId : undefined })
       }
       await mcp?.reconcile(policy)
       await options.onGeneration?.(handle)

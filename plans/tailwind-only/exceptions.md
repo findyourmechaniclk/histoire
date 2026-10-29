@@ -67,3 +67,11 @@ against host element resets without exceeding utility specificity. Explicit
 tones retain pressed-state priority; disabled opacity yields to hidden actions.
 Static `bundle-main.js` loads bundled defaults before `style.css`, so final app
 utilities also win equal-specificity conflicts across files.
+
+## Official accessibility plugin
+
+`packages/histoire-plugin-a11y/src/workbench/styles.css` is external-plugin CSS, scoped to `.histoire-a11y`, compiled inline and installed through shared plugin-kit stylesheet owner. It is outside `histoire-app` styling boundary. `src/frame/highlight.ts` uses temporary fixed-position translucent overlay in story document; runtime geometry cannot be expressed in app templates. Overlay has no colored border and is removed on actor retirement.
+
+## Standalone development startup document
+
+`packages/histoire-dev-proxy/src/client/styles.ts` owns minimal inline document CSS for proxy loading/error screen. Public HTTP responds before project config, Vite, Vue, or workbench styles exist; startup cannot import Tailwind workbench bundle. Styles stay scoped to standalone document, include light/dark appearance, and add no spinner/keyframe or colored border decoration. Particle canvas owns its GPU rendering and follows reduced motion. This exception is listed in `app-styling-guard.spec.ts`.

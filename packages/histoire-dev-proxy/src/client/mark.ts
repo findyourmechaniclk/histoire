@@ -1,0 +1,2 @@
+/** Canonical Histoire logo geometry from repository logo.svg. */
+export const bookMark = `<svg viewBox="0 0 512 512" aria-hidden="true" focusable="false"><rect opacity=".5" fill="#34d399" width="314.30923" height="406.60901" x="-26.565063" y="134.75079" transform="rotate(-23.821262)" rx="8"/><rect fill="#34d399" width="314.30923" height="406.60901" x="77.571838" y="72.808708" transform="rotate(-4.5744534)" rx="8"/><path fill="#b4fae2" d="M359.38947 355.95134 320.72935 176.52942 238.34613 238.94118ZM273.64124 273.06608 152.59788 156.05591 191.25804 335.47786Z"/></svg>`

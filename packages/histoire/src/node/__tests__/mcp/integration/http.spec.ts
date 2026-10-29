@@ -71,7 +71,7 @@ describe('built CLI dev HTTP conformance', () => {
     }
   })
 
-  it('restarts same owner after config change and rejects previous publication', async () => {
+  it('reconnects runtime MCP after full config winddown and rejects previous publication', async () => {
     const project = await createMcpCliProject()
     cleanup.push(project.close)
     const runtime = startMcpProcess(['dev', '-c', 'custom config.ts', '--port', '0', '--mcp-port', '0'], project.root)
@@ -82,9 +82,13 @@ describe('built CLI dev HTTP conformance', () => {
     const before = (await callMcp(client, 'histoire_get_project')).data
     await writeFile(resolve(project.root, 'custom config.ts'), `import { HstVue } from '@histoire/plugin-vue'; export default { plugins: [HstVue()], storyMatch: ['*.story.vue'], tree: { groups: [] }, mcp: true };`)
     await runtime.waitFor(/Config changed, restarting/)
-    const after = await waitMcp(() => callMcp(client, 'histoire_get_project'), value => value.data?.status === 'ready' && value.data.epoch !== before.epoch)
+    const endpoints = await waitMcp(async () => [...runtime.output().matchAll(/MCP: (http:\/\/\S+)/g)].map(match => match[1]), values => values.length >= 2)
+    await expect(callMcp(client, 'histoire_get_project')).rejects.toThrow()
+    const replacement = await connectMcpHttp(endpoints.at(-1)!)
+    cleanup.push(() => replacement.close())
+    const after = await waitMcp(() => callMcp(replacement, 'histoire_get_project'), value => value.data?.status === 'ready' && value.data.epoch !== before.epoch)
     expect(after.data.projectId).toBe(before.projectId)
-    const stale = await callMcp(client, 'histoire_get_story', { storyId: 'stdio/a %2E..', expectedRevision: before.revision })
+    const stale = await callMcp(replacement, 'histoire_get_story', { storyId: 'stdio/a %2E..', expectedRevision: before.revision })
     expect(stale).toMatchObject({ ok: false, error: { code: 'STALE_REVISION' } })
   })
 

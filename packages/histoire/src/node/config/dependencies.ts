@@ -1,10 +1,15 @@
+import type { FileSnapshot } from '@histoire/dev-proxy/config'
 import type { HistoireConfig } from '@histoire/shared'
-import type { Buffer } from 'node:buffer'
-import { readFile } from 'node:fs/promises'
+import { readFileSnapshot } from '@histoire/dev-proxy/config'
 import path from 'pathe'
 
+export { readFileSnapshot } from '@histoire/dev-proxy/config'
+
 /** Bytes of one watched file, or `undefined` while it does not exist. */
-export type FileSnapshot = Buffer | undefined
+export type { FileSnapshot } from '@histoire/dev-proxy/config'
+
+/** CLI parent learns inputs during evaluation, even before runtime acquisition succeeds. */
+export type ConfigurationObserver = (files: ReadonlyMap<string, FileSnapshot>) => void
 
 /**
  * Local modules (outside `node_modules`) evaluated while loading the config files, keyed by
@@ -20,20 +25,6 @@ export interface ConfigDependencies {
 
 /** Dependencies recorded per resolved config object; the config owns their lifetime. */
 const recorded = new WeakMap<object, ConfigDependencies>()
-
-/**
- * Reads one file; a missing file is a distinct snapshot so creation and removal stay observable.
- * @param file Absolute path.
- */
-export async function readFileSnapshot(file: string): Promise<FileSnapshot> {
-  try {
-    return await readFile(file)
-  }
-  catch (error) {
-    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 'ENOENT') return
-    throw error
-  }
-}
 
 /**
  * Snapshots the local modules among loader-reported dependencies. Installed packages are left to

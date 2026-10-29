@@ -16,9 +16,20 @@ const allowedStyles = [
 ]
 /** Absolute authored source tree, excluding documentation and build output. */
 const sourceRoot = fileURLToPath(new URL('../../../../histoire-app/src/', import.meta.url))
+/** Standalone pre-runtime document cannot consume workbench's Tailwind bundle. */
+const runtimeStyleExceptions = ['packages/histoire-dev-proxy/src/client/styles.ts']
 
 describe('app styling boundaries', async () => {
   const paths = (await readdir(sourceRoot, { recursive: true })).map(path => normalize(path))
+
+  it('documents standalone runtime styles outside workbench stylesheet inventory', async () => {
+    const root = fileURLToPath(new URL('../../../../../', import.meta.url))
+    const exceptions = await readFile(resolve(root, 'plans/tailwind-only/exceptions.md'), 'utf8')
+    for (const path of runtimeStyleExceptions) {
+      expect(exceptions).toContain(path)
+      expect(await readFile(resolve(root, path), 'utf8')).toBeTruthy()
+    }
+  })
 
   it('keeps global stylesheets aligned with documented exceptions', () => {
     const styles = paths.filter(path => /\.(?:css|pcss)$/.test(path))

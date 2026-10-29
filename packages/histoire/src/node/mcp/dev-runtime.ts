@@ -23,9 +23,9 @@ import { startDevMcpHttp } from './transport/http.js'
 export type DevMcpServerExtension = Pick<HistoireMcpServerOptions, 'register' | 'readResource'>
 
 /** Owns one dev facade and reconciles HTTP policy independently of project generations. */
-export async function createDevMcpRuntime(options: { controller: McpRuntimeController, root: string, token?: string, extension?: DevMcpServerExtension, execution?: ExecutionService, ownsExecution?: boolean }) {
+export async function createDevMcpRuntime(options: { controller: McpRuntimeController, root: string, token?: string, extension?: DevMcpServerExtension, execution?: ExecutionService, ownsExecution?: boolean, /** CLI parent identity survives runtime-process replacement. */ projectId?: string }) {
   const execution = options.execution ?? createExecutionService()
-  const project = createDevMcpProject({ controller: options.controller, projectId: createMcpProjectId(await realpath(options.root)), secret: options.token, executionAvailable: () => execution.available })
+  const project = createDevMcpProject({ controller: options.controller, projectId: options.projectId ?? createMcpProjectId(await realpath(options.root)), secret: options.token, executionAvailable: () => execution.available })
   const activity = createDevMcpActivity()
   const fallbackClientId = randomUUID()
   const operations = createDevMcpOperations(project, execution, options.ownsExecution ?? true, () => activity.currentClientId() ?? fallbackClientId)

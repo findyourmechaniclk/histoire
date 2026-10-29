@@ -1,0 +1,131 @@
+import type { ChildMessage, ParentMessage, WatchInput } from '../protocol.js'
+import { fork, spawn } from 'node:child_process'
+import { isChildMessage } from '../protocol.js'
+
+/** Starts one IPC runtime and joins its entire lifetime before ownership transfer. */
+export function startRuntimeChild(options: {
+  /** Runtime entry supplied by Histoire, never imported into proxy process. */
+  entry: URL
+  /** Existing project directory. */
+  root: string
+  /** Opaque identity fixed for this process. */
+  generation: string
+  /** External browser origin. */
+  publicOrigin: string
+  /** Serializable CLI options. */
+  options: Record<string, unknown>
+  /** Private MCP credential, sent only over IPC. */
+  token?: string
+  /** Evaluation snapshots must reconcile before readiness publication. */
+  onWatch: (inputs: WatchInput[], complete: boolean) => Promise<void>
+  /** Commit current dependency set before public readiness, if runtime reported one. */
+  onReady?: () => Promise<void>
+  /** Reports unexpected exits after readiness. */
+  onExit: (error: Error) => void
+  /** Winddown deadline; defaults to ten seconds. */
+  shutdownTimeout?: number
+}) {
+  const environment = { ...process.env }
+  delete environment.HISTOIRE_MCP_TOKEN
+  const child = fork(options.entry, [], { cwd: options.root, env: environment, detached: process.platform !== 'win32', execArgv: [], stdio: ['ignore', 'pipe', 'pipe', 'ipc'] })
+  child.stdout!.pipe(process.stdout, { end: false })
+  child.stderr!.pipe(process.stderr, { end: false })
+  let closing: Promise<void> | undefined
+  let settled = false
+  let backend: Extract<ChildMessage, { type: 'ready' }> | undefined
+  let resolve!: () => void
+  let reject!: (error: unknown) => void
+  const ready = new Promise<void>((yes, no) => {
+    resolve = yes
+    reject = no
+  })
+  void ready.catch(() => {
+  })
+  const exited = new Promise<void>(resolve => child.once('exit', () => resolve()))
+  let messages = Promise.resolve()
+  child.on('error', reject)
+  child.on('message', (raw) => {
+    if (!isChildMessage(raw) || raw.generation !== options.generation || closing) return
+    messages = messages.then(async () => {
+      if (closing) return
+      if (raw.type === 'watch') await options.onWatch(raw.inputs, raw.complete === true)
+      if (raw.type === 'failed') reject(new Error(raw.error))
+      if (raw.type === 'ready') {
+        await options.onReady?.()
+        if (closing) return
+        backend = raw
+        settled = true
+        resolve()
+      }
+    }).catch(reject)
+  })
+  child.once('exit', (code, signal) => {
+    const error = new Error(`Histoire runtime exited (${signal ?? code ?? 'unknown'})`)
+    reject(error)
+    if (settled && !closing) options.onExit(error)
+  })
+  const message: ParentMessage = { type: 'start', generation: options.generation, publicOrigin: options.publicOrigin, options: options.options, token: options.token }
+  child.send(message, error => error && reject(error))
+
+  /** Waits bounded time without retaining a timer once process exits. */
+  async function wait(milliseconds: number) {
+    if (child.exitCode !== null || child.signalCode !== null) return true
+    let timer: ReturnType<typeof setTimeout> | undefined
+    try {
+      return await Promise.race([exited.then(() => true), new Promise<false>((resolve) => {
+        timer = setTimeout(() => resolve(false), milliseconds)
+      })])
+    }
+    finally {
+      clearTimeout(timer)
+    }
+  }
+  /** Kills only this detached ownership group, including ordinary runtime descendants. */
+  async function killTree() {
+    if (!child.pid) return
+    if (process.platform === 'win32') {
+      await new Promise<void>((resolve, reject) => {
+        const kill = spawn('taskkill', ['/pid', String(child.pid), '/T', '/F'], { stdio: 'ignore' })
+        kill.once('error', reject)
+        kill.once('exit', code => code === 0 ? resolve() : reject(new Error('Unable to terminate Histoire runtime tree')))
+      })
+    }
+    else {
+      try {
+        process.kill(-child.pid, 'SIGKILL')
+      }
+      catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== 'ESRCH') throw error
+      }
+    }
+  }
+  return {
+    ready,
+    /** Latest backend metadata remains private to parent proxy. */
+    get backend() {
+      return backend
+    },
+    /** Process identity used only by parent diagnostics and ownership tests. */
+    pid: child.pid,
+    /** IPC first permits framework cleanup; forced tree termination is last resort. */
+    close() {
+      return closing ??= (async () => {
+        reject(new Error('Histoire runtime closed'))
+        if (child.connected) {
+          child.send({ type: 'shutdown' } satisfies ParentMessage, () => {
+          })
+        }
+        if (!await wait(options.shutdownTimeout ?? 10_000)) {
+          console.error('Histoire runtime winddown timed out; terminating owned process tree')
+          await killTree()
+          if (!await wait(3000)) throw new Error('Histoire runtime termination could not be confirmed')
+        }
+        // Successful exit must not leave inherited descendants holding ports.
+        if (process.platform !== 'win32') await killTree()
+        child.stdout!.unpipe(process.stdout)
+        child.stderr!.unpipe(process.stderr)
+        if (child.connected) child.disconnect()
+      })()
+    },
+  }
+}

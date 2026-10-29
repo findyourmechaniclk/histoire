@@ -181,3 +181,5 @@ Browser tests have additional Vue fixture evidence for both `project-vitest` and
 ## Hosting and scope
 
 [Build a standalone Node server](./deploy-node.md) to expose MCP alongside a deployed book. Static hosting serves the book without MCP. MCP offers no file writes, shell commands, arbitrary browser scripts, browser interactions, control-state mutation, or SSR rendering. HTTP accepts native MCP clients with exact Host/Origin validation; it does not advertise browser CORS or an OAuth authorization server.
+
+In CLI dev, config changes replace entire runtime process after cleanup. This also closes its MCP HTTP sessions. Reconnect MCP client to the announced endpoint after restart (`--mcp-port 0` can produce a new endpoint); project identity remains stable for the CLI session, while generation/revision changes invalidate old results. SDK hosting and stdio MCP retain their existing lifecycle adapters.

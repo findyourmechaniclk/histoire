@@ -96,6 +96,7 @@
     "@akryum/tinypool": "^0.3.1",
     "@histoire/app": "workspace:^",
     "@histoire/controls": "workspace:^",
+    "@histoire/dev-proxy": "workspace:^",
     "@histoire/protocol": "workspace:^",
     "@histoire/shared": "workspace:^",
     "@histoire/vendors": "workspace:^",
