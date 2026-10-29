@@ -7,14 +7,14 @@ import { MCP_REPOSITORY_ROOT } from '../mcp/cli-project.js'
 export const STANDALONE_SELECTED_FRAME = '.histoire-canvas-frame.is-selected [aria-busy="false"] iframe[title="Histoire variant"]'
 
 /** Real browser launcher shared by embed conformance; remote WebKit works on unsupported hosts. */
-export async function launchEmbedBrowser() {
+export async function launchEmbedBrowser(options: { /** Optional browser capabilities for real fallback coverage. */ args?: string[] } = {}) {
   const require = createRequire(join(MCP_REPOSITORY_ROOT, 'examples/vue3/package.json'))
   const playwright = await import(require.resolve('playwright'))
   const name = process.env.HISTOIRE_EMBED_BROWSER ?? 'chromium'
   if (!['chromium', 'firefox', 'webkit'].includes(name)) throw new Error('Unknown embed browser')
   const browserType = playwright[name]
   const endpoint = process.env.HISTOIRE_EMBED_BROWSER_WS_ENDPOINT
-  return endpoint ? browserType.connect(endpoint) : browserType.launch({ headless: true })
+  return endpoint ? browserType.connect(endpoint) : browserType.launch({ headless: true, ...options })
 }
 
 /** Reads public source connection without installing globals or importing any story. */

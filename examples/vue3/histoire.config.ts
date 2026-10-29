@@ -1,4 +1,5 @@
 import type { ReferenceUi } from 'histoire-example-plugin-reference'
+import { HstA11y } from '@histoire/plugin-a11y'
 import { HstVue } from '@histoire/plugin-vue'
 import { HstVueDevtools } from '@histoire/plugin-vue-devtools'
 import { defineConfig, getDefaultConfig } from 'histoire'
@@ -18,6 +19,7 @@ export default defineConfig({
   // outDir: 'hdist',
   plugins: [
     HstVue(),
+    HstA11y(),
     HstVueDevtools({
       enabled: process.env.HISTOIRE_VUE_DEVTOOLS !== 'false',
       clientAuthToken: process.env.HISTOIRE_VUE_DEVTOOLS_TOKEN,

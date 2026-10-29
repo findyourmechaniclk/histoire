@@ -85,5 +85,7 @@ jobs:
         run: pnpm run build
       - name: Install consumer Chromium
         run: pnpm --filter histoire exec playwright install --with-deps chromium
+      - name: Run accessibility browser checks
+        run: pnpm --filter @histoire/plugin-a11y test:browser
       - name: Run packed consumer smoke
         run: pnpm --filter histoire test:embed:consumers

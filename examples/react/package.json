@@ -14,6 +14,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@histoire/plugin-a11y": "workspace:*",
     "@histoire/plugin-react": "workspace:*",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

@@ -33,6 +33,10 @@
     "./client-node": {
       "types": "./dist/client/server/run.d.ts",
       "default": "./dist/client/server/run.js"
+    },
+    "./accessibility": {
+      "types": "./dist/accessibility/index.d.ts",
+      "default": "./dist/accessibility/index.js"
     }
   },
   "main": "./dist/index.js",

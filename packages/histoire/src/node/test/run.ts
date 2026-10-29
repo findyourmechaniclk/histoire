@@ -103,8 +103,12 @@ async function runTests(ctx: Context, options: RunHistoireTestsOptions, specRoot
   }
   warnAboutUncollectedStories(collection.failures)
 
+  // Vanilla metadata collection never mounts its app, so absence of registrations
+  // cannot prove that configured setup hooks contribute no tests. Let variant
+  // collection inspect these candidates, retaining fast omission for other stories.
+  const hasSetup = Boolean(ctx.config.setupFile || ctx.config.setupCode?.length)
   const specFiles = await generateSpecFiles(
-    collection.files.filter(collected => collected.hasTests).map(collected => collected.storyFile),
+    collection.files.filter(collected => collected.hasTests || (hasSetup && collected.storyFile.supportPluginId === 'vanilla')).map(collected => collected.storyFile),
     specRoot,
   )
   const selectedSpecFiles = selectSpecFiles(specFiles, options)

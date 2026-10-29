@@ -1,0 +1,11 @@
+<!doctype html><html lang="en"><title>Accessibility fixture</title><body>
+<img id="shell-image"><main><section id="variant"><img id="story-image"><button id="story-button"></button><img id="excluded-image" class="excluded"><span id="contrast" style="color:#aaa;background:#fff">Low contrast</span></section><section id="sibling"><img id="sibling-image"></section></main>
+<script type="module">
+import { runAudit } from '../scanner/run.ts'
+import { assertA11y } from '../test.ts'
+window.fixture = {
+  async scan(options) { const result = await runAudit(document.querySelector('#variant'), options); return result.report },
+  async assert(options) { try { await assertA11y(document.querySelector('#variant'), options); return 'passed' } catch (error) { return error.message } },
+  repair() { document.querySelector('#story-image').setAttribute('alt', 'Example'); document.querySelector('#story-button').textContent = 'Save' },
+}
+</script></body></html>

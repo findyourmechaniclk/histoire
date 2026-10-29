@@ -1,0 +1,30 @@
+.histoire-a11y {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  color: var(--histoire-text, inherit);
+  font-size: 13px;
+}
+.histoire-a11y-auto { display: inline-flex; gap: 5px; align-items: center; font-size: 12px; white-space: nowrap; --histoire-control-margin: 0px; --histoire-control-wrapper-padding: 0px; }
+.histoire-a11y-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 10px var(--histoire-pane-gutter); font-size: 12px; }
+.histoire-a11y-summary > span:last-child:not(:nth-child(3)) { opacity: .7; }
+.histoire-a11y-filter { min-width: 0; --histoire-control-margin: 0px; --histoire-control-wrapper-padding: 0px; }
+.histoire-a11y-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 128px), 1fr)); gap: 8px; width: 100%; }
+.histoire-a11y-rule { margin-bottom: 6px; border-radius: var(--histoire-radius-control, 6px); background: var(--histoire-chip, rgb(128 128 128 / .06)); }
+.histoire-a11y-rule summary { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; cursor: pointer; padding: var(--histoire-comment-row-padding, 10px) var(--histoire-pane-row-inset); list-style: none; }
+.histoire-a11y-rule summary::-webkit-details-marker { display: none; }
+.histoire-a11y-rule summary::before { content: '›'; font-size: 18px; }
+.histoire-a11y-rule[open] summary::before { content: '⌄'; }
+.histoire-a11y-rule summary strong { flex: 1; min-width: 120px; font-size: 12px; }
+.histoire-a11y-rule summary > span:last-child { font-size: 11px; opacity: .7; }
+.histoire-a11y-impact { padding: 2px 5px; border-radius: 4px; font-size: 10px; background: rgb(128 128 128 / .12); }
+.histoire-a11y-impact[data-impact="critical"], .histoire-a11y-impact[data-impact="serious"] { background: rgb(var(--histoire-danger-rgb, 220 60 80) / .13); }
+.histoire-a11y-impact[data-impact="moderate"] { background: rgb(var(--histoire-warn-rgb, 190 140 40) / .13); }
+.histoire-a11y-details { padding: 0 var(--histoire-pane-row-inset) 8px; }
+.histoire-a11y-rule-link { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; padding: 4px 0; font-size: 11px; }
+.histoire-a11y a { color: inherit; text-underline-offset: 3px; }
+.histoire-a11y-node { padding: 8px 0; }
+.histoire-a11y-node code { display: block; overflow-wrap: anywhere; white-space: pre-wrap; font-size: 11px; }
+.histoire-a11y-node p { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; font-size: 12px; margin: 6px 0; }
+.histoire-a11y-note { padding: 6px var(--histoire-pane-gutter); margin: 0; font-size: 12px; }

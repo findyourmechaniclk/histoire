@@ -71,3 +71,7 @@ Code that accessed host document or host app globals must use story iframe docum
 Increase [`test.storyCollectTimeout`](../reference/config.md#test-storycollecttimeout) for legitimately slow imports or mounts. Same budget protects bootstrap and render readiness.
 
 See [Visual testing](./visual-testing.md) for tracked baselines, Matrix cases, image review, and CI comparisons.
+
+## Accessibility checks
+
+Install [official accessibility plugin](./plugins/a11y.md) and enable `HstA11y({ test: true })` to add fresh-mount axe-core test per variant, including stories without authored tests. All violations fail by default; checks needing manual review remain informational.
