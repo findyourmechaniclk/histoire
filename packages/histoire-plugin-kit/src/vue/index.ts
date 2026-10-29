@@ -53,3 +53,5 @@ export function useWorkbenchContext<C extends WorkbenchContext = WorkbenchContex
 export function useViewHost(): ViewHost {
   return useBinding().host
 }
+
+export { WorkbenchPanelAction } from './panel-action.js'

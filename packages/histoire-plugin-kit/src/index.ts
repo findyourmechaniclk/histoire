@@ -23,4 +23,6 @@ export { createSessionFrameService } from './session/frames.js'
 export type { SessionFrameActor, SessionFramePlugins, SessionFrameServiceOptions } from './session/frames.js'
 export { BUILTIN_SHORTCUTS, createPluginShortcutBindings, findBuiltinShortcutConflict, findPluginShortcutConflict, isEditableTarget, matchesShortcut, shortcutBindingsOverlap } from './shortcuts.js'
 export type { BuiltinShortcut, IdentifiedShortcutBinding, PluginShortcutBindings, PluginShortcutConflictOptions, ShortcutBinding, ShortcutKeyEvent } from './shortcuts.js'
+export { installPluginStyles } from './styles.js'
+
 export type * from './types/index.js'

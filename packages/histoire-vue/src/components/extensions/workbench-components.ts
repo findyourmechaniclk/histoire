@@ -6,6 +6,7 @@ import type { SlotsType, VNode } from 'vue'
 import { BuiltinIcon, HstPulsatingDisc, useLoadingDelay } from '@histoire/controls/vue'
 import { WORKBENCH_COMPONENTS_KEY } from '@histoire/plugin-kit'
 import { defineComponent, h, inject, provide } from 'vue'
+import { NativeWorkbenchPanelAction } from './panel-action.js'
 
 /** Slots of the state components. */
 type StateSlots = SlotsType<{
@@ -93,6 +94,7 @@ export const histoireWorkbenchComponents: Readonly<WorkbenchComponents> = Object
   WorkbenchEmptyState: EmptyState,
   WorkbenchLoadingState: LoadingState,
   WorkbenchErrorState: ErrorState,
+  WorkbenchPanelAction: NativeWorkbenchPanelAction,
   WorkbenchPaneHeader: PaneHeader,
   WorkbenchPaneToolbar: PaneToolbar,
   WorkbenchPaneList: PaneList,

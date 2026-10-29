@@ -3,6 +3,7 @@ import WorkbenchEmptyState from '../shell/WorkbenchEmptyState.vue'
 import WorkbenchErrorState from '../shell/WorkbenchErrorState.vue'
 import WorkbenchLoadingState from '../shell/WorkbenchLoadingState.vue'
 import WorkbenchPaneHeader from '../shell/WorkbenchPaneHeader.vue'
+import WorkbenchPanelAction from '../shell/WorkbenchPanelAction.vue'
 import WorkbenchPaneList from '../shell/WorkbenchPaneList.vue'
 import WorkbenchPaneToolbar from '../shell/WorkbenchPaneToolbar.vue'
 
@@ -15,6 +16,7 @@ export const workbenchComponents: Readonly<WorkbenchComponents> = Object.freeze(
   WorkbenchEmptyState,
   WorkbenchLoadingState,
   WorkbenchErrorState,
+  WorkbenchPanelAction,
   WorkbenchPaneHeader,
   WorkbenchPaneToolbar,
   WorkbenchPaneList,

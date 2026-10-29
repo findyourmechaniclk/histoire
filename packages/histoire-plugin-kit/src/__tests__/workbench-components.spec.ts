@@ -4,7 +4,7 @@ import type { ViewHost, WorkbenchComponents, WorkbenchState } from '../index.js'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createApp, defineComponent, h, nextTick } from 'vue'
 import { WORKBENCH_COMPONENTS_KEY } from '../index.js'
-import { WorkbenchEmptyState, WorkbenchErrorState, WorkbenchLoadingState, WorkbenchPaneHeader, WorkbenchPaneList } from '../vue/index.js'
+import { WorkbenchEmptyState, WorkbenchErrorState, WorkbenchLoadingState, WorkbenchPaneHeader, WorkbenchPanelAction, WorkbenchPaneList } from '../vue/index.js'
 import { createTestHost, plugin } from './fixtures/host.js'
 
 /**
@@ -149,5 +149,26 @@ describe('view host states', () => {
     viewHost.renderState(target, state)
 
     expect(renderState).toHaveBeenCalledWith(target, state)
+  })
+})
+
+describe('primary panel actions', () => {
+  it('forwards label, disabled state and activation through host component', () => {
+    let clicks = 0
+    const HostAction = defineComponent({
+      props: { label: String, disabled: Boolean },
+      emits: ['click'],
+      setup: (props, { emit }) => () => h('button', { disabled: props.disabled, onClick: (event: MouseEvent) => emit('click', event) }, props.label),
+    })
+    const element = renderApp(() => h('div', [
+      h(WorkbenchPanelAction, { icon: 'play-filled-alt', label: 'Run', onClick: () => clicks++ }),
+      h(WorkbenchPanelAction, { icon: 'play-filled-alt', label: 'Disabled', disabled: true, onClick: () => clicks++ }),
+    ]), { WorkbenchPanelAction: HostAction })
+    const buttons = element.querySelectorAll('button')
+    expect(buttons[0].textContent).toBe('Run')
+    buttons[0].click()
+    buttons[1].click()
+    expect(clicks).toBe(1)
+    expect(buttons[1].disabled).toBe(true)
   })
 })

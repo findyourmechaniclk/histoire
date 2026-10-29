@@ -23,6 +23,8 @@ export const WORKBENCH_COMPONENTS_KEY: symbol = Symbol.for('histoire.plugin-kit.
  * names `@histoire/plugin-kit/vue` exports. Missing entries render plugin-kit's plain fallback.
  */
 export interface WorkbenchComponents {
+  /** Primary panel action: props icon, label, disabled; emits click. */
+  WorkbenchPanelAction?: WorkbenchComponent
   /** Empty area: props `icon`, `title`; slots `default` (detail), `actions`. */
   WorkbenchEmptyState?: WorkbenchComponent
   /** Loading placeholder: prop `title`; slot `default` (detail). */
