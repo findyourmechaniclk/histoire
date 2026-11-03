@@ -89,11 +89,16 @@ export async function startDevProxy(options: DevProxyOptions) {
           if (completeInputs) await watcher?.replace(completeInputs, isActive)
         },
         onExit: (error) => {
-          if (!closed && isActive()) publish('failed', error)
+          if (closed || !isActive()) return
+          // Coordinator still owns crashed child as ready; replace it instead of serving dead handle.
+          console.error(error.message)
+          publish('failed', error)
+          void controller.restart().catch(failure => publish('failed', failure))
         },
       })
     },
     isUnsafeCleanup: () => false,
+    quarantineCleanupFailures: false,
     withDeadline: promise => promise,
   })
   const off = controller.subscribe((status, runtime) => {
@@ -109,15 +114,23 @@ export async function startDevProxy(options: DevProxyOptions) {
     options.onListening?.(url)
     if (options.open) void open().catch(console.error)
     const config = await import('./config/index.js')
-    const revision = await config.captureProjectConfigurationRevision(root, options.config)
     if (closed) return
-    watcher = await config.watchConfiguration(await config.configurationWatchInputs({ root, config: options.config, revision }), () => {
+    watcher = await config.watchConfiguration([], () => {
       if (!closed) void controller.restart().catch(error => publish('failed', error))
     })
     if (closed) {
       await watcher.close()
       return
     }
+    try {
+      const revision = await config.captureProjectConfigurationRevision(root, options.config)
+      await watcher.update(await config.configurationWatchInputs({ root, config: options.config, revision }))
+    }
+    catch (error) {
+      // Runtime still reports its own inputs; an unreadable candidate must not disable watching.
+      console.error(error)
+    }
+    if (closed) return
     await http.prepare()
   })()
   const boot = prepared.then(async () => {
@@ -153,7 +166,7 @@ export async function startDevProxy(options: DevProxyOptions) {
         closed = true
         publish('closed')
         const stop = controller.close()
-        await Promise.allSettled([boot, watcher?.close()])
+        await Promise.allSettled([boot])
         try {
           await stop
         }

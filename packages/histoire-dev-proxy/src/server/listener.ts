@@ -6,10 +6,12 @@ export async function listen(server: Server, port: number, host: string | boolea
   for (;;) {
     try {
       await new Promise<void>((resolve, reject) => {
+        /** Rejects this bind attempt and drops its success listener. */
         function failed(error: Error) {
           server.off('listening', ready)
           reject(error)
         }
+        /** Resolves this bind attempt and drops its failure listener. */
         function ready() {
           server.off('error', failed)
           resolve()

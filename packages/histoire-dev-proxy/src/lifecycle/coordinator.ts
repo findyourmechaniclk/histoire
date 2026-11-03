@@ -27,6 +27,8 @@ export interface CoordinatorOptions<G extends LifecycleGeneration> {
   onBeforeRelease?: (handle: LifecycleHandle<G>) => void | Promise<void>
   /** Reports asynchronous watcher failures. */
   onError?: (error: unknown) => void
+  /** Quarantines controller after failed resource release; process-isolated owners opt out. Default true. */
+  quarantineCleanupFailures?: boolean
   /** Marks failures after which ownership cannot safely transfer. */
   isUnsafeCleanup: (error: unknown) => boolean
   /** Bounds cleanup using owning framework's error contract. */
@@ -50,6 +52,11 @@ export function createRestartCoordinator<G extends LifecycleGeneration>(options:
   let unsafeCleanupError: unknown
   let version = 0
 
+  /** Records a release failure that blocks later generations, unless owner opted out. */
+  function quarantine(error: unknown) {
+    if (options.quarantineCleanupFailures !== false) unsafeCleanupError = error
+  }
+
   /** Announces lifecycle changes after state has been updated. */
   function publish(next: RuntimeStatus) {
     status = next
@@ -71,7 +78,7 @@ export function createRestartCoordinator<G extends LifecycleGeneration>(options:
       if (oldHandle) await options.onBeforeRelease?.(oldHandle)
     }
     catch (error) {
-      unsafeCleanupError = error
+      quarantine(error)
       // Quarantine this controller after unknown runner teardown; closing
       // remaining project resources still avoids watcher/server leaks.
       await Promise.allSettled([oldWatch?.(), oldGeneration?.close()])
@@ -80,7 +87,7 @@ export function createRestartCoordinator<G extends LifecycleGeneration>(options:
     const results = await Promise.allSettled([oldWatch?.(), oldGeneration?.close()])
     const failure = results.find((result): result is PromiseRejectedResult => result.status === 'rejected')
     if (failure) {
-      unsafeCleanupError = failure.reason
+      quarantine(failure.reason)
       throw failure.reason
     }
   }
@@ -100,7 +107,7 @@ export function createRestartCoordinator<G extends LifecycleGeneration>(options:
           await runtime.close()
         }
         catch (error) {
-          unsafeCleanupError = error
+          quarantine(error)
           throw error
         }
         throw new Error('Project runtime closed')
@@ -124,7 +131,7 @@ export function createRestartCoordinator<G extends LifecycleGeneration>(options:
           await stopWatch()
         }
         catch (error) {
-          unsafeCleanupError = error
+          quarantine(error)
           throw error
         }
         throw new Error('Project runtime closed')

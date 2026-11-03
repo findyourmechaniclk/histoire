@@ -38,7 +38,8 @@ function connect() {
       document.getElementById('detail')!.textContent = state.error ?? ''
       if (state.status === 'ready') navigate(state.base)
     }
-    else if (state.status !== 'ready' || state.generation !== generation) {
+    // Shutdown leaves workbench in place; reloading would only reach a closed listener.
+    else if (state.status !== 'closed' && (state.status !== 'ready' || state.generation !== generation)) {
       navigate(state.base)
     }
   }

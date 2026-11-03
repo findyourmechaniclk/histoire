@@ -58,7 +58,8 @@ it('binds before config finishes, restarts only after full winddown, and recover
     const firstPid = Number(await readFile(pidFile, 'utf8'))
     expect(firstPid).not.toBe(child.child.pid)
     const hmr = await (await fetch(`${url}@vite/client`)).text()
-    expect(hmr).toContain(String(new URL(url).port))
+    // No pinned HMR port: client follows page origin, so port-forwarded and TLS-terminated access keep working.
+    expect(hmr).toContain('const hmrPort = null')
     const token = /const wsToken = "([^"]+)"/.exec(hmr)![1]
     const socket = new WebSocket(`${url.replace('http:', 'ws:')}?token=${token}`, 'vite-hmr')
     const connected = new Promise<string>((resolve, reject) => {

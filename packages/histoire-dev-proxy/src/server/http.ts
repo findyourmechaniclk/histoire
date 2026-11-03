@@ -1,8 +1,16 @@
 import type { PublicState } from '../protocol.js'
 import { readFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
+import { isIP } from 'node:net'
 import { renderLoadingPage } from '../client/page.js'
 import { createStatusChannel } from './events.js'
+
+/** Proxy-owned responses expose startup errors; reject DNS-rebinding hosts like Vite's default allowedHosts. */
+function isTrustedHost(host: string | undefined) {
+  if (!host) return false
+  const hostname = host.startsWith('[') ? host.slice(1, host.indexOf(']')) : host.replace(/:\d+$/, '')
+  return hostname === 'localhost' || hostname.endsWith('.localhost') || isIP(hostname) !== 0
+}
 
 /** Stable HTTP listener delegates only after coherent generation readiness. */
 export function createProxyHttp(read: () => PublicState) {
@@ -15,6 +23,12 @@ export function createProxyHttp(read: () => PublicState) {
   const server = createServer(async (request, response) => {
     const pathname = (request.url ?? '/').split('?')[0]
     try {
+      // Proxied runtime requests keep Vite's own host policy; everything answered here is checked.
+      if (!(target && proxy && !pathname.startsWith('/__histoire/dev/')) && !isTrustedHost(request.headers.host)) {
+        response.writeHead(403, { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' })
+        response.end('Blocked host')
+        return
+      }
       if (pathname === '/__histoire/dev/events' && request.method === 'GET') return events.connect(request, response)
       if (pathname.startsWith('/__histoire/dev/')) {
         const name = pathname.slice('/__histoire/dev/'.length)
@@ -40,7 +54,12 @@ export function createProxyHttp(read: () => PublicState) {
       response.end(request.method === 'HEAD' ? undefined : html ? renderLoadingPage(read()) : 'Histoire runtime unavailable')
     }
     catch {
-      if (!response.headersSent) response.writeHead(503, { 'content-type': 'text/plain', 'cache-control': 'no-store' })
+      // Appending text to a partially proxied body would corrupt it; abort instead.
+      if (response.headersSent) {
+        response.destroy()
+        return
+      }
+      response.writeHead(503, { 'content-type': 'text/plain', 'cache-control': 'no-store' })
       response.end('Histoire runtime unavailable')
     }
   })

@@ -18,6 +18,8 @@ export function createDevProxyPlugin(transport: DevProxyTransport, collecting: b
       const server = config.server
       server.host = '127.0.0.1'
       server.port = 0
+      // Public proxy binds before project config loads, so it can only serve plain HTTP.
+      if (server.https) config.logger.warn('server.https is not supported by `histoire dev`: stories are served over HTTP')
       server.https = undefined
       server.strictPort = true
       server.origin = transport.origin
@@ -28,8 +30,9 @@ export function createDevProxyPlugin(transport: DevProxyTransport, collecting: b
         server.ws = false
         return
       }
-      const socket = { ...(typeof server.hmr === 'object' ? server.hmr : {}), ...(typeof server.ws === 'object' ? server.ws : {}), clientPort: Number(origin.port), protocol: 'ws' as const }
-      // Browser hostname keeps --host LAN access working through public proxy.
+      const socket = { ...(typeof server.hmr === 'object' ? server.hmr : {}), ...(typeof server.ws === 'object' ? server.ws : {}) }
+      // Proxy serves WebSockets on page origin: client derives host, port and protocol from
+      // page URL, which keeps LAN, port-forwarded and TLS-terminated access working.
       delete socket.host
       delete socket.port
       delete socket.server
