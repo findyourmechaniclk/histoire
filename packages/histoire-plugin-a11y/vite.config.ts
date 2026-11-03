@@ -21,6 +21,9 @@ export default defineConfig({
   build: {
     target: 'es2022',
     minify: false,
+    // `tsc` emits `dist/index.js` alongside; `vite build --watch` must not wipe it on rebuild.
+    // `build` script cleans `dist` with `rimraf` instead.
+    emptyOutDir: false,
     lib: { formats: ['es'], entry: { client: 'src/client.ts', frame: 'src/frame.ts', test: 'src/test.ts' }, fileName: (_format, name) => `${name}.js` },
     rolldownOptions: { external: id => /^(?:node:|vue(?:\/|$)|@histoire\/)/.test(id), output: { chunkFileNames: 'chunks/[name]-[hash].js' } },
   },
