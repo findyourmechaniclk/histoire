@@ -37,7 +37,7 @@ export interface DevProxyOptions {
 export async function startDevProxy(options: DevProxyOptions) {
   const root = resolve(options.root ?? process.cwd())
   let state: PublicState = { status: 'starting', generation: randomUUID(), base: '/' }
-  const http = createProxyHttp(() => state)
+  const http = createProxyHttp(() => state, () => restart())
   let url: string
   try {
     url = `${await listen(http.server, options.port ?? 6006, options.host)}/`
@@ -142,6 +142,15 @@ export async function startDevProxy(options: DevProxyOptions) {
   })
   void ready.catch(() => {
   })
+  /** Manual replacement uses same serialized winddown as configuration changes. */
+  async function restart() {
+    if (closed) throw new Error('Histoire proxy closed')
+    await prepared
+    await controller.restart().catch((error) => {
+      publish('failed', error)
+      throw error
+    })
+  }
   return {
     /** Actual public address, including OS-selected or fallback port. */
     url,
@@ -151,15 +160,7 @@ export async function startDevProxy(options: DevProxyOptions) {
     get status() {
       return state.status
     },
-    /** Manual replacement uses same serialized winddown as configuration changes. */
-    async restart() {
-      if (closed) throw new Error('Histoire proxy closed')
-      await prepared
-      await controller.restart().catch((error) => {
-        publish('failed', error)
-        throw error
-      })
-    },
+    restart,
     /** Stop observation/admission synchronously before joining child shutdown. */
     close() {
       return closing ??= (async () => {

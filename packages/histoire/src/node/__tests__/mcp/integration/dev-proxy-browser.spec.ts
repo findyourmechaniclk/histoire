@@ -30,16 +30,15 @@ it('shows accessible startup in light/dark/reduced-motion and hands deep link to
   await writeFile(join(fixture.root, 'vite.config.ts'), `import vue from '@vitejs/plugin-vue';export default {base:'/book/',plugins:[vue()]}`)
   const process = startMcpProcess(['dev', '--host', '127.0.0.1', '--port', '0', '--config', 'custom config.ts', '--no-mcp'], fixture.root)
   const browser = await launchEmbedBrowser()
-  let fallback: Awaited<ReturnType<typeof launchEmbedBrowser>> | undefined
   let page: Awaited<ReturnType<typeof browser.newPage>> | undefined
   const errors: string[] = []
   try {
     const url = (await process.waitFor(/Histoire: (http\S+)/))[1]
     page = await browser.newPage({ viewport: { width: 1100, height: 740 }, colorScheme: 'light' })
     page.on('pageerror', error => errors.push(error.message))
-    const asset = page.waitForResponse(response => response.url().endsWith('/__histoire/dev/particles.js'))
+    const asset = page.waitForResponse(response => response.url().endsWith('/__histoire/dev/lifecycle.js'))
     await page.goto(`${url}book/?keep=yes#selected`)
-    expect(await page.getByRole('status').textContent()).toBe('Starting Histoire')
+    expect(await page.getByRole('status').textContent()).toBe('Starting')
     expect((await asset).status()).toBe(200)
     await page.screenshot({ path: '/tmp/histoire-dev-startup-light.png' })
     await page.emulateMedia({ colorScheme: 'dark' })
@@ -49,13 +48,6 @@ it('shows accessible startup in light/dark/reduced-motion and hands deep link to
     expect(await reduced.getByRole('heading', { name: 'Histoire', exact: true }).isVisible()).toBe(true)
     expect(await reduced.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true)
     await reduced.screenshot({ path: '/tmp/histoire-dev-startup-mobile.png' })
-    if (!globalThis.process.env.HISTOIRE_EMBED_BROWSER || globalThis.process.env.HISTOIRE_EMBED_BROWSER === 'chromium') {
-      fallback = await launchEmbedBrowser({ args: ['--disable-webgl'] })
-      const noGpu = await fallback.newPage()
-      await noGpu.goto(url)
-      expect(await noGpu.evaluate(() => document.querySelector('canvas')!.getContext('webgl2'))).toBeNull()
-      expect(await noGpu.getByRole('status').textContent()).toBe('Starting Histoire')
-    }
     released = true
     for (const response of pending) response.end('go')
     pending.clear()
@@ -80,7 +72,6 @@ it('shows accessible startup in light/dark/reduced-motion and hands deep link to
     released = true
     for (const response of pending) response.end('go')
     await browser.close()
-    await fallback?.close()
     await process.close()
     gate.closeAllConnections()
     await new Promise<void>(resolve => gate.close(() => resolve()))

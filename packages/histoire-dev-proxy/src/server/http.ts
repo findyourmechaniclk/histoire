@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import { isIP } from 'node:net'
 import { renderLoadingPage } from '../client/page.js'
+import { designPlaygroundPath, renderDesignPlayground } from '../client/playground.js'
 import { createStatusChannel } from './events.js'
 
 /** Proxy-owned responses expose startup errors; reject DNS-rebinding hosts like Vite's default allowedHosts. */
@@ -13,7 +14,7 @@ function isTrustedHost(host: string | undefined) {
 }
 
 /** Stable HTTP listener delegates only after coherent generation readiness. */
-export function createProxyHttp(read: () => PublicState) {
+export function createProxyHttp(read: () => PublicState, restart: () => Promise<void>) {
   let target: string | undefined
   let proxy: Awaited<ReturnType<typeof import('httpxy')['createProxyServer']>> | undefined
   const sockets = new Set<import('node:net').Socket>()
@@ -29,10 +30,28 @@ export function createProxyHttp(read: () => PublicState) {
         response.end('Blocked host')
         return
       }
+      if (pathname === '/__histoire/dev/restart' && request.method === 'POST') {
+        // Cross-site pages can send simple POSTs without reading responses; only accept own origin.
+        if (request.headers.origin !== `http://${request.headers.host}`) {
+          response.writeHead(403, { 'content-type': 'text/plain; charset=utf-8' }).end('Cross-origin restart refused')
+          return
+        }
+        // Outcome reaches the page over the status stream.
+        void restart().catch(() => {})
+        response.writeHead(202, { 'cache-control': 'no-store' }).end()
+        return
+      }
       if (pathname === '/__histoire/dev/events' && request.method === 'GET') return events.connect(request, response)
+      if (pathname === designPlaygroundPath && ['GET', 'HEAD'].includes(request.method ?? '')) {
+        const query = new URL(request.url ?? '/', 'http://localhost').searchParams
+        response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' })
+        response.end(request.method === 'HEAD' ? undefined : renderDesignPlayground(query, read()))
+        return
+      }
       if (pathname.startsWith('/__histoire/dev/')) {
         const name = pathname.slice('/__histoire/dev/'.length)
-        if (['lifecycle.js', 'particles.js'].includes(name) && ['GET', 'HEAD'].includes(request.method ?? '')) {
+        // Entries share code through bundler chunks, which must be served next to them.
+        if (/^(?:lifecycle|demo|chunks\/[\w-]+)\.js$/.test(name) && ['GET', 'HEAD'].includes(request.method ?? '')) {
           if (!assets.has(name)) assets.set(name, readFile(new URL(`../browser/${name}`, import.meta.url), 'utf8'))
           const asset = await assets.get(name)
           response.writeHead(200, { 'content-type': 'text/javascript; charset=utf-8', 'cache-control': 'no-store' })

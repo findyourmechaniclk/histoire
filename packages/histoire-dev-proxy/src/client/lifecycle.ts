@@ -1,4 +1,5 @@
 import type { PublicState } from '../protocol.js'
+import { applyStatus, leaveStartup } from './transitions.js'
 
 /** Connect top-level workbench/loading documents to proxy-owned process lifecycle. */
 function connect() {
@@ -11,10 +12,11 @@ function connect() {
   let navigating = false
   let disposeTimer: ReturnType<typeof setTimeout> | undefined
   /** Preserve selected route and URL state across an updated application base. */
-  function navigate(base: string) {
+  async function navigate(base: string) {
     if (navigating) return
     navigating = true
     events.close()
+    if (loading) await leaveStartup()
     const url = new URL(location.href)
     if (url.pathname === '/') url.pathname = base
     else if (originalBase !== base && !url.pathname.startsWith(base) && url.pathname.startsWith(originalBase)) url.pathname = base + url.pathname.slice(originalBase.length)
@@ -33,20 +35,26 @@ function connect() {
     }
     clearTimeout(disposeTimer)
     if (loading) {
-      const status = document.getElementById('status')!
-      status.textContent = state.status === 'failed' ? 'Histoire failed to start' : state.status === 'restarting' ? 'Restarting Histoire' : state.status === 'closed' ? 'Histoire stopped' : 'Starting Histoire'
-      document.getElementById('detail')!.textContent = state.error ?? ''
-      if (state.status === 'ready') navigate(state.base)
+      if (state.status === 'ready') void navigate(state.base)
+      else applyStatus(state)
     }
     // Shutdown leaves workbench in place; reloading would only reach a closed listener.
     else if (state.status !== 'closed' && (state.status !== 'ready' || state.generation !== generation)) {
-      navigate(state.base)
+      void navigate(state.base)
     }
   }
+  const restart = document.getElementById('restart') as HTMLButtonElement | null
+  restart?.addEventListener('click', () => {
+    restart.disabled = true
+    // New status arrives over the event stream; re-enable once the request settles.
+    void fetch('/__histoire/dev/restart', { method: 'POST' }).catch(() => {}).finally(() => {
+      restart.disabled = false
+    })
+  })
   events.onerror = () => {
     if (loading) {
       disposeTimer = setTimeout(() => {
-        document.getElementById('status')!.textContent = 'Connecting to Histoire'
+        document.getElementById('status')!.textContent = 'Connecting'
       }, 3000)
     }
   }

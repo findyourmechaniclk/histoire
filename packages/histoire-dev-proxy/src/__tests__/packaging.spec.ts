@@ -24,10 +24,12 @@ it('serves packaged browser assets and runtime from unrelated installed consumer
     const url = (await process.waitFor(/Histoire: (http\S+)/))[1]
     const lifecycle = await fetch(`${url}__histoire/dev/lifecycle.js`)
     expect(lifecycle.status).toBe(200)
-    expect(await lifecycle.text()).toContain('EventSource')
-    const particles = await fetch(`${url}__histoire/dev/particles.js`)
-    expect(particles.status).toBe(200)
-    expect(await particles.text()).toContain('webgl2')
+    const lifecycleSource = await lifecycle.text()
+    expect(lifecycleSource).toContain('EventSource')
+    // Entries share code through bundler chunks; an unserved chunk breaks every startup script.
+    for (const chunk of lifecycleSource.matchAll(/from "\.\/(chunks\/[^"]+)"/g)) {
+      expect((await fetch(`${url}__histoire/dev/${chunk[1]}`)).status).toBe(200)
+    }
     await expect.poll(async () => (await fetch(url)).text()).toContain('packed runtime')
   }
   finally {

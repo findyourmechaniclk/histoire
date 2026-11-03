@@ -22,11 +22,12 @@ it('serves HTTP before runtime readiness, replaces process after cleanup, and re
   const address = gate.address() as { port: number }
   const file = join(root, 'histoire.config.ts')
   await writeFile(file, JSON.stringify({ gate: `http://127.0.0.1:${address.port}`, value: 'first' }))
-  const proxy = await startDevProxy({ root, port: 0, host: '127.0.0.1', runtime: new URL('./fixtures/runtime.mjs', import.meta.url) })
+  const statuses: string[] = []
+  const proxy = await startDevProxy({ root, port: 0, host: '127.0.0.1', runtime: new URL('./fixtures/runtime.mjs', import.meta.url), onStatus: state => statuses.push(state.status) })
   try {
     const response = await fetch(`${proxy.url}deep?story=book`, { headers: { accept: 'text/html' } })
     expect(response.status).toBe(200)
-    expect(await response.text()).toContain('Starting Histoire')
+    expect(await response.text()).toContain('Starting')
     expect((await fetch(`${proxy.url}module.js`)).status).toBe(503)
     expect((await fetch(`${proxy.url}api/data`)).status).toBe(503)
     const head = await fetch(proxy.url, { method: 'HEAD' })
@@ -53,7 +54,14 @@ it('serves HTTP before runtime readiness, replaces process after cleanup, and re
     expect(() => process.kill(first.pid, 0)).toThrow()
     await writeFile(file, 'invalid config')
     await expect.poll(() => proxy.status).toBe('failed')
-    expect(await (await fetch(proxy.url, { headers: { accept: 'text/html' } })).text()).toContain('Histoire failed to start')
+    expect(await (await fetch(proxy.url, { headers: { accept: 'text/html' } })).text()).toContain('Failed to start')
+    // Failure screen's restart action: own origin only, then a fresh attempt begins.
+    const restartUrl = `${proxy.url}__histoire/dev/restart`
+    expect((await fetch(restartUrl, { method: 'POST', headers: { origin: 'http://evil.example' } })).status).toBe(403)
+    const before = statuses.length
+    expect((await fetch(restartUrl, { method: 'POST', headers: { origin: new URL(proxy.url).origin } })).status).toBe(202)
+    await expect.poll(() => statuses.slice(before)).toContain('restarting')
+    await expect.poll(() => proxy.status).toBe('failed')
     await writeFile(file, JSON.stringify({ value: 'recovered' }))
     await expect.poll(async () => (await fetch(proxy.url)).text()).toContain('recovered')
   }

@@ -1,6 +1,6 @@
 # @histoire/dev-proxy
 
-Early HTTP hosting and process ownership for `histoire dev`. Public listener responds before project configuration or Vite imports. Standalone loading document uses Histoire particle artwork with static/reduced-motion fallbacks.
+Early HTTP hosting and process ownership for `histoire dev`. Public listener responds before project configuration or Vite imports. Standalone loading document draws a wireframe Histoire logo, animates transitions between lifecycle states (reduced motion applies them instantly), and offers a restart action after failures (`POST /__histoire/dev/restart`, same-origin only). `/__histoire/dev/loading` serves that document with a state switcher and scripted sequence for design iteration.
 
 `startDevProxy({ runtime, root, port, host, runtimeOptions })` binds public listener and returns `{ url, status, ready, restart, close }`. `ready` observes initial acquisition; config errors reject it while persistent watcher permits later recovery. `close()` is idempotent. Public address defaults to `localhost:6006`; port `0` selects an ephemeral port.
 

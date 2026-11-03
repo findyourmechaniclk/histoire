@@ -4,5 +4,5 @@ import { defineRuntimeBundleConfig } from '../../scripts/vite-runtime-bundle.mjs
 export default defineRuntimeBundleConfig({
   name: 'histoire:dev-proxy',
   outDir: 'dist/browser',
-  entries: { lifecycle: 'src/client/lifecycle.ts', particles: 'src/client/particles.ts' },
+  entries: { lifecycle: 'src/client/lifecycle.ts', demo: 'src/client/demo.ts' },
 })
